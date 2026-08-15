@@ -1,0 +1,292 @@
+---
+import { getCollection, render } from 'astro:content';
+import ArticleCard from '../../components/ArticleCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+
+export async function getStaticPaths() {
+  const games = (await getCollection('games')).filter((game) => !game.data.draft);
+  const guides = (await getCollection('guides')).filter((guide) => !guide.data.draft);
+  const articles = (await getCollection('articles')).filter((article) => !article.data.draft);
+  const gameById = new Map(games.map((game) => [game.id, game]));
+  const guideByGame = new Map(guides.map((guide) => [guide.data.game, guide]));
+
+  return articles.map((article) => ({
+    params: { slug: article.id },
+    props: {
+      article,
+      game: gameById.get(article.data.game),
+      guide: guideByGame.get(article.data.game),
+      related: articles
+        .filter((candidate) => candidate.id !== article.id && candidate.data.game === article.data.game)
+        .sort((a, b) => Number(b.data.featured) - Number(a.data.featured) || a.data.title.localeCompare(b.data.title))
+        .slice(0, 2),
+    },
+  }));
+}
+
+const { article, game, guide, related } = Astro.props;
+if (!game || !guide) throw new Error(`Article ${article.id} references an unknown game or guide.`);
+const { Content } = await render(article);
+const publishedLabel = new Date(`${article.data.published}T12:00:00`).toLocaleDateString('en-US', {
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+});
+const updatedLabel = new Date(`${article.data.updated}T12:00:00`).toLocaleDateString('en-US', {
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+});
+const canonical = `https://nocharge.net/articles/${article.id}/`;
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: article.data.title,
+    description: article.data.description,
+    datePublished: article.data.published,
+    dateModified: article.data.updated,
+    mainEntityOfPage: canonical,
+    url: canonical,
+    inLanguage: 'en',
+    author: {
+      '@type': 'Organization',
+      name: article.data.author,
+      url: 'https://nocharge.net/',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'NoCharge',
+      url: 'https://nocharge.net/',
+    },
+    ...(game.data.artwork ? { image: `https://nocharge.net${game.data.artwork.socialCardFallback ?? game.data.artwork.socialCard}` } : {}),
+    articleSection: article.data.topics,
+    keywords: article.data.topics.join(', '),
+    about: {
+      '@type': 'VideoGame',
+      name: game.data.title,
+      url: `https://nocharge.net/games/${game.id}/`,
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nocharge.net/' },
+      { '@type': 'ListItem', position: 2, name: 'Articles', item: 'https://nocharge.net/articles/' },
+      { '@type': 'ListItem', position: 3, name: article.data.title, item: canonical },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title={article.data.title}
+  description={article.data.description}
+  path={`/articles/${article.id}/`}
+  schema={schema}
+  ogType="article"
+  modifiedTime={article.data.updated}
+  socialImage={game.data.artwork?.socialCardFallback ?? game.data.artwork?.socialCard}
+  socialImageAlt={game.data.artwork ? `${game.data.title}: ${game.data.artwork.alt}` : undefined}
+>
+  <div class="article-page">
+    <Breadcrumbs
+      items={[
+        { label: 'Home', href: '/' },
+        { label: 'Articles', href: '/articles/' },
+        { label: article.data.title },
+      ]}
+    />
+    <article>
+      <header class="article-header">
+        <a class="article-header__game" href={`/games/${game.id}/`}>{game.data.title}</a>
+        <h1 class="page-title">{article.data.title}</h1>
+        <p class="lede">{article.data.description}</p>
+        <div class="article-header__meta">
+          <span>By {article.data.author}</span>
+          <span aria-hidden="true">·</span>
+          <time datetime={article.data.published}>Published {publishedLabel}</time>
+          <span aria-hidden="true">·</span>
+          <time datetime={article.data.updated}>Updated {updatedLabel}</time>
+          <span aria-hidden="true">·</span>
+          <span>{article.data.readTime} min read</span>
+        </div>
+      </header>
+
+      <aside class="article-play panel" aria-label={`Play ${game.data.title} or read its guide`}>
+        <div>
+          <strong>Try the detail in a live board.</strong>
+          <p>{game.data.tagline}</p>
+        </div>
+        <div class="article-play__actions">
+          <a class="btn btn--sm" href={`/games/${game.id}/`}>Play {game.data.title}</a>
+          <a class="btn btn--ghost btn--sm" href={`/guides/${guide.id}/`}>Read the guide</a>
+        </div>
+      </aside>
+
+      <div class="article-prose prose">
+        <Content />
+      </div>
+    </article>
+
+    <section class="article-cta panel" aria-labelledby="article-cta-heading">
+      <div>
+        <p class="section-kicker">Put it into practice</p>
+        <h2 id="article-cta-heading">Ready for a focused run?</h2>
+        <p>Open {game.data.title}, or use the complete guide when you need the full rule set.</p>
+      </div>
+      <div class="article-cta__actions">
+        <a class="btn" href={`/games/${game.id}/`}>Play now</a>
+        <a class="btn btn--ghost" href={`/guides/${guide.id}/`}>Open guide</a>
+      </div>
+    </section>
+
+    <section class="article-related" aria-labelledby="article-related-heading">
+      <div class="article-related__heading">
+        <p class="section-kicker">Keep reading</p>
+        <h2 id="article-related-heading">More {game.data.title} notes</h2>
+      </div>
+      <div class="article-related__grid">
+        {
+          related.map((item) => (
+            <ArticleCard
+              slug={item.id}
+              title={item.data.title}
+              description={item.data.description}
+              gameTitle={game.data.title}
+              readTime={item.data.readTime}
+              published={item.data.published}
+              topics={item.data.topics}
+              accent={game.data.accent}
+            />
+          ))
+        }
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .article-page {
+    display: grid;
+    gap: 2rem;
+    max-width: 52rem;
+    margin-inline: auto;
+  }
+
+  .article-header {
+    padding: 0.75rem 0 1.5rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .article-header__game {
+    display: inline-flex;
+    min-height: 30px;
+    margin-bottom: 0.75rem;
+    color: var(--accent-strong);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  .article-header .page-title {
+    max-width: 50rem;
+    font-size: clamp(2.2rem, 6vw, 4rem);
+  }
+
+  .article-header__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 1rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+
+  .article-play,
+  .article-cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 1.5rem;
+    padding: 1rem;
+    margin: 1.5rem 0 2.25rem;
+  }
+
+  .article-play > div:first-child,
+  .article-cta > div:first-child {
+    display: grid;
+    gap: 0.3rem;
+  }
+
+  .article-play p,
+  .article-cta p:not(.section-kicker) {
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+
+  .article-play__actions,
+  .article-cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+  }
+
+  .article-prose {
+    max-width: 46rem;
+  }
+
+  .article-cta {
+    padding: clamp(1.1rem, 4vw, 1.75rem);
+    margin: 0;
+  }
+
+  .article-cta h2,
+  .article-related h2 {
+    font-size: 1.35rem;
+    letter-spacing: -0.025em;
+  }
+
+  .section-kicker {
+    color: var(--accent-strong);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .article-related {
+    display: grid;
+    gap: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .article-related__heading {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .article-related__grid {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  @media (min-width: 42rem) {
+    .article-related__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 32rem) {
+    .article-play__actions,
+    .article-play__actions .btn,
+    .article-cta__actions,
+    .article-cta__actions .btn {
+      width: 100%;
+    }
+  }
+</style>

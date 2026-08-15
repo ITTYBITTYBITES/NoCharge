@@ -2,10 +2,12 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import GameShell from '../../components/GameShell.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
 
 export async function getStaticPaths() {
   const games = (await getCollection('games')).filter((game) => !game.data.draft);
   const guides = (await getCollection('guides')).filter((guide) => !guide.data.draft);
+  const articles = (await getCollection('articles')).filter((article) => !article.data.draft);
   const guideIds = new Set(guides.map((guide) => guide.data.game));
   return games.map((game) => ({
     params: { slug: game.id },
@@ -13,11 +15,14 @@ export async function getStaticPaths() {
       game,
       hasGuide: guideIds.has(game.id),
       relatedGames: games.filter((candidate) => candidate.id !== game.id).sort((a, b) => a.data.order - b.data.order),
+      relatedArticles: articles
+        .filter((article) => article.data.game === game.id)
+        .sort((a, b) => Number(b.data.featured) - Number(a.data.featured) || a.data.title.localeCompare(b.data.title)),
     },
   }));
 }
 
-const { game, hasGuide, relatedGames } = Astro.props;
+const { game, hasGuide, relatedGames, relatedArticles } = Astro.props;
 const { Content } = await render(game);
 const slug = game.id;
 const presentation = game.data.presentation;
@@ -41,6 +46,7 @@ const stageStyle = presentation?.stageAspectDesktop
     artwork={game.data.artwork}
   >
     <div
+      slot="game"
       data-game-root={slug}
       class:list={['game-root', { 'game-root--reserved': presentation?.stageAspectDesktop }]}
       style={stageStyle}
@@ -80,6 +86,32 @@ const stageStyle = presentation?.stageAspectDesktop
       }
     </section>
     {
+      relatedArticles.length > 0 && (
+        <section class="game-articles" aria-labelledby="game-articles-heading">
+          <div>
+            <p class="game-about__kicker">Player notes</p>
+            <h2 id="game-articles-heading">More ways to read this game</h2>
+            <p>Original articles about the systems and decisions inside {game.data.title}.</p>
+          </div>
+          <div class="game-articles__grid">
+            {relatedArticles.map((article) => (
+              <ArticleCard
+                slug={article.id}
+                title={article.data.title}
+                description={article.data.description}
+                gameTitle={game.data.title}
+                readTime={article.data.readTime}
+                published={article.data.published}
+                topics={article.data.topics}
+                accent={game.data.accent}
+              />
+            ))}
+          </div>
+          <a class="game-about__guide" href="/articles/">Browse all game articles →</a>
+        </section>
+      )
+    }
+    {
       presentation?.relatedHeading && (
         <nav class="game-related" aria-labelledby="game-related-heading">
           <div>
@@ -107,11 +139,6 @@ const stageStyle = presentation?.stageAspectDesktop
   </GameShell>
 </BaseLayout>
 
-<script>
-  import { mountGame } from '../../games/registry';
-  const root = document.querySelector<HTMLElement>('[data-game-root]');
-  if (root?.dataset.gameRoot) mountGame(root.dataset.gameRoot, root);
-</script>
 
 <style>
   .game-root {
@@ -230,6 +257,35 @@ const stageStyle = presentation?.stageAspectDesktop
     font-weight: 700;
   }
 
+  .game-articles {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .game-articles > div:first-child {
+    display: grid;
+    gap: 0.35rem;
+    max-width: 42rem;
+  }
+
+  .game-articles h2 {
+    font-size: 1.3rem;
+    letter-spacing: -0.025em;
+  }
+
+  .game-articles > div:first-child > p:last-child {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .game-articles__grid {
+    display: grid;
+    gap: 0.85rem;
+  }
+
   .game-related {
     display: grid;
     gap: 0.9rem 2rem;
@@ -257,6 +313,12 @@ const stageStyle = presentation?.stageAspectDesktop
     .game-controls,
     .game-related {
       grid-template-columns: minmax(13rem, 0.8fr) minmax(20rem, 1.2fr);
+    }
+  }
+
+  @media (min-width: 52rem) {
+    .game-articles__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 

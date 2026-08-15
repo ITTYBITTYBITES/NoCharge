@@ -1,0 +1,131 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+---
+
+<BaseLayout
+  title="Terms of Use"
+  description="Plain-language terms for using NoCharge browser games, guides, and optional services."
+  path="/terms/"
+  showAds={false}
+>
+  <article class="trust-page prose">
+    <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Terms of Use' }]} />
+    <header>
+      <p class="eyebrow">Terms of Use</p>
+      <h1 class="page-title">Terms for using NoCharge.</h1>
+      <p class="lede">These terms explain the basic rules for the NoCharge site, games, guides, and optional services.</p>
+      <p class="trust-page__date">Effective date: August 15, 2026</p>
+    </header>
+
+    <section aria-labelledby="terms-acceptance">
+      <h2 id="terms-acceptance">Acceptance and intended audience</h2>
+      <p>
+        By accessing or using NoCharge, you agree to these Terms of Use. NoCharge is intended for people aged 13
+        and older. If you do not agree with these terms, please do not use the site.
+      </p>
+    </section>
+
+    <section aria-labelledby="terms-access">
+      <h2 id="terms-access">Free browser-game access and no accounts</h2>
+      <p>
+        NoCharge provides free browser-game access to its current catalog and related guides. The site does not
+        require or offer user accounts, passwords, paid memberships, cloud saves, or public player profiles.
+        Features, games, guides, and availability may change over time.
+      </p>
+    </section>
+
+    <section aria-labelledby="terms-local-data">
+      <h2 id="terms-local-data">Local browser data</h2>
+      <p>
+        Game high scores, game preferences, sound preference, and privacy choices may be stored locally in your
+        browser. This data is not a NoCharge account and is not uploaded as a player profile. You can clear local
+        game data through the Privacy page or your browser settings. See <a href="/privacy/">Privacy</a> for details.
+      </p>
+    </section>
+
+    <section aria-labelledby="terms-ip">
+      <h2 id="terms-ip">Intellectual property</h2>
+      <p>
+        The NoCharge site design, game code, artwork, guides, articles, text, and other site materials are
+        protected by applicable intellectual-property laws. You may use the site for personal, non-commercial
+        play and reading. Do not copy, republish, sell, scrape for republication, or present NoCharge materials as
+        your own without permission, except where applicable law allows it.
+      </p>
+    </section>
+
+    <section aria-labelledby="terms-use">
+      <h2 id="terms-use">Acceptable use</h2>
+      <p>
+        Use NoCharge lawfully and in a way that does not interfere with other visitors or the site. Do not attempt
+        to bypass security controls, probe or overload the site, introduce malicious code, impersonate NoCharge,
+        or use automated tools to scrape, benchmark, flood, or otherwise abuse the service without permission.
+      </p>
+    </section>
+
+    <section aria-labelledby="terms-third-parties">
+      <h2 id="terms-third-parties">Third-party advertisements and links</h2>
+      <p>
+        If you choose advertising consent, NoCharge may display sandboxed advertising supplied by third parties
+        and may show a clearly labeled sponsored no-fill link. Third-party destinations, products, policies, and
+        availability are outside NoCharge’s control. Review the <a href="/advertising/">Advertising Disclosure</a>
+        and the applicable third party’s terms before interacting with an external destination.
+      </p>
+    </section>
+
+    <section aria-labelledby="terms-availability">
+      <h2 id="terms-availability">Availability and game changes</h2>
+      <p>
+        We aim to keep NoCharge available and its guides accurate, but the site is provided on an as-available
+        basis. We may maintain, change, suspend, remove, or replace a game, guide, page, or optional service
+        without notice. Local scores can be lost if browser storage is cleared or unavailable.
+      </p>
+    </section>
+
+    <section aria-labelledby="terms-disclaimers">
+      <h2 id="terms-disclaimers">Disclaimers and limits</h2>
+      <p>
+        To the extent permitted by applicable law, NoCharge is provided without warranties of any kind, whether
+        express or implied, including warranties of availability, fitness for a particular purpose, accuracy, or
+        non-infringement. To the extent permitted by applicable law, NoCharge is not liable for indirect,
+        incidental, special, consequential, or punitive damages arising from use of, or inability to use, the site
+        or an external destination. Nothing in these terms excludes rights that cannot be excluded under applicable law.
+      </p>
+    </section>
+
+    <section aria-labelledby="terms-contact">
+      <h2 id="terms-contact">Contact</h2>
+      <p>
+        For questions about these terms, email <a href="mailto:hello@nocharge.net">hello@nocharge.net</a>.
+      </p>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .trust-page {
+    display: grid;
+    gap: 1.15rem;
+    max-width: 48rem;
+    margin-inline: auto;
+  }
+
+  .trust-page > header {
+    padding: 0.75rem 0 1.25rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .trust-page__date {
+    margin-top: 0.75rem;
+    color: var(--muted);
+    font-size: 0.82rem;
+  }
+
+  .trust-page section {
+    padding-top: 0.25rem;
+  }
+
+  .trust-page section + section {
+    border-top: 1px solid var(--line);
+  }
+</style>

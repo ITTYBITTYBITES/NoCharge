@@ -24,9 +24,11 @@ A growing collection of browser games and practical player guides built with **A
 2. **Word Tile Rush** — drag adjacent tiles to spell words  
 3. **Color Flip** — tap to change color, stay on matching tiles  
 
-## Guides
+## Guides and articles
 
-Each game has a long-form guide under `/guides/` covering rules, controls, scoring, strategy, accessibility, and local score storage.
+Each game has a long-form guide under `/guides/` covering rules, controls, scoring, strategy, accessibility, and local score storage. Focused supporting articles live under `/articles/` and link back to both the relevant game and its definitive guide.
+
+Public trust pages are available at `/about/`, `/terms/`, `/advertising/`, and `/changelog/`.
 
 ## Develop
 
@@ -39,6 +41,8 @@ npm run dev
 npm run check
 npm run build
 npm run test:e2e
+npm run test:e2e:matrix
+npm run lighthouse
 npm run preview
 ```
 
@@ -48,10 +52,12 @@ npm run preview
 src/
   components/     # Navigation, cards, game shell, consent, SEO
   layouts/        # BaseLayout
-  pages/          # home, arcade, guides, games, privacy
-  content/games/  # game metadata and descriptions
-  content/guides/ # long-form player guides
-  games/          # per-game TS + CSS + shared helpers
+  pages/             # home, arcade, guides, articles, games, trust pages
+  content/games/     # game metadata and descriptions
+  content/guides/    # long-form player guides
+  content/articles/  # focused supporting articles
+  content/changelog/ # public verified updates
+  games/             # per-game TS + CSS + shared helpers
   styles/         # global.css
 public/           # favicon, icons, manifest, robots, sound assets
 ```
@@ -65,4 +71,6 @@ public/           # favicon, icons, manifest, robots, sound assets
 - Adsterra documents run in sandboxed iframes without same-origin or top-navigation access.
 - The configured Smartlink is a sponsored no-fill fallback and never loads before advertising consent.
 - Responsive banner units load only when their breakpoint is visible.
-- Playwright and axe-core checks run before GitHub Pages deployment.
+- `npm run test:e2e:matrix` enables the cross-browser Playwright matrix; see `docs/CI_BROWSER_MATRIX.md` for CI activation status.
+- `npm run lighthouse` audits the production build with optional advertising denied; see `docs/CI_LIGHTHOUSE.md`.
+- `/health.json` and `scripts/check-production.mjs` prepare privacy-safe uptime checks. Scheduled monitoring is not active until the owner configures it; see `docs/CI_UPTIME.md`.

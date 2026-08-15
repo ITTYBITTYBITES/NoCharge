@@ -33,10 +33,11 @@ const {
 } = Astro.props;
 
 const isProd = import.meta.env.PROD;
+const release = import.meta.env.PUBLIC_RELEASE ?? '1.0.0';
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-release={release}>
   <head>
     <meta charset="utf-8" />
     <meta
@@ -140,5 +141,10 @@ const isProd = import.meta.env.PROD;
     </div>
     {showAds && <BottomBanner />}
     <ConsentManager />
+    <script>
+      import { startPrivacyAwareErrorReporting } from '../lib/error-monitoring';
+
+      startPrivacyAwareErrorReporting(document.documentElement.dataset.release ?? '1.0.0');
+    </script>
   </body>
 </html>

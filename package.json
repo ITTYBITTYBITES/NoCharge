@@ -9,12 +9,20 @@
     "check": "npm run test:unit && astro check",
     "build": "astro build",
     "test:e2e": "npm run build && playwright test",
+    "test:e2e:matrix": "cross-env FULL_BROWSER_MATRIX=1 playwright test",
+    "test:consent-network": "npm run build && playwright test tests/e2e/consent.spec.ts --project=chromium",
     "preview": "astro preview --host 0.0.0.0",
     "astro": "astro",
     "art:memory": "node scripts/generate-memory-match-art.mjs",
     "test:unit": "vitest run",
     "art:word": "node scripts/generate-word-tile-rush-art.mjs",
-    "art:color": "node scripts/generate-color-flip-art.mjs"
+    "art:color": "node scripts/generate-color-flip-art.mjs",
+    "lighthouse": "lhci autorun",
+    "validate:html": "html-validate \"dist/**/*.html\"",
+    "check:links": "node scripts/check-internal-links.mjs",
+    "validate:sitemap": "node scripts/validate-sitemap.mjs",
+    "inspect:structured-data": "node scripts/inspect-structured-data.mjs",
+    "check:assets": "node scripts/check-asset-budget.mjs"
   },
   "engines": {
     "node": ">=22.12.0"
@@ -40,8 +48,11 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@axe-core/playwright": "^4.13.0",
+    "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.62.1",
     "@types/node": "^26.2.0",
+    "cross-env": "^10.1.0",
+    "html-validate": "^11.6.2",
     "sharp": "^0.35.3",
     "typescript": "^6.0.3",
     "vitest": "^4.1.10"

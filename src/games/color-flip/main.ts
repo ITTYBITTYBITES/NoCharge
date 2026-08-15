@@ -1,5 +1,6 @@
 import { play, unlockAudio } from '../shared/audio';
 import { loadScore, saveScore } from '../shared/storage';
+import type { GameController, PauseReason } from '../shared/types';
 import { pick } from '../shared/utils';
 import './styles.css';
 
@@ -21,7 +22,7 @@ type Tile = {
   color: ColorId;
 };
 
-export function mountColorFlip(root: HTMLElement): () => void {
+export function mountColorFlip(root: HTMLElement): GameController {
   root.innerHTML = `
     <div class="cf">
       <div class="cf__hud">
@@ -35,7 +36,6 @@ export function mountColorFlip(root: HTMLElement): () => void {
         </div>
         <div class="cf__actions">
           <button type="button" class="btn btn--ghost btn--sm" data-cf="mode">Turn-based mode</button>
-          <button type="button" class="btn btn--ghost btn--sm" data-cf="restart">New</button>
         </div>
       </div>
       <p class="cf__hint" id="cf-instructions" data-cf="hint">Select Start, then tap the playfield or press Space to cycle colors. Match both color and letter.</p>
@@ -78,7 +78,6 @@ export function mountColorFlip(root: HTMLElement): () => void {
   const overlayHeading = root.querySelector<HTMLElement>('[data-cf="overlay-heading"]')!;
   const resultEl = root.querySelector<HTMLElement>('[data-cf="result"]')!;
   const modeBtn = root.querySelector<HTMLButtonElement>('[data-cf="mode"]')!;
-  const restartBtn = root.querySelector<HTMLButtonElement>('[data-cf="restart"]')!;
   const againBtn = root.querySelector<HTMLButtonElement>('[data-cf="again"]')!;
   const accessible = root.querySelector<HTMLElement>('[data-cf="accessible"]')!;
   const accessibleCurrent = root.querySelector<HTMLElement>('[data-cf="accessible-current"]')!;
@@ -109,6 +108,7 @@ export function mountColorFlip(root: HTMLElement): () => void {
   let pathAngle = 0;
   let nextTileY = 1.05;
   let dpr = 1;
+  let paused = false;
 
   const TILE_H = 0.09;
   const TILE_W = 0.42;
@@ -143,6 +143,12 @@ export function mountColorFlip(root: HTMLElement): () => void {
     accessibleNext.textContent = `${colorName(id)}, ${id[0]!.toUpperCase()}`;
   }
 
+  function updatePausedControls() {
+    modeBtn.disabled = paused;
+    accessibleCycleBtn.disabled = paused || !turnBasedAlive;
+    accessibleStepBtn.disabled = paused || !turnBasedAlive;
+  }
+
   function announceTurnBased(message: string) {
     accessibleAnnouncement.textContent = message;
   }
@@ -161,13 +167,12 @@ export function mountColorFlip(root: HTMLElement): () => void {
     setScore(0);
     setPlayerColor('green');
     setTurnBasedTarget(pick(COLORS).id);
-    accessibleCycleBtn.disabled = false;
-    accessibleStepBtn.disabled = false;
+    updatePausedControls();
     accessibleResult.hidden = true;
     announceTurnBased(
       `New turn-based run. Current color ${colorName(playerColor)}. Next tile ${colorName(turnBasedTarget)}.`,
     );
-    accessibleCycleBtn.focus();
+    if (!paused) accessibleCycleBtn.focus();
   }
 
   function enterTurnBased() {
@@ -197,7 +202,7 @@ export function mountColorFlip(root: HTMLElement): () => void {
   }
 
   function cycleTurnBasedColor() {
-    if (!turnBasedAlive) return;
+    if (paused || !turnBasedAlive) return;
     unlockAudio();
     cyclePlayerColor();
     announceTurnBased(`Current color ${colorName(playerColor)}. Next tile ${colorName(turnBasedTarget)}.`);
@@ -205,14 +210,13 @@ export function mountColorFlip(root: HTMLElement): () => void {
   }
 
   function stepTurnBased() {
-    if (!turnBasedAlive) return;
+    if (paused || !turnBasedAlive) return;
     unlockAudio();
     if (playerColor !== turnBasedTarget) {
       turnBasedAlive = false;
       best = saveScore(TURN_BASED_GAME_ID, score);
       bestEl.textContent = String(best);
-      accessibleCycleBtn.disabled = true;
-      accessibleStepBtn.disabled = true;
+      updatePausedControls();
       accessibleResultText.textContent = `Wrong color. Score ${score}. Best ${best}.`;
       accessibleResult.hidden = false;
       announceTurnBased(
@@ -282,8 +286,10 @@ export function mountColorFlip(root: HTMLElement): () => void {
 
     if (start) {
       overlay.classList.remove('is-open');
-      canvas.focus({ preventScroll: true });
-      raf = requestAnimationFrame(loop);
+      if (!paused) {
+        canvas.focus({ preventScroll: true });
+        raf = requestAnimationFrame(loop);
+      }
     } else {
       overlayHeading.textContent = 'Ready?';
       resultEl.textContent = 'The run begins when you select Start.';
@@ -306,13 +312,14 @@ export function mountColorFlip(root: HTMLElement): () => void {
   }
 
   function flipColor() {
-    if (!alive) return;
+    if (paused || !alive) return;
     unlockAudio();
     cyclePlayerColor();
     void play('blip');
   }
 
   function loop(ts: number) {
+    if (paused) return;
     if (!alive) {
       draw();
       return;
@@ -444,6 +451,7 @@ export function mountColorFlip(root: HTMLElement): () => void {
   }
 
   const onKey = (e: KeyboardEvent) => {
+    if (paused) return;
     if (e.code === 'Space' || e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
       flipColor();
@@ -451,6 +459,7 @@ export function mountColorFlip(root: HTMLElement): () => void {
   };
 
   const onPointer = (e: PointerEvent) => {
+    if (paused) return;
     e.preventDefault();
     flipColor();
   };
@@ -460,31 +469,59 @@ export function mountColorFlip(root: HTMLElement): () => void {
   window.addEventListener('resize', resize);
 
   modeBtn.addEventListener('click', () => {
+    if (paused) return;
     unlockAudio();
     if (turnBased) exitTurnBased();
     else enterTurnBased();
   });
-  restartBtn.addEventListener('click', () => {
-    unlockAudio();
-    if (turnBased) startTurnBased();
-    else reset();
-  });
   againBtn.addEventListener('click', () => {
+    if (paused) return;
     unlockAudio();
     reset();
   });
   accessibleCycleBtn.addEventListener('click', cycleTurnBasedColor);
   accessibleStepBtn.addEventListener('click', stepTurnBased);
-  accessibleAgainBtn.addEventListener('click', startTurnBased);
+  accessibleAgainBtn.addEventListener('click', () => {
+    if (paused) return;
+    startTurnBased();
+  });
 
   // Do not run behind the above-game ad before the player reaches the stage.
   reset(false);
 
-  return () => {
-    alive = false;
-    cancelAnimationFrame(raf);
-    canvas.removeEventListener('keydown', onKey);
-    window.removeEventListener('resize', resize);
-    root.innerHTML = '';
+  return {
+    destroy() {
+      alive = false;
+      turnBasedAlive = false;
+      cancelAnimationFrame(raf);
+      canvas.removeEventListener('pointerdown', onPointer);
+      canvas.removeEventListener('keydown', onKey);
+      window.removeEventListener('resize', resize);
+      root.innerHTML = '';
+    },
+    pause(_reason?: PauseReason) {
+      if (paused) return;
+      paused = true;
+      // Preserve visual positions and reset timing only when we resume. This
+      // prevents a hidden-tab duration becoming one oversized animation step.
+      cancelAnimationFrame(raf);
+      raf = 0;
+      lastTs = 0;
+      updatePausedControls();
+    },
+    resume() {
+      if (!paused) return;
+      paused = false;
+      lastTs = 0;
+      updatePausedControls();
+      if (!turnBased && alive) raf = requestAnimationFrame(loop);
+    },
+    isPaused() {
+      return paused;
+    },
+    restart() {
+      if (turnBased) startTurnBased();
+      else reset();
+    },
   };
 }

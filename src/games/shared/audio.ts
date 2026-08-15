@@ -1,3 +1,5 @@
+import { loadPref, savePref } from './storage';
+
 type SoundName = 'pop' | 'blip' | 'win';
 
 const FILES: Record<SoundName, string> = {
@@ -6,10 +8,13 @@ const FILES: Record<SoundName, string> = {
   win: '/game-assets/win.wav',
 };
 
+const MUTE_PREFERENCE = 'game-muted';
+
 let unlocked = false;
 let ctx: AudioContext | null = null;
 const cache = new Map<SoundName, AudioBuffer>();
 let muted = false;
+let muteLoaded = false;
 
 function getCtx(): AudioContext | null {
   if (typeof window === 'undefined') return null;
@@ -19,6 +24,14 @@ function getCtx(): AudioContext | null {
   if (!AC) return null;
   if (!ctx) ctx = new AC();
   return ctx;
+}
+
+function loadMutePreference(): boolean {
+  if (!muteLoaded) {
+    muted = loadPref<boolean>(MUTE_PREFERENCE, false);
+    muteLoaded = true;
+  }
+  return muted;
 }
 
 async function loadBuffer(name: SoundName): Promise<AudioBuffer | null> {
@@ -74,6 +87,10 @@ function synth(name: SoundName): void {
   }
 }
 
+/**
+ * Audio contexts are created only in a user gesture. Games call this from
+ * their input handlers and the shared toolbar does the same for restarts.
+ */
 export function unlockAudio(): void {
   if (unlocked) return;
   unlocked = true;
@@ -81,23 +98,30 @@ export function unlockAudio(): void {
   if (audio && audio.state === 'suspended') {
     void audio.resume();
   }
-  // Warm cache (best-effort)
+  // Warm cache after a gesture (best-effort).
   void loadBuffer('pop');
   void loadBuffer('blip');
   void loadBuffer('win');
 }
 
-export function setMuted(value: boolean): void {
+export function setMuted(value: boolean, persist = true): void {
   muted = value;
+  muteLoaded = true;
+  if (persist) savePref(MUTE_PREFERENCE, value);
 }
 
 export function isMuted(): boolean {
-  return muted;
+  return loadMutePreference();
+}
+
+export function toggleMuted(): boolean {
+  const next = !isMuted();
+  setMuted(next);
+  return next;
 }
 
 export async function play(name: SoundName): Promise<void> {
-  if (muted) return;
-  unlockAudio();
+  if (isMuted() || !unlocked) return;
   const audio = getCtx();
   if (!audio) return;
   if (audio.state === 'suspended') {

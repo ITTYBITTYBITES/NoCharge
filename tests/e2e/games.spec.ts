@@ -52,7 +52,7 @@ test('Color Flip waits to start and offers a complete turn-based mode', async ({
   await expect(page.locator('[data-cf="score"]')).toHaveText('0');
 
   await page.getByRole('button', { name: 'Turn-based mode' }).click();
-  await expect(page.getByRole('heading', { name: 'Turn-based Color Flip' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Turn-based Color Flip', exact: true })).toBeVisible();
   await expect(page.locator('[data-cf="stage"]')).toBeHidden();
 
   const current = page.locator('[data-cf="accessible-current"]');

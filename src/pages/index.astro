@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import GameCard from '../components/GameCard.astro';
 import GuideCard from '../components/GuideCard.astro';
+import ArticleCard from '../components/ArticleCard.astro';
 
 const allGames = (await getCollection('games'))
   .filter((game) => !game.data.draft)
@@ -12,6 +13,10 @@ const gameById = new Map(allGames.map((game) => [game.id, game]));
 const featuredGuides = (await getCollection('guides'))
   .filter((guide) => !guide.data.draft && guide.data.featured)
   .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3);
+const featuredArticles = (await getCollection('articles'))
+  .filter((article) => !article.data.draft && article.data.featured)
+  .sort((a, b) => a.data.title.localeCompare(b.data.title))
   .slice(0, 3);
 ---
 
@@ -124,6 +129,37 @@ const featuredGuides = (await getCollection('guides'))
                 emoji={game.data.emoji}
                 accent={game.data.accent}
                 readTime={guide.data.readTime}
+              />
+            );
+          })
+        }
+      </div>
+    </section>
+
+    <section class="home-section" aria-labelledby="featured-articles-heading">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">Play notes</p>
+          <h2 id="featured-articles-heading">One useful idea for the next run</h2>
+          <p>Focused original articles on the systems inside each game.</p>
+        </div>
+        <a class="section-link" href="/articles/">Explore all articles →</a>
+      </div>
+      <div class="card-grid card-grid--articles">
+        {
+          featuredArticles.map((article) => {
+            const game = gameById.get(article.data.game);
+            if (!game) return null;
+            return (
+              <ArticleCard
+                slug={article.id}
+                title={article.data.title}
+                description={article.data.description}
+                gameTitle={game.data.title}
+                readTime={article.data.readTime}
+                published={article.data.published}
+                topics={article.data.topics}
+                accent={game.data.accent}
               />
             );
           })
@@ -423,6 +459,7 @@ const featuredGuides = (await getCollection('guides'))
   @media (min-width: 60rem) {
     .card-grid--games,
     .card-grid--guides,
+    .card-grid--articles,
     .home-library__points {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }

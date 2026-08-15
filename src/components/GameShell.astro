@@ -46,10 +46,44 @@ const { title, tagline, slug, accent = '#12b66a', artwork } = Astro.props;
     <AdSlot unit="rect-300x250" defer />
   </aside>
 
-  <div class="game-shell__stage panel">
+  <section class="game-viewport panel" data-game-viewport aria-label={`${title} game area`}>
+    <div class="game-toolbar" role="toolbar" aria-label="Game controls">
+      <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="pause" aria-pressed="false">
+        Pause game
+      </button>
+      <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="mute" aria-pressed="false">
+        Mute sound
+      </button>
+      <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="fullscreen" aria-pressed="false">
+        Enter full screen
+      </button>
+      <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="restart">
+        New game
+      </button>
+      <p class="game-toolbar__status" data-game-toolbar-status aria-live="polite" aria-atomic="true"></p>
+    </div>
+    <div class="game-viewport__content">
+      <slot name="game" />
+    </div>
+    <div class="game-viewport__pause" data-game-pause-overlay hidden>
+      <div role="status" aria-live="polite">
+        <p class="game-viewport__pause-label">Game paused</p>
+        <p>Your current game is waiting exactly where you left it.</p>
+        <button type="button" class="btn" data-game-pause-resume>Resume game</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="game-shell__details">
     <slot />
   </div>
 </section>
+
+<script>
+  import { mountRenderedGameShells } from '../games/shared/shell';
+
+  mountRenderedGameShells();
+</script>
 
 <style>
   .game-shell {
@@ -83,9 +117,142 @@ const { title, tagline, slug, accent = '#12b66a', artwork } = Astro.props;
     min-width: 0;
   }
 
-  .game-shell__stage {
-    padding: 1rem;
+  .game-viewport {
+    position: relative;
+    display: grid;
+    min-height: 0;
+    padding: 0.75rem;
     overflow: hidden;
+    isolation: isolate;
+  }
+
+  .game-toolbar {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0 0 0.75rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .game-toolbar__status {
+    flex: 1 1 14rem;
+    min-height: 1.3rem;
+    margin-left: 0.2rem;
+    color: var(--muted);
+    font-size: 0.78rem;
+  }
+
+  .game-viewport__content {
+    min-height: 0;
+    padding: 0.85rem 0 0;
+  }
+
+  .game-viewport__pause[hidden] {
+    display: none;
+  }
+
+  .game-viewport__pause {
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 5rem 1rem 1rem;
+    background: rgba(8, 12, 10, 0.84);
+    backdrop-filter: blur(5px);
+    /* The overlay explains the state without trapping the shared toolbar.
+       Game modules still reject any underlying board input while paused. */
+    pointer-events: none;
+  }
+
+  .game-viewport__pause > div {
+    pointer-events: auto;
+    display: grid;
+    justify-items: center;
+    gap: 0.7rem;
+    max-width: 25rem;
+    padding: 1.2rem;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: var(--radius);
+    background: var(--panel);
+    box-shadow: var(--shadow);
+    text-align: center;
+  }
+
+  .game-viewport__pause-label {
+    color: var(--text);
+    font-size: 1.2rem;
+    font-weight: 800;
+  }
+
+  .game-viewport__pause p:not(.game-viewport__pause-label) {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .game-shell__details {
+    display: grid;
+  }
+
+  .game-viewport:fullscreen,
+  .game-viewport.is-immersive {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    width: 100dvw;
+    min-width: 0;
+    height: 100dvh;
+    min-height: 0;
+    max-width: none;
+    max-height: none;
+    padding:
+      max(0.75rem, env(safe-area-inset-top, 0px))
+      max(0.75rem, env(safe-area-inset-right, 0px))
+      max(0.75rem, env(safe-area-inset-bottom, 0px))
+      max(0.75rem, env(safe-area-inset-left, 0px));
+    border: 0;
+    border-radius: 0;
+    background: var(--bg);
+    overflow: auto;
+  }
+
+  .game-viewport:fullscreen {
+    box-shadow: none;
+  }
+
+  .game-viewport.is-immersive {
+    position: fixed;
+    z-index: 90;
+    inset: 0;
+  }
+
+  .game-viewport:fullscreen .game-toolbar,
+  .game-viewport.is-immersive .game-toolbar {
+    position: sticky;
+    top: 0;
+    padding-bottom: 0.75rem;
+    background: var(--bg);
+  }
+
+  .game-viewport:fullscreen .game-viewport__content,
+  .game-viewport.is-immersive .game-viewport__content {
+    display: grid;
+    align-content: center;
+    min-height: min-content;
+    overflow: auto;
+  }
+
+  .game-viewport:fullscreen :global(.game-root),
+  .game-viewport.is-immersive :global(.game-root) {
+    width: min(100%, 70rem);
+    margin-inline: auto;
+  }
+
+  .game-viewport:fullscreen .game-viewport__pause,
+  .game-viewport.is-immersive .game-viewport__pause {
+    padding-top: max(6rem, calc(env(safe-area-inset-top, 0px) + 5rem));
   }
 
   @media (min-width: 48rem) {
@@ -93,8 +260,19 @@ const { title, tagline, slug, accent = '#12b66a', artwork } = Astro.props;
       grid-template-columns: minmax(16rem, 0.78fr) minmax(24rem, 1.22fr);
     }
 
-    .game-shell__stage {
-      padding: 1.25rem;
+    .game-viewport {
+      padding: 1rem;
+    }
+  }
+
+  @media (max-width: 34rem) {
+    .game-toolbar .btn {
+      flex: 1 1 calc(50% - 0.5rem);
+    }
+
+    .game-toolbar__status {
+      flex-basis: 100%;
+      margin-left: 0;
     }
   }
 </style>

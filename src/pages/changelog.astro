@@ -1,0 +1,166 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+
+const entries = (await getCollection('changelog'))
+  .filter((entry) => !entry.data.draft)
+  .sort((a, b) => b.data.date.localeCompare(a.data.date) || a.data.title.localeCompare(b.data.title));
+
+const typeLabel: Record<(typeof entries)[number]['data']['type'], string> = {
+  launch: 'Launch',
+  privacy: 'Privacy and advertising',
+  artwork: 'Artwork',
+  quality: 'Quality',
+  update: 'Update',
+};
+
+const renderedEntries = await Promise.all(
+  entries.map(async (entry) => {
+    const { Content } = await render(entry);
+    return {
+      entry,
+      Content,
+      date: new Date(`${entry.data.date}T12:00:00`).toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+      }),
+    };
+  }),
+);
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'NoCharge Changelog',
+    description: 'Verified public updates to NoCharge games, guides, privacy controls, artwork, and quality work.',
+    url: 'https://nocharge.net/changelog/',
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: entries.length,
+      itemListElement: entries.map((entry, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: entry.data.title,
+        description: entry.data.summary,
+        dateCreated: entry.data.date,
+      })),
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nocharge.net/' },
+      { '@type': 'ListItem', position: 2, name: 'Changelog', item: 'https://nocharge.net/changelog/' },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="Changelog"
+  description="Verified public updates to NoCharge games, guides, privacy controls, artwork, and quality work."
+  path="/changelog/"
+  schema={schema}
+  showAds={false}
+>
+  <div class="changelog-page">
+    <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Changelog' }]} />
+    <header>
+      <p class="eyebrow">Changelog</p>
+      <h1 class="page-title">Verified changes, kept in one place.</h1>
+      <p class="lede">
+        This is the public record for launched games, guides, privacy controls, artwork, and quality improvements.
+        Entries describe changes that are available on the site, not future plans.
+      </p>
+    </header>
+
+    <section class="changelog-list" aria-labelledby="changelog-list-heading">
+      <h2 id="changelog-list-heading" class="sr-only">Changelog entries</h2>
+      {
+        renderedEntries.map(({ entry, Content, date }) => (
+          <article class="changelog-entry panel">
+            <div class="changelog-entry__meta">
+              <time datetime={entry.data.date}>{date}</time>
+              <span>{typeLabel[entry.data.type]}</span>
+            </div>
+            <div>
+              <h2>{entry.data.title}</h2>
+              <p class="changelog-entry__summary">{entry.data.summary}</p>
+              <div class="changelog-entry__body prose"><Content /></div>
+            </div>
+          </article>
+        ))
+      }
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .changelog-page {
+    display: grid;
+    gap: 2rem;
+    max-width: 52rem;
+    margin-inline: auto;
+  }
+
+  .changelog-page > header {
+    padding: 0.75rem 0 1.25rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .changelog-list {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .changelog-entry {
+    display: grid;
+    gap: 0.75rem 1.5rem;
+    padding: 1.1rem;
+  }
+
+  .changelog-entry__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-content: start;
+    color: var(--muted);
+    font-size: 0.78rem;
+  }
+
+  .changelog-entry__meta span {
+    padding: 0.12rem 0.45rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+  }
+
+  .changelog-entry h2 {
+    font-size: 1.2rem;
+    letter-spacing: -0.025em;
+  }
+
+  .changelog-entry__summary {
+    margin-top: 0.35rem;
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .changelog-entry__body {
+    margin-top: 0.7rem;
+    font-size: 0.9rem;
+  }
+
+  .changelog-entry__body :global(p) {
+    margin: 0;
+  }
+
+  @media (min-width: 42rem) {
+    .changelog-entry {
+      grid-template-columns: 9rem minmax(0, 1fr);
+    }
+  }
+</style>

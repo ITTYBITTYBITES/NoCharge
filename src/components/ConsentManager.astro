@@ -199,6 +199,7 @@
   const closeSettings = () => {
     if (!modal) return;
     modal.hidden = true;
+    window.dispatchEvent(new CustomEvent('nocharge:modalchange', { detail: { open: false, source: 'consent' } }));
     setBackgroundInert(false);
     const fallback = document.querySelector<HTMLElement>('.brand');
     const target = lastFocused && !lastFocused.closest('[hidden]') ? lastFocused : fallback;
@@ -211,6 +212,7 @@
     analyticsInput.checked = currentChoice.analytics;
     advertisingInput.checked = currentChoice.advertising;
     modal.hidden = false;
+    window.dispatchEvent(new CustomEvent('nocharge:modalchange', { detail: { open: true, source: 'consent' } }));
     setBackgroundInert(true);
     analyticsInput.focus();
   };

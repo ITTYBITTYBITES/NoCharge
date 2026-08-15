@@ -3,10 +3,12 @@ import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import GameArtwork from '../../components/GameArtwork.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
 
 export async function getStaticPaths() {
   const games = (await getCollection('games')).filter((game) => !game.data.draft);
   const guides = (await getCollection('guides')).filter((guide) => !guide.data.draft);
+  const articles = (await getCollection('articles')).filter((article) => !article.data.draft);
   const gameById = new Map(games.map((game) => [game.id, game]));
 
   return guides.map((guide) => ({
@@ -17,11 +19,14 @@ export async function getStaticPaths() {
       related: guides
         .filter((candidate) => candidate.id !== guide.id)
         .sort((a, b) => a.data.order - b.data.order),
+      relatedArticles: articles
+        .filter((article) => article.data.game === guide.data.game)
+        .sort((a, b) => Number(b.data.featured) - Number(a.data.featured) || a.data.title.localeCompare(b.data.title)),
     },
   }));
 }
 
-const { guide, game, related } = Astro.props;
+const { guide, game, related, relatedArticles } = Astro.props;
 if (!game) throw new Error(`Guide ${guide.id} references an unknown game: ${guide.data.game}`);
 const { Content } = await render(guide);
 const artwork = game.data.artwork;
@@ -191,6 +196,33 @@ const schema = {
         <a class="btn btn--ghost" href="/guides/">All guides</a>
       </div>
     </section>
+
+    {
+      relatedArticles.length > 0 && (
+        <section class="guide-articles" aria-labelledby="guide-articles-heading">
+          <div class="guide-articles__heading">
+            <p class="section-kicker">Player notes</p>
+            <h2 id="guide-articles-heading">Read more about {game.data.title}</h2>
+            <p>Focused articles expand on one game behavior at a time.</p>
+          </div>
+          <div class="guide-articles__grid">
+            {relatedArticles.map((article) => (
+              <ArticleCard
+                slug={article.id}
+                title={article.data.title}
+                description={article.data.description}
+                gameTitle={game.data.title}
+                readTime={article.data.readTime}
+                published={article.data.published}
+                topics={article.data.topics}
+                accent={game.data.accent}
+              />
+            ))}
+          </div>
+          <a class="guide-articles__all" href="/articles/">Browse all game articles →</a>
+        </section>
+      )
+    }
 
     <nav class="related-guides" aria-labelledby="related-guides-heading">
       <h2 id="related-guides-heading">More game guides</h2>
@@ -363,6 +395,36 @@ const schema = {
     gap: 0.55rem;
   }
 
+  .guide-articles {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .guide-articles__heading {
+    display: grid;
+    gap: 0.35rem;
+    max-width: 42rem;
+  }
+
+  .guide-articles__heading p:not(.section-kicker) {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .guide-articles__grid {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .guide-articles__all {
+    justify-self: start;
+    min-height: 44px;
+    padding-top: 0.5rem;
+    color: var(--accent-strong);
+    font-size: 0.88rem;
+    font-weight: 700;
+  }
+
   .related-guides {
     padding-bottom: 1rem;
   }
@@ -396,6 +458,12 @@ const schema = {
   @media (min-width: 48rem) {
     .guide-header--artwork {
       grid-template-columns: minmax(0, 1.08fr) minmax(18rem, 0.92fr);
+    }
+  }
+
+  @media (min-width: 42rem) {
+    .guide-articles__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 

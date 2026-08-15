@@ -29,7 +29,7 @@ test('Memory Match artwork preserves crops, focus visibility, and layout stabili
   });
   expect(desktopRatio).toBeCloseTo(16 / 9, 1);
 
-  const restart = page.locator('[data-mm="restart"]');
+  const restart = page.locator('[data-game-toolbar="restart"]');
   await restart.focus();
   await expect(restart).toBeFocused();
   expect(await restart.evaluate((element) => getComputedStyle(element).outlineWidth)).not.toBe('0px');

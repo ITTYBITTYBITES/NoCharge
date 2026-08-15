@@ -35,5 +35,10 @@ test('guide library connects guide articles, games, and sitemap URLs', async ({ 
   expect(xml).toContain('<loc>https://nocharge.net/arcade/</loc>');
   expect(xml).toContain('<loc>https://nocharge.net/guides/</loc>');
   expect(xml).toContain('<loc>https://nocharge.net/guides/memory-match/</loc>');
-  expect((xml.match(/<url>/g) ?? []).length).toBe(10);
+  expect(xml).toContain('<loc>https://nocharge.net/articles/</loc>');
+  expect(xml).toContain('<loc>https://nocharge.net/about/</loc>');
+  expect(xml).toContain('<loc>https://nocharge.net/terms/</loc>');
+  expect(xml).toContain('<loc>https://nocharge.net/advertising/</loc>');
+  expect(xml).toContain('<loc>https://nocharge.net/changelog/</loc>');
+  expect((xml.match(/<url>/g) ?? []).length).toBe(24);
 });
