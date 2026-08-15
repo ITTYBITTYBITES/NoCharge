@@ -54,7 +54,7 @@ test('Memory Match guide provides header art, a decorative icon, and an accessib
   await page.goto('/guides/memory-match/');
 
   const headerImage = page.locator('.guide-header__artwork img');
-  await expect(page.locator('.guide-header__artwork source[type="image/webp"]')).toHaveAttribute(
+  await expect(page.locator('.guide-header__artwork source[type="image/webp"]:not([media])')).toHaveAttribute(
     'srcset',
     '/game-art/memory-match/guide-header.webp',
   );
