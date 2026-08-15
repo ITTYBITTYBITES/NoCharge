@@ -1,6 +1,6 @@
 ---
 title: "Solitaire: Shattered Foil"
-tagline: Klondike cut in glass and copper.
+tagline: Fragments of beauty, brought together.
 description: Play a complete, local-first Klondike Draw 1 solitaire game with undo, save and resume, keyboard controls, left-handed layout, and four-color suits.
 emoji: 🂡
 accent: "#c9874f"
