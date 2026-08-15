@@ -10,7 +10,8 @@ const games = defineCollection({
     description: z.string(),
     emoji: z.string(),
     accent: z.string().default('#0f9d58'),
-    runtime: z.enum(['memory-match', 'word-tile-rush', 'color-flip']),
+    tier: z.enum(['quick', 'signature']).default('quick'),
+    runtime: z.enum(['memory-match', 'word-tile-rush', 'color-flip', 'shattered-foil']),
     artwork: z
       .object({
         icon: z.string(),
@@ -21,10 +22,14 @@ const games = defineCollection({
         guideHeader: z.string(),
         guideHeaderFallback: z.string(),
         socialCard: z.string(),
+        socialCardFallback: z.string().optional(),
         socialCardWebp: z.string().optional(),
         screenshotMobile: z.string().optional(),
         screenshotDesktop: z.string().optional(),
         controlsDiagram: z.string().optional(),
+        scoringDiagram: z.string().optional(),
+        modesDiagram: z.string().optional(),
+        rulesDiagram: z.string().optional(),
         alt: z.string(),
       })
       .optional(),
@@ -41,6 +46,8 @@ const games = defineCollection({
         stageAspectMobile: z.number().positive().optional(),
         controlsDiagramAlt: z.string().optional(),
         controlsDiagramCaption: z.string().optional(),
+        secondaryDiagramAlt: z.string().optional(),
+        secondaryDiagramCaption: z.string().optional(),
         gameplayPreviewAlt: z.string().optional(),
         gameplayPreviewCaption: z.string().optional(),
         relatedHeading: z.string().optional(),

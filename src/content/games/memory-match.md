@@ -14,6 +14,7 @@ artwork:
   guideHeader: /game-art/memory-match/guide-header.webp
   guideHeaderFallback: /game-art/memory-match/guide-header.jpg
   socialCard: /game-art/memory-match/social-card.jpg
+  socialCardFallback: /game-art/memory-match/social-card.jpg
   socialCardWebp: /game-art/memory-match/social-card.webp
   screenshotMobile: /game-art/memory-match/screenshot-mobile.webp
   screenshotDesktop: /game-art/memory-match/screenshot-desktop.webp

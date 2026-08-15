@@ -26,6 +26,7 @@ if (!game) throw new Error(`Guide ${guide.id} references an unknown game: ${guid
 const { Content } = await render(guide);
 const artwork = game.data.artwork;
 const presentation = game.data.presentation;
+const secondaryDiagram = artwork?.scoringDiagram ?? artwork?.modesDiagram ?? artwork?.rulesDiagram;
 const updatedLabel = new Date(`${guide.data.updated}T12:00:00`).toLocaleDateString('en-US', {
   month: 'long',
   day: 'numeric',
@@ -141,6 +142,15 @@ const schema = {
               alt={presentation.controlsDiagramAlt}
             />
             {presentation.controlsDiagramCaption && <figcaption>{presentation.controlsDiagramCaption}</figcaption>}
+          </figure>
+        )
+      }
+
+      {
+        secondaryDiagram && presentation?.secondaryDiagramAlt && (
+          <figure class="guide-diagram">
+            <img src={secondaryDiagram} width="960" height="520" loading="lazy" decoding="async" alt={presentation.secondaryDiagramAlt} />
+            {presentation.secondaryDiagramCaption && <figcaption>{presentation.secondaryDiagramCaption}</figcaption>}
           </figure>
         )
       }

@@ -375,6 +375,3 @@ export function mountWordTileRush(root: HTMLElement): () => void {
     root.innerHTML = '';
   };
 }
-
-const mountEl = document.querySelector<HTMLElement>('[data-game-root="word-tile-rush"]');
-if (mountEl) mountWordTileRush(mountEl);

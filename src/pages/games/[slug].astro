@@ -107,27 +107,11 @@ const stageStyle = presentation?.stageAspectDesktop
   </GameShell>
 </BaseLayout>
 
-{
-  game.data.runtime === 'memory-match' && (
-    <script>
-      import '../../games/memory-match/main.ts';
-    </script>
-  )
-}
-{
-  game.data.runtime === 'word-tile-rush' && (
-    <script>
-      import '../../games/word-tile-rush/main.ts';
-    </script>
-  )
-}
-{
-  game.data.runtime === 'color-flip' && (
-    <script>
-      import '../../games/color-flip/main.ts';
-    </script>
-  )
-}
+<script>
+  import { mountGame } from '../../games/registry';
+  const root = document.querySelector<HTMLElement>('[data-game-root]');
+  if (root?.dataset.gameRoot) mountGame(root.dataset.gameRoot, root);
+</script>
 
 <style>
   .game-root {
