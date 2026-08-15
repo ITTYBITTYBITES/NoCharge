@@ -31,8 +31,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <section aria-labelledby="local-data">
         <h2 id="local-data">Data on your device</h2>
         <p>
-          NoCharge uses your browser’s local storage for high scores and game preferences. That information is
-          not sent to NoCharge and remains until you clear it in your browser or use the button below.
+          NoCharge uses browser storage for scores and preferences. Shattered Foil uses a versioned IndexedDB database for multi-mode saves, move history, Daily results, Journey progress, and local inventory. This information is not sent to NoCharge and remains until you clear it in your browser or use the button below.
         </p>
         <button class="btn btn--ghost btn--sm" type="button" data-clear-games>Clear game data</button>
         <p class="privacy__status" data-game-status aria-live="polite"></p>
@@ -87,11 +86,14 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 </BaseLayout>
 
 <script>
+  import { clearAllGameData } from '../games/shattered-foil/storage/db';
+
   const clearGames = document.querySelector<HTMLButtonElement>('[data-clear-games]');
   const gameStatus = document.querySelector<HTMLElement>('[data-game-status]');
 
-  clearGames?.addEventListener('click', () => {
+  clearGames?.addEventListener('click', async () => {
     try {
+      await clearAllGameData();
       const gameKeys: string[] = [];
       for (let index = 0; index < localStorage.length; index += 1) {
         const key = localStorage.key(index);
