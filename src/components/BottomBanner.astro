@@ -1,0 +1,144 @@
+---
+/**
+ * Site-wide responsive bottom ad banner (Adsterra).
+ *
+ * Adsterra banners are fixed-size, so we register two units and show one
+ * per breakpoint: 728x90 on desktop, 320x50 on mobile.
+ *
+ * Each unit renders inside its own `iframe srcdoc`. This is deliberate:
+ * Adsterra's invoke.js reads a *global* `atOptions` object, so two units on
+ * the same document clobber each other and one silently renders the wrong
+ * creative. Separate iframe documents give each unit its own global scope.
+ *
+ * SMARTLINK FALLBACK
+ * Smartlink (Direct Link) is a bare URL, not a renderable creative — it pays
+ * on conversion, so it needs a click. We use it purely as backfill: if a
+ * banner slot never fills (common on small geos), we swap in a house CTA
+ * linking to the Smartlink rather than leaving dead space earning nothing.
+ * If you leave SMARTLINK_URL empty the fallback is simply skipped.
+ */
+
+interface Props {
+  /** Render sticky to the viewport bottom instead of at the end of the page. */
+  sticky?: boolean;
+}
+
+const { sticky = false } = Astro.props;
+
+const DESKTOP_KEY = 'a199226578c2c0b962341e6036074857'; // 728x90_1
+const MOBILE_KEY = '40e152263863504f784358cd6dba0c2b'; // 320x50_1
+
+/** Adsterra Smartlink / Direct Link URL. Leave '' to disable the fallback. */
+const SMARTLINK_URL = '';
+
+const units = [
+  { key: DESKTOP_KEY, width: 728, height: 90, variant: 'desktop' },
+  { key: MOBILE_KEY, width: 320, height: 50, variant: 'mobile' },
+];
+
+/** Minimal host document for a single Adsterra unit. */
+const srcdoc = ({ key, width, height }: { key: string; width: number; height: number }) => `
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><style>
+html,body{margin:0;padding:0;overflow:hidden;background:transparent}
+body{display:flex;align-items:center;justify-content:center}
+</style></head>
+<body>
+<script type="text/javascript">
+  atOptions = {
+    key: ${JSON.stringify(key)},
+    format: 'iframe',
+    height: ${height},
+    width: ${width},
+    params: {}
+  };
+<\/script>
+<script type="text/javascript" src="https://www.highperformanceformat.com/${key}/invoke.js"><\/script>
+</body>
+</html>`;
+
+const isPlaceholder = DESKTOP_KEY.startsWith('REPLACE_WITH') || MOBILE_KEY.startsWith('REPLACE_WITH');
+const hasSmartlink = SMARTLINK_URL.length > 0;
+---
+
+{
+  !isPlaceholder && (
+    <aside
+      class:list={['site-banner', { 'site-banner--sticky': sticky }]}
+      aria-label="Advertisement"
+      data-smartlink={hasSmartlink ? SMARTLINK_URL : undefined}
+    >
+      <div class="site-banner__inner">
+        {units.map((unit) => (
+          <iframe
+            class:list={['site-banner__frame', `site-banner__frame--${unit.variant}`]}
+            title="Advertisement"
+            width={unit.width}
+            height={unit.height}
+            srcdoc={srcdoc(unit)}
+            loading="lazy"
+            scrolling="no"
+            frameborder="0"
+            referrerpolicy="no-referrer-when-downgrade"
+            sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-same-origin"
+          />
+        ))}
+
+        {hasSmartlink && (
+          <a
+            class="site-banner__fallback"
+            href={SMARTLINK_URL}
+            target="_blank"
+            rel="noopener sponsored"
+            hidden
+          >
+            <span class="site-banner__fallback-text">Play more free games →</span>
+          </a>
+        )}
+      </div>
+    </aside>
+  )
+}
+
+{
+  !isPlaceholder && hasSmartlink && (
+    <script is:inline>
+      // Backfill: if a visible banner iframe never paints a creative, reveal
+      // the Smartlink CTA instead of leaving an empty slot.
+      (() => {
+        const banner = document.querySelector('.site-banner[data-smartlink]');
+        if (!banner) return;
+        const fallback = banner.querySelector('.site-banner__fallback');
+        if (!fallback) return;
+
+        const filled = (frame) => {
+          try {
+            const doc = frame.contentDocument;
+            if (!doc) return true; // cross-origin => an ad loaded
+            if (doc.querySelector('iframe, img, ins, a')) return true;
+            return (doc.body?.textContent || '').trim().length > 0;
+          } catch {
+            return true; // cross-origin access threw => an ad loaded
+          }
+        };
+
+        const check = () => {
+          const visible = [...banner.querySelectorAll('.site-banner__frame')].filter(
+            (f) => f.offsetParent !== null,
+          );
+          if (!visible.length) return;
+          const anyFilled = visible.some(filled);
+          fallback.hidden = anyFilled;
+          visible.forEach((f) => {
+            f.style.display = anyFilled ? '' : 'none';
+          });
+        };
+
+        // Give the ad network time to respond before declaring the slot empty.
+        setTimeout(check, 3000);
+        window.addEventListener('resize', () => setTimeout(check, 300));
+      })();
+    </script>
+  )
+}
