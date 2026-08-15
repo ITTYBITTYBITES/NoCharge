@@ -2,12 +2,14 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import GameCard from '../components/GameCard.astro';
+import SignatureGameCard from '../components/SignatureGameCard.astro';
 import GuideCard from '../components/GuideCard.astro';
 
 const allGames = (await getCollection('games'))
   .filter((game) => !game.data.draft)
   .sort((a, b) => a.data.order - b.data.order);
-const featuredGames = allGames.filter((game) => game.data.featured).slice(0, 3);
+const signatureGames = allGames.filter((game) => game.data.featured && game.data.tier === 'signature' && game.data.artwork);
+const featuredGames = allGames.filter((game) => game.data.featured && game.data.tier === 'quick').slice(0, 3);
 const gameById = new Map(allGames.map((game) => [game.id, game]));
 const featuredGuides = (await getCollection('guides'))
   .filter((guide) => !guide.data.draft && guide.data.featured)
@@ -45,6 +47,15 @@ const featuredGuides = (await getCollection('guides'))
       </aside>
     </section>
 
+    {
+      signatureGames.map((game) => (
+        <section class="home-section" aria-labelledby={`signature-${game.id}`}>
+          <div class="section-heading"><div><p class="section-kicker">A deeper table</p><h2 id={`signature-${game.id}`}>Signature Experience</h2></div></div>
+          <SignatureGameCard slug={game.id} title={game.data.title} tagline={game.data.tagline} description={game.data.description} genre={game.data.genre} session={game.data.session} accent={game.data.accent} artwork={game.data.artwork!}/>
+        </section>
+      ))
+    }
+
     <section class="home-section" id="games" aria-labelledby="featured-games-heading">
       <div class="section-heading">
         <div>
@@ -63,6 +74,7 @@ const featuredGuides = (await getCollection('guides'))
               tagline={game.data.tagline}
               emoji={game.data.emoji}
               accent={game.data.accent}
+              artwork={game.data.artwork}
               genre={game.data.genre}
               session={game.data.session}
             />

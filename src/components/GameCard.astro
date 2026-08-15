@@ -1,19 +1,42 @@
 ---
+import type { GameArtworkData } from '../types/content';
+import GameArtwork from './GameArtwork.astro';
+
 interface Props {
   slug: string;
   title: string;
   tagline: string;
   emoji: string;
   accent?: string;
+  artwork?: GameArtworkData;
   genre?: string;
   session?: string;
 }
 
-const { slug, title, tagline, emoji, accent = '#0f9d58', genre, session } = Astro.props;
+const { slug, title, tagline, emoji, accent = '#0f9d58', artwork, genre, session } = Astro.props;
 ---
 
-<a class="game-card" href={`/games/${slug}/`} style={`--card-accent: ${accent}`}>
-  <div class="game-card__icon" aria-hidden="true">{emoji}</div>
+<a
+  class:list={['game-card', { 'game-card--artwork': artwork }]}
+  href={`/games/${slug}/`}
+  style={`--card-accent: ${accent}`}
+>
+  {
+    artwork ? (
+      <GameArtwork
+        class="game-card__artwork"
+        src={artwork.coverSquareFallback}
+        webpSrc={artwork.coverSquare}
+        alt={artwork.alt}
+        width={800}
+        height={800}
+        variant="square"
+        accent={accent}
+      />
+    ) : (
+      <div class="game-card__icon" aria-hidden="true">{emoji}</div>
+    )
+  }
   <div class="game-card__body">
     <h3 class="game-card__title">{title}</h3>
     <p class="game-card__tagline">{tagline}</p>
@@ -68,6 +91,12 @@ const { slug, title, tagline, emoji, accent = '#0f9d58', genre, session } = Astr
     font-size: 1.55rem;
   }
 
+  .game-card :global(.game-card__artwork) {
+    width: 4.75rem;
+    border-radius: 0.9rem;
+    box-shadow: 0 0.75rem 1.8rem rgba(0, 0, 0, 0.24);
+  }
+
   .game-card__title {
     font-size: 1.15rem;
     font-weight: 700;
@@ -105,8 +134,13 @@ const { slug, title, tagline, emoji, accent = '#0f9d58', genre, session } = Astr
         'cta cta';
     }
 
-    .game-card__icon {
+    .game-card__icon,
+    .game-card :global(.game-card__artwork) {
       grid-area: icon;
+    }
+
+    .game-card :global(.game-card__artwork) {
+      width: 4rem;
     }
 
     .game-card__body {

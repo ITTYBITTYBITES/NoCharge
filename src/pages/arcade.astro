@@ -3,10 +3,13 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import GameCard from '../components/GameCard.astro';
+import SignatureGameCard from '../components/SignatureGameCard.astro';
 
 const games = (await getCollection('games'))
   .filter((game) => !game.data.draft)
   .sort((a, b) => a.data.order - b.data.order);
+const signatureGames = games.filter((game) => game.data.tier === 'signature' && game.data.artwork);
+const quickGames = games.filter((game) => game.data.tier === 'quick');
 
 const schema = {
   '@context': 'https://schema.org',
@@ -43,28 +46,38 @@ const schema = {
         Open a game, learn it in a minute, and play for as long as you like. Every title works in the browser,
         requires no account, and keeps its best score on this device.
       </p>
-      <dl class="arcade-hero__facts" aria-label="Arcade facts">
+      <dl class="arcade-hero__facts">
         <div><dt>{games.length}</dt><dd>games available</dd></div>
         <div><dt>0</dt><dd>accounts needed</dd></div>
         <div><dt>3</dt><dd>input styles supported</dd></div>
       </dl>
     </header>
 
+    {
+      signatureGames.length > 0 && (
+        <section class="arcade-list" aria-labelledby="signature-games-heading">
+          <div class="arcade-list__heading"><p class="section-kicker">Longer-form play</p><h2 id="signature-games-heading">Signature Experiences</h2><p>Deeper games with persistent local progress and complete guides.</p></div>
+          {signatureGames.map((game)=><SignatureGameCard slug={game.id} title={game.data.title} tagline={game.data.tagline} description={game.data.description} genre={game.data.genre} session={game.data.session} accent={game.data.accent} artwork={game.data.artwork!}/>)}
+        </section>
+      )
+    }
+
     <section class="arcade-list" aria-labelledby="all-games-heading">
       <div class="arcade-list__heading">
-        <p class="section-kicker">Choose a game</p>
-        <h2 id="all-games-heading">All arcade games</h2>
+        <p class="section-kicker">Quick Arcade</p>
+        <h2 id="all-games-heading">Quick Arcade games</h2>
         <p>Memory, word, and reflex play—each with a full guide when you want the details.</p>
       </div>
       <div class="arcade-grid">
         {
-          games.map((game) => (
+          quickGames.map((game) => (
             <GameCard
               slug={game.id}
               title={game.data.title}
               tagline={game.data.tagline}
               emoji={game.data.emoji}
               accent={game.data.accent}
+              artwork={game.data.artwork}
               genre={game.data.genre}
               session={game.data.session}
             />

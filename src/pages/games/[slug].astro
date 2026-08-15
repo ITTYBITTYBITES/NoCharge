@@ -9,22 +9,57 @@ export async function getStaticPaths() {
   const guideIds = new Set(guides.map((guide) => guide.data.game));
   return games.map((game) => ({
     params: { slug: game.id },
-    props: { game, hasGuide: guideIds.has(game.id) },
+    props: {
+      game,
+      hasGuide: guideIds.has(game.id),
+      relatedGames: games.filter((candidate) => candidate.id !== game.id).sort((a, b) => a.data.order - b.data.order),
+    },
   }));
 }
 
-const { game, hasGuide } = Astro.props;
+const { game, hasGuide, relatedGames } = Astro.props;
 const { Content } = await render(game);
 const slug = game.id;
+const presentation = game.data.presentation;
+const stageStyle = presentation?.stageAspectDesktop
+  ? `--game-stage-aspect:${presentation.stageAspectDesktop};--game-stage-aspect-mobile:${presentation.stageAspectMobile ?? presentation.stageAspectDesktop}`
+  : undefined;
 ---
 
 <BaseLayout
   title={game.data.title}
   description={game.data.description}
   path={`/games/${game.id}/`}
+  socialImage={game.data.artwork?.socialCard}
+  socialImageAlt={game.data.artwork ? `${game.data.title}: ${game.data.artwork.alt}` : undefined}
 >
-  <GameShell title={game.data.title} tagline={game.data.tagline} slug={game.id}>
-    <div data-game-root={slug} class="game-root"></div>
+  <GameShell
+    title={game.data.title}
+    tagline={game.data.tagline}
+    slug={game.id}
+    accent={game.data.accent}
+    artwork={game.data.artwork}
+  >
+    <div
+      data-game-root={slug}
+      class:list={['game-root', { 'game-root--reserved': presentation?.stageAspectDesktop }]}
+      style={stageStyle}
+    ></div>
+    {
+      presentation?.controls.length && (
+        <section class="game-controls" aria-labelledby="game-controls-heading">
+          <div>
+            <p class="game-about__kicker">Controls at a glance</p>
+            <h2 id="game-controls-heading">{presentation.controlsHeading}</h2>
+          </div>
+          <ul>
+            {presentation.controls.map((control) => (
+              <li><strong>{control.label}</strong><span>{control.description}</span></li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
     <section class="game-about" aria-labelledby="game-about-heading">
       <p class="game-about__kicker">About this game</p>
       <h2 id="game-about-heading">How {game.data.title} works</h2>
@@ -44,34 +79,90 @@ const slug = game.id;
         )
       }
     </section>
+    {
+      presentation?.relatedHeading && (
+        <nav class="game-related" aria-labelledby="game-related-heading">
+          <div>
+            <p class="game-about__kicker">Continue exploring</p>
+            <h2 id="game-related-heading">{presentation.relatedHeading}</h2>
+          </div>
+          <ul>
+            {
+              hasGuide && (
+                <li>
+                  <a href={`/guides/${slug}/`}>
+                    <span>{presentation.relatedGuideLabel ?? `${game.data.title} guide`}</span>
+                    <span aria-hidden="true">Guide →</span>
+                  </a>
+                </li>
+              )
+            }
+            {relatedGames.slice(0, 2).map((item) => (
+              <li><a href={`/games/${item.id}/`}><span>{item.data.title}</span><span aria-hidden="true">Play →</span></a></li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
   </GameShell>
 </BaseLayout>
 
-{
-  slug === 'memory-match' && (
-    <script>
-      import '../../games/memory-match/main.ts';
-    </script>
-  )
-}
-{
-  slug === 'word-tile-rush' && (
-    <script>
-      import '../../games/word-tile-rush/main.ts';
-    </script>
-  )
-}
-{
-  slug === 'color-flip' && (
-    <script>
-      import '../../games/color-flip/main.ts';
-    </script>
-  )
-}
+<script>
+  import { mountGame } from '../../games/registry';
+  const root = document.querySelector<HTMLElement>('[data-game-root]');
+  if (root?.dataset.gameRoot) mountGame(root.dataset.gameRoot, root);
+</script>
 
 <style>
   .game-root {
     min-height: 12rem;
+  }
+
+  .game-root--reserved {
+    min-height: 0;
+    aspect-ratio: var(--game-stage-aspect);
+  }
+
+  .game-controls {
+    display: grid;
+    gap: 1rem 2rem;
+    margin-top: 1.5rem;
+    padding: 1.1rem;
+    border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--line));
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, rgba(18, 182, 106, 0.08), transparent 48%), var(--panel-2);
+  }
+
+  .game-controls h2,
+  .game-related h2 {
+    margin-top: 0.2rem;
+    font-size: 1.15rem;
+    letter-spacing: -0.025em;
+  }
+
+  .game-controls ul,
+  .game-related ul {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .game-controls li {
+    display: grid;
+    gap: 0.15rem;
+    padding: 0.6rem 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .game-controls strong {
+    font-size: 0.84rem;
+  }
+
+  .game-controls span {
+    color: var(--muted);
+    font-size: 0.8rem;
   }
 
   .game-about {
@@ -137,5 +228,41 @@ const slug = game.id;
     color: var(--accent-strong);
     font-size: 0.88rem;
     font-weight: 700;
+  }
+
+  .game-related {
+    display: grid;
+    gap: 0.9rem 2rem;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .game-related a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 44px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  .game-related a:hover {
+    color: var(--accent-strong);
+  }
+
+  @media (min-width: 48rem) {
+    .game-controls,
+    .game-related {
+      grid-template-columns: minmax(13rem, 0.8fr) minmax(20rem, 1.2fr);
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .game-root--reserved {
+      aspect-ratio: var(--game-stage-aspect-mobile);
+    }
   }
 </style>

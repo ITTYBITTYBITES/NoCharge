@@ -6,11 +6,16 @@
   "scripts": {
     "dev": "astro dev --host 0.0.0.0",
     "start": "astro dev --host 0.0.0.0",
-    "check": "astro check",
+    "check": "npm run test:unit && astro check",
     "build": "astro build",
     "test:e2e": "npm run build && playwright test",
     "preview": "astro preview --host 0.0.0.0",
-    "astro": "astro"
+    "astro": "astro",
+    "art:memory": "node scripts/generate-memory-match-art.mjs",
+    "test:unit": "vitest run",
+    "art:word": "node scripts/generate-word-tile-rush-art.mjs",
+    "art:color": "node scripts/generate-color-flip-art.mjs",
+    "art:shattered": "node scripts/generate-shattered-foil-art.mjs"
   },
   "engines": {
     "node": ">=22.12.0"
@@ -38,6 +43,9 @@
     "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.62.1",
     "@types/node": "^26.2.0",
-    "typescript": "^6.0.3"
+    "fake-indexeddb": "^6.2.5",
+    "sharp": "^0.35.3",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.10"
   }
 }

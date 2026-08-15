@@ -7,6 +7,8 @@ interface Props {
   schema?: Record<string, unknown> | Record<string, unknown>[];
   ogType?: 'website' | 'article';
   modifiedTime?: string;
+  socialImage?: string;
+  socialImageAlt?: string;
 }
 
 const {
@@ -17,10 +19,12 @@ const {
   schema,
   ogType = 'website',
   modifiedTime,
+  socialImage: socialImagePath = '/social-card.png',
+  socialImageAlt = 'NoCharge — browser games and player guides',
 } = Astro.props;
 const site = Astro.site ?? new URL('https://nocharge.net');
 const canonical = new URL(path, site).toString();
-const socialImage = new URL('/social-card.png', site).toString();
+const socialImage = new URL(socialImagePath, site).toString();
 const fullTitle = title === 'NoCharge' ? 'NoCharge — Browser games and player guides' : `${title} · NoCharge`;
 const isGame = path.startsWith('/games/');
 const defaultStructuredData = isGame
@@ -69,11 +73,11 @@ const structuredData = schema ?? defaultStructuredData;
 <meta property="og:image" content={socialImage} />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<meta property="og:image:alt" content="NoCharge — browser games and player guides" />
+<meta property="og:image:alt" content={socialImageAlt} />
 {ogType === 'article' && modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={fullTitle} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={socialImage} />
-<meta name="twitter:image:alt" content="NoCharge — browser games and player guides" />
+<meta name="twitter:image:alt" content={socialImageAlt} />
 {structuredData && <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />}

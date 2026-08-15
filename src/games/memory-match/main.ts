@@ -187,6 +187,3 @@ export function mountMemoryMatch(root: HTMLElement): () => void {
     root.innerHTML = '';
   };
 }
-
-const mountEl = document.querySelector<HTMLElement>('[data-game-root="memory-match"]');
-if (mountEl) mountMemoryMatch(mountEl);

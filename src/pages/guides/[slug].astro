@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import GameArtwork from '../../components/GameArtwork.astro';
 
 export async function getStaticPaths() {
   const games = (await getCollection('games')).filter((game) => !game.data.draft);
@@ -23,6 +24,9 @@ export async function getStaticPaths() {
 const { guide, game, related } = Astro.props;
 if (!game) throw new Error(`Guide ${guide.id} references an unknown game: ${guide.data.game}`);
 const { Content } = await render(guide);
+const artwork = game.data.artwork;
+const presentation = game.data.presentation;
+const secondaryDiagram = artwork?.scoringDiagram ?? artwork?.modesDiagram ?? artwork?.rulesDiagram;
 const updatedLabel = new Date(`${guide.data.updated}T12:00:00`).toLocaleDateString('en-US', {
   month: 'long',
   day: 'numeric',
@@ -49,6 +53,7 @@ const schema = {
     name: 'NoCharge',
     url: 'https://nocharge.net/',
   },
+  ...(game.data.artwork ? { image: `https://nocharge.net${game.data.artwork.socialCard}` } : {}),
   about: {
     '@type': 'VideoGame',
     name: game.data.title,
@@ -64,6 +69,8 @@ const schema = {
   schema={schema}
   ogType="article"
   modifiedTime={guide.data.updated}
+  socialImage={game.data.artwork?.socialCard}
+  socialImageAlt={game.data.artwork ? `${game.data.title}: ${game.data.artwork.alt}` : undefined}
 >
   <div class="guide-page">
     <Breadcrumbs
@@ -75,20 +82,46 @@ const schema = {
     />
 
     <article>
-      <header class="guide-header">
-        <p class="eyebrow">{game.data.emoji} {game.data.title} guide</p>
-        <h1 class="page-title">{guide.data.title}</h1>
-        <p class="lede">{guide.data.description}</p>
-        <div class="guide-header__meta">
-          <span>Updated {updatedLabel}</span>
-          <span aria-hidden="true">·</span>
-          <span>{guide.data.readTime} min read</span>
+      <header class:list={['guide-header', { 'guide-header--artwork': game.data.artwork }]}>
+        <div class="guide-header__copy">
+          <p class="eyebrow">{game.data.artwork ? game.data.title : `${game.data.emoji} ${game.data.title}`} guide</p>
+          <h1 class="page-title">{guide.data.title}</h1>
+          <p class="lede">{guide.data.description}</p>
+          <div class="guide-header__meta">
+            <span>Updated {updatedLabel}</span>
+            <span aria-hidden="true">·</span>
+            <span>{guide.data.readTime} min read</span>
+          </div>
         </div>
+        {
+          game.data.artwork && (
+            <GameArtwork
+              class="guide-header__artwork"
+              src={game.data.artwork.guideHeaderFallback}
+              webpSrc={game.data.artwork.guideHeader}
+              mobileSrc={game.data.artwork.coverSquareFallback}
+              mobileWebpSrc={game.data.artwork.coverSquare}
+              alt={game.data.artwork.alt}
+              width={1280}
+              height={640}
+              variant="guide"
+              mobileVariant="square"
+              accent={game.data.accent}
+              priority
+            />
+          )
+        }
       </header>
 
       <aside class="guide-play panel" aria-label={`Play ${game.data.title}`}>
         <div>
-          <span aria-hidden="true">{game.data.emoji}</span>
+          {
+            game.data.artwork ? (
+              <img class="guide-play__icon" src={game.data.artwork.icon} width="44" height="44" alt="" aria-hidden="true" />
+            ) : (
+              <span aria-hidden="true">{game.data.emoji}</span>
+            )
+          }
           <div>
             <strong>Keep the game open while you read</strong>
             <p>{game.data.tagline} Scores stay on this device.</p>
@@ -96,6 +129,51 @@ const schema = {
         </div>
         <a class="btn btn--sm" href={`/games/${game.id}/`}>Play {game.data.title}</a>
       </aside>
+
+      {
+        artwork?.controlsDiagram && presentation?.controlsDiagramAlt && (
+          <figure class="guide-diagram">
+            <img
+              src={artwork.controlsDiagram}
+              width="960"
+              height="520"
+              loading="lazy"
+              decoding="async"
+              alt={presentation.controlsDiagramAlt}
+            />
+            {presentation.controlsDiagramCaption && <figcaption>{presentation.controlsDiagramCaption}</figcaption>}
+          </figure>
+        )
+      }
+
+      {
+        secondaryDiagram && presentation?.secondaryDiagramAlt && (
+          <figure class="guide-diagram">
+            <img src={secondaryDiagram} width="960" height="520" loading="lazy" decoding="async" alt={presentation.secondaryDiagramAlt} />
+            {presentation.secondaryDiagramCaption && <figcaption>{presentation.secondaryDiagramCaption}</figcaption>}
+          </figure>
+        )
+      }
+
+      {
+        artwork?.screenshotDesktop && artwork.screenshotMobile && presentation?.gameplayPreviewAlt && (
+          <figure class="gameplay-preview">
+            <picture>
+              <source media="(max-width: 36rem)" srcset={artwork.screenshotMobile} type="image/webp" />
+              <source srcset={artwork.screenshotDesktop} type="image/webp" />
+              <img
+                src={artwork.screenshotDesktop}
+                width="1440"
+                height="900"
+                loading="lazy"
+                decoding="async"
+                alt={presentation.gameplayPreviewAlt}
+              />
+            </picture>
+            {presentation.gameplayPreviewCaption && <figcaption>{presentation.gameplayPreviewCaption}</figcaption>}
+          </figure>
+        )
+      }
 
       <div class="guide-prose prose">
         <Content />
@@ -145,6 +223,16 @@ const schema = {
     border-bottom: 1px solid var(--line);
   }
 
+  .guide-header--artwork {
+    display: grid;
+    align-items: center;
+    gap: 1.25rem 2rem;
+  }
+
+  .guide-header :global(.guide-header__artwork) {
+    min-width: 0;
+  }
+
   .guide-header .page-title {
     max-width: 49rem;
     font-size: clamp(2.25rem, 6vw, 4rem);
@@ -179,6 +267,12 @@ const schema = {
     font-size: 1.6rem;
   }
 
+  .guide-play__icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.7rem;
+  }
+
   .guide-play strong {
     display: block;
     font-size: 0.9rem;
@@ -187,6 +281,43 @@ const schema = {
   .guide-play p {
     color: var(--muted);
     font-size: 0.8rem;
+  }
+
+  .guide-diagram,
+  .gameplay-preview {
+    display: grid;
+    gap: 0.65rem;
+    margin: 0 0 2.25rem;
+  }
+
+  .guide-diagram img,
+  .gameplay-preview picture {
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #121412;
+  }
+
+  .guide-diagram img {
+    height: auto;
+  }
+
+  .gameplay-preview picture {
+    display: block;
+    aspect-ratio: 8 / 5;
+  }
+
+  .gameplay-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .guide-diagram figcaption,
+  .gameplay-preview figcaption {
+    color: var(--muted);
+    font-size: 0.82rem;
   }
 
   .guide-prose {
@@ -260,6 +391,18 @@ const schema = {
 
   .related-guides a:hover {
     color: var(--accent-strong);
+  }
+
+  @media (min-width: 48rem) {
+    .guide-header--artwork {
+      grid-template-columns: minmax(0, 1.08fr) minmax(18rem, 0.92fr);
+    }
+  }
+
+  @media (max-width: 36rem) {
+    .gameplay-preview picture {
+      aspect-ratio: 9 / 16;
+    }
   }
 
   @media (max-width: 32rem) {

@@ -488,6 +488,3 @@ export function mountColorFlip(root: HTMLElement): () => void {
     root.innerHTML = '';
   };
 }
-
-const mountEl = document.querySelector<HTMLElement>('[data-game-root="color-flip"]');
-if (mountEl) mountColorFlip(mountEl);
