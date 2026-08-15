@@ -1,18 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const denyOptionalServices = async (page: import('@playwright/test').Page) => {
-  await page.addInitScript(() => {
-    localStorage.setItem(
-      'nocharge:consent',
-      JSON.stringify({
-        version: 1,
-        analytics: false,
-        advertising: false,
-        updatedAt: new Date().toISOString(),
-      }),
-    );
-  });
-};
+import { denyOptionalServices } from './helpers/consent';
 
 test('home features games while the arcade owns the full game collection', async ({ page }) => {
   await denyOptionalServices(page);

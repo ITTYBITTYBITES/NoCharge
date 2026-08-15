@@ -1,6 +1,16 @@
 import { expect, test } from '@playwright/test';
 
-const consentKey = 'nocharge:consent';
+import { CONSENT_KEY } from './helpers/consent';
+
+/**
+ * Scope the category toggles to the settings modal.
+ *
+ * `page.getByLabel('Analytics')` is ambiguous while the banner is still on
+ * screen: the banner is a dialog labelled "Optional analytics and ads", so it
+ * matches the same substring as the checkbox and trips strict mode.
+ */
+const consentToggle = (page: import('@playwright/test').Page, name: 'Analytics' | 'Advertising') =>
+  page.locator('[data-consent-modal]').getByRole('checkbox', { name: new RegExp(`^${name}\\b`) });
 
 const blockThirdParties = async (page: import('@playwright/test').Page) => {
   await page.route(/(?:googletagmanager|google-analytics|highperformanceformat)\.com/, async (route) => {
@@ -28,15 +38,15 @@ test('stores granular choices and loads analytics only when allowed', async ({ p
 
   await page.goto('/');
   await page.getByRole('button', { name: 'Customize' }).click();
-  await page.getByLabel('Analytics').check();
-  await page.getByLabel('Advertising').uncheck();
+  await consentToggle(page, 'Analytics').check();
+  await consentToggle(page, 'Advertising').uncheck();
   await page.getByRole('button', { name: 'Save choices' }).click();
 
   await expect(page.locator('[data-consent-banner]')).toBeHidden();
   await expect(page.locator('[data-consent-ad]')).toBeHidden();
   await expect.poll(() => requests.some((url) => url.includes('googletagmanager.com/gtag/js'))).toBe(true);
 
-  const stored = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), consentKey);
+  const stored = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}'), CONSENT_KEY);
   expect(stored).toMatchObject({ version: 1, analytics: true, advertising: false });
 });
 
@@ -55,7 +65,7 @@ test('loads one responsive sandboxed ad after advertising consent and unloads it
   );
 
   await page.getByRole('button', { name: 'Privacy choices' }).click();
-  await page.getByLabel('Advertising').uncheck();
+  await consentToggle(page, 'Advertising').uncheck();
   await page.getByRole('button', { name: 'Save choices' }).click();
 
   await expect(page.locator('[data-consent-ad]')).toBeHidden();
