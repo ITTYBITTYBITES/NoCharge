@@ -8,7 +8,7 @@ export type GameState = {
   preferences:{leftHanded:boolean;fourColor:boolean;muted:boolean};
 };
 export type Action =
- | {type:'draw'} | {type:'recycle'} | {type:'move';from:PileRef;to:PileRef;cardIndex?:number}
+ | {type:'draw';count?:1|3} | {type:'recycle'} | {type:'move';from:PileRef;to:PileRef;cardIndex?:number}
  | {type:'undo'};
 export const colorOf=(card:Card)=>card.suit==='hearts'||card.suit==='diamonds'?'red':'black';
 export const cloneState=(state:GameState):GameState=>structuredClone(state);

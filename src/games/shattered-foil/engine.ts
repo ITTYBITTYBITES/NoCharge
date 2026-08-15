@@ -8,7 +8,7 @@ function finish(s:GameState){s.won=s.foundations.every(p=>p.length===13);return 
 export function reduce(state:GameState,action:Action):GameState{
  if(action.type==='undo'){const previous=state.history.at(-1);if(!previous)return state;const restored=cloneState(previous);restored.history=state.history.slice(0,-1);return restored;}
  const next=cloneState(state);next.history=[...state.history,snapshot(state)];next.started=true;
- if(action.type==='draw'){if(!next.stock.length)return state;const card=next.stock.pop()!;card.faceUp=true;next.waste.push(card);next.moves++;return next;}
+ if(action.type==='draw'){if(!next.stock.length)return state;const count=Math.min(action.count??1,next.stock.length);for(let i=0;i<count;i++){const card=next.stock.pop()!;card.faceUp=true;next.waste.push(card);}next.moves++;return next;}
  if(action.type==='recycle'){if(next.stock.length||!next.waste.length)return state;next.stock=next.waste.reverse().map(c=>({...c,faceUp:false}));next.waste=[];next.moves++;return next;}
  const source=pile(next,action.from),start=action.cardIndex??source.length-1,cards=source.slice(start);if(!cards.length||cards.some(c=>!c.faceUp))return state;
  const target=pile(next,action.to);let valid=false,delta=0;

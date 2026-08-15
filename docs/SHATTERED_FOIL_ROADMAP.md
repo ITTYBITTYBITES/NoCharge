@@ -1,5 +1,5 @@
-# Shattered Foil deferred roadmap
+# Shattered Foil parity architecture
 
-The first public release is complete Klondike Draw 1. The following concepts are intentionally deferred and must not be shown as active controls: Spider, FreeCell, TriPeaks, Pyramid, journey/campaign progression, stars, shards, a theme store, monthly streak calendars, soundtrack collections, an advanced solver, guaranteed-winnable deals, and competitive leaderboards.
+Shattered Foil is implemented as a five-mode local-first product: Klondike Draw 1/3, Spider, FreeCell, TriPeaks, and Pyramid. The product also includes Daily Window, streak calendar, five-realm Journey, stars, shards, 24-entry Atelier inventory, card backs, four atmospheres, ten named synthesized melodies, foley, haptics, move history, timeline, settings, export/import, and win presentation.
 
-Any future variant requires its own tested rules engine, accessibility review, save-version plan, content, and artwork before it is exposed.
+The source of truth for behavior and status is [`SHATTERED_FOIL_PARITY.md`](./SHATTERED_FOIL_PARITY.md). Storage and cross-origin behavior are documented in [`SHATTERED_FOIL_MIGRATION.md`](./SHATTERED_FOIL_MIGRATION.md); local reward rules are in [`SHATTERED_FOIL_ECONOMY.md`](./SHATTERED_FOIL_ECONOMY.md).
