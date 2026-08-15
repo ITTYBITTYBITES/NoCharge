@@ -95,7 +95,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       const gameKeys: string[] = [];
       for (let index = 0; index < localStorage.length; index += 1) {
         const key = localStorage.key(index);
-        if (key?.startsWith('nocharge:') && (key.endsWith(':high') || key.endsWith(':best-moves'))) {
+        if (
+          key?.startsWith('nocharge:') &&
+          (key.endsWith(':high') || key.endsWith(':best-moves') || key === 'nocharge:shattered-foil:v1')
+        ) {
           gameKeys.push(key);
         }
       }
