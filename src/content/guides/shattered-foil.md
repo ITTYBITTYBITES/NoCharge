@@ -1,5 +1,5 @@
 ---
-title: "Solitaire: Shattered Foil Guide: Complete Klondike Draw 1 Rules"
+title: "Shattered Foil Klondike Draw 1 Guide"
 description: Learn the Shattered Foil deal, tableau and foundation rules, scoring, undo, keyboard controls, accessibility options, and local save behavior.
 game: shattered-foil
 readTime: 9
