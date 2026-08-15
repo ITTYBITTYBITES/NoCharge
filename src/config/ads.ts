@@ -32,10 +32,13 @@ export const getUnit = (id: string): AdUnit => {
 
 /**
  * Adsterra Smartlink / Direct Link, used as backfill when a slot returns no
- * creative. Set `PUBLIC_ADSTERRA_SMARTLINK` in the build environment (or a
- * `.env` file) to enable it; leave it unset to skip the fallback entirely.
+ * creative. The configured publisher Smartlink is the default; set
+ * `PUBLIC_ADSTERRA_SMARTLINK` in the build environment (or a `.env` file) to
+ * override it for a deployment.
  */
-export const SMARTLINK_URL: string = import.meta.env.PUBLIC_ADSTERRA_SMARTLINK ?? '';
+export const SMARTLINK_URL: string =
+  import.meta.env.PUBLIC_ADSTERRA_SMARTLINK ??
+  'https://harryinspectionlucy.com/srnxu0v8?key=a88515281e2b9a060a8d095fbae6a3d7';
 
 /** A zone key that is still a placeholder should never render. */
 export const isPlaceholder = (unit: AdUnit): boolean => unit.key.startsWith('REPLACE_WITH');

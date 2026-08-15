@@ -1,0 +1,232 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import GuideCard from '../../components/GuideCard.astro';
+
+const games = (await getCollection('games')).filter((game) => !game.data.draft);
+const gameById = new Map(games.map((game) => [game.id, game]));
+const guides = (await getCollection('guides'))
+  .filter((guide) => !guide.data.draft)
+  .sort((a, b) => a.data.order - b.data.order);
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'NoCharge Game Guides',
+  description: 'Rules, controls, scoring details, accessibility notes, and practical strategies for NoCharge games.',
+  url: 'https://nocharge.net/guides/',
+  mainEntity: {
+    '@type': 'ItemList',
+    numberOfItems: guides.length,
+    itemListElement: guides.map((guide, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: guide.data.title,
+      url: `https://nocharge.net/guides/${guide.id}/`,
+    })),
+  },
+};
+---
+
+<BaseLayout
+  title="Game Guides"
+  description="Read NoCharge game guides with exact rules, controls, scoring details, accessibility options, and practical strategies for better runs."
+  path="/guides/"
+  schema={schema}
+>
+  <div class="guides-page">
+    <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Guides' }]} />
+
+    <header class="guides-hero">
+      <p class="eyebrow">Guide library</p>
+      <h1 class="page-title">Know the rules. See the system.</h1>
+      <p class="lede">
+        Each guide is written against the actual game: how input works, how points are counted, what ends a run,
+        and which decisions are worth practicing.
+      </p>
+    </header>
+
+    <section class="guides-list" aria-labelledby="all-guides-heading">
+      <div class="guides-list__heading">
+        <p class="section-kicker">Current collection</p>
+        <h2 id="all-guides-heading">Guides for every arcade game</h2>
+      </div>
+      <div class="guides-grid">
+        {
+          guides.map((guide) => {
+            const game = gameById.get(guide.data.game);
+            if (!game) return null;
+            return (
+              <GuideCard
+                slug={guide.id}
+                title={guide.data.title}
+                description={guide.data.description}
+                gameTitle={game.data.title}
+                emoji={game.data.emoji}
+                accent={game.data.accent}
+                readTime={guide.data.readTime}
+              />
+            );
+          })
+        }
+      </div>
+    </section>
+
+    <section class="guides-method panel" aria-labelledby="guides-method-heading">
+      <div>
+        <p class="section-kicker">What is inside</p>
+        <h2 id="guides-method-heading">Useful detail, kept close to the game.</h2>
+        <p>
+          These are not generic listicles. A NoCharge guide documents the live controls and scoring model, then
+          adds practical ways to read the board, manage risk, or choose an accessible mode.
+        </p>
+      </div>
+      <ul>
+        <li><strong>Rules</strong><span>What counts, what clears, and what ends the run.</span></li>
+        <li><strong>Controls</strong><span>Touch, pointer, and keyboard paths where available.</span></li>
+        <li><strong>Scoring</strong><span>The real formula or objective used by the game.</span></li>
+        <li><strong>Strategy</strong><span>Specific decisions you can apply on the next attempt.</span></li>
+      </ul>
+    </section>
+
+    <section class="guides-faq" aria-labelledby="guides-faq-heading">
+      <div>
+        <p class="section-kicker">Guide questions</p>
+        <h2 id="guides-faq-heading">A few quick answers</h2>
+      </div>
+      <div>
+        <article>
+          <h3>Do I need to read before playing?</h3>
+          <p>No. Every game is designed to start quickly. Guides are there when you want exact details or a better plan.</p>
+        </article>
+        <article>
+          <h3>Are mobile and keyboard controls covered?</h3>
+          <p>Yes. Each guide separates control methods and notes accessibility-specific options.</p>
+        </article>
+        <article>
+          <h3>Will the guides change?</h3>
+          <p>They are updated when game rules, controls, scoring, or accessibility behavior changes.</p>
+        </article>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .guides-page {
+    display: grid;
+    gap: clamp(2.5rem, 7vw, 5rem);
+  }
+
+  .guides-hero {
+    max-width: 52rem;
+    padding-top: 1rem;
+  }
+
+  .guides-list {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .guides-list__heading,
+  .guides-method > div,
+  .guides-faq > div:first-child {
+    display: grid;
+    gap: 0.4rem;
+    max-width: 44rem;
+  }
+
+  .guides-list h2,
+  .guides-method h2,
+  .guides-faq h2 {
+    font-size: clamp(1.65rem, 4vw, 2.4rem);
+    letter-spacing: -0.035em;
+    line-height: 1.1;
+  }
+
+  .section-kicker {
+    color: var(--accent-strong);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .guides-grid {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .guides-method {
+    display: grid;
+    gap: 1.75rem 3rem;
+    padding: clamp(1.25rem, 4vw, 2rem);
+  }
+
+  .guides-method > div > p:last-child {
+    color: var(--muted);
+  }
+
+  .guides-method ul {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .guides-method li {
+    display: grid;
+    gap: 0.2rem;
+    padding: 0.75rem 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .guides-method li strong {
+    font-size: 0.9rem;
+  }
+
+  .guides-method li span {
+    color: var(--muted);
+    font-size: 0.84rem;
+  }
+
+  .guides-faq {
+    display: grid;
+    gap: 1.25rem 3rem;
+    padding-bottom: 1rem;
+  }
+
+  .guides-faq > div:last-child {
+    display: grid;
+  }
+
+  .guides-faq article {
+    padding: 1rem 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .guides-faq h3 {
+    font-size: 1rem;
+  }
+
+  .guides-faq article p {
+    margin-top: 0.35rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  @media (min-width: 52rem) {
+    .guides-method,
+    .guides-faq {
+      grid-template-columns: minmax(0, 0.85fr) minmax(22rem, 1.15fr);
+    }
+  }
+
+  @media (min-width: 60rem) {
+    .guides-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

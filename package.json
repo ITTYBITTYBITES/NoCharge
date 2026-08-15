@@ -2,13 +2,18 @@
   "name": "nocharge",
   "type": "module",
   "version": "1.0.0",
-  "description": "Simple browser games. Fast load. Real players. No bloat.",
+  "description": "Quick browser games, clear player guides, and no account required.",
   "scripts": {
     "dev": "astro dev --host 0.0.0.0",
     "start": "astro dev --host 0.0.0.0",
+    "check": "astro check",
     "build": "astro build",
+    "test:e2e": "npm run build && playwright test",
     "preview": "astro preview --host 0.0.0.0",
     "astro": "astro"
+  },
+  "engines": {
+    "node": ">=22.12.0"
   },
   "repository": {
     "type": "git",
@@ -27,5 +32,12 @@
   "homepage": "https://nocharge.net",
   "dependencies": {
     "astro": "^7.2.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.62.1",
+    "@types/node": "^26.2.0",
+    "typescript": "^6.0.3"
   }
 }

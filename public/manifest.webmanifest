@@ -1,7 +1,7 @@
 {
   "name": "NoCharge",
   "short_name": "NoCharge",
-  "description": "Simple browser games. Fast load. Real players. No bloat.",
+  "description": "Quick browser games, clear player guides, and no account required.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#121212",

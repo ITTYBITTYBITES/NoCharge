@@ -13,7 +13,7 @@
   --danger: #e05a5a;
   --radius: 12px;
   --shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
-  --font: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --max: 72rem;
   color-scheme: dark;
 }
@@ -69,13 +69,19 @@ button {
   background: none;
 }
 
+button:disabled {
+  cursor: default;
+}
+
 button:active {
   transform: scale(0.95);
 }
 
 button:focus-visible,
-a:focus-visible {
-  outline: 2px solid var(--accent);
+a:focus-visible,
+canvas:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--accent-strong);
   outline-offset: 3px;
 }
 
@@ -96,6 +102,24 @@ p {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  padding: 0.65rem 0.9rem;
+  border-radius: 0.5rem;
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 700;
+  transform: translateY(-200%);
+  transition: transform 120ms ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
 }
 
 .site-shell {
@@ -119,6 +143,7 @@ p {
   display: inline-flex;
   align-items: center;
   gap: 0.65rem;
+  min-height: 44px;
   font-weight: 700;
   letter-spacing: -0.02em;
 }
@@ -136,14 +161,36 @@ p {
   font-weight: 800;
 }
 
+.primary-nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 3vw, 1.5rem);
+}
+
 .nav-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: var(--muted);
   font-size: 0.92rem;
   transition: color 160ms ease;
 }
 
-.nav-link:hover {
+.nav-link:hover,
+.nav-link.is-current {
   color: var(--text);
+}
+
+.nav-link.is-current::after {
+  position: absolute;
+  right: 0;
+  bottom: 0.2rem;
+  left: 0;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--accent-strong);
+  content: '';
 }
 
 .site-main {
@@ -162,12 +209,19 @@ p {
   font-size: 0.82rem;
 }
 
-.site-footer a {
+.site-footer a,
+.site-footer button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0;
   color: var(--muted);
+  font-size: inherit;
   transition: color 160ms ease;
 }
 
-.site-footer a:hover {
+.site-footer a:hover,
+.site-footer button:hover {
   color: var(--accent-strong);
 }
 
@@ -258,6 +312,63 @@ p {
   font-size: 1.05rem;
 }
 
+.prose {
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.prose h2,
+.prose h3 {
+  color: var(--text);
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+}
+
+.prose h2 {
+  margin: 2.4rem 0 0.75rem;
+  padding-top: 0.4rem;
+  font-size: clamp(1.4rem, 3vw, 1.75rem);
+}
+
+.prose h3 {
+  margin: 1.6rem 0 0.55rem;
+  font-size: 1.08rem;
+}
+
+.prose p + p,
+.prose p + ul,
+.prose p + ol,
+.prose ul + p,
+.prose ol + p {
+  margin-top: 1rem;
+}
+
+.prose ul,
+.prose ol {
+  margin-bottom: 0;
+  padding-left: 1.35rem;
+}
+
+.prose li + li {
+  margin-top: 0.35rem;
+}
+
+.prose strong {
+  color: var(--text);
+}
+
+.prose a {
+  color: var(--accent-strong);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ad-banner[hidden],
+.site-banner[hidden] {
+  display: none;
+}
+
 .ad-banner {
   display: flex;
   align-items: center;
@@ -335,9 +446,8 @@ p {
   min-height: 90px;
 }
 
-/* Show exactly one unit per breakpoint. `display: none` keeps the hidden
-   slot from loading a creative that can never be viewed (which would
-   otherwise burn an impression and hurt CTR). */
+/* Show exactly one unit per breakpoint. BottomBanner assigns an iframe src
+   only after CSS makes that unit visible, avoiding a hidden impression. */
 .site-banner__slot--mobile {
   display: none;
 }

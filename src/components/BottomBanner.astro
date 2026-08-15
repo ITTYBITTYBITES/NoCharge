@@ -3,9 +3,8 @@
  * Site-wide responsive bottom ad banner (Adsterra).
  *
  * Adsterra banners are fixed-size, so we register two units and show one per
- * breakpoint: 728x90 on desktop, 320x50 on mobile. Each unit is hosted in its
- * own same-origin document under /ads/ — see src/pages/ads/[unit].astro for
- * why srcdoc and sandbox were removed.
+ * breakpoint: 728x90 on desktop, 320x50 on mobile. The iframe src is assigned
+ * client-side only to the visible unit, preventing a hidden impression.
  */
 import AdSlot from './AdSlot.astro';
 import { SMARTLINK_URL } from '../config/ads';
@@ -22,53 +21,93 @@ const hasSmartlink = SMARTLINK_URL.length > 0;
 <aside
   class:list={['site-banner', { 'site-banner--sticky': sticky }]}
   aria-label="Advertisement"
+  data-consent-ad
+  hidden
 >
   <div class="site-banner__inner">
-    <AdSlot unit="banner-728x90" class="site-banner__slot site-banner__slot--desktop" />
-    <AdSlot unit="banner-320x50" class="site-banner__slot site-banner__slot--mobile" />
+    <AdSlot
+      unit="banner-728x90"
+      class="site-banner__slot site-banner__slot--desktop"
+      defer
+    />
+    <AdSlot
+      unit="banner-320x50"
+      class="site-banner__slot site-banner__slot--mobile"
+      defer
+    />
   </div>
 </aside>
 
-{
-  hasSmartlink && (
-    <script is:inline>
-      // Backfill: each /ads/ host page posts back whether a creative painted.
-      // If the visible slot reports empty, swap in the Smartlink CTA rather
-      // than leaving dead space that earns nothing.
-      (() => {
-        const visible = (slot) => slot.offsetParent !== null;
+<script is:inline define:vars={{ hasSmartlink }}>
+  (() => {
+    const banner = document.querySelector('.site-banner');
+    if (!banner) return;
 
-        const apply = (slot, filled) => {
-          const frame = slot.querySelector('.ad-slot__frame');
-          const fallback = slot.querySelector('.ad-slot__fallback');
-          if (!frame || !fallback) return;
-          fallback.hidden = filled;
-          frame.style.display = filled ? '' : 'none';
-        };
+    const visible = (slot) => slot.offsetParent !== null;
+    let advertisingAllowed = window.NoChargeConsent?.get().advertising ?? false;
+    const reported = new Set();
 
-        const reported = new Set();
+    // CSS selects the correct fixed-size unit. Only give that iframe a URL
+    // after advertising consent, so the hidden breakpoint never requests an
+    // ad or records an impression.
+    const activateVisibleSlot = () => {
+      if (!advertisingAllowed) return;
+      banner.querySelectorAll('.ad-slot').forEach((slot) => {
+        if (!visible(slot)) return;
+        const frame = slot.querySelector('.ad-slot__frame');
+        const src = frame?.dataset.src;
+        if (frame && src && frame.getAttribute('src') !== src) frame.src = src;
+      });
+    };
 
-        window.addEventListener('message', (event) => {
-          if (event.origin !== location.origin) return;
-          const data = event.data;
-          if (!data || data.type !== 'nocharge:ad') return;
+    window.addEventListener('nocharge:consentchange', (event) => {
+      advertisingAllowed = !!event.detail?.advertising;
+      if (!advertisingAllowed) reported.clear();
+      activateVisibleSlot();
+      scheduleFallbackCheck();
+    });
+    activateVisibleSlot();
+    scheduleFallbackCheck();
+    window.matchMedia('(max-width: 48rem)').addEventListener('change', () => {
+      activateVisibleSlot();
+      scheduleFallbackCheck();
+    });
 
-          document.querySelectorAll('.ad-slot').forEach((slot) => {
-            const frame = slot.querySelector('.ad-slot__frame');
-            if (!frame || frame.contentWindow !== event.source) return;
-            reported.add(slot);
-            if (visible(slot)) apply(slot, !!data.filled);
-          });
+    if (!hasSmartlink) return;
+
+    const apply = (slot, filled) => {
+      const frame = slot.querySelector('.ad-slot__frame');
+      const fallback = slot.querySelector('.ad-slot__fallback');
+      if (!frame || !fallback) return;
+      fallback.hidden = filled;
+      frame.style.display = filled ? '' : 'none';
+    };
+
+    window.addEventListener('message', (event) => {
+      // Sandboxed ad hosts report an opaque ("null") origin. The source
+      // window check below ties the message to one of our known frames.
+      if (event.origin !== location.origin && event.origin !== 'null') return;
+      const data = event.data;
+      if (!data || data.type !== 'nocharge:ad') return;
+
+      document.querySelectorAll('.ad-slot').forEach((slot) => {
+        const frame = slot.querySelector('.ad-slot__frame');
+        if (!frame || frame.contentWindow !== event.source) return;
+        reported.add(slot);
+        if (visible(slot)) apply(slot, !!data.filled);
+      });
+    });
+
+    // Start the no-fill grace period when advertising is actually allowed,
+    // not at page load (the visitor may take any amount of time to decide).
+    function scheduleFallbackCheck() {
+      if (!hasSmartlink || !advertisingAllowed) return;
+      setTimeout(() => {
+        if (!advertisingAllowed) return;
+        document.querySelectorAll('.ad-slot').forEach((slot) => {
+          if (!reported.has(slot) && visible(slot)) apply(slot, false);
         });
-
-        // Safety net: a slot that never reports at all (script blocked, network
-        // failure) is treated as empty once the grace period elapses.
-        setTimeout(() => {
-          document.querySelectorAll('.ad-slot').forEach((slot) => {
-            if (!reported.has(slot) && visible(slot)) apply(slot, false);
-          });
-        }, 6000);
-      })();
-    </script>
-  )
-}
+      }, 6000);
+    }
+  })();
+</script>

@@ -1,0 +1,5 @@
+Contact: mailto:hello@nocharge.net
+Expires: 2027-08-15T23:59:59Z
+Canonical: https://nocharge.net/.well-known/security.txt
+Preferred-Languages: en
+Policy: https://github.com/ITTYBITTYBITES/NoCharge/security/policy

@@ -1,0 +1,427 @@
+---
+---
+
+<div
+  class="consent-banner panel"
+  data-consent-banner
+  role="dialog"
+  aria-labelledby="consent-banner-title"
+  aria-describedby="consent-banner-description"
+  hidden
+>
+  <div class="consent-banner__copy">
+    <p class="eyebrow">Your choice</p>
+    <h2 id="consent-banner-title">Optional analytics and ads</h2>
+    <p id="consent-banner-description">
+      Necessary storage keeps your scores and privacy choice. Analytics and advertising stay off unless you
+      allow them. You can change this anytime.
+    </p>
+  </div>
+  <div class="consent-actions">
+    <button class="btn btn--ghost btn--sm" type="button" data-consent-reject>Reject optional</button>
+    <button class="btn btn--ghost btn--sm" type="button" data-consent-customize>Customize</button>
+    <button class="btn btn--sm" type="button" data-consent-allow>Allow all</button>
+  </div>
+  <a class="consent-banner__link" href="/privacy/">Read the privacy policy</a>
+</div>
+
+<div class="consent-modal" data-consent-modal hidden>
+  <div class="consent-modal__backdrop" data-consent-close aria-hidden="true"></div>
+  <section
+    class="consent-modal__panel panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="consent-settings-title"
+    aria-describedby="consent-settings-description"
+  >
+    <button class="consent-modal__close" type="button" aria-label="Close privacy choices" data-consent-close>
+      ×
+    </button>
+    <p class="eyebrow">Privacy choices</p>
+    <h2 id="consent-settings-title">Choose what may load</h2>
+    <p id="consent-settings-description" class="consent-modal__intro">
+      Optional services remain blocked until you allow them. Turning a category off unloads ads and stops future
+      optional requests initiated by NoCharge in this tab.
+    </p>
+
+    <div class="consent-option">
+      <div>
+        <h3>Necessary storage</h3>
+        <p>Saves this choice, game scores, and preferences on your device.</p>
+      </div>
+      <span class="consent-option__required">Always on</span>
+    </div>
+
+    <label class="consent-option" for="consent-analytics">
+      <div>
+        <h3>Analytics</h3>
+        <p>Allows Google Analytics to measure broad site usage.</p>
+      </div>
+      <input id="consent-analytics" type="checkbox" data-consent-analytics />
+    </label>
+
+    <label class="consent-option" for="consent-advertising">
+      <div>
+        <h3>Advertising</h3>
+        <p>Allows sandboxed Adsterra banners and their required network requests.</p>
+      </div>
+      <input id="consent-advertising" type="checkbox" data-consent-advertising />
+    </label>
+
+    <div class="consent-modal__actions">
+      <button class="btn btn--ghost" type="button" data-consent-modal-allow>Allow all</button>
+      <button class="btn" type="button" data-consent-save>Save choices</button>
+    </div>
+  </section>
+</div>
+
+<script>
+  type ConsentChoice = {
+    version: number;
+    analytics: boolean;
+    advertising: boolean;
+    updatedAt: string;
+  };
+
+  type ConsentApi = {
+    get: () => ConsentChoice;
+    hasDecision: () => boolean;
+    open: () => void;
+  };
+
+  declare global {
+    interface Window {
+      NoChargeConsent?: ConsentApi;
+    }
+  }
+
+  const root = document.querySelector<HTMLElement>('[data-consent-banner]');
+  const modal = document.querySelector<HTMLElement>('[data-consent-modal]');
+  const analyticsInput = document.querySelector<HTMLInputElement>('[data-consent-analytics]');
+  const advertisingInput = document.querySelector<HTMLInputElement>('[data-consent-advertising]');
+  const storageKey = 'nocharge:consent';
+  const consentVersion = 1;
+  let lastFocused: HTMLElement | null = null;
+  let sessionChoice: ConsentChoice | null = null;
+
+  const defaults = (): ConsentChoice => ({
+    version: consentVersion,
+    analytics: false,
+    advertising: false,
+    updatedAt: new Date().toISOString(),
+  });
+
+  const readStored = (): ConsentChoice | null => {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw) as Partial<ConsentChoice>;
+      if (
+        parsed.version !== consentVersion ||
+        typeof parsed.analytics !== 'boolean' ||
+        typeof parsed.advertising !== 'boolean'
+      ) {
+        return null;
+      }
+      return {
+        version: consentVersion,
+        analytics: parsed.analytics,
+        advertising: parsed.advertising,
+        updatedAt: typeof parsed.updatedAt === 'string' ? parsed.updatedAt : new Date().toISOString(),
+      };
+    } catch {
+      return null;
+    }
+  };
+
+  let storedChoice = readStored();
+  let currentChoice = storedChoice ?? defaults();
+
+  const setBackgroundInert = (value: boolean) => {
+    document.querySelector<HTMLElement>('.site-shell')?.toggleAttribute('inert', value);
+    document.querySelector<HTMLElement>('.site-banner')?.toggleAttribute('inert', value);
+    root?.toggleAttribute('inert', value);
+  };
+
+  const updateSummary = () => {
+    document.querySelectorAll<HTMLElement>('[data-consent-summary]').forEach((summary) => {
+      summary.textContent = `Analytics: ${currentChoice.analytics ? 'allowed' : 'off'}. Advertising: ${currentChoice.advertising ? 'allowed' : 'off'}.`;
+    });
+  };
+
+  const loadVisibleAds = () => {
+    requestAnimationFrame(() => {
+      document.querySelectorAll<HTMLIFrameElement>('[data-consent-ad] .ad-slot__frame[data-src]').forEach((frame) => {
+        const slot = frame.closest<HTMLElement>('.ad-slot');
+        const src = frame.dataset.src;
+        if (slot?.offsetParent !== null && src && frame.getAttribute('src') !== src) frame.src = src;
+      });
+    });
+  };
+
+  const unloadAds = () => {
+    document.querySelectorAll<HTMLIFrameElement>('.ad-slot__frame[data-src]').forEach((frame) => {
+      frame.style.display = '';
+      if (frame.getAttribute('src')) {
+        frame.src = 'about:blank';
+        frame.removeAttribute('src');
+      }
+    });
+    document.querySelectorAll<HTMLElement>('.ad-slot__fallback').forEach((fallback) => {
+      fallback.hidden = true;
+    });
+  };
+
+  const applyChoice = (choice: ConsentChoice, persist: boolean) => {
+    currentChoice = choice;
+
+    if (persist) {
+      sessionChoice = choice;
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(choice));
+        storedChoice = choice;
+      } catch {
+        // Keep the choice for this page even when storage is unavailable.
+      }
+    }
+
+    document.querySelectorAll<HTMLElement>('[data-consent-ad]').forEach((container) => {
+      container.hidden = !choice.advertising;
+    });
+    if (choice.advertising) loadVisibleAds();
+    else unloadAds();
+
+    updateSummary();
+    document.documentElement.dataset.consentReady = 'true';
+    window.dispatchEvent(new CustomEvent<ConsentChoice>('nocharge:consentchange', { detail: choice }));
+  };
+
+  const closeSettings = () => {
+    if (!modal) return;
+    modal.hidden = true;
+    setBackgroundInert(false);
+    const fallback = document.querySelector<HTMLElement>('.brand');
+    const target = lastFocused && !lastFocused.closest('[hidden]') ? lastFocused : fallback;
+    target?.focus();
+  };
+
+  const openSettings = () => {
+    if (!modal || !analyticsInput || !advertisingInput) return;
+    lastFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    analyticsInput.checked = currentChoice.analytics;
+    advertisingInput.checked = currentChoice.advertising;
+    modal.hidden = false;
+    setBackgroundInert(true);
+    analyticsInput.focus();
+  };
+
+  const makeChoice = (analytics: boolean, advertising: boolean) => {
+    const choice: ConsentChoice = {
+      version: consentVersion,
+      analytics,
+      advertising,
+      updatedAt: new Date().toISOString(),
+    };
+    applyChoice(choice, true);
+    if (root) root.hidden = true;
+    closeSettings();
+  };
+
+  window.NoChargeConsent = {
+    get: () => ({ ...currentChoice }),
+    hasDecision: () => storedChoice !== null || sessionChoice !== null,
+    open: openSettings,
+  };
+
+  document.querySelector('[data-consent-reject]')?.addEventListener('click', () => makeChoice(false, false));
+  document.querySelector('[data-consent-allow]')?.addEventListener('click', () => makeChoice(true, true));
+  document.querySelector('[data-consent-customize]')?.addEventListener('click', openSettings);
+  document.querySelector('[data-consent-modal-allow]')?.addEventListener('click', () => makeChoice(true, true));
+  document.querySelector('[data-consent-save]')?.addEventListener('click', () => {
+    makeChoice(analyticsInput?.checked ?? false, advertisingInput?.checked ?? false);
+  });
+  document.querySelectorAll('[data-consent-close]').forEach((control) => {
+    control.addEventListener('click', closeSettings);
+  });
+  document.querySelectorAll<HTMLElement>('[data-consent-open]').forEach((control) => {
+    control.addEventListener('click', (event) => {
+      event.preventDefault();
+      openSettings();
+    });
+  });
+  document.addEventListener('keydown', (event) => {
+    if (!modal || modal.hidden) return;
+    if (event.key === 'Escape') {
+      closeSettings();
+      return;
+    }
+    if (event.key !== 'Tab') return;
+
+    const focusable = [...modal.querySelectorAll<HTMLElement>('button, input, a[href], [tabindex]:not([tabindex="-1"])')]
+      .filter((element) => !element.hasAttribute('disabled') && element.offsetParent !== null);
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (!first || !last) return;
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
+
+  applyChoice(currentChoice, false);
+  if (root) root.hidden = storedChoice !== null;
+</script>
+
+<style>
+  .consent-banner[hidden],
+  .consent-modal[hidden] {
+    display: none;
+  }
+
+  .consent-banner {
+    position: fixed;
+    right: max(1rem, env(safe-area-inset-right, 0px));
+    bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+    left: max(1rem, env(safe-area-inset-left, 0px));
+    z-index: 100;
+    display: grid;
+    gap: 1rem;
+    width: min(calc(100% - 2rem), 44rem);
+    max-height: calc(100svh - 2rem);
+    margin-left: auto;
+    padding: 1.1rem;
+    overflow: auto;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.7);
+  }
+
+  .consent-banner__copy {
+    display: grid;
+    gap: 0.45rem;
+  }
+
+  .consent-banner .eyebrow,
+  .consent-modal .eyebrow {
+    justify-self: start;
+    margin: 0;
+  }
+
+  .consent-banner h2,
+  .consent-modal h2 {
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+  }
+
+  .consent-banner p,
+  .consent-modal p {
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+
+  .consent-actions,
+  .consent-modal__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+  }
+
+  .consent-banner__link {
+    justify-self: start;
+    color: var(--accent-strong);
+    font-size: 0.85rem;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .consent-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 110;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+  }
+
+  .consent-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.76);
+    backdrop-filter: blur(5px);
+  }
+
+  .consent-modal__panel {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 1rem;
+    width: min(100%, 38rem);
+    max-height: calc(100svh - 2rem);
+    padding: 1.25rem;
+    overflow: auto;
+  }
+
+  .consent-modal__close {
+    position: absolute;
+    top: 0.65rem;
+    right: 0.75rem;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    color: var(--muted);
+    font-size: 1.6rem;
+  }
+
+  .consent-modal__close:hover {
+    background: var(--panel-2);
+    color: var(--text);
+  }
+
+  .consent-modal__intro {
+    max-width: 34rem;
+    padding-right: 2rem;
+  }
+
+  .consent-option {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    min-height: 4.75rem;
+    padding: 0.85rem;
+    border: 1px solid var(--line);
+    border-radius: 0.75rem;
+    background: var(--panel-2);
+  }
+
+  .consent-option h3 {
+    font-size: 0.98rem;
+  }
+
+  .consent-option input {
+    width: 1.4rem;
+    height: 1.4rem;
+    accent-color: var(--accent);
+  }
+
+  .consent-option__required {
+    color: var(--accent-strong);
+    font-size: 0.82rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .consent-modal__actions {
+    justify-content: flex-end;
+  }
+
+  @media (max-width: 32rem) {
+    .consent-actions .btn,
+    .consent-modal__actions .btn {
+      flex: 1 1 100%;
+    }
+  }
+</style>

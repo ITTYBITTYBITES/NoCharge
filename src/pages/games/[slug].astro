@@ -4,14 +4,16 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import GameShell from '../../components/GameShell.astro';
 
 export async function getStaticPaths() {
-  const games = await getCollection('games');
+  const games = (await getCollection('games')).filter((game) => !game.data.draft);
+  const guides = (await getCollection('guides')).filter((guide) => !guide.data.draft);
+  const guideIds = new Set(guides.map((guide) => guide.data.game));
   return games.map((game) => ({
     params: { slug: game.id },
-    props: { game },
+    props: { game, hasGuide: guideIds.has(game.id) },
   }));
 }
 
-const { game } = Astro.props;
+const { game, hasGuide } = Astro.props;
 const { Content } = await render(game);
 const slug = game.id;
 ---
@@ -23,9 +25,25 @@ const slug = game.id;
 >
   <GameShell title={game.data.title} tagline={game.data.tagline} slug={game.id}>
     <div data-game-root={slug} class="game-root"></div>
-    <div class="game-about">
-      <Content />
-    </div>
+    <section class="game-about" aria-labelledby="game-about-heading">
+      <p class="game-about__kicker">About this game</p>
+      <h2 id="game-about-heading">How {game.data.title} works</h2>
+      <div class="game-about__copy">
+        <Content />
+      </div>
+      <dl class="game-about__facts">
+        <div><dt>Genre</dt><dd>{game.data.genre}</dd></div>
+        <div><dt>Challenge</dt><dd>{game.data.difficulty}</dd></div>
+        <div><dt>Typical run</dt><dd>{game.data.session}</dd></div>
+      </dl>
+      {
+        hasGuide && (
+          <a class="game-about__guide" href={`/guides/${slug}/`}>
+            Read the complete {game.data.title} guide →
+          </a>
+        )
+      }
+    </section>
   </GameShell>
 </BaseLayout>
 
@@ -57,14 +75,67 @@ const slug = game.id;
   }
 
   .game-about {
-    margin-top: 1.25rem;
-    padding-top: 1rem;
+    display: grid;
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
     border-top: 1px solid var(--line);
-    color: var(--muted);
-    font-size: 0.95rem;
   }
 
-  .game-about :global(p) {
-    max-width: 40rem;
+  .game-about__kicker {
+    color: var(--accent-strong);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .game-about h2 {
+    font-size: 1.3rem;
+    letter-spacing: -0.025em;
+  }
+
+  .game-about__copy {
+    display: grid;
+    gap: 0.75rem;
+    max-width: 44rem;
+    color: var(--muted);
+    font-size: 0.94rem;
+  }
+
+  .game-about__facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin: 0.4rem 0 0;
+  }
+
+  .game-about__facts div {
+    min-width: 8rem;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 0.65rem;
+    background: var(--panel-2);
+  }
+
+  .game-about__facts dt {
+    color: var(--muted);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+  }
+
+  .game-about__facts dd {
+    margin: 0.1rem 0 0;
+    font-size: 0.84rem;
+    font-weight: 700;
+  }
+
+  .game-about__guide {
+    justify-self: start;
+    min-height: 44px;
+    padding-top: 0.7rem;
+    color: var(--accent-strong);
+    font-size: 0.88rem;
+    font-weight: 700;
   }
 </style>

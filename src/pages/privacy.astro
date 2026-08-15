@@ -4,71 +4,158 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 <BaseLayout
   title="Privacy"
-  description="How NoCharge handles analytics and local data."
+  description="How NoCharge handles analytics, advertising, and data stored on your device."
   path="/privacy/"
+  showAds={false}
 >
   <article class="privacy">
     <a class="back-link" href="/">← Home</a>
-    <h1 class="page-title">Privacy</h1>
-    <p class="lede">Short version: we keep it light.</p>
+    <header>
+      <h1 class="page-title">Privacy</h1>
+      <p class="lede">The short version: no accounts, and game data stays on your device.</p>
+      <p class="privacy__updated">Last updated: August 15, 2026</p>
+    </header>
 
     <div class="privacy__body panel">
-      <p>NoCharge uses:</p>
-      <ul>
-        <li>
-          <strong>Anonymous Google Analytics</strong> — to understand traffic. The script loads after a short delay
-          in production only. IP addresses are anonymized.
-        </li>
-        <li>
-          <strong>localStorage</strong> — to save high scores and preferences on your device. Nothing is uploaded.
-        </li>
-        <li>
-          <strong>Banner ads</strong> (when enabled) — non-intrusive placements only. No popups, redirects, or
-          full-screen interstitials from us.
-        </li>
-      </ul>
-      <p>There are no accounts and no passwords. This site is intended for users 13+.</p>
-      <p>
-        Questions? <a href="mailto:hello@nocharge.net">hello@nocharge.net</a>
-      </p>
+      <section aria-labelledby="privacy-choices">
+        <h2 id="privacy-choices">Your privacy choices</h2>
+        <p>
+          Analytics and advertising are off by default. They load only after you allow their categories. You can
+          review or withdraw that choice at any time; necessary storage remains available for this choice and
+          local game features.
+        </p>
+        <button class="btn btn--ghost btn--sm" type="button" data-consent-open>Review privacy choices</button>
+        <p class="privacy__status" data-consent-summary aria-live="polite">Loading your current choices…</p>
+      </section>
+
+      <section aria-labelledby="local-data">
+        <h2 id="local-data">Data on your device</h2>
+        <p>
+          NoCharge uses your browser’s local storage for high scores and game preferences. That information is
+          not sent to NoCharge and remains until you clear it in your browser or use the button below.
+        </p>
+        <button class="btn btn--ghost btn--sm" type="button" data-clear-games>Clear game data</button>
+        <p class="privacy__status" data-game-status aria-live="polite"></p>
+      </section>
+
+      <section aria-labelledby="analytics">
+        <h2 id="analytics">Analytics</h2>
+        <p>
+          If you allow analytics, NoCharge loads Google Analytics to understand broad usage such as page visits
+          and device types. We request IP anonymization, but your browser still connects directly to Google and
+          Google may use browser identifiers or cookies. The tag is not requested when analytics is off. See the
+          <a href="https://policies.google.com/privacy">Google Privacy Policy</a>.
+        </p>
+      </section>
+
+      <section aria-labelledby="advertising">
+        <h2 id="advertising">Advertising</h2>
+        <p>
+          If you allow advertising, NoCharge loads sandboxed banner ads supplied by Adsterra on the home and
+          game pages. Your browser then connects directly to the advertising provider. The provider may receive
+          technical data such as your IP address, browser and device details, the referring site, and ad
+          interactions, and may use cookies or similar identifiers. No ad frame or Adsterra script is requested
+          while advertising is off. Read Adsterra’s
+          <a href="https://adsterra.com/privacy-policy-managed/">Privacy Policy</a> and
+          <a href="https://adsterra.com/cookies/">Cookies Policy</a> for its practices and controls.
+        </p>
+        <p>
+          If a banner does not fill, NoCharge may show a clearly labeled sponsored link using Adsterra’s
+          provider-controlled anti-adblock domain. It remains hidden until advertising is allowed and opens only
+          after you select it. NoCharge does not place popups or full-screen interstitials over gameplay.
+        </p>
+      </section>
+
+      <section aria-labelledby="accounts-retention">
+        <h2 id="accounts-retention">Accounts and retention</h2>
+        <p>
+          NoCharge has no user accounts, passwords, or database of player scores. Local game data remains on
+          your device until you remove it. Google and Adsterra control retention for information they process
+          under their own policies.
+        </p>
+      </section>
+
+      <section aria-labelledby="contact">
+        <h2 id="contact">Contact</h2>
+        <p>
+          This site is intended for users 13 and older. For privacy questions or requests, email
+          <a href="mailto:hello@nocharge.net">hello@nocharge.net</a>.
+        </p>
+      </section>
     </div>
   </article>
 </BaseLayout>
+
+<script>
+  const clearGames = document.querySelector<HTMLButtonElement>('[data-clear-games]');
+  const gameStatus = document.querySelector<HTMLElement>('[data-game-status]');
+
+  clearGames?.addEventListener('click', () => {
+    try {
+      const gameKeys: string[] = [];
+      for (let index = 0; index < localStorage.length; index += 1) {
+        const key = localStorage.key(index);
+        if (key?.startsWith('nocharge:') && (key.endsWith(':high') || key.endsWith(':best-moves'))) {
+          gameKeys.push(key);
+        }
+      }
+      gameKeys.forEach((key) => localStorage.removeItem(key));
+      if (gameStatus) gameStatus.textContent = 'Game scores were cleared from this browser.';
+    } catch {
+      if (gameStatus) gameStatus.textContent = 'This browser did not allow game data to be cleared.';
+    }
+  });
+</script>
 
 <style>
   .privacy {
     display: grid;
     gap: 0.85rem;
-    max-width: 40rem;
+    max-width: 46rem;
+  }
+
+  .privacy__updated {
+    margin-top: 0.65rem;
+    color: var(--muted);
+    font-size: 0.82rem;
   }
 
   .privacy__body {
+    display: grid;
+    gap: 1.5rem;
     padding: 1.25rem 1.3rem;
     margin-top: 0.5rem;
   }
 
-  .privacy__body p + p,
-  .privacy__body p + ul {
-    margin-top: 0.85rem;
+  .privacy__body section {
+    display: grid;
+    justify-items: start;
+    gap: 0.65rem;
   }
 
-  .privacy__body ul {
-    margin: 0.5rem 0 0;
-    padding-left: 1.2rem;
-    color: var(--muted);
+  .privacy__body section + section {
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
   }
 
-  .privacy__body li + li {
-    margin-top: 0.55rem;
-  }
-
-  .privacy__body strong {
+  .privacy__body h2 {
     color: var(--text);
+    font-size: 1.05rem;
+    letter-spacing: -0.015em;
+  }
+
+  .privacy__body p {
+    color: var(--muted);
   }
 
   .privacy__body a {
     color: var(--accent-strong);
     text-decoration: underline;
     text-underline-offset: 2px;
+  }
+
+  .privacy__status {
+    min-height: 1.3rem;
+    font-size: 0.85rem;
   }
 </style>

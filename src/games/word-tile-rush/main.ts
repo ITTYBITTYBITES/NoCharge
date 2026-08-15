@@ -52,18 +52,19 @@ export function mountWordTileRush(root: HTMLElement): () => void {
           <span>Best <strong data-wtr="best">0</strong></span>
         </div>
         <div class="wtr__actions">
+          <button type="button" class="btn btn--ghost btn--sm" data-wtr="submit" disabled>Submit</button>
           <button type="button" class="btn btn--ghost btn--sm" data-wtr="clear">Clear</button>
           <button type="button" class="btn btn--ghost btn--sm" data-wtr="restart">New</button>
         </div>
       </div>
       <div class="wtr__word" data-wtr="word" aria-live="polite"></div>
-      <p class="wtr__hint">Drag across adjacent tiles to spell a word (3+ letters).</p>
+      <p class="wtr__hint">Drag across letters, or select them and press Submit. The timer starts with your first letter.</p>
       <div class="wtr__board-wrap">
-        <div class="wtr__board" data-wtr="board" role="grid" aria-label="Letter grid"></div>
+        <div class="wtr__board" data-wtr="board" role="group" aria-label="Letter grid"></div>
       </div>
-      <div class="wtr__overlay" data-wtr="overlay" role="status">
+      <div class="wtr__overlay" data-wtr="overlay">
         <h2>Grid full</h2>
-        <p data-wtr="result"></p>
+        <p data-wtr="result" aria-live="polite"></p>
         <button type="button" class="btn" data-wtr="again">Play again</button>
       </div>
     </div>
@@ -75,6 +76,7 @@ export function mountWordTileRush(root: HTMLElement): () => void {
   const wordEl = root.querySelector<HTMLElement>('[data-wtr="word"]')!;
   const overlay = root.querySelector<HTMLElement>('[data-wtr="overlay"]')!;
   const resultEl = root.querySelector<HTMLElement>('[data-wtr="result"]')!;
+  const submitBtn = root.querySelector<HTMLButtonElement>('[data-wtr="submit"]')!;
   const clearBtn = root.querySelector<HTMLButtonElement>('[data-wtr="clear"]')!;
   const restartBtn = root.querySelector<HTMLButtonElement>('[data-wtr="restart"]')!;
   const againBtn = root.querySelector<HTMLButtonElement>('[data-wtr="again"]')!;
@@ -85,14 +87,13 @@ export function mountWordTileRush(root: HTMLElement): () => void {
   let score = 0;
   let best = loadScore(GAME_ID);
   let dropTimer = 0;
+  let feedbackTimer = 0;
   let alive = true;
-  const cellEls: HTMLElement[][] = [];
+  let started = false;
+  let rejecting = false;
+  const cellEls: HTMLButtonElement[][] = [];
 
   bestEl.textContent = String(best);
-
-  function idx(r: number, c: number) {
-    return r * COLS + c;
-  }
 
   function randomLetter() {
     return LETTER_POOL[Math.floor(Math.random() * LETTER_POOL.length)]!;
@@ -112,11 +113,18 @@ export function mountWordTileRush(root: HTMLElement): () => void {
         const cell = grid[r]![c]!;
         const el = cellEls[r]![c]!;
         el.textContent = cell.letter ?? '';
+        el.disabled = !cell.letter;
         el.classList.toggle('is-empty', !cell.letter);
         el.classList.toggle('is-selected', cell.selected);
         el.classList.remove('is-invalid');
+        el.setAttribute('aria-pressed', String(cell.selected));
+        el.setAttribute(
+          'aria-label',
+          cell.letter ? `Row ${r + 1}, column ${c + 1}: ${cell.letter}` : `Row ${r + 1}, column ${c + 1}: empty`,
+        );
       }
     }
+    submitBtn.disabled = path.length === 0;
     wordEl.textContent = path.map((p) => grid[p.r]![p.c]!.letter).join('');
   }
 
@@ -124,13 +132,21 @@ export function mountWordTileRush(root: HTMLElement): () => void {
     boardEl.innerHTML = '';
     cellEls.length = 0;
     for (let r = 0; r < ROWS; r++) {
-      const row: HTMLElement[] = [];
+      const row: HTMLButtonElement[] = [];
       for (let c = 0; c < COLS; c++) {
-        const el = document.createElement('div');
+        const el = document.createElement('button');
+        el.type = 'button';
         el.className = 'wtr__cell is-empty';
-        el.setAttribute('role', 'gridcell');
         el.dataset.r = String(r);
         el.dataset.c = String(c);
+        // Pointer input is handled as a drag on the board. A keyboard-created
+        // click has detail 0 and builds the same path one letter at a time.
+        el.addEventListener('click', (event) => {
+          if (event.detail !== 0 || !grid[r]?.[c]?.letter) return;
+          prepareForInput();
+          ensureStarted();
+          addToPath({ r, c });
+        });
         boardEl.appendChild(el);
         row.push(el);
       }
@@ -139,11 +155,15 @@ export function mountWordTileRush(root: HTMLElement): () => void {
   }
 
   function resetGrid() {
+    clearInterval(dropTimer);
+    clearTimeout(feedbackTimer);
     grid = Array.from({ length: ROWS }, () =>
       Array.from({ length: COLS }, () => ({ letter: null, selected: false })),
     );
     path = [];
     dragging = false;
+    started = false;
+    rejecting = false;
     setScore(0);
     overlay.classList.remove('is-open');
     boardEl.style.display = '';
@@ -158,12 +178,19 @@ export function mountWordTileRush(root: HTMLElement): () => void {
   }
 
   function clearSelection() {
+    rejecting = false;
     for (const p of path) {
       const cell = grid[p.r]?.[p.c];
       if (cell) cell.selected = false;
     }
     path = [];
     renderCells();
+  }
+
+  function prepareForInput() {
+    if (!rejecting) return;
+    clearTimeout(feedbackTimer);
+    clearSelection();
   }
 
   function isAdjacent(a: { r: number; c: number }, b: { r: number; c: number }) {
@@ -209,10 +236,12 @@ export function mountWordTileRush(root: HTMLElement): () => void {
       return;
     }
     if (!WORDS.has(word)) {
+      rejecting = true;
       for (const p of path) {
         cellEls[p.r]![p.c]!.classList.add('is-invalid');
       }
-      setTimeout(() => clearSelection(), 280);
+      clearTimeout(feedbackTimer);
+      feedbackTimer = window.setTimeout(() => clearSelection(), 280);
       return;
     }
 
@@ -245,7 +274,7 @@ export function mountWordTileRush(root: HTMLElement): () => void {
   }
 
   function dropRow() {
-    if (!alive) return;
+    if (!alive || document.hidden || dragging || path.length > 0) return;
     // If top row has any letter, game over
     if (grid[0]!.some((c) => c.letter)) {
       endGame();
@@ -275,21 +304,30 @@ export function mountWordTileRush(root: HTMLElement): () => void {
     resultEl.textContent = `Score ${score}. Best ${best}.`;
     overlay.classList.add('is-open');
     boardEl.style.display = 'none';
+    againBtn.focus();
     void play('win');
   }
 
   function startLoop() {
     clearInterval(dropTimer);
+    started = true;
     dropTimer = window.setInterval(dropRow, 2800);
+  }
+
+  function ensureStarted() {
+    if (!started) startLoop();
   }
 
   function onPointerDown(e: PointerEvent) {
     if (!alive) return;
+    e.preventDefault();
     unlockAudio();
+    prepareForInput();
     dragging = true;
     boardEl.setPointerCapture(e.pointerId);
     const pos = cellFromPoint(e.clientX, e.clientY);
     if (pos) {
+      ensureStarted();
       clearSelection();
       addToPath(pos);
     }
@@ -309,20 +347,23 @@ export function mountWordTileRush(root: HTMLElement): () => void {
 
   buildDom();
   resetGrid();
-  startLoop();
 
   boardEl.addEventListener('pointerdown', onPointerDown);
   boardEl.addEventListener('pointermove', onPointerMove);
   boardEl.addEventListener('pointerup', onPointerUp);
   boardEl.addEventListener('pointercancel', onPointerUp);
+  submitBtn.addEventListener('click', () => {
+    unlockAudio();
+    submitWord();
+  });
   clearBtn.addEventListener('click', () => {
     unlockAudio();
+    clearTimeout(feedbackTimer);
     clearSelection();
   });
   const restart = () => {
     unlockAudio();
     resetGrid();
-    startLoop();
   };
   restartBtn.addEventListener('click', restart);
   againBtn.addEventListener('click', restart);
@@ -330,6 +371,7 @@ export function mountWordTileRush(root: HTMLElement): () => void {
   return () => {
     alive = false;
     clearInterval(dropTimer);
+    clearTimeout(feedbackTimer);
     root.innerHTML = '';
   };
 }

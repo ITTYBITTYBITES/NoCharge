@@ -2,106 +2,439 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import GameCard from '../components/GameCard.astro';
+import GuideCard from '../components/GuideCard.astro';
 
-const games = (await getCollection('games'))
-  .filter((g) => !g.data.draft)
+const allGames = (await getCollection('games'))
+  .filter((game) => !game.data.draft)
   .sort((a, b) => a.data.order - b.data.order);
+const featuredGames = allGames.filter((game) => game.data.featured).slice(0, 3);
+const gameById = new Map(allGames.map((game) => [game.id, game]));
+const featuredGuides = (await getCollection('guides'))
+  .filter((guide) => !guide.data.draft && guide.data.featured)
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3);
 ---
 
 <BaseLayout
   title="NoCharge"
-  description="Simple browser games. Fast load. Real players. No bloat."
+  description="Quick browser games, clear player guides, and a quieter place to play. No account required, with scores saved only on your device."
   path="/"
 >
-  <section class="home-hero">
-    <p class="eyebrow">Quiet arcade</p>
-    <h1 class="page-title">Simple games.<br />Fast load. Real play.</h1>
-    <p class="lede">
-      No login. No tracking maze. Just a small set of browser games that feel good on phone and desktop.
-    </p>
-  </section>
+  <div class="home">
+    <section class="home-hero" aria-labelledby="home-title">
+      <div class="home-hero__copy">
+        <p class="eyebrow">Play, learn, move on</p>
+        <h1 class="page-title" id="home-title">Quick games.<br />Clear guides. No clutter.</h1>
+        <p class="lede">
+          NoCharge is building a useful corner of the web for instant browser games, straightforward rules, and
+          practical strategies. No account required.
+        </p>
+        <div class="home-hero__actions">
+          <a class="btn" href="/arcade/">Enter the arcade</a>
+          <a class="btn btn--ghost" href="/guides/">Browse game guides</a>
+        </div>
+      </div>
 
-  <section class="home-games" id="games" aria-labelledby="games-heading">
-    <div class="home-games__head">
-      <h2 id="games-heading">Games</h2>
-      <p>Pick one and play. Scores stay on your device.</p>
-    </div>
-    <div class="home-games__grid">
-      {
-        games.map((game) => (
-          <GameCard
-            slug={game.id}
-            title={game.data.title}
-            tagline={game.data.tagline}
-            emoji={game.data.emoji}
-            accent={game.data.accent}
-          />
-        ))
-      }
-    </div>
-  </section>
+      <aside class="home-hero__card panel" aria-label="What to expect">
+        <p class="home-hero__card-label">What to expect</p>
+        <ul>
+          <li><span aria-hidden="true">↗</span><strong>Play immediately</strong><small>No login or install</small></li>
+          <li><span aria-hidden="true">◎</span><strong>Learn the details</strong><small>Rules, scoring, and controls</small></li>
+          <li><span aria-hidden="true">◇</span><strong>Keep it local</strong><small>Scores stay on this device</small></li>
+        </ul>
+      </aside>
+    </section>
 
-  <section class="home-note panel">
-    <h2>NoCharge means what it says</h2>
-    <p>
-      Free to play. No accounts. Intended for users 13+. Optional analytics load late and hide IP addresses.
-      Banner ads only — never over gameplay.
-    </p>
-  </section>
+    <section class="home-section" id="games" aria-labelledby="featured-games-heading">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">Featured now</p>
+          <h2 id="featured-games-heading">Start in the arcade</h2>
+          <p>Three small games, each designed for a quick session on phone or desktop.</p>
+        </div>
+        <a class="section-link" href="/arcade/">See the full arcade →</a>
+      </div>
+      <div class="card-grid card-grid--games">
+        {
+          featuredGames.map((game) => (
+            <GameCard
+              slug={game.id}
+              title={game.data.title}
+              tagline={game.data.tagline}
+              emoji={game.data.emoji}
+              accent={game.data.accent}
+              genre={game.data.genre}
+              session={game.data.session}
+            />
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="home-library panel" aria-labelledby="library-heading">
+      <div class="home-library__intro">
+        <p class="section-kicker">More than a game grid</p>
+        <h2 id="library-heading">A growing play library</h2>
+        <p>
+          The arcade is one part of NoCharge. We are also building a reference shelf around every game: how the
+          controls work, how scoring is calculated, which strategies help, and what accessibility options are
+          available.
+        </p>
+      </div>
+      <div class="home-library__points">
+        <article>
+          <span aria-hidden="true">01</span>
+          <h3>Instant play</h3>
+          <p>Open a game and start without an account, download, or onboarding maze.</p>
+        </article>
+        <article>
+          <span aria-hidden="true">02</span>
+          <h3>Useful explanations</h3>
+          <p>Guides document real controls and scoring instead of padding pages with generic advice.</p>
+        </article>
+        <article>
+          <span aria-hidden="true">03</span>
+          <h3>Respectful defaults</h3>
+          <p>Optional analytics and advertising stay off until you make a clear choice.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="home-section" aria-labelledby="featured-guides-heading">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">Player notes</p>
+          <h2 id="featured-guides-heading">Understand the game before the next run</h2>
+          <p>Short, specific guides to rules, controls, scoring, and better decisions.</p>
+        </div>
+        <a class="section-link" href="/guides/">Explore all guides →</a>
+      </div>
+      <div class="card-grid card-grid--guides">
+        {
+          featuredGuides.map((guide) => {
+            const game = gameById.get(guide.data.game);
+            if (!game) return null;
+            return (
+              <GuideCard
+                slug={guide.id}
+                title={guide.data.title}
+                description={guide.data.description}
+                gameTitle={game.data.title}
+                emoji={game.data.emoji}
+                accent={game.data.accent}
+                readTime={guide.data.readTime}
+              />
+            );
+          })
+        }
+      </div>
+    </section>
+
+    <section class="home-faq" aria-labelledby="home-faq-heading">
+      <div class="home-faq__heading">
+        <p class="section-kicker">Good to know</p>
+        <h2 id="home-faq-heading">Before you play</h2>
+      </div>
+      <div class="home-faq__items">
+        <details>
+          <summary>Are the browser games free?</summary>
+          <p>Yes. Every game in the NoCharge arcade is free to open and play without creating an account.</p>
+        </details>
+        <details>
+          <summary>Where are best scores stored?</summary>
+          <p>Scores are stored in local storage on your current browser. They are not uploaded or synced.</p>
+        </details>
+        <details>
+          <summary>Do the games work on mobile and keyboard?</summary>
+          <p>
+            Each game supports phone and desktop input. Memory Match and Word Tile Rush have native keyboard
+            controls, and Color Flip includes both keyboard play and an untimed turn-based mode.
+          </p>
+        </details>
+        <details>
+          <summary>What else will NoCharge publish?</summary>
+          <p>
+            The library will grow with more small games, detailed player guides, accessibility notes, and useful
+            explainers connected to the arcade.
+          </p>
+        </details>
+      </div>
+    </section>
+
+    <section class="home-cta panel" aria-labelledby="home-cta-heading">
+      <div>
+        <p class="section-kicker">Choose your next stop</p>
+        <h2 id="home-cta-heading">Play a round or learn the system.</h2>
+        <p>Both sides of the library are open—no account required.</p>
+      </div>
+      <div class="home-cta__actions">
+        <a class="btn" href="/arcade/">Open the arcade</a>
+        <a class="btn btn--ghost" href="/guides/">Read the guides</a>
+      </div>
+    </section>
+  </div>
 </BaseLayout>
 
 <style>
-  .home-hero {
-    padding: 1.25rem 0 1.75rem;
-  }
-
-  .home-games {
+  .home {
     display: grid;
-    gap: 1rem;
-    margin-bottom: 1.75rem;
+    gap: clamp(3.25rem, 8vw, 6.5rem);
   }
 
-  .home-games__head {
+  .home-hero {
+    display: grid;
+    gap: 1.5rem;
+    align-items: center;
+    min-height: min(40rem, 72vh);
+    padding: clamp(2rem, 8vw, 6rem) 0;
+  }
+
+  .home-hero__copy {
+    max-width: 47rem;
+  }
+
+  .home-hero .page-title {
+    max-width: 46rem;
+    font-size: clamp(2.75rem, 8vw, 5.8rem);
+  }
+
+  .home-hero .lede {
+    max-width: 43rem;
+    font-size: clamp(1.05rem, 2vw, 1.2rem);
+  }
+
+  .home-hero__actions,
+  .home-cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin-top: 1.4rem;
+  }
+
+  .home-hero__card {
+    padding: 1.2rem;
+    background:
+      linear-gradient(145deg, rgba(15, 157, 88, 0.12), transparent 55%),
+      var(--panel);
+  }
+
+  .home-hero__card-label {
+    margin-bottom: 0.8rem;
+    color: var(--muted);
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .home-hero__card ul {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .home-hero__card li {
+    display: grid;
+    grid-template-columns: 2rem 1fr;
+    gap: 0.05rem 0.7rem;
+    padding: 0.9rem 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .home-hero__card li > span {
+    grid-row: 1 / 3;
+    color: var(--accent-strong);
+    font-size: 1.25rem;
+  }
+
+  .home-hero__card strong {
+    font-size: 0.94rem;
+  }
+
+  .home-hero__card small {
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+
+  .home-section {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .section-heading {
     display: flex;
     flex-wrap: wrap;
     align-items: end;
     justify-content: space-between;
-    gap: 0.5rem 1rem;
+    gap: 1rem 2rem;
   }
 
-  .home-games__head h2 {
-    font-size: 1.25rem;
-    letter-spacing: -0.02em;
+  .section-heading > div {
+    display: grid;
+    gap: 0.35rem;
+    max-width: 45rem;
   }
 
-  .home-games__head p {
+  .section-heading h2,
+  .home-library h2,
+  .home-faq h2,
+  .home-cta h2 {
+    font-size: clamp(1.65rem, 4vw, 2.45rem);
+    letter-spacing: -0.035em;
+    line-height: 1.1;
+  }
+
+  .section-heading p:not(.section-kicker),
+  .home-library__intro > p:last-child,
+  .home-cta p:not(.section-kicker) {
     color: var(--muted);
-    font-size: 0.92rem;
   }
 
-  .home-games__grid {
+  .section-kicker {
+    color: var(--accent-strong);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .section-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--accent-strong);
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  .card-grid {
     display: grid;
     gap: 0.85rem;
   }
 
-  .home-note {
-    padding: 1.25rem 1.3rem;
+  .home-library {
+    display: grid;
+    gap: 2rem;
+    padding: clamp(1.25rem, 4vw, 2.25rem);
   }
 
-  .home-note h2 {
-    font-size: 1.05rem;
-    letter-spacing: -0.015em;
-    margin-bottom: 0.45rem;
+  .home-library__intro {
+    display: grid;
+    align-content: start;
+    gap: 0.6rem;
+    max-width: 42rem;
   }
 
-  .home-note p {
+  .home-library__points {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .home-library__points article {
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .home-library__points span {
+    color: var(--accent-strong);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .home-library__points h3 {
+    margin-top: 0.25rem;
+    font-size: 1rem;
+  }
+
+  .home-library__points p {
+    margin-top: 0.35rem;
     color: var(--muted);
-    max-width: 44rem;
+    font-size: 0.88rem;
   }
 
-  @media (min-width: 52rem) {
-    .home-games__grid {
+  .home-faq {
+    display: grid;
+    gap: 1.25rem 3rem;
+  }
+
+  .home-faq__heading {
+    display: grid;
+    align-content: start;
+    gap: 0.35rem;
+  }
+
+  .home-faq__items {
+    border-top: 1px solid var(--line);
+  }
+
+  .home-faq details {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .home-faq summary {
+    padding: 1rem 0;
+    cursor: pointer;
+    font-weight: 700;
+  }
+
+  .home-faq details p {
+    max-width: 46rem;
+    padding: 0 0 1.1rem;
+    color: var(--muted);
+  }
+
+  .home-cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem 2rem;
+    padding: clamp(1.25rem, 4vw, 2rem);
+    margin-bottom: 1rem;
+  }
+
+  .home-cta > div:first-child {
+    display: grid;
+    gap: 0.45rem;
+    max-width: 42rem;
+  }
+
+  .home-cta__actions {
+    margin: 0;
+  }
+
+  @media (min-width: 48rem) {
+    .home-hero {
+      grid-template-columns: minmax(0, 1.65fr) minmax(17rem, 0.75fr);
+    }
+
+    .home-library {
+      grid-template-columns: minmax(0, 1.1fr) minmax(20rem, 1fr);
+    }
+
+    .home-faq {
+      grid-template-columns: minmax(14rem, 0.55fr) minmax(0, 1.45fr);
+    }
+  }
+
+  @media (min-width: 60rem) {
+    .card-grid--games,
+    .card-grid--guides,
+    .home-library__points {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .home-library {
       grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 32rem) {
+    .home-hero__actions .btn,
+    .home-cta__actions .btn {
+      flex: 1 1 100%;
     }
   }
 </style>

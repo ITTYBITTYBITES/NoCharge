@@ -19,7 +19,7 @@
  * One unit per document also keeps the *global* `atOptions` object from
  * being clobbered when several units are on screen at once.
  */
-import { AD_UNITS, getUnit } from '../../config/ads';
+import { AD_UNITS } from '../../config/ads';
 
 export function getStaticPaths() {
   return AD_UNITS.map((unit) => ({
@@ -37,6 +37,11 @@ const { unit } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex,nofollow" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; base-uri 'none'; object-src 'none'; script-src 'unsafe-inline' https:; style-src 'unsafe-inline'; img-src data: blob: https:; media-src https:; connect-src https:; frame-src https:; form-action https:; upgrade-insecure-requests"
+    />
     <title>Advertisement</title>
     <style is:global>
       html,
@@ -76,7 +81,6 @@ const { unit } = Astro.props;
     `} />
     <script
       is:inline
-      type="text/javascript"
       src={`https://www.highperformanceformat.com/${unit.key}/invoke.js`}
     ></script>
 
@@ -87,7 +91,9 @@ const { unit } = Astro.props;
         const report = () => {
           const filled = !!document.querySelector('iframe, img, ins, a');
           try {
-            parent.postMessage({ type: 'nocharge:ad', filled }, location.origin);
+            // A sandboxed frame has an opaque origin, so the parent validates
+            // this message by its source window rather than a target origin.
+            parent.postMessage({ type: 'nocharge:ad', filled }, '*');
           } catch {
             /* parent gone; nothing to do */
           }
