@@ -1,12 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
-const storedDenial = {
-  version: 1,
-  analytics: false,
-  advertising: false,
-  updatedAt: '2026-08-15T12:00:00.000Z',
-};
+import { denyOptionalServices } from './helpers/consent';
 
 for (const path of [
   '/',
@@ -22,9 +17,7 @@ for (const path of [
   '/404.html',
 ]) {
   test(`has no automatically detectable accessibility violations: ${path}`, async ({ page }) => {
-    await page.addInitScript((choice) => {
-      localStorage.setItem('nocharge:consent', JSON.stringify(choice));
-    }, storedDenial);
+    await denyOptionalServices(page);
     await page.goto(path);
 
     const results = await new AxeBuilder({ page }).analyze();
@@ -33,9 +26,7 @@ for (const path of [
 }
 
 test('ships a restrictive document policy and sandboxed ad frames', async ({ page }) => {
-  await page.addInitScript((choice) => {
-    localStorage.setItem('nocharge:consent', JSON.stringify(choice));
-  }, storedDenial);
+  await denyOptionalServices(page);
   await page.goto('/games/memory-match/');
 
   const policy = await page.locator('meta[http-equiv="Content-Security-Policy"]').getAttribute('content');
