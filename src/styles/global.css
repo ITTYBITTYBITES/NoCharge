@@ -266,13 +266,56 @@ p {
   min-height: 250px;
   margin: 0.25rem 0 0.5rem;
   border-radius: var(--radius);
-  overflow: hidden;
 }
 
-.ad-banner iframe {
+/* Shared ad slot ---------------------------------------------------------- */
+
+.ad-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: var(--ad-w);
+  /* Reserve the slot height so a late creative doesn't shift layout. */
+  min-height: var(--ad-h);
+}
+
+.ad-slot__frame {
   display: block;
+  width: var(--ad-w);
+  height: var(--ad-h);
+  /* A 300px creative must never overflow a 320px phone. */
   max-width: 100%;
-  margin-inline: auto;
+  border: 0;
+  background: transparent;
+  color-scheme: light;
+}
+
+/* Smartlink backfill CTA, revealed only when a slot fails to fill. */
+.ad-slot__fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: var(--ad-h);
+  padding: 0.75rem 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: linear-gradient(145deg, var(--panel-2), var(--panel));
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+  transition: border-color 160ms ease, color 160ms ease;
+}
+
+.ad-slot__fallback[hidden] {
+  display: none;
+}
+
+.ad-slot__fallback:hover {
+  border-color: var(--accent);
+  color: var(--accent-strong);
 }
 
 /* Site-wide bottom banner ------------------------------------------------- */
@@ -289,22 +332,13 @@ p {
   justify-content: center;
   width: min(100% - 2rem, var(--max));
   margin-inline: auto;
-  /* Reserve the desktop slot height so late-loading ads don't shift layout. */
   min-height: 90px;
 }
 
-.site-banner__frame {
-  display: block;
-  border: 0;
-  max-width: 100%;
-  background: transparent;
-  color-scheme: light;
-}
-
 /* Show exactly one unit per breakpoint. `display: none` keeps the hidden
-   iframe from loading a creative that can never be viewed (which would
+   slot from loading a creative that can never be viewed (which would
    otherwise burn an impression and hurt CTR). */
-.site-banner__frame--mobile {
+.site-banner__slot--mobile {
   display: none;
 }
 
@@ -331,12 +365,12 @@ body:has(.site-banner--sticky) .site-shell {
     min-height: 50px;
   }
 
-  .site-banner__frame--desktop {
+  .site-banner__slot--desktop {
     display: none;
   }
 
-  .site-banner__frame--mobile {
-    display: block;
+  .site-banner__slot--mobile {
+    display: flex;
   }
 
   body:has(.site-banner--sticky) .site-shell {
@@ -344,38 +378,10 @@ body:has(.site-banner--sticky) .site-shell {
   }
 }
 
-/* Smartlink backfill CTA, revealed only when a banner slot fails to fill. */
-.site-banner__fallback {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 728px;
-  min-height: 50px;
-  padding: 0.75rem 1.25rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: linear-gradient(145deg, var(--panel-2), var(--panel));
-  color: var(--text);
-  font-size: 0.95rem;
-  font-weight: 600;
-  text-align: center;
-  transition: border-color 160ms ease, color 160ms ease;
-}
-
-.site-banner__fallback[hidden] {
-  display: none;
-}
-
-.site-banner__fallback:hover {
-  border-color: var(--accent);
-  color: var(--accent-strong);
-}
-
-/* Ads are visual-only; hide them from print and from users who asked for
-   reduced data (some browsers map this to Save-Data). */
+/* Ads are visual-only; hide them from print. */
 @media print {
-  .site-banner {
+  .site-banner,
+  .ad-banner {
     display: none;
   }
 }

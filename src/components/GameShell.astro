@@ -1,4 +1,6 @@
 ---
+import AdSlot from './AdSlot.astro';
+
 interface Props {
   title: string;
   tagline: string;
@@ -18,19 +20,7 @@ const { title, tagline, slug } = Astro.props;
   </div>
 
   <div class="ad-banner" aria-label="Advertisement">
-    <script is:inline>
-      atOptions = {
-        key: 'bbf27229842bc99d26b859e45478df34',
-        format: 'iframe',
-        height: 250,
-        width: 300,
-        params: {},
-      };
-    </script>
-    <script
-      is:inline
-      src="https://www.highperformanceformat.com/bbf27229842bc99d26b859e45478df34/invoke.js"
-    ></script>
+    <AdSlot unit="rect-300x250" />
   </div>
 
   <div class="game-shell__stage panel">
