@@ -22,7 +22,7 @@ test('guide library connects guide articles, games, and sitemap URLs', async ({ 
   await denyOptionalServices(page);
   await page.goto('/guides/');
 
-  await expect(page.locator('.guides-grid .guide-card')).toHaveCount(4);
+  await expect(page.locator('.guides-grid .guide-card')).toHaveCount(3);
   await page.locator('.guides-grid .guide-card a').first().click();
   await expect(page).toHaveURL(/\/guides\/memory-match\/$/);
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Memory Match Guide');
@@ -35,7 +35,5 @@ test('guide library connects guide articles, games, and sitemap URLs', async ({ 
   expect(xml).toContain('<loc>https://nocharge.net/arcade/</loc>');
   expect(xml).toContain('<loc>https://nocharge.net/guides/</loc>');
   expect(xml).toContain('<loc>https://nocharge.net/guides/memory-match/</loc>');
-  expect(xml).toContain('<loc>https://nocharge.net/games/shattered-foil/</loc>');
-  expect(xml).toContain('<loc>https://nocharge.net/guides/shattered-foil/</loc>');
-  expect((xml.match(/<url>/g) ?? []).length).toBe(12);
+  expect((xml.match(/<url>/g) ?? []).length).toBe(10);
 });

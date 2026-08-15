@@ -103,3 +103,21 @@ test('presentation metadata renders shared game and guide sections', async ({ pa
   await expect(page.locator('.guide-diagram')).toHaveCount(2);
   await expect(page.locator('.gameplay-preview')).toHaveCount(1);
 });
+
+for (const slug of ['word-tile-rush', 'color-flip']) {
+  test(`${slug} uses complete responsive artwork`, async ({ page }) => {
+    await denyOptionalServices(page);
+    await page.goto(`/games/${slug}/`);
+    await expect(page.locator('.game-shell__artwork img')).toHaveAttribute(
+      'src',
+      new RegExp(`/game-art/${slug}/cover-landscape.jpg`),
+    );
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
+      'content',
+      new RegExp(`/game-art/${slug}/social-card.jpg$`),
+    );
+    await page.goto(`/guides/${slug}/`);
+    await expect(page.locator('.gameplay-preview img')).toHaveAttribute('loading', 'lazy');
+    await expect(page.locator('.guide-diagram')).toHaveCount(2);
+  });
+}

@@ -11,7 +11,7 @@ const games = defineCollection({
     emoji: z.string(),
     accent: z.string().default('#0f9d58'),
     tier: z.enum(['quick', 'signature']).default('quick'),
-    runtime: z.enum(['memory-match', 'word-tile-rush', 'color-flip', 'shattered-foil']),
+    runtime: z.enum(['memory-match', 'word-tile-rush', 'color-flip']),
     artwork: z
       .object({
         icon: z.string(),
