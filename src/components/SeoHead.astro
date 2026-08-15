@@ -1,0 +1,26 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  path?: string;
+  noIndex?: boolean;
+}
+
+const { title, description, path = '/', noIndex = false } = Astro.props;
+const site = Astro.site ?? new URL('https://nocharge.net');
+const canonical = new URL(path, site).toString();
+const fullTitle = title === 'NoCharge' ? 'NoCharge — Simple browser games' : `${title} · NoCharge`;
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{noIndex && <meta name="robots" content="noindex,nofollow" />}
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="NoCharge" />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />

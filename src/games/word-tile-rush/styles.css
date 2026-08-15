@@ -1,0 +1,121 @@
+.wtr {
+  display: grid;
+  gap: 1rem;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.wtr__hud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.wtr__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.15rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.wtr__stats strong {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.wtr__word {
+  min-height: 1.4rem;
+  color: var(--accent-strong);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.wtr__board-wrap {
+  position: relative;
+  width: min(100%, 22rem);
+  margin-inline: auto;
+}
+
+.wtr__board {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.4rem;
+  width: 100%;
+}
+
+.wtr__cell {
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 0.55rem;
+  background: var(--panel-2);
+  color: var(--text);
+  font-size: clamp(0.95rem, 3.8vw, 1.2rem);
+  font-weight: 700;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease,
+    transform 120ms ease,
+    opacity 160ms ease;
+}
+
+.wtr__cell.is-empty {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.04);
+  color: transparent;
+  pointer-events: none;
+}
+
+.wtr__cell.is-selected {
+  border-color: var(--accent);
+  background: rgba(15, 157, 88, 0.22);
+  transform: scale(1.04);
+  color: #d8ffe9;
+}
+
+.wtr__cell.is-invalid {
+  border-color: var(--danger);
+  background: rgba(224, 90, 90, 0.18);
+}
+
+.wtr__hint {
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.wtr__overlay {
+  display: none;
+  place-items: center;
+  gap: 0.65rem;
+  padding: 1.5rem 1rem;
+  text-align: center;
+}
+
+.wtr__overlay.is-open {
+  display: grid;
+}
+
+.wtr__overlay h2 {
+  font-size: 1.45rem;
+  letter-spacing: -0.02em;
+}
+
+.wtr__overlay p {
+  color: var(--muted);
+}
+
+.wtr__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.55rem;
+}

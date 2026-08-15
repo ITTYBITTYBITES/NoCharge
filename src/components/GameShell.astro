@@ -1,0 +1,66 @@
+---
+interface Props {
+  title: string;
+  tagline: string;
+  slug: string;
+}
+
+const { title, tagline, slug } = Astro.props;
+---
+
+<section class="game-shell" data-game={slug}>
+  <div class="game-shell__top">
+    <a class="back-link" href="/">← Games</a>
+    <div class="game-shell__heading">
+      <h1 class="page-title">{title}</h1>
+      <p class="lede">{tagline}</p>
+    </div>
+  </div>
+
+  <div class="ad-banner" aria-label="Advertisement">
+    <script is:inline>
+      atOptions = {
+        key: 'bbf27229842bc99d26b859e45478df34',
+        format: 'iframe',
+        height: 250,
+        width: 300,
+        params: {},
+      };
+    </script>
+    <script
+      is:inline
+      src="https://www.highperformanceformat.com/bbf27229842bc99d26b859e45478df34/invoke.js"
+    ></script>
+  </div>
+
+  <div class="game-shell__stage panel">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .game-shell {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .game-shell__top {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .game-shell__heading .lede {
+    margin-top: 0.45rem;
+  }
+
+  .game-shell__stage {
+    padding: 1rem;
+    overflow: hidden;
+  }
+
+  @media (min-width: 48rem) {
+    .game-shell__stage {
+      padding: 1.25rem;
+    }
+  }
+</style>

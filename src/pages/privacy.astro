@@ -1,0 +1,74 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Privacy"
+  description="How NoCharge handles analytics and local data."
+  path="/privacy/"
+>
+  <article class="privacy">
+    <a class="back-link" href="/">← Home</a>
+    <h1 class="page-title">Privacy</h1>
+    <p class="lede">Short version: we keep it light.</p>
+
+    <div class="privacy__body panel">
+      <p>NoCharge uses:</p>
+      <ul>
+        <li>
+          <strong>Anonymous Google Analytics</strong> — to understand traffic. The script loads after a short delay
+          in production only. IP addresses are anonymized.
+        </li>
+        <li>
+          <strong>localStorage</strong> — to save high scores and preferences on your device. Nothing is uploaded.
+        </li>
+        <li>
+          <strong>Banner ads</strong> (when enabled) — non-intrusive placements only. No popups, redirects, or
+          full-screen interstitials from us.
+        </li>
+      </ul>
+      <p>There are no accounts and no passwords. This site is intended for users 13+.</p>
+      <p>
+        Questions? <a href="mailto:hello@nocharge.net">hello@nocharge.net</a>
+      </p>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .privacy {
+    display: grid;
+    gap: 0.85rem;
+    max-width: 40rem;
+  }
+
+  .privacy__body {
+    padding: 1.25rem 1.3rem;
+    margin-top: 0.5rem;
+  }
+
+  .privacy__body p + p,
+  .privacy__body p + ul {
+    margin-top: 0.85rem;
+  }
+
+  .privacy__body ul {
+    margin: 0.5rem 0 0;
+    padding-left: 1.2rem;
+    color: var(--muted);
+  }
+
+  .privacy__body li + li {
+    margin-top: 0.55rem;
+  }
+
+  .privacy__body strong {
+    color: var(--text);
+  }
+
+  .privacy__body a {
+    color: var(--accent-strong);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+</style>
