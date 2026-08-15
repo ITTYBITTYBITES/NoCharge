@@ -93,13 +93,13 @@ test('Memory Match guide provides header art, a decorative icon, and an accessib
   await expect(previewImage).toHaveAttribute('alt', /four-by-four card grid/i);
 });
 
-test('optional presentation metadata leaves other game templates unchanged', async ({ page }) => {
+test('presentation metadata renders shared game and guide sections', async ({ page }) => {
   await denyOptionalServices(page);
   await page.goto('/games/word-tile-rush/');
-  await expect(page.locator('.game-controls')).toHaveCount(0);
-  await expect(page.locator('.game-related')).toHaveCount(0);
+  await expect(page.locator('.game-controls')).toHaveCount(1);
+  await expect(page.locator('.game-related')).toHaveCount(1);
 
   await page.goto('/guides/word-tile-rush/');
-  await expect(page.locator('.guide-diagram')).toHaveCount(0);
-  await expect(page.locator('.gameplay-preview')).toHaveCount(0);
+  await expect(page.locator('.guide-diagram')).toHaveCount(2);
+  await expect(page.locator('.gameplay-preview')).toHaveCount(1);
 });
