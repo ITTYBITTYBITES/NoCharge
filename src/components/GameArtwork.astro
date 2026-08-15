@@ -1,0 +1,101 @@
+---
+interface Props {
+  src: string;
+  webpSrc?: string;
+  alt?: string;
+  width: number;
+  height: number;
+  mobileSrc?: string;
+  mobileWebpSrc?: string;
+  mobileAvifSrc?: string;
+  avifSrc?: string;
+  variant?: 'square' | 'landscape' | 'guide';
+  accent?: string;
+  decorative?: boolean;
+  priority?: boolean;
+  class?: string;
+}
+
+const {
+  src,
+  webpSrc,
+  alt = '',
+  width,
+  height,
+  mobileSrc,
+  mobileWebpSrc,
+  mobileAvifSrc,
+  avifSrc,
+  variant = 'landscape',
+  accent = '#12b66a',
+  decorative = false,
+  priority = false,
+  class: className,
+} = Astro.props;
+
+if (!decorative && !alt.trim()) {
+  throw new Error('GameArtwork requires alt text unless decorative is true.');
+}
+---
+
+<figure
+  class:list={['game-artwork', `game-artwork--${variant}`, className]}
+  style={`--art-accent:${accent}`}
+  aria-hidden={decorative ? 'true' : undefined}
+  data-game-artwork={variant}
+>
+  <picture>
+    {mobileAvifSrc && <source media="(max-width: 36rem)" srcset={mobileAvifSrc} type="image/avif" />}
+    {mobileWebpSrc && <source media="(max-width: 36rem)" srcset={mobileWebpSrc} type="image/webp" />}
+    {mobileSrc && <source media="(max-width: 36rem)" srcset={mobileSrc} type="image/jpeg" />}
+    {avifSrc && <source srcset={avifSrc} type="image/avif" />}
+    {webpSrc && <source srcset={webpSrc} type="image/webp" />}
+    <img
+      src={src}
+      width={width}
+      height={height}
+      alt={decorative ? '' : alt}
+      loading={priority ? 'eager' : 'lazy'}
+      decoding="async"
+      fetchpriority={priority ? 'high' : 'auto'}
+    />
+  </picture>
+</figure>
+
+<style>
+  .game-artwork {
+    position: relative;
+    width: 100%;
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--art-accent) 28%, var(--line));
+    border-radius: 1.1rem;
+    background: #111513;
+    box-shadow:
+      0 1.5rem 4rem rgba(0, 0, 0, 0.28),
+      0 0 2.5rem color-mix(in srgb, var(--art-accent) 8%, transparent);
+    isolation: isolate;
+  }
+
+  .game-artwork--square {
+    aspect-ratio: 1;
+  }
+
+  .game-artwork--landscape {
+    aspect-ratio: 16 / 9;
+  }
+
+  .game-artwork--guide {
+    aspect-ratio: 2 / 1;
+  }
+
+  .game-artwork picture,
+  .game-artwork img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .game-artwork img {
+    object-fit: cover;
+  }
+</style>

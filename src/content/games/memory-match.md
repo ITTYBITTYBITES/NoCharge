@@ -4,6 +4,16 @@ tagline: Flip cards. Find pairs.
 description: Play a fast 4×4 memory matching game in your browser. Match eight symbol pairs, count every move, and keep your best result on your device.
 emoji: 🃏
 accent: "#12b66a"
+artwork:
+  icon: /game-art/memory-match/icon.svg
+  coverSquare: /game-art/memory-match/cover-square.webp
+  coverSquareFallback: /game-art/memory-match/cover-square.jpg
+  coverLandscape: /game-art/memory-match/cover-landscape.webp
+  coverLandscapeFallback: /game-art/memory-match/cover-landscape.jpg
+  guideHeader: /game-art/memory-match/guide-header.webp
+  guideHeaderFallback: /game-art/memory-match/guide-header.jpg
+  socialCard: /game-art/memory-match/social-card.webp
+  alt: Two overlapping dark cards marked with matching emerald diamonds
 genre: Memory
 difficulty: Easy to learn
 session: 2–5 min

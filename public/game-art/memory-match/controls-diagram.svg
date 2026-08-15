@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" role="img" aria-labelledby="title desc">
+  <title id="title">Memory Match controls</title>
+  <desc id="desc">A three-step diagram: choose a hidden card, choose a second card, then keep a matching pair or remember where a mismatch was.</desc>
+  <defs>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#202522"/><stop offset="1" stop-color="#151816"/>
+    </linearGradient>
+    <filter id="glow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="960" height="520" rx="28" fill="#121412"/>
+  <g fill="none" stroke="#29332d"><path d="M319 84v352"/><path d="M640 84v352"/></g>
+  <g font-family="ui-sans-serif,system-ui,sans-serif">
+    <g transform="translate(48 55)">
+      <text x="0" y="0" fill="#91e8ba" font-size="18" font-weight="700" letter-spacing="2">01 · CHOOSE</text>
+      <rect x="74" y="72" width="132" height="168" rx="18" fill="url(#panel)" stroke="#3b4c42" stroke-width="2"/>
+      <path d="m140 124 25 25-25 25-25-25 25-25Z" fill="none" stroke="#12b66a" stroke-width="4"/>
+      <circle cx="210" cy="248" r="12" fill="#12b66a" opacity=".22"/><circle cx="210" cy="248" r="5" fill="#91e8ba"/>
+      <text x="140" y="292" fill="#e0e0e0" font-size="22" text-anchor="middle" font-weight="650">Reveal one card</text>
+      <text x="140" y="324" fill="#9a9a9a" font-size="16" text-anchor="middle">Tap, click, or use Tab</text>
+      <text x="140" y="348" fill="#9a9a9a" font-size="16" text-anchor="middle">then Enter or Space</text>
+    </g>
+    <g transform="translate(367 55)">
+      <text x="0" y="0" fill="#91e8ba" font-size="18" font-weight="700" letter-spacing="2">02 · COMPARE</text>
+      <g transform="translate(23 72)">
+        <rect width="108" height="148" rx="16" fill="url(#panel)" stroke="#12b66a" stroke-opacity=".65" stroke-width="2"/>
+        <rect x="126" width="108" height="148" rx="16" fill="url(#panel)" stroke="#12b66a" stroke-opacity=".65" stroke-width="2"/>
+        <path d="m54 47 22 27-22 27-22-27 22-27Zm126 0 22 27-22 27-22-27 22-27Z" fill="none" stroke="#91e8ba" stroke-width="4" filter="url(#glow)"/>
+      </g>
+      <text x="140" y="292" fill="#e0e0e0" font-size="22" text-anchor="middle" font-weight="650">Reveal a second</text>
+      <text x="140" y="324" fill="#9a9a9a" font-size="16" text-anchor="middle">Each two-card attempt</text>
+      <text x="140" y="348" fill="#9a9a9a" font-size="16" text-anchor="middle">counts as one move</text>
+    </g>
+    <g transform="translate(688 55)">
+      <text x="0" y="0" fill="#91e8ba" font-size="18" font-weight="700" letter-spacing="2">03 · REMEMBER</text>
+      <g transform="translate(52 76)">
+        <rect width="72" height="94" rx="12" fill="#202522" stroke="#12b66a" stroke-width="2"/>
+        <rect x="84" width="72" height="94" rx="12" fill="#202522" stroke="#12b66a" stroke-width="2"/>
+        <circle cx="36" cy="47" r="15" fill="none" stroke="#91e8ba" stroke-width="4"/>
+        <circle cx="120" cy="47" r="15" fill="none" stroke="#91e8ba" stroke-width="4"/>
+        <path d="M23 119h146" stroke="#12b66a" stroke-width="3" stroke-linecap="round"/>
+        <path d="m158 111 12 8-12 8" fill="none" stroke="#12b66a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <text x="140" y="292" fill="#e0e0e0" font-size="22" text-anchor="middle" font-weight="650">Keep or recall</text>
+      <text x="140" y="324" fill="#9a9a9a" font-size="16" text-anchor="middle">Matches stay visible;</text>
+      <text x="140" y="348" fill="#9a9a9a" font-size="16" text-anchor="middle">mismatches turn back</text>
+    </g>
+  </g>
+</svg>

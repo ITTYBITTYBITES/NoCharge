@@ -1,22 +1,49 @@
 ---
 import AdSlot from './AdSlot.astro';
+import GameArtwork from './GameArtwork.astro';
 
 interface Props {
   title: string;
   tagline: string;
   slug: string;
+  accent?: string;
+  artwork?: {
+    coverSquare: string;
+    coverSquareFallback: string;
+    coverLandscape: string;
+    coverLandscapeFallback: string;
+    alt: string;
+  };
 }
 
-const { title, tagline, slug } = Astro.props;
+const { title, tagline, slug, accent = '#12b66a', artwork } = Astro.props;
 ---
 
 <section class="game-shell" data-game={slug}>
-  <div class="game-shell__top">
+  <div class:list={['game-shell__top', { 'game-shell__top--artwork': artwork }]}>
     <a class="back-link" href="/arcade/">← Arcade</a>
     <div class="game-shell__heading">
+      {artwork && <p class="eyebrow">Quiet Arcade · {title}</p>}
       <h1 class="page-title">{title}</h1>
       <p class="lede">{tagline}</p>
     </div>
+    {
+      artwork && (
+        <GameArtwork
+          class="game-shell__artwork"
+          src={artwork.coverLandscapeFallback}
+          webpSrc={artwork.coverLandscape}
+          mobileSrc={artwork.coverSquareFallback}
+          mobileWebpSrc={artwork.coverSquare}
+          alt={artwork.alt}
+          width={1280}
+          height={720}
+          variant="landscape"
+          accent={accent}
+          priority
+        />
+      )
+    }
   </div>
 
   <aside class="ad-banner" aria-label="Advertisement" data-consent-ad hidden>
@@ -39,8 +66,25 @@ const { title, tagline, slug } = Astro.props;
     gap: 0.85rem;
   }
 
+  .game-shell__top--artwork {
+    align-items: center;
+    gap: 1rem 2rem;
+  }
+
+  .game-shell__top--artwork .back-link {
+    grid-column: 1 / -1;
+  }
+
   .game-shell__heading .lede {
     margin-top: 0.45rem;
+  }
+
+  .game-shell__heading .eyebrow {
+    margin-bottom: 0.7rem;
+  }
+
+  .game-shell__top :global(.game-shell__artwork) {
+    min-width: 0;
   }
 
   .game-shell__stage {
@@ -49,6 +93,10 @@ const { title, tagline, slug } = Astro.props;
   }
 
   @media (min-width: 48rem) {
+    .game-shell__top--artwork {
+      grid-template-columns: minmax(16rem, 0.78fr) minmax(24rem, 1.22fr);
+    }
+
     .game-shell__stage {
       padding: 1.25rem;
     }

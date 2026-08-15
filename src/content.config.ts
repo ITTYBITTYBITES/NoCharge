@@ -10,6 +10,19 @@ const games = defineCollection({
     description: z.string(),
     emoji: z.string(),
     accent: z.string().default('#0f9d58'),
+    artwork: z
+      .object({
+        icon: z.string(),
+        coverSquare: z.string(),
+        coverSquareFallback: z.string(),
+        coverLandscape: z.string(),
+        coverLandscapeFallback: z.string(),
+        guideHeader: z.string(),
+        guideHeaderFallback: z.string(),
+        socialCard: z.string(),
+        alt: z.string(),
+      })
+      .optional(),
     genre: z.string(),
     difficulty: z.string(),
     session: z.string(),
