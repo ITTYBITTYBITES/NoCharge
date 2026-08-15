@@ -1,0 +1,107 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import GameCard from '../components/GameCard.astro';
+
+const games = (await getCollection('games'))
+  .filter((g) => !g.data.draft)
+  .sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout
+  title="NoCharge"
+  description="Simple browser games. Fast load. Real players. No bloat."
+  path="/"
+>
+  <section class="home-hero">
+    <p class="eyebrow">Quiet arcade</p>
+    <h1 class="page-title">Simple games.<br />Fast load. Real play.</h1>
+    <p class="lede">
+      No login. No tracking maze. Just a small set of browser games that feel good on phone and desktop.
+    </p>
+  </section>
+
+  <section class="home-games" id="games" aria-labelledby="games-heading">
+    <div class="home-games__head">
+      <h2 id="games-heading">Games</h2>
+      <p>Pick one and play. Scores stay on your device.</p>
+    </div>
+    <div class="home-games__grid">
+      {
+        games.map((game) => (
+          <GameCard
+            slug={game.id}
+            title={game.data.title}
+            tagline={game.data.tagline}
+            emoji={game.data.emoji}
+            accent={game.data.accent}
+          />
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="home-note panel">
+    <h2>NoCharge means what it says</h2>
+    <p>
+      Free to play. No accounts. Intended for users 13+. Optional analytics load late and hide IP addresses.
+      Banner ads only — never over gameplay.
+    </p>
+  </section>
+</BaseLayout>
+
+<style>
+  .home-hero {
+    padding: 1.25rem 0 1.75rem;
+  }
+
+  .home-games {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .home-games__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+  }
+
+  .home-games__head h2 {
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+  }
+
+  .home-games__head p {
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+
+  .home-games__grid {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .home-note {
+    padding: 1.25rem 1.3rem;
+  }
+
+  .home-note h2 {
+    font-size: 1.05rem;
+    letter-spacing: -0.015em;
+    margin-bottom: 0.45rem;
+  }
+
+  .home-note p {
+    color: var(--muted);
+    max-width: 44rem;
+  }
+
+  @media (min-width: 52rem) {
+    .home-games__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

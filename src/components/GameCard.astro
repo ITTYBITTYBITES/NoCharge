@@ -1,0 +1,100 @@
+---
+interface Props {
+  slug: string;
+  title: string;
+  tagline: string;
+  emoji: string;
+  accent?: string;
+}
+
+const { slug, title, tagline, emoji, accent = '#0f9d58' } = Astro.props;
+---
+
+<a class="game-card" href={`/games/${slug}/`} style={`--card-accent: ${accent}`}>
+  <div class="game-card__icon" aria-hidden="true">{emoji}</div>
+  <div class="game-card__body">
+    <h2 class="game-card__title">{title}</h2>
+    <p class="game-card__tagline">{tagline}</p>
+  </div>
+  <span class="game-card__cta">Play →</span>
+</a>
+
+<style>
+  .game-card {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.15rem 1.2rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--panel);
+    box-shadow: var(--shadow);
+    transition:
+      border-color 160ms ease,
+      transform 160ms ease,
+      background 160ms ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .game-card:hover {
+    border-color: color-mix(in srgb, var(--card-accent) 55%, transparent);
+    background: var(--panel-2);
+    transform: translateY(-2px);
+  }
+
+  .game-card:active {
+    transform: scale(0.98);
+  }
+
+  .game-card__icon {
+    display: grid;
+    place-items: center;
+    width: 3.25rem;
+    aspect-ratio: 1;
+    border-radius: 0.9rem;
+    background: color-mix(in srgb, var(--card-accent) 18%, transparent);
+    font-size: 1.55rem;
+  }
+
+  .game-card__title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .game-card__tagline {
+    margin-top: 0.2rem;
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+
+  .game-card__cta {
+    color: var(--card-accent);
+    font-size: 0.9rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 28rem) {
+    .game-card {
+      grid-template-columns: auto 1fr;
+      grid-template-areas:
+        'icon body'
+        'cta cta';
+    }
+
+    .game-card__icon {
+      grid-area: icon;
+    }
+
+    .game-card__body {
+      grid-area: body;
+    }
+
+    .game-card__cta {
+      grid-area: cta;
+      justify-self: end;
+    }
+  }
+</style>

@@ -1,0 +1,70 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import GameShell from '../../components/GameShell.astro';
+
+export async function getStaticPaths() {
+  const games = await getCollection('games');
+  return games.map((game) => ({
+    params: { slug: game.id },
+    props: { game },
+  }));
+}
+
+const { game } = Astro.props;
+const { Content } = await render(game);
+const slug = game.id;
+---
+
+<BaseLayout
+  title={game.data.title}
+  description={game.data.description}
+  path={`/games/${game.id}/`}
+>
+  <GameShell title={game.data.title} tagline={game.data.tagline} slug={game.id}>
+    <div data-game-root={slug} class="game-root"></div>
+    <div class="game-about">
+      <Content />
+    </div>
+  </GameShell>
+</BaseLayout>
+
+{
+  slug === 'memory-match' && (
+    <script>
+      import '../../games/memory-match/main.ts';
+    </script>
+  )
+}
+{
+  slug === 'word-tile-rush' && (
+    <script>
+      import '../../games/word-tile-rush/main.ts';
+    </script>
+  )
+}
+{
+  slug === 'color-flip' && (
+    <script>
+      import '../../games/color-flip/main.ts';
+    </script>
+  )
+}
+
+<style>
+  .game-root {
+    min-height: 12rem;
+  }
+
+  .game-about {
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+
+  .game-about :global(p) {
+    max-width: 40rem;
+  }
+</style>
