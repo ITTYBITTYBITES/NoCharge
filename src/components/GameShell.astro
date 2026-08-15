@@ -17,9 +17,20 @@ const { title, tagline, slug } = Astro.props;
     </div>
   </div>
 
-  <div class="ad-banner" aria-hidden="true">
-    <!-- Adsterra banner slot (non-intrusive) -->
-    <span>Ad space</span>
+  <div class="ad-banner" aria-label="Advertisement">
+    <script is:inline>
+      atOptions = {
+        key: 'bbf27229842bc99d26b859e45478df34',
+        format: 'iframe',
+        height: 250,
+        width: 300,
+        params: {},
+      };
+    </script>
+    <script
+      is:inline
+      src="https://www.highperformanceformat.com/bbf27229842bc99d26b859e45478df34/invoke.js"
+    ></script>
   </div>
 
   <div class="game-shell__stage panel">

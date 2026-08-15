@@ -263,14 +263,16 @@ p {
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 90px;
-  margin: 1rem 0;
-  border: 1px dashed rgba(255, 255, 255, 0.08);
+  min-height: 250px;
+  margin: 0.25rem 0 0.5rem;
   border-radius: var(--radius);
-  color: #666;
-  background: rgba(255, 255, 255, 0.02);
-  font-size: 0.78rem;
   overflow: hidden;
+}
+
+.ad-banner iframe {
+  display: block;
+  max-width: 100%;
+  margin-inline: auto;
 }
 
 .back-link {
