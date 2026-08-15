@@ -45,7 +45,14 @@ test('Memory Match game header uses responsive, intrinsic LCP artwork and social
   await expect(image).toHaveAttribute('fetchpriority', 'high');
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
     'content',
-    'https://nocharge.net/game-art/memory-match/social-card.webp',
+    'https://nocharge.net/game-art/memory-match/social-card.jpg',
+  );
+  await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute(
+    'content',
+    'https://nocharge.net/game-art/memory-match/social-card.jpg',
+  );
+  await expect(page.locator('script[type="application/ld+json"]')).toContainText(
+    'https://nocharge.net/game-art/memory-match/social-card.jpg',
   );
 });
 
@@ -72,4 +79,27 @@ test('Memory Match guide provides header art, a decorative icon, and an accessib
   await expect(diagram).toHaveAttribute('loading', 'lazy');
   await expect(diagram).toHaveAttribute('alt', /Each two-card attempt|Choose one hidden card/i);
   await expect(page.locator('.guide-diagram figcaption')).toContainText('Each two-card attempt is one move');
+
+  const preview = page.locator('.gameplay-preview');
+  await expect(preview.locator('source[media="(max-width: 36rem)"]')).toHaveAttribute(
+    'srcset',
+    '/game-art/memory-match/screenshot-mobile.webp',
+  );
+  const previewImage = preview.locator('img');
+  await expect(previewImage).toHaveAttribute('src', '/game-art/memory-match/screenshot-desktop.webp');
+  await expect(previewImage).toHaveAttribute('width', '1440');
+  await expect(previewImage).toHaveAttribute('height', '900');
+  await expect(previewImage).toHaveAttribute('loading', 'lazy');
+  await expect(previewImage).toHaveAttribute('alt', /four-by-four card grid/i);
+});
+
+test('optional presentation metadata leaves other game templates unchanged', async ({ page }) => {
+  await denyOptionalServices(page);
+  await page.goto('/games/word-tile-rush/');
+  await expect(page.locator('.game-controls')).toHaveCount(0);
+  await expect(page.locator('.game-related')).toHaveCount(0);
+
+  await page.goto('/guides/word-tile-rush/');
+  await expect(page.locator('.guide-diagram')).toHaveCount(0);
+  await expect(page.locator('.gameplay-preview')).toHaveCount(0);
 });

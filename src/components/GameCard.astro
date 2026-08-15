@@ -1,4 +1,5 @@
 ---
+import type { GameArtworkData } from '../types/content';
 import GameArtwork from './GameArtwork.astro';
 
 interface Props {
@@ -7,11 +8,7 @@ interface Props {
   tagline: string;
   emoji: string;
   accent?: string;
-  artwork?: {
-    coverSquare: string;
-    coverSquareFallback: string;
-    alt: string;
-  };
+  artwork?: GameArtworkData;
   genre?: string;
   session?: string;
 }

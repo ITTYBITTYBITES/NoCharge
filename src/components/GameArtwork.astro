@@ -10,6 +10,7 @@ interface Props {
   mobileAvifSrc?: string;
   avifSrc?: string;
   variant?: 'square' | 'landscape' | 'guide';
+  mobileVariant?: 'square' | 'landscape' | 'guide';
   accent?: string;
   decorative?: boolean;
   priority?: boolean;
@@ -27,6 +28,7 @@ const {
   mobileAvifSrc,
   avifSrc,
   variant = 'landscape',
+  mobileVariant,
   accent = '#12b66a',
   decorative = false,
   priority = false,
@@ -39,7 +41,12 @@ if (!decorative && !alt.trim()) {
 ---
 
 <figure
-  class:list={['game-artwork', `game-artwork--${variant}`, className]}
+  class:list={[
+    'game-artwork',
+    `game-artwork--${variant}`,
+    mobileVariant && `game-artwork--mobile-${mobileVariant}`,
+    className,
+  ]}
   style={`--art-accent:${accent}`}
   aria-hidden={decorative ? 'true' : undefined}
   data-game-artwork={variant}
@@ -97,5 +104,19 @@ if (!decorative && !alt.trim()) {
 
   .game-artwork img {
     object-fit: cover;
+  }
+
+  @media (max-width: 36rem) {
+    .game-artwork--mobile-square {
+      aspect-ratio: 1;
+    }
+
+    .game-artwork--mobile-landscape {
+      aspect-ratio: 16 / 9;
+    }
+
+    .game-artwork--mobile-guide {
+      aspect-ratio: 2 / 1;
+    }
   }
 </style>

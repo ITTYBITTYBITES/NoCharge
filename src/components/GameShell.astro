@@ -1,4 +1,5 @@
 ---
+import type { GameArtworkData } from '../types/content';
 import AdSlot from './AdSlot.astro';
 import GameArtwork from './GameArtwork.astro';
 
@@ -7,13 +8,7 @@ interface Props {
   tagline: string;
   slug: string;
   accent?: string;
-  artwork?: {
-    coverSquare: string;
-    coverSquareFallback: string;
-    coverLandscape: string;
-    coverLandscapeFallback: string;
-    alt: string;
-  };
+  artwork?: GameArtworkData;
 }
 
 const { title, tagline, slug, accent = '#12b66a', artwork } = Astro.props;
@@ -39,6 +34,7 @@ const { title, tagline, slug, accent = '#12b66a', artwork } = Astro.props;
           width={1280}
           height={720}
           variant="landscape"
+          mobileVariant="square"
           accent={accent}
           priority
         />

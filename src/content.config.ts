@@ -20,7 +20,28 @@ const games = defineCollection({
         guideHeader: z.string(),
         guideHeaderFallback: z.string(),
         socialCard: z.string(),
+        socialCardWebp: z.string().optional(),
+        screenshotMobile: z.string().optional(),
+        screenshotDesktop: z.string().optional(),
+        controlsDiagram: z.string().optional(),
         alt: z.string(),
+      })
+      .optional(),
+    presentation: z
+      .object({
+        controlsHeading: z.string(),
+        controls: z.array(
+          z.object({
+            label: z.string(),
+            description: z.string(),
+          }),
+        ),
+        controlsDiagramAlt: z.string().optional(),
+        controlsDiagramCaption: z.string().optional(),
+        gameplayPreviewAlt: z.string().optional(),
+        gameplayPreviewCaption: z.string().optional(),
+        relatedHeading: z.string().optional(),
+        relatedGuideLabel: z.string().optional(),
       })
       .optional(),
     genre: z.string(),

@@ -24,6 +24,8 @@ export async function getStaticPaths() {
 const { guide, game, related } = Astro.props;
 if (!game) throw new Error(`Guide ${guide.id} references an unknown game: ${guide.data.game}`);
 const { Content } = await render(guide);
+const artwork = game.data.artwork;
+const presentation = game.data.presentation;
 const updatedLabel = new Date(`${guide.data.updated}T12:00:00`).toLocaleDateString('en-US', {
   month: 'long',
   day: 'numeric',
@@ -102,6 +104,7 @@ const schema = {
               width={1280}
               height={640}
               variant="guide"
+              mobileVariant="square"
               accent={game.data.accent}
               priority
             />
@@ -127,17 +130,37 @@ const schema = {
       </aside>
 
       {
-        guide.id === 'memory-match' && (
+        artwork?.controlsDiagram && presentation?.controlsDiagramAlt && (
           <figure class="guide-diagram">
             <img
-              src="/game-art/memory-match/controls-diagram.svg"
+              src={artwork.controlsDiagram}
               width="960"
               height="520"
               loading="lazy"
               decoding="async"
-              alt="Choose one hidden card, compare it with a second card, then keep a match or remember both mismatch positions."
+              alt={presentation.controlsDiagramAlt}
             />
-            <figcaption>Each two-card attempt is one move. Matches remain visible; mismatches turn back over.</figcaption>
+            {presentation.controlsDiagramCaption && <figcaption>{presentation.controlsDiagramCaption}</figcaption>}
+          </figure>
+        )
+      }
+
+      {
+        artwork?.screenshotDesktop && artwork.screenshotMobile && presentation?.gameplayPreviewAlt && (
+          <figure class="gameplay-preview">
+            <picture>
+              <source media="(max-width: 36rem)" srcset={artwork.screenshotMobile} type="image/webp" />
+              <source srcset={artwork.screenshotDesktop} type="image/webp" />
+              <img
+                src={artwork.screenshotDesktop}
+                width="1440"
+                height="900"
+                loading="lazy"
+                decoding="async"
+                alt={presentation.gameplayPreviewAlt}
+              />
+            </picture>
+            {presentation.gameplayPreviewCaption && <figcaption>{presentation.gameplayPreviewCaption}</figcaption>}
           </figure>
         )
       }
@@ -250,21 +273,39 @@ const schema = {
     font-size: 0.8rem;
   }
 
-  .guide-diagram {
+  .guide-diagram,
+  .gameplay-preview {
     display: grid;
     gap: 0.65rem;
     margin: 0 0 2.25rem;
   }
 
-  .guide-diagram img {
+  .guide-diagram img,
+  .gameplay-preview picture {
     width: 100%;
-    height: auto;
+    overflow: hidden;
     border: 1px solid var(--line);
     border-radius: var(--radius);
     background: #121412;
   }
 
-  .guide-diagram figcaption {
+  .guide-diagram img {
+    height: auto;
+  }
+
+  .gameplay-preview picture {
+    display: block;
+    aspect-ratio: 8 / 5;
+  }
+
+  .gameplay-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .guide-diagram figcaption,
+  .gameplay-preview figcaption {
     color: var(--muted);
     font-size: 0.82rem;
   }
@@ -345,6 +386,12 @@ const schema = {
   @media (min-width: 48rem) {
     .guide-header--artwork {
       grid-template-columns: minmax(0, 1.08fr) minmax(18rem, 0.92fr);
+    }
+  }
+
+  @media (max-width: 36rem) {
+    .gameplay-preview picture {
+      aspect-ratio: 9 / 16;
     }
   }
 
