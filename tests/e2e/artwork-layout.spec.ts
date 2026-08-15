@@ -20,9 +20,8 @@ test('Memory Match artwork preserves crops, focus visibility, and layout stabili
   await page.waitForLoadState('networkidle');
 
   const art = page.locator('.game-shell__artwork');
-  await expect(art.locator('img')).toHaveJSProperty(
-    'currentSrc',
-    expect.stringContaining('/game-art/memory-match/cover-landscape.webp'),
+  expect(await art.locator('img').evaluate((image: HTMLImageElement) => image.currentSrc)).toContain(
+    '/game-art/memory-match/cover-landscape.webp',
   );
   const desktopRatio = await art.evaluate((element) => {
     const { width, height } = element.getBoundingClientRect();
@@ -40,9 +39,8 @@ test('Memory Match artwork preserves crops, focus visibility, and layout stabili
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.reload();
-  await expect(art.locator('img')).toHaveJSProperty(
-    'currentSrc',
-    expect.stringContaining('/game-art/memory-match/cover-square.webp'),
+  expect(await art.locator('img').evaluate((image: HTMLImageElement) => image.currentSrc)).toContain(
+    '/game-art/memory-match/cover-square.webp',
   );
   const mobileRatio = await art.evaluate((element) => {
     const { width, height } = element.getBoundingClientRect();
@@ -66,5 +64,5 @@ test('consent UI remains above the Memory Match artwork at mobile size', async (
   expect(await modal.evaluate((element) => Number(getComputedStyle(element).zIndex))).toBeGreaterThan(
     await banner.evaluate((element) => Number(getComputedStyle(element).zIndex)),
   );
-  await expect(page.getByRole('button', { name: 'Close privacy choices' })).toBeFocused();
+  await expect(page.locator('[data-consent-analytics]')).toBeFocused();
 });

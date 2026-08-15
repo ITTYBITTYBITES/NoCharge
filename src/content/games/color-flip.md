@@ -4,6 +4,7 @@ tagline: One wrong step and it’s over.
 description: Match your color to a moving tile path in this quick browser reflex game, or switch to an accessible untimed turn-based mode.
 emoji: 🎨
 accent: "#f59e0b"
+runtime: color-flip
 genre: Reflex
 difficulty: Timing challenge
 session: 1–4 min

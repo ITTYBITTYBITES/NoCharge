@@ -51,7 +51,7 @@ test('Memory Match game header uses responsive, intrinsic LCP artwork and social
     'content',
     'https://nocharge.net/game-art/memory-match/social-card.jpg',
   );
-  await expect(page.locator('script[type="application/ld+json"]')).toContainText(
+  expect(await page.locator('script[type="application/ld+json"]').textContent()).toContain(
     'https://nocharge.net/game-art/memory-match/social-card.jpg',
   );
 });

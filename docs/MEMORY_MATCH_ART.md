@@ -33,7 +33,12 @@ Dimensions and file sizes were measured from the committed files after the final
 
 ## PR visual review
 
-The before/after captures in `docs/pr-7/` use the game page at desktop (1440×1000) and mobile (390×844) viewports. The after captures are generated from this branch; the before captures use the current production baseline.
+The before/after captures in `docs/pr-7/` use the game page at desktop (1440×1000) and mobile (390×844) viewports. The after captures are generated from this branch; the before captures use the current `main` baseline.
+
+| Viewport | Before | After |
+| --- | --- | --- |
+| Desktop | ![Memory Match desktop before the artwork pilot](./pr-7/before-desktop.png) | ![Memory Match desktop after the artwork pilot](./pr-7/after-desktop.png) |
+| Mobile | ![Memory Match mobile before the artwork pilot](./pr-7/before-mobile.png) | ![Memory Match mobile after the artwork pilot](./pr-7/after-mobile.png) |
 
 The review verifies:
 

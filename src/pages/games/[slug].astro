@@ -21,6 +21,9 @@ const { game, hasGuide, relatedGames } = Astro.props;
 const { Content } = await render(game);
 const slug = game.id;
 const presentation = game.data.presentation;
+const stageStyle = presentation?.stageAspectDesktop
+  ? `--game-stage-aspect:${presentation.stageAspectDesktop};--game-stage-aspect-mobile:${presentation.stageAspectMobile ?? presentation.stageAspectDesktop}`
+  : undefined;
 ---
 
 <BaseLayout
@@ -37,7 +40,11 @@ const presentation = game.data.presentation;
     accent={game.data.accent}
     artwork={game.data.artwork}
   >
-    <div data-game-root={slug} class="game-root"></div>
+    <div
+      data-game-root={slug}
+      class:list={['game-root', { 'game-root--reserved': presentation?.stageAspectDesktop }]}
+      style={stageStyle}
+    ></div>
     {
       presentation?.controls.length && (
         <section class="game-controls" aria-labelledby="game-controls-heading">
@@ -100,21 +107,36 @@ const presentation = game.data.presentation;
   </GameShell>
 </BaseLayout>
 
-<script>
-  const root = document.querySelector<HTMLElement>('[data-game-root]');
-  const gameId = root?.dataset.gameRoot;
-  const loaders: Record<string, () => Promise<unknown>> = {
-    'memory-match': () => import('../../games/memory-match/main.ts'),
-    'word-tile-rush': () => import('../../games/word-tile-rush/main.ts'),
-    'color-flip': () => import('../../games/color-flip/main.ts'),
-  };
-
-  if (gameId) void loaders[gameId]?.();
-</script>
+{
+  game.data.runtime === 'memory-match' && (
+    <script>
+      import '../../games/memory-match/main.ts';
+    </script>
+  )
+}
+{
+  game.data.runtime === 'word-tile-rush' && (
+    <script>
+      import '../../games/word-tile-rush/main.ts';
+    </script>
+  )
+}
+{
+  game.data.runtime === 'color-flip' && (
+    <script>
+      import '../../games/color-flip/main.ts';
+    </script>
+  )
+}
 
 <style>
   .game-root {
     min-height: 12rem;
+  }
+
+  .game-root--reserved {
+    min-height: 0;
+    aspect-ratio: var(--game-stage-aspect);
   }
 
   .game-controls {
@@ -251,6 +273,12 @@ const presentation = game.data.presentation;
     .game-controls,
     .game-related {
       grid-template-columns: minmax(13rem, 0.8fr) minmax(20rem, 1.2fr);
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .game-root--reserved {
+      aspect-ratio: var(--game-stage-aspect-mobile);
     }
   }
 </style>

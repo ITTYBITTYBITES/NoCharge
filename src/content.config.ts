@@ -10,6 +10,7 @@ const games = defineCollection({
     description: z.string(),
     emoji: z.string(),
     accent: z.string().default('#0f9d58'),
+    runtime: z.enum(['memory-match', 'word-tile-rush', 'color-flip']),
     artwork: z
       .object({
         icon: z.string(),
@@ -36,6 +37,8 @@ const games = defineCollection({
             description: z.string(),
           }),
         ),
+        stageAspectDesktop: z.number().positive().optional(),
+        stageAspectMobile: z.number().positive().optional(),
         controlsDiagramAlt: z.string().optional(),
         controlsDiagramCaption: z.string().optional(),
         gameplayPreviewAlt: z.string().optional(),
