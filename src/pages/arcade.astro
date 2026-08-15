@@ -1,0 +1,242 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import GameCard from '../components/GameCard.astro';
+
+const games = (await getCollection('games'))
+  .filter((game) => !game.data.draft)
+  .sort((a, b) => a.data.order - b.data.order);
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'NoCharge Arcade',
+  description: 'A growing collection of quick browser games with no account required.',
+  url: 'https://nocharge.net/arcade/',
+  mainEntity: {
+    '@type': 'ItemList',
+    numberOfItems: games.length,
+    itemListElement: games.map((game, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: game.data.title,
+      url: `https://nocharge.net/games/${game.id}/`,
+    })),
+  },
+};
+---
+
+<BaseLayout
+  title="Arcade"
+  description="Play quick browser games with touch, mouse, or keyboard controls. No account required, and best scores stay on your device."
+  path="/arcade/"
+  schema={schema}
+>
+  <div class="arcade-page">
+    <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Arcade' }]} />
+
+    <header class="arcade-hero">
+      <p class="eyebrow">NoCharge Arcade</p>
+      <h1 class="page-title">Small games built for real breaks.</h1>
+      <p class="lede">
+        Open a game, learn it in a minute, and play for as long as you like. Every title works in the browser,
+        requires no account, and keeps its best score on this device.
+      </p>
+      <dl class="arcade-hero__facts" aria-label="Arcade facts">
+        <div><dt>{games.length}</dt><dd>games available</dd></div>
+        <div><dt>0</dt><dd>accounts needed</dd></div>
+        <div><dt>3</dt><dd>input styles supported</dd></div>
+      </dl>
+    </header>
+
+    <section class="arcade-list" aria-labelledby="all-games-heading">
+      <div class="arcade-list__heading">
+        <p class="section-kicker">Choose a game</p>
+        <h2 id="all-games-heading">All arcade games</h2>
+        <p>Memory, word, and reflex play—each with a full guide when you want the details.</p>
+      </div>
+      <div class="arcade-grid">
+        {
+          games.map((game) => (
+            <GameCard
+              slug={game.id}
+              title={game.data.title}
+              tagline={game.data.tagline}
+              emoji={game.data.emoji}
+              accent={game.data.accent}
+              genre={game.data.genre}
+              session={game.data.session}
+            />
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="arcade-notes panel" aria-labelledby="arcade-notes-heading">
+      <div>
+        <p class="section-kicker">How this arcade works</p>
+        <h2 id="arcade-notes-heading">Designed around the game, not the funnel.</h2>
+      </div>
+      <div class="arcade-notes__grid">
+        <article>
+          <h3>Start without setup</h3>
+          <p>There is no profile, password, download, or tutorial wall between the game page and the first move.</p>
+        </article>
+        <article>
+          <h3>Use the controls you have</h3>
+          <p>Games support touch and pointer input, with documented keyboard paths and an untimed Color Flip mode.</p>
+        </article>
+        <article>
+          <h3>Keep your progress private</h3>
+          <p>Best results use local browser storage. NoCharge does not receive or publish your game scores.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="arcade-guide-cta" aria-labelledby="arcade-guide-heading">
+      <div>
+        <p class="section-kicker">Need the rules?</p>
+        <h2 id="arcade-guide-heading">Every game has a field guide.</h2>
+        <p>Read exact controls, scoring details, accessibility notes, and strategies based on how the game works.</p>
+      </div>
+      <a class="btn btn--ghost" href="/guides/">Open the guide library</a>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .arcade-page {
+    display: grid;
+    gap: clamp(2.5rem, 7vw, 5rem);
+  }
+
+  .arcade-hero {
+    max-width: 54rem;
+    padding: 1rem 0 0;
+  }
+
+  .arcade-hero__facts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.65rem;
+    max-width: 38rem;
+    margin: 1.5rem 0 0;
+  }
+
+  .arcade-hero__facts div {
+    padding: 0.85rem;
+    border: 1px solid var(--line);
+    border-radius: 0.75rem;
+    background: var(--panel);
+  }
+
+  .arcade-hero__facts dt {
+    color: var(--accent-strong);
+    font-size: 1.35rem;
+    font-weight: 800;
+  }
+
+  .arcade-hero__facts dd {
+    margin: 0.1rem 0 0;
+    color: var(--muted);
+    font-size: 0.76rem;
+  }
+
+  .arcade-list {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .arcade-list__heading {
+    display: grid;
+    gap: 0.35rem;
+    max-width: 44rem;
+  }
+
+  .arcade-list h2,
+  .arcade-notes h2,
+  .arcade-guide-cta h2 {
+    font-size: clamp(1.65rem, 4vw, 2.4rem);
+    letter-spacing: -0.035em;
+    line-height: 1.1;
+  }
+
+  .arcade-list__heading > p:last-child,
+  .arcade-guide-cta p:not(.section-kicker) {
+    color: var(--muted);
+  }
+
+  .section-kicker {
+    color: var(--accent-strong);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .arcade-grid {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .arcade-notes {
+    display: grid;
+    gap: 1.75rem;
+    padding: clamp(1.25rem, 4vw, 2rem);
+  }
+
+  .arcade-notes > div:first-child {
+    display: grid;
+    gap: 0.4rem;
+    max-width: 40rem;
+  }
+
+  .arcade-notes__grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .arcade-notes article {
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .arcade-notes h3 {
+    font-size: 1rem;
+  }
+
+  .arcade-notes article p {
+    margin-top: 0.35rem;
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+
+  .arcade-guide-cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem 2rem;
+    padding: 0 0 1rem;
+  }
+
+  .arcade-guide-cta > div {
+    display: grid;
+    gap: 0.4rem;
+    max-width: 44rem;
+  }
+
+  @media (min-width: 60rem) {
+    .arcade-grid,
+    .arcade-notes__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 34rem) {
+    .arcade-hero__facts {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

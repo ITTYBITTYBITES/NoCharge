@@ -1,10 +1,16 @@
 ---
 title: Color Flip
 tagline: One wrong step and it’s over.
-description: Auto-walk a shifting path. Tap to change your color and only step on matching tiles. One mistake ends the run.
+description: Match your color to a moving tile path in this quick browser reflex game, or switch to an accessible untimed turn-based mode.
 emoji: 🎨
 accent: "#f59e0b"
+genre: Reflex
+difficulty: Timing challenge
+session: 1–4 min
+featured: true
 order: 3
 ---
 
-Stay on the path by flipping colors at the right moment. Speed climbs as your score grows.
+Color Flip is a timing game built around four clearly labeled colors. Cycle between green, blue, amber, and rose, then stay on tiles that match your current color as the path speeds up.
+
+The visual mode supports touch and keyboard controls. Turn-based mode announces each upcoming tile and replaces the moving canvas with simple Cycle color and Step forward buttons.

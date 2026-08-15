@@ -18,9 +18,11 @@ interface Props {
   class?: string;
   /** Load immediately instead of lazily. Default true. */
   eager?: boolean;
+  /** Leave src unset until the parent activates this responsive slot. */
+  defer?: boolean;
 }
 
-const { unit: unitId, class: className, eager = true } = Astro.props;
+const { unit: unitId, class: className, eager = true, defer = false } = Astro.props;
 
 const unit = getUnit(unitId);
 const hidden = isPlaceholder(unit);
@@ -37,13 +39,14 @@ const hasSmartlink = SMARTLINK_URL.length > 0;
       <iframe
         class="ad-slot__frame"
         title="Advertisement"
-        src={`/ads/${unit.id}/`}
+        src={defer ? undefined : `/ads/${unit.id}/`}
+        data-src={defer ? `/ads/${unit.id}/` : undefined}
         width={unit.width}
         height={unit.height}
         loading={eager ? 'eager' : 'lazy'}
-        scrolling="no"
-        frameborder="0"
-        referrerpolicy="no-referrer-when-downgrade"
+        referrerpolicy="strict-origin-when-cross-origin"
+        sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
+        allow="camera 'none'; geolocation 'none'; microphone 'none'; payment 'none'; usb 'none'"
       />
 
       {hasSmartlink && (
@@ -51,10 +54,10 @@ const hasSmartlink = SMARTLINK_URL.length > 0;
           class="ad-slot__fallback"
           href={SMARTLINK_URL}
           target="_blank"
-          rel="noopener sponsored"
+          rel="noopener noreferrer sponsored"
           hidden
         >
-          Play more free games →
+          Sponsored · Play more free games →
         </a>
       )}
     </div>

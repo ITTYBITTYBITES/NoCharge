@@ -1,0 +1,272 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+
+export async function getStaticPaths() {
+  const games = (await getCollection('games')).filter((game) => !game.data.draft);
+  const guides = (await getCollection('guides')).filter((guide) => !guide.data.draft);
+  const gameById = new Map(games.map((game) => [game.id, game]));
+
+  return guides.map((guide) => ({
+    params: { slug: guide.id },
+    props: {
+      guide,
+      game: gameById.get(guide.data.game),
+      related: guides
+        .filter((candidate) => candidate.id !== guide.id)
+        .sort((a, b) => a.data.order - b.data.order),
+    },
+  }));
+}
+
+const { guide, game, related } = Astro.props;
+if (!game) throw new Error(`Guide ${guide.id} references an unknown game: ${guide.data.game}`);
+const { Content } = await render(guide);
+const updatedLabel = new Date(`${guide.data.updated}T12:00:00`).toLocaleDateString('en-US', {
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+});
+const canonical = `https://nocharge.net/guides/${guide.id}/`;
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: guide.data.title,
+  description: guide.data.description,
+  dateModified: guide.data.updated,
+  datePublished: guide.data.updated,
+  mainEntityOfPage: canonical,
+  url: canonical,
+  inLanguage: 'en',
+  author: {
+    '@type': 'Organization',
+    name: 'NoCharge',
+    url: 'https://nocharge.net/',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'NoCharge',
+    url: 'https://nocharge.net/',
+  },
+  about: {
+    '@type': 'VideoGame',
+    name: game.data.title,
+    url: `https://nocharge.net/games/${game.id}/`,
+  },
+};
+---
+
+<BaseLayout
+  title={guide.data.title}
+  description={guide.data.description}
+  path={`/guides/${guide.id}/`}
+  schema={schema}
+  ogType="article"
+  modifiedTime={guide.data.updated}
+>
+  <div class="guide-page">
+    <Breadcrumbs
+      items={[
+        { label: 'Home', href: '/' },
+        { label: 'Guides', href: '/guides/' },
+        { label: game.data.title },
+      ]}
+    />
+
+    <article>
+      <header class="guide-header">
+        <p class="eyebrow">{game.data.emoji} {game.data.title} guide</p>
+        <h1 class="page-title">{guide.data.title}</h1>
+        <p class="lede">{guide.data.description}</p>
+        <div class="guide-header__meta">
+          <span>Updated {updatedLabel}</span>
+          <span aria-hidden="true">·</span>
+          <span>{guide.data.readTime} min read</span>
+        </div>
+      </header>
+
+      <aside class="guide-play panel" aria-label={`Play ${game.data.title}`}>
+        <div>
+          <span aria-hidden="true">{game.data.emoji}</span>
+          <div>
+            <strong>Keep the game open while you read</strong>
+            <p>{game.data.tagline} Scores stay on this device.</p>
+          </div>
+        </div>
+        <a class="btn btn--sm" href={`/games/${game.id}/`}>Play {game.data.title}</a>
+      </aside>
+
+      <div class="guide-prose prose">
+        <Content />
+      </div>
+    </article>
+
+    <section class="guide-next panel" aria-labelledby="guide-next-heading">
+      <div>
+        <p class="section-kicker">Put it into practice</p>
+        <h2 id="guide-next-heading">Ready for another run?</h2>
+        <p>Open the game with the rules fresh, or continue through the guide library.</p>
+      </div>
+      <div class="guide-next__actions">
+        <a class="btn" href={`/games/${game.id}/`}>Play now</a>
+        <a class="btn btn--ghost" href="/guides/">All guides</a>
+      </div>
+    </section>
+
+    <nav class="related-guides" aria-labelledby="related-guides-heading">
+      <h2 id="related-guides-heading">More game guides</h2>
+      <ul>
+        {
+          related.map((item) => (
+            <li>
+              <a href={`/guides/${item.id}/`}>
+                <span>{item.data.title}</span>
+                <span aria-hidden="true">→</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</BaseLayout>
+
+<style>
+  .guide-page {
+    display: grid;
+    gap: 2rem;
+    max-width: 52rem;
+    margin-inline: auto;
+  }
+
+  .guide-header {
+    padding: 0.75rem 0 1.5rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .guide-header .page-title {
+    max-width: 49rem;
+    font-size: clamp(2.25rem, 6vw, 4rem);
+  }
+
+  .guide-header__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 1rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+
+  .guide-play {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    margin: 1.5rem 0 2.25rem;
+  }
+
+  .guide-play > div {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+  }
+
+  .guide-play > div > span {
+    font-size: 1.6rem;
+  }
+
+  .guide-play strong {
+    display: block;
+    font-size: 0.9rem;
+  }
+
+  .guide-play p {
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+
+  .guide-prose {
+    max-width: 46rem;
+  }
+
+  .guide-next {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem 2rem;
+    padding: clamp(1.1rem, 4vw, 1.75rem);
+  }
+
+  .guide-next > div:first-child {
+    display: grid;
+    gap: 0.4rem;
+    max-width: 34rem;
+  }
+
+  .guide-next h2,
+  .related-guides h2 {
+    font-size: 1.35rem;
+    letter-spacing: -0.025em;
+  }
+
+  .guide-next p:not(.section-kicker) {
+    color: var(--muted);
+  }
+
+  .section-kicker {
+    color: var(--accent-strong);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .guide-next__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+  }
+
+  .related-guides {
+    padding-bottom: 1rem;
+  }
+
+  .related-guides ul {
+    display: grid;
+    gap: 0;
+    margin: 0.75rem 0 0;
+    padding: 0;
+    border-top: 1px solid var(--line);
+    list-style: none;
+  }
+
+  .related-guides a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 48px;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 0.9rem;
+    transition: color 160ms ease;
+  }
+
+  .related-guides a:hover {
+    color: var(--accent-strong);
+  }
+
+  @media (max-width: 32rem) {
+    .guide-play .btn,
+    .guide-next__actions,
+    .guide-next__actions .btn {
+      width: 100%;
+    }
+  }
+</style>

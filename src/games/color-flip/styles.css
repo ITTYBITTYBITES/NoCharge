@@ -27,6 +27,20 @@
   font-variant-numeric: tabular-nums;
 }
 
+.cf__actions,
+.cf__accessible-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.55rem;
+}
+
+.cf__stage[hidden],
+.cf__accessible[hidden],
+.cf__accessible-result[hidden] {
+  display: none;
+}
+
 .cf__stage {
   position: relative;
   width: min(100%, 28rem);
@@ -46,9 +60,56 @@
   touch-action: none;
 }
 
+.cf__stage canvas:focus-visible {
+  outline-offset: -4px;
+}
+
 .cf__hint {
   color: var(--muted);
   font-size: 0.85rem;
+  text-align: center;
+}
+
+.cf__accessible {
+  display: grid;
+  gap: 1rem;
+  width: min(100%, 32rem);
+  margin-inline: auto;
+  padding: clamp(1rem, 4vw, 1.5rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #171717;
+}
+
+.cf__accessible > h2 {
+  font-size: 1.35rem;
+  letter-spacing: -0.02em;
+}
+
+.cf__accessible > p,
+.cf__accessible-result p {
+  color: var(--muted);
+}
+
+.cf__accessible-state {
+  display: grid;
+  gap: 0.55rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: var(--panel-2);
+}
+
+.cf__accessible-state strong {
+  color: var(--text);
+}
+
+.cf__accessible-result {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
   text-align: center;
 }
 

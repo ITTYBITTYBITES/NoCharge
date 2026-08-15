@@ -1,4 +1,9 @@
 ---
+const pathname = Astro.url.pathname;
+const arcadeCurrent = pathname.startsWith('/arcade/') || pathname.startsWith('/games/');
+const guidesCurrent = pathname.startsWith('/guides/');
+const arcadeAria = pathname === '/arcade/' ? 'page' : arcadeCurrent ? 'location' : undefined;
+const guidesAria = pathname === '/guides/' ? 'page' : guidesCurrent ? 'location' : undefined;
 ---
 
 <header class="site-header">
@@ -6,7 +11,8 @@
     <span class="brand__mark" aria-hidden="true">N</span>
     <span>NoCharge</span>
   </a>
-  <nav aria-label="Primary">
-    <a class="nav-link" href="/#games">Games</a>
+  <nav class="primary-nav" aria-label="Primary">
+    <a class:list={['nav-link', { 'is-current': arcadeCurrent }]} href="/arcade/" aria-current={arcadeAria}>Arcade</a>
+    <a class:list={['nav-link', { 'is-current': guidesCurrent }]} href="/guides/" aria-current={guidesAria}>Guides</a>
   </nav>
 </header>

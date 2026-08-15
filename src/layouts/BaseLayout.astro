@@ -3,6 +3,7 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import BottomBanner from '../components/BottomBanner.astro';
+import ConsentManager from '../components/ConsentManager.astro';
 import SeoHead from '../components/SeoHead.astro';
 
 interface Props {
@@ -10,13 +11,21 @@ interface Props {
   description?: string;
   path?: string;
   noIndex?: boolean;
+  showAds?: boolean;
+  schema?: Record<string, unknown> | Record<string, unknown>[];
+  ogType?: 'website' | 'article';
+  modifiedTime?: string;
 }
 
 const {
   title = 'NoCharge',
-  description = 'Simple browser games. Fast load. Real players. No bloat.',
+  description = 'Quick browser games, clear player guides, and no account required.',
   path = '/',
   noIndex = false,
+  showAds = true,
+  schema,
+  ogType = 'website',
+  modifiedTime,
 } = Astro.props;
 
 const isProd = import.meta.env.PROD;
@@ -30,53 +39,100 @@ const isProd = import.meta.env.PROD;
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
-    <SeoHead title={title} description={description} path={path} noIndex={noIndex} />
+    <SeoHead
+      title={title}
+      description={description}
+      path={path}
+      noIndex={noIndex}
+      schema={schema}
+      ogType={ogType}
+      modifiedTime={modifiedTime}
+    />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="theme-color" content="#121212" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap"
-      rel="stylesheet"
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.google-analytics.com https://*.google-analytics.com; font-src 'self'; media-src 'self'; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com; frame-src 'self'; form-action 'self'; upgrade-insecure-requests"
     />
     {
       isProd && (
-        <>
-          <link rel="preconnect" href="https://www.google-analytics.com" />
-          <link rel="preconnect" href="https://www.googletagmanager.com" />
-          <script is:inline>
-            document.addEventListener('DOMContentLoaded', () => {
-              setTimeout(() => {
-                const s = document.createElement('script');
-                s.async = true;
-                s.src = 'https://www.googletagmanager.com/gtag/js?id=G-GYQ8TEM6DS';
-                document.head.appendChild(s);
-                window.dataLayer = window.dataLayer || [];
-                function gtag() {
-                  dataLayer.push(arguments);
+        <script is:inline>
+          (() => {
+            const measurementId = 'G-GYQ8TEM6DS';
+            let loaded = false;
+
+            const removeAnalyticsCookies = () => {
+              document.cookie.split(';').forEach((cookie) => {
+                const name = cookie.split('=')[0]?.trim();
+                if (!name?.startsWith('_ga')) return;
+                document.cookie = `${name}=; Max-Age=0; Path=/; SameSite=Lax`;
+                document.cookie = `${name}=; Max-Age=0; Path=/; Domain=${location.hostname}; SameSite=Lax`;
+              });
+            };
+
+            const loadAnalytics = () => {
+              if (loaded) return;
+              loaded = true;
+              window[`ga-disable-${measurementId}`] = false;
+              window.dataLayer = window.dataLayer || [];
+              window.gtag = function () {
+                window.dataLayer.push(arguments);
+              };
+              window.gtag('consent', 'default', {
+                analytics_storage: 'granted',
+                ad_storage: 'denied',
+                ad_user_data: 'denied',
+                ad_personalization: 'denied',
+              });
+              window.gtag('js', new Date());
+              window.gtag('config', measurementId, {
+                page_path: location.pathname,
+                anonymize_ip: true,
+              });
+
+              const script = document.createElement('script');
+              script.async = true;
+              script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
+              document.head.appendChild(script);
+            };
+
+            const applyAnalyticsConsent = (allowed) => {
+              if (allowed) {
+                if (loaded) {
+                  window[`ga-disable-${measurementId}`] = false;
+                  window.gtag?.('consent', 'update', { analytics_storage: 'granted' });
+                } else {
+                  loadAnalytics();
                 }
-                window.gtag = gtag;
-                gtag('js', new Date());
-                gtag('config', 'G-GYQ8TEM6DS', {
-                  page_path: location.pathname,
-                  anonymize_ip: true,
-                });
-              }, 2000);
+                return;
+              }
+
+              window[`ga-disable-${measurementId}`] = true;
+              window.gtag?.('consent', 'update', { analytics_storage: 'denied' });
+              removeAnalyticsCookies();
+            };
+
+            window.addEventListener('nocharge:consentchange', (event) => {
+              applyAnalyticsConsent(!!event.detail?.analytics);
             });
-          </script>
-        </>
+          })();
+        </script>
       )
     }
   </head>
   <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <div class="site-shell">
       <Header />
-      <main class="site-main">
+      <main class="site-main" id="main-content">
         <slot />
       </main>
       <Footer />
     </div>
-    <BottomBanner />
+    {showAds && <BottomBanner />}
+    <ConsentManager />
   </body>
 </html>
