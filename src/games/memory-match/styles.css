@@ -34,6 +34,12 @@
   perspective: 900px;
 }
 
+/* The author grid declaration otherwise overrides the user-agent [hidden]
+   rule, leaving cleared cards in the layout beneath the result panel. */
+.mm__board[hidden] {
+  display: none;
+}
+
 .mm__card {
   position: relative;
   aspect-ratio: 1;
@@ -106,6 +112,11 @@
 
 .mm__overlay.is-open {
   display: grid;
+  align-content: center;
+  min-height: min(52dvh, 28rem);
+  border: 1px solid rgba(18, 182, 106, 0.25);
+  border-radius: var(--radius);
+  background: linear-gradient(145deg, rgba(15, 157, 88, 0.14), transparent 62%), var(--panel-2);
 }
 
 .mm__overlay h2 {

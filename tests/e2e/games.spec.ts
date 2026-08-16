@@ -30,6 +30,30 @@ test('Memory Match survives restart during a pending mismatch', async ({ page })
   expect(errors).toEqual([]);
 });
 
+test('Memory Match replaces the cleared board with a visible result panel', async ({ page }) => {
+  await page.goto('/games/memory-match/');
+  const cards = page.locator('.mm__card');
+  const symbols = await cards.evaluateAll((elements) =>
+    elements.map((element, index) => ({
+      index,
+      symbol: element.querySelector('.mm__face--front')?.textContent ?? '',
+    })),
+  );
+  const pairs = new Map<string, number[]>();
+  symbols.forEach(({ index, symbol }) => pairs.set(symbol, [...(pairs.get(symbol) ?? []), index]));
+
+  for (const indexes of pairs.values()) {
+    await cards.nth(indexes[0]!).click();
+    await cards.nth(indexes[1]!).click();
+  }
+
+  await expect(page.locator('.mm__board')).toBeHidden();
+  await expect(page.locator('.mm__overlay')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Cleared' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Play again' })).toBeVisible();
+  await expect(page.locator('[data-game-root="memory-match"]')).toHaveClass(/game-root--complete/);
+});
+
 test('Word Tile Rush waits for input and supports keyboard selection', async ({ page }) => {
   await page.goto('/games/word-tile-rush/');
   const cells = page.locator('.wtr__cell');

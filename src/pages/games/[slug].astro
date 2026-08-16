@@ -150,6 +150,13 @@ const stageStyle = presentation?.stageAspectDesktop
     aspect-ratio: var(--game-stage-aspect);
   }
 
+  /* The reserved board ratio is useful while a game mounts. A completed
+     Memory Match run intentionally collapses to its clear, centered result
+     panel instead of leaving an invisible board-sized gap. */
+  .game-root--complete {
+    aspect-ratio: auto;
+  }
+
   .game-controls {
     display: grid;
     gap: 1rem 2rem;

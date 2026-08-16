@@ -110,6 +110,7 @@ export function mountMemoryMatch(root: HTMLElement): GameController {
 
   function build() {
     round += 1;
+    root.classList.remove('game-root--complete');
     clearPendingMismatch();
     lock = false;
     first = null;
@@ -188,6 +189,7 @@ export function mountMemoryMatch(root: HTMLElement): GameController {
         }
         bestEl.textContent = String(best);
         resultEl.textContent = `Finished in ${moves} moves. Best: ${best}.`;
+        root.classList.add('game-root--complete');
         overlay.classList.add('is-open');
         board.hidden = true;
         if (!paused) againBtn.focus();
