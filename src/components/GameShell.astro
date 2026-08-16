@@ -82,7 +82,12 @@ const { title, tagline, slug, accent = '#12b66a', artwork } = Astro.props;
 <script>
   import { mountRenderedGameShells } from '../games/shared/shell';
 
-  mountRenderedGameShells();
+  // Astro hoists component scripts. Waiting for the parsed document keeps the
+  // game mount reliable in WebKit when an external module arrives before this
+  // component's viewport markup has been parsed.
+  const mount = () => mountRenderedGameShells();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount, { once: true });
+  else mount();
 </script>
 
 <style>

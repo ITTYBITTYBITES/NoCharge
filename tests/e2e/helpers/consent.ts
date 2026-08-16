@@ -36,4 +36,23 @@ export const denyOptionalServices = async (page: Page) => {
 
   await page.context().addInitScript(persistChoice, seed);
   await page.addInitScript(persistChoice, seed);
+
+  // A few WebKit builds initialise page storage after their first document
+  // script. Apply the same already-denied choice at DOMContentLoaded as a
+  // harmless test-only backstop, then notify the live consent UI.
+  page.on('domcontentloaded', () => {
+    void page
+      .evaluate(({ key, choice }) => {
+        try {
+          localStorage.setItem(key, JSON.stringify(choice));
+        } catch {
+          return;
+        }
+        document.querySelector<HTMLElement>('[data-consent-banner]')?.setAttribute('hidden', '');
+        window.dispatchEvent(new CustomEvent('nocharge:consentchange', { detail: choice }));
+      }, seed)
+      .catch(() => {
+        /* navigation can replace the document while this test helper runs */
+      });
+  });
 };
