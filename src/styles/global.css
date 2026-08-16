@@ -367,19 +367,8 @@ p {
   text-underline-offset: 3px;
 }
 
-.ad-banner[hidden],
 .site-banner[hidden] {
   display: none;
-}
-
-.ad-banner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 250px;
-  margin: 0.25rem 0 0.5rem;
-  border-radius: var(--radius);
 }
 
 /* Shared ad slot ---------------------------------------------------------- */
@@ -493,8 +482,7 @@ body:has(.site-banner--sticky) .site-shell {
 
 /* Ads are visual-only; hide them from print. */
 @media print {
-  .site-banner,
-  .ad-banner {
+  .site-banner {
     display: none;
   }
 }

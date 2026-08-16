@@ -1,6 +1,5 @@
 ---
 import type { GameArtworkData } from '../types/content';
-import AdSlot from './AdSlot.astro';
 import GameArtwork from './GameArtwork.astro';
 
 interface Props {
@@ -41,10 +40,6 @@ const { title, tagline, slug, accent = '#12b66a', artwork } = Astro.props;
       )
     }
   </div>
-
-  <aside class="ad-banner" aria-label="Game advertisement" data-consent-ad hidden>
-    <AdSlot unit="rect-300x250" defer />
-  </aside>
 
   <section class="game-viewport panel" data-game-viewport aria-label={`${title} game area`}>
     <div class="game-toolbar" role="toolbar" aria-label="Game controls">
