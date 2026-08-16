@@ -41,6 +41,24 @@ test.describe('shared game lifecycle controls', () => {
     }
   });
 
+  test('keeps the desktop Memory Match board compact enough to view as one play area', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/games/memory-match/');
+    const metrics = await page.evaluate(() => {
+      const root = document.querySelector<HTMLElement>('[data-game-root="memory-match"]')!;
+      const viewport = document.querySelector<HTMLElement>('[data-game-viewport]')!;
+      return {
+        rootWidth: root.getBoundingClientRect().width,
+        viewportHeight: viewport.getBoundingClientRect().height,
+        hasHorizontalOverflow: document.documentElement.scrollWidth > window.innerWidth,
+      };
+    });
+
+    expect(metrics.rootWidth).toBeLessThanOrEqual(608);
+    expect(metrics.viewportHeight).toBeLessThanOrEqual(780);
+    expect(metrics.hasHorizontalOverflow).toBe(false);
+  });
+
   test('pauses Memory Match without resetting revealed cards or allowing input', async ({ page }) => {
     await page.goto('/games/memory-match/');
     const cards = page.locator('.mm__card');

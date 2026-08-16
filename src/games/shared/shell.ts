@@ -15,6 +15,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
   if (!root || !gameId) return () => {};
 
   const controller = mountGame(gameId, root);
+  root.classList.add('is-game-mounted');
   const pauseButton = viewport.querySelector<HTMLButtonElement>('[data-game-toolbar="pause"]');
   const muteButton = viewport.querySelector<HTMLButtonElement>('[data-game-toolbar="mute"]');
   const fullscreenButton = viewport.querySelector<HTMLButtonElement>('[data-game-toolbar="fullscreen"]');

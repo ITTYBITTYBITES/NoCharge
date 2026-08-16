@@ -142,19 +142,27 @@ const stageStyle = presentation?.stageAspectDesktop
 
 <style>
   .game-root {
+    width: min(100%, 38rem);
     min-height: 12rem;
+    margin-inline: auto;
   }
 
+  /* Reserve a modest first-paint area without forcing a desktop board to be
+     wider than a typical viewport. Once mounted, each game grows naturally
+     to its real controls and playfield instead of being clipped by a rigid
+     aspect-ratio box. */
   .game-root--reserved {
-    min-height: 0;
-    aspect-ratio: var(--game-stage-aspect);
+    min-height: clamp(22rem, 55vw, 38rem);
   }
 
-  /* The reserved board ratio is useful while a game mounts. A completed
-     Memory Match run intentionally collapses to its clear, centered result
-     panel instead of leaving an invisible board-sized gap. */
+  .game-root--reserved.is-game-mounted {
+    min-height: 0;
+  }
+
+  /* A completed Memory Match run intentionally collapses to its clear,
+     centered result panel instead of leaving an invisible board-sized gap. */
   .game-root--complete {
-    aspect-ratio: auto;
+    min-height: 0;
   }
 
   .game-controls {
@@ -330,8 +338,8 @@ const stageStyle = presentation?.stageAspectDesktop
   }
 
   @media (max-width: 40rem) {
-    .game-root--reserved {
-      aspect-ratio: var(--game-stage-aspect-mobile);
+    .game-root {
+      width: 100%;
     }
   }
 </style>
