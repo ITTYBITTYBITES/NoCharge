@@ -10,7 +10,10 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: process.env.CI ? [['github'], ['line']] : [['list']],
   use: {
-    baseURL: 'http://127.0.0.1:4321',
+    // `upgrade-insecure-requests` intentionally protects the deployed HTTPS
+    // site. WebKit treats a numeric loopback host as upgradeable, so use the
+    // trusted localhost name for the plain-HTTP preview server.
+    baseURL: 'http://localhost:4321',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -42,8 +45,8 @@ export default defineConfig({
       : []),
   ],
   webServer: {
-    command: './node_modules/.bin/astro preview --host=127.0.0.1 --port=4321',
-    url: 'http://127.0.0.1:4321/',
+    command: './node_modules/.bin/astro preview --host=localhost --port=4321',
+    url: 'http://localhost:4321/',
     reuseExistingServer: !process.env.CI,
     timeout: 30_000,
   },
