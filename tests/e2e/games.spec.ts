@@ -7,12 +7,15 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('Memory Match survives restart during a pending mismatch', async ({ page }) => {
-  const errors: Error[] = [];
-  page.on('pageerror', (error) => errors.push(error));
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(`pageerror: ${error.message}`));
+  page.on('console', (message) => {
+    if (message.type() === 'error') errors.push(`console: ${message.text()}`);
+  });
   await page.goto('/games/memory-match/');
 
   const cards = page.locator('.mm__card');
-  await expect(cards).toHaveCount(16);
+  await expect(cards, `Client errors: ${errors.join(' | ') || 'none observed'}`).toHaveCount(16);
   const symbols = await cards.evaluateAll((elements) =>
     elements.map((element) => element.querySelector('.mm__face--front')?.textContent ?? ''),
   );
