@@ -149,12 +149,22 @@
     });
   };
 
+  const isVisibleAdSlot = (slot: HTMLElement | null) => {
+    if (!slot) return false;
+    // WebKit can report a layout parent for both responsive slots before its
+    // media query layout settles. The breakpoint is the source of truth for
+    // the two fixed-size bottom-banner units.
+    if (slot.classList.contains('site-banner__slot--mobile')) return window.matchMedia('(max-width: 48rem)').matches;
+    if (slot.classList.contains('site-banner__slot--desktop')) return !window.matchMedia('(max-width: 48rem)').matches;
+    return slot.offsetParent !== null;
+  };
+
   const loadVisibleAds = () => {
     requestAnimationFrame(() => {
       document.querySelectorAll<HTMLIFrameElement>('[data-consent-ad] .ad-slot__frame[data-src]').forEach((frame) => {
         const slot = frame.closest<HTMLElement>('.ad-slot');
         const src = frame.dataset.src;
-        if (slot?.offsetParent !== null && src && frame.getAttribute('src') !== src) frame.src = src;
+        if (isVisibleAdSlot(slot) && src && frame.getAttribute('src') !== src) frame.src = src;
       });
     });
   };
@@ -288,7 +298,7 @@
     right: max(1rem, env(safe-area-inset-right, 0px));
     bottom: max(1rem, env(safe-area-inset-bottom, 0px));
     left: max(1rem, env(safe-area-inset-left, 0px));
-    z-index: 100;
+    z-index: 1000;
     display: grid;
     gap: 1rem;
     width: min(calc(100% - 2rem), 44rem);
@@ -340,7 +350,7 @@
   .consent-modal {
     position: fixed;
     inset: 0;
-    z-index: 110;
+    z-index: 1100;
     display: grid;
     place-items: center;
     padding: 1rem;
