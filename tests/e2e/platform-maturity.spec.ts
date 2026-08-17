@@ -95,17 +95,16 @@ test.describe('shared game lifecycle controls', () => {
     await expect(page.getByRole('button', { name: 'Pause game' })).toBeVisible();
   });
 
-  test('pauses Color Flip before a pointer change and keeps its visible state', async ({ page }) => {
+  test('pauses Color Flip with its direct selection visible and unavailable', async ({ page }) => {
     await page.goto('/games/color-flip/');
     await page.getByRole('button', { name: 'Start' }).click();
-    const color = page.locator('[data-cf="color-label"]');
-    const before = await color.textContent();
+    await page.getByRole('button', { name: 'Set player color to Amber' }).click();
 
     await page.getByRole('button', { name: 'Pause game' }).click();
-    await page.locator('[data-cf="canvas"]').evaluate((canvas) => {
-      canvas.dispatchEvent(new Event('pointerdown', { bubbles: true }));
-    });
-    await expect(color).toHaveText(before ?? 'Green');
+    await expect(page.getByRole('button', { name: 'Set player color to Amber' })).toHaveAttribute('aria-pressed', 'true');
+    for (const name of ['Green', 'Blue', 'Amber', 'Rose']) {
+      await expect(page.getByRole('button', { name: `Set player color to ${name}` })).toBeDisabled();
+    }
     await expect(page.locator('[data-game-pause-overlay]')).toBeVisible();
   });
 

@@ -1,1 +1,53 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" role="img"><rect width="960" height="520" rx="28" fill="#121412"/><g transform="translate(45 60)"><text fill="#ffd18a" font-family="system-ui" font-size="18" font-weight="700">01 · CHOOSE</text><rect y="60" width="250" height="230" rx="20" fill="#1d231f" stroke="#f59e0b" stroke-opacity=".55"/><path d="M45 205C95 120 150 255 205 125" fill="none" stroke="#f59e0b" stroke-width="5"/><text x="125" y="340" text-anchor="middle" fill="#e0e0e0" font-family="system-ui" font-size="20">Select</text></g><g transform="translate(345 60)"><text fill="#ffd18a" font-family="system-ui" font-size="18" font-weight="700">02 · CONNECT</text><rect y="60" width="250" height="230" rx="20" fill="#1d231f" stroke="#f59e0b" stroke-opacity=".55"/><path d="M45 205C95 120 150 255 205 125" fill="none" stroke="#f59e0b" stroke-width="5"/><text x="125" y="340" text-anchor="middle" fill="#e0e0e0" font-family="system-ui" font-size="20">Build</text></g><g transform="translate(645 60)"><text fill="#ffd18a" font-family="system-ui" font-size="18" font-weight="700">03 · CONFIRM</text><rect y="60" width="250" height="230" rx="20" fill="#1d231f" stroke="#f59e0b" stroke-opacity=".55"/><path d="M45 205C95 120 150 255 205 125" fill="none" stroke="#f59e0b" stroke-width="5"/><text x="125" y="340" text-anchor="middle" fill="#e0e0e0" font-family="system-ui" font-size="20">Continue</text></g><text x="48" y="475" fill="#9a9a9a" font-family="system-ui" font-size="18">Controls remain available to touch, pointer, and keyboard players.</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" role="img" aria-labelledby="title desc">
+  <title id="title">Color Flip direct color controls</title>
+  <desc id="desc">Read the approaching tile, choose Green, Blue, Amber, or Rose directly, and match the player circle when the tile crosses the dashed checkpoint.</desc>
+  <rect width="960" height="520" rx="28" fill="#121412"/>
+
+  <g transform="translate(45 48)">
+    <text fill="#ffd18a" font-family="system-ui, sans-serif" font-size="18" font-weight="700">01 · READ NEXT TILE</text>
+    <rect y="44" width="250" height="290" rx="20" fill="#1d231f" stroke="#f59e0b" stroke-opacity=".55"/>
+    <path d="M30 245H220" stroke="#f7f7f7" stroke-width="2" stroke-dasharray="8 8" opacity=".72"/>
+    <rect x="54" y="90" width="142" height="72" rx="14" fill="#3b82f6" stroke="#fff" stroke-opacity=".65"/>
+    <text x="125" y="137" text-anchor="middle" fill="#07101d" font-family="system-ui, sans-serif" font-size="30" font-weight="800">B</text>
+    <path d="M125 178V218" stroke="#e0e0e0" stroke-width="4" stroke-linecap="round"/>
+    <path d="m115 208 10 12 10-12" fill="none" stroke="#e0e0e0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="125" y="282" text-anchor="middle" fill="#e0e0e0" font-family="system-ui, sans-serif" font-size="18">Dashed checkpoint</text>
+  </g>
+
+  <g transform="translate(355 48)">
+    <text fill="#ffd18a" font-family="system-ui, sans-serif" font-size="18" font-weight="700">02 · CHOOSE DIRECTLY</text>
+    <rect y="44" width="250" height="290" rx="20" fill="#1d231f" stroke="#f59e0b" stroke-opacity=".55"/>
+    <g font-family="system-ui, sans-serif" font-size="16" font-weight="700">
+      <rect x="22" y="72" width="98" height="76" rx="12" fill="#272c29" stroke="#8d9891" stroke-width="2"/>
+      <circle cx="42" cy="96" r="7" fill="#0f9d58" stroke="#fff"/>
+      <text x="56" y="102" fill="#f4f4f4">G · Green</text>
+      <rect x="130" y="72" width="98" height="76" rx="12" fill="#272c29" stroke="#fff" stroke-width="4"/>
+      <circle cx="150" cy="96" r="7" fill="#3b82f6" stroke="#fff"/>
+      <text x="164" y="102" fill="#f4f4f4">B · Blue</text>
+      <text x="179" y="130" text-anchor="middle" fill="#fff" font-size="12">✓ SELECTED</text>
+      <rect x="22" y="162" width="98" height="76" rx="12" fill="#272c29" stroke="#8d9891" stroke-width="2"/>
+      <circle cx="42" cy="186" r="7" fill="#f59e0b" stroke="#fff"/>
+      <text x="56" y="192" fill="#f4f4f4">A · Amber</text>
+      <rect x="130" y="162" width="98" height="76" rx="12" fill="#272c29" stroke="#8d9891" stroke-width="2"/>
+      <circle cx="150" cy="186" r="7" fill="#f43f5e" stroke="#fff"/>
+      <text x="164" y="192" fill="#f4f4f4">R · Rose</text>
+    </g>
+    <text x="125" y="280" text-anchor="middle" fill="#e0e0e0" font-family="system-ui, sans-serif" font-size="16">Buttons or G / B / A / R</text>
+    <text x="125" y="305" text-anchor="middle" fill="#aeb5b0" font-family="system-ui, sans-serif" font-size="14">The canvas is not a control</text>
+  </g>
+
+  <g transform="translate(665 48)">
+    <text fill="#ffd18a" font-family="system-ui, sans-serif" font-size="18" font-weight="700">03 · MATCH ONCE</text>
+    <rect y="44" width="250" height="290" rx="20" fill="#1d231f" stroke="#f59e0b" stroke-opacity=".55"/>
+    <rect x="54" y="92" width="142" height="72" rx="14" fill="#3b82f6" stroke="#fff" stroke-opacity=".65"/>
+    <text x="125" y="139" text-anchor="middle" fill="#07101d" font-family="system-ui, sans-serif" font-size="30" font-weight="800">B</text>
+    <path d="M30 218H220" stroke="#f7f7f7" stroke-width="2" stroke-dasharray="8 8" opacity=".72"/>
+    <circle cx="125" cy="218" r="28" fill="#3b82f6" stroke="#fff" stroke-width="4"/>
+    <text x="125" y="228" text-anchor="middle" fill="#07101d" font-family="system-ui, sans-serif" font-size="27" font-weight="800">B</text>
+    <text x="125" y="282" text-anchor="middle" fill="#86efac" font-family="system-ui, sans-serif" font-size="24" font-weight="800">+1 point</text>
+    <text x="125" y="307" text-anchor="middle" fill="#aeb5b0" font-family="system-ui, sans-serif" font-size="14">One checkpoint evaluation</text>
+  </g>
+
+  <text x="48" y="455" fill="#e0e0e0" font-family="system-ui, sans-serif" font-size="18">If the circle already matches, leave it unchanged or choose the same color—it stays selected.</text>
+  <text x="48" y="486" fill="#9a9a9a" font-family="system-ui, sans-serif" font-size="16">Direct controls remain available to touch, pointer, and keyboard players.</text>
+</svg>

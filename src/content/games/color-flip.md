@@ -23,20 +23,20 @@ artwork:
   modesDiagram: /game-art/color-flip/modes-diagram.svg
   alt: An amber-led path of green, blue, amber, and rose labeled tiles
 presentation:
-  controlsHeading: Match the next labeled tile before stepping forward.
+  controlsHeading: Choose the next labeled color before it reaches the checkpoint.
   controls:
     - label: Visual mode
-      description: Each touch, click, Enter, or Space input cycles to the next color; have the required final G, B, A, or R active at the dashed checkpoint.
+      description: Choose G · Green, B · Blue, A · Amber, or R · Rose directly with its button or keyboard shortcut.
+    - label: Checkpoint
+      description: The chosen color appears in the player circle, and each approaching tile is judged once at the dashed line.
     - label: Turn-based mode
-      description: Use Cycle color and Step forward with no timing requirement.
-    - label: Labels
-      description: Every color is paired with G, B, A, or R so state never depends on color alone.
-  controlsDiagramAlt: Controls show cycling the labeled player color before moving to a matching tile.
-  controlsDiagramCaption: Each tile is evaluated once at the dashed checkpoint; intermediate colors are safe before the next crossing.
+      description: Use Cycle color and Step forward with no timing requirement; direct selection applies to visual mode.
+  controlsDiagramAlt: A labeled tile approaches while four direct Green, Blue, Amber, and Rose controls set the player circle before the dashed checkpoint.
+  controlsDiagramCaption: Choose a color directly; selecting the active color keeps it selected, and the tile is evaluated once at the dashed checkpoint.
   secondaryDiagramAlt: Visual moving-path mode and untimed turn-based mode are shown side by side.
-  secondaryDiagramCaption: Turn-based mode exposes current color, next tile, Cycle color, and Step forward.
+  secondaryDiagramCaption: Turn-based mode keeps the fixed Cycle color and Step forward controls.
   gameplayPreviewAlt: Color Flip displays a labeled four-color tile road and mode controls.
-  gameplayPreviewCaption: Visual and turn-based modes preserve the same four-color cycle and labels.
+  gameplayPreviewCaption: Visual mode uses four direct color choices; turn-based mode keeps its untimed cycle control and labels.
   relatedHeading: Compare both modes—or try another game.
   relatedGuideLabel: Color Flip visual and turn-based guide
 genre: Reflex
@@ -46,6 +46,6 @@ featured: true
 order: 3
 ---
 
-Color Flip is a timing game built around four clearly labeled colors. Each input cycles to the next color rather than selecting the displayed color. Intermediate colors are safe between checkpoints; have the required final green, blue, amber, or rose active when the next tile reaches the dashed line.
+Color Flip is a timing game built around four clearly labeled colors. In visual mode, choose **G · Green**, **B · Blue**, **A · Amber**, or **R · Rose** directly. The choice appears in the player circle, and each approaching tile is judged exactly once when its center reaches the dashed checkpoint. If the circle already has the required color, leave it unchanged or select that same color again—it stays selected.
 
-The visual mode supports touch and keyboard controls. Turn-based mode announces each upcoming tile and replaces the moving canvas with simple Cycle color and Step forward buttons.
+The four native color buttons support touch, pointer, and keyboard use, and G, B, A, and R are direct shortcuts after the run starts. Clicking the moving canvas does not select a color. Turn-based mode keeps its untimed **Cycle color** and **Step forward** controls and announces each upcoming tile.

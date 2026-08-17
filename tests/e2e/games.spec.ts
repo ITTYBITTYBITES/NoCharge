@@ -105,89 +105,157 @@ test('Word Tile Rush waits for input and supports keyboard selection', async ({ 
   await expect(page.getByRole('button', { name: 'Submit' })).toBeEnabled();
 });
 
-test('Color Flip waits to start and permits Green to Blue to Amber across animation frames', async ({ page }) => {
+test('Color Flip exposes four direct color buttons with lifecycle and selected state', async ({ page }) => {
   await page.goto('/games/color-flip/?colorFlipTest=checkpoint');
-  await expect(page.getByRole('button', { name: 'Start' })).toBeVisible();
-  await expect(page.locator('[data-cf="score"]')).toHaveText('0');
-  await page.waitForTimeout(500);
-  await expect(page.locator('[data-cf="score"]')).toHaveText('0');
+  const choices = [
+    ['Green', 'G'],
+    ['Blue', 'B'],
+    ['Amber', 'A'],
+    ['Rose', 'R'],
+  ] as const;
 
-  await page.getByRole('button', { name: 'Start' }).click();
-  await setColorFlipScenario(page, {
-    speed: 0.2,
-    tiles: [
-      { y: 0.72, color: 'green' },
-      { y: 0.5, color: 'amber' },
-    ],
-  });
-  await expect(page.locator('[data-cf="score"]')).toHaveText('1', { timeout: 1_000 });
-
-  // Inputs deliberately span several animation frames while the evaluated
-  // Green tile is still overlapping the player marker.
-  await page.keyboard.press('Space');
-  await page.waitForTimeout(100);
-  await expect(page.locator('[data-cf="color-label"]')).toHaveText('Blue');
-  await page.keyboard.press('Space');
-  await page.waitForTimeout(100);
-  await expect(page.locator('[data-cf="color-label"]')).toHaveText('Amber');
-  await expect(page.locator('[data-cf="overlay"]')).not.toHaveClass(/is-open/);
-  await expect(page.locator('[data-cf="score"]')).toHaveText('2', { timeout: 1_500 });
-});
-
-test('Color Flip keeps a complete four-color cycle safe between checkpoints', async ({ page }) => {
-  await openColorFlipTestRun(page);
-  await setColorFlipScenario(page, {
-    speed: 0.2,
-    tiles: [
-      { y: 0.72, color: 'green' },
-      { y: 0.42, color: 'green' },
-    ],
-  });
-  await expect(page.locator('[data-cf="score"]')).toHaveText('1', { timeout: 1_000 });
-
-  for (const expected of ['Blue', 'Amber', 'Rose', 'Green']) {
-    await page.keyboard.press('Space');
-    await page.waitForTimeout(100);
-    await expect(page.locator('[data-cf="color-label"]')).toHaveText(expected);
-    await expect(page.locator('[data-cf="overlay"]')).not.toHaveClass(/is-open/);
+  for (const [name, shortcut] of choices) {
+    const button = page.getByRole('button', { name: `Set player color to ${name}`, exact: true });
+    await expect(button).toBeVisible();
+    await expect(button).toBeDisabled();
+    await expect(button).toHaveAttribute('aria-keyshortcuts', shortcut);
+    await expect(button).toHaveAttribute('aria-pressed', name === 'Green' ? 'true' : 'false');
   }
 
-  await expect(page.locator('[data-cf="score"]')).toHaveText('2', { timeout: 1_500 });
+  await page.getByRole('button', { name: 'Start' }).click();
+  await setColorFlipScenario(page, { tiles: [] });
+  await page.getByRole('button', { name: 'Set player color to Green' }).click();
+  await expect(page.locator('[data-cf="color-label"]')).toHaveText('Green');
+  await expect(page.getByRole('button', { name: 'Set player color to Green' })).toHaveAttribute('aria-pressed', 'true');
+
+  await page.getByRole('button', { name: 'Set player color to Amber' }).click();
+  await expect(page.locator('[data-cf="color-label"]')).toHaveText('Amber');
+  await expect(page.getByRole('button', { name: 'Set player color to Green' })).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.getByRole('button', { name: 'Set player color to Amber' })).toHaveAttribute('aria-pressed', 'true');
 });
 
-test('Color Flip scores a matching checkpoint once and not again during cleanup', async ({ page }) => {
+test('Color Flip G, B, A, and R shortcuts select directly and ignore modified or typing input', async ({ page }) => {
   await openColorFlipTestRun(page);
+  await setColorFlipScenario(page, { tiles: [] });
+
+  for (const [key, expected] of [
+    ['r', 'Rose'],
+    ['g', 'Green'],
+    ['b', 'Blue'],
+    ['a', 'Amber'],
+  ] as const) {
+    await page.keyboard.press(key);
+    await expect(page.locator('[data-cf="color-label"]')).toHaveText(expected);
+  }
+
+  await page.keyboard.press('Control+g');
+  await expect(page.locator('[data-cf="color-label"]')).toHaveText('Amber');
+  await page.evaluate(() => {
+    const input = document.createElement('input');
+    input.setAttribute('aria-label', 'Shortcut test input');
+    document.body.append(input);
+    input.focus();
+  });
+  await page.keyboard.press('r');
+  await expect(page.locator('[data-cf="color-label"]')).toHaveText('Amber');
+});
+
+test('Color Flip direct buttons support Tab with Enter or Space', async ({ page }) => {
+  await openColorFlipTestRun(page);
+  await setColorFlipScenario(page, { tiles: [] });
+  await page.getByRole('button', { name: 'Turn-based mode' }).focus();
+
+  for (const [name, activation] of [
+    ['Green', 'Enter'],
+    ['Blue', 'Space'],
+    ['Amber', 'Enter'],
+    ['Rose', 'Space'],
+  ] as const) {
+    await page.keyboard.press('Tab');
+    const button = page.getByRole('button', { name: `Set player color to ${name}` });
+    await expect(button).toBeFocused();
+    await page.keyboard.press(activation);
+    await expect(button).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('[data-cf="color-label"]')).toHaveText(name);
+  }
+});
+
+test('Color Flip canvas clicks do not change the selected color', async ({ page }) => {
+  await openColorFlipTestRun(page);
+  await setColorFlipScenario(page, { tiles: [], playerColor: 'amber' });
+  await page.locator('[data-cf="canvas"]').click({ position: { x: 40, y: 40 } });
+  await expect(page.locator('[data-cf="color-label"]')).toHaveText('Amber');
+  await expect(page.getByRole('button', { name: 'Set player color to Amber' })).toHaveAttribute('aria-pressed', 'true');
+});
+
+test('Color Flip restart returns to a disabled Green selection until Start', async ({ page }) => {
+  await openColorFlipTestRun(page);
+  await setColorFlipScenario(page, { tiles: [] });
+  await page.getByRole('button', { name: 'Set player color to Rose' }).click();
+  await page.getByRole('button', { name: 'New game' }).click();
+
+  await expect(page.locator('[data-cf="color-label"]')).toHaveText('Green');
+  await expect(page.getByRole('button', { name: 'Set player color to Green' })).toHaveAttribute('aria-pressed', 'true');
+  for (const name of ['Green', 'Blue', 'Amber', 'Rose']) {
+    await expect(page.getByRole('button', { name: `Set player color to ${name}` })).toBeDisabled();
+  }
+  await expect(page.getByRole('button', { name: 'Start' })).toBeVisible();
+});
+
+test('Color Flip keeps Green selected and scores a Green checkpoint exactly once', async ({ page }) => {
+  await openColorFlipTestRun(page);
+  await page.getByRole('button', { name: 'Set player color to Green' }).click();
   await setColorFlipScenario(page, { speed: 0.2, tiles: [{ y: 0.72, color: 'green' }] });
 
+  await expect(page.locator('[data-cf="color-label"]')).toHaveText('Green');
   await expect(page.locator('[data-cf="score"]')).toHaveText('1', { timeout: 1_000 });
   await page.waitForTimeout(2_600);
   await expect(page.locator('[data-cf="score"]')).toHaveText('1');
   await expect(page.locator('[data-cf="overlay"]')).not.toHaveClass(/is-open/);
 });
 
-test('Color Flip consistently ends on a wrong final color at the next checkpoint', async ({ page }) => {
+test('Color Flip scores a directly selected matching color once', async ({ page }) => {
   await openColorFlipTestRun(page);
-  await setColorFlipScenario(page, {
-    speed: 0.2,
-    tiles: [
-      { y: 0.72, color: 'green' },
-      { y: 0.5, color: 'amber' },
-    ],
-  });
+  await page.getByRole('button', { name: 'Set player color to Amber' }).click();
+  await expect(page.locator('[data-cf="color-label"]')).toHaveText('Amber');
+  await setColorFlipScenario(page, { speed: 0.2, tiles: [{ y: 0.72, color: 'amber' }] });
 
   await expect(page.locator('[data-cf="score"]')).toHaveText('1', { timeout: 1_000 });
-  await expect(page.locator('[data-cf="overlay"]')).toHaveClass(/is-open/, { timeout: 1_500 });
-  await expect(page.locator('[data-cf="result"]')).toContainText('Score 1.');
+  await page.waitForTimeout(500);
+  await expect(page.locator('[data-cf="score"]')).toHaveText('1');
+  await expect(page.locator('[data-cf="overlay"]')).not.toHaveClass(/is-open/);
 });
 
-test('Color Flip pause and resume near a checkpoint neither skips nor duplicates scoring', async ({ page }) => {
+test('Color Flip ends at the checkpoint for a directly selected wrong color', async ({ page }) => {
   await openColorFlipTestRun(page);
-  await page.getByRole('button', { name: 'Pause game' }).click();
-  await setColorFlipScenario(page, { speed: 0.2, tiles: [{ y: 0.77, color: 'green' }] });
+  await page.getByRole('button', { name: 'Set player color to Rose' }).click();
+  await expect(page.locator('[data-cf="color-label"]')).toHaveText('Rose');
+  await setColorFlipScenario(page, { speed: 0.2, tiles: [{ y: 0.72, color: 'blue' }] });
 
+  await expect(page.locator('[data-cf="overlay"]')).toHaveClass(/is-open/, { timeout: 1_000 });
+  await expect(page.locator('[data-cf="result"]')).toContainText('Score 0.');
+  for (const name of ['Green', 'Blue', 'Amber', 'Rose']) {
+    await expect(page.getByRole('button', { name: `Set player color to ${name}` })).toBeDisabled();
+  }
+});
+
+test('Color Flip pause preserves selection and neither skips nor duplicates a checkpoint', async ({ page }) => {
+  await openColorFlipTestRun(page);
+  await page.getByRole('button', { name: 'Set player color to Amber' }).click();
+  await page.getByRole('button', { name: 'Pause game' }).click();
+  await setColorFlipScenario(page, { speed: 0.2, tiles: [{ y: 0.77, color: 'amber' }] });
+
+  for (const name of ['Green', 'Blue', 'Amber', 'Rose']) {
+    await expect(page.getByRole('button', { name: `Set player color to ${name}` })).toBeDisabled();
+  }
+  await page.keyboard.press('g');
+  await expect(page.locator('[data-cf="color-label"]')).toHaveText('Amber');
   await page.waitForTimeout(500);
   await expect(page.locator('[data-cf="score"]')).toHaveText('0');
+
   await page.locator('[data-game-toolbar="pause"]').click();
+  await expect(page.getByRole('button', { name: 'Set player color to Amber' })).toBeEnabled();
+  await expect(page.locator('[data-cf="color-label"]')).toHaveText('Amber');
   await expect(page.locator('[data-cf="score"]')).toHaveText('1', { timeout: 1_000 });
   await page.waitForTimeout(500);
   await expect(page.locator('[data-cf="score"]')).toHaveText('1');
@@ -218,6 +286,27 @@ test('Color Flip consent-modal pause preserves the pending checkpoint', async ({
   await expect(page.locator('[data-cf="score"]')).toHaveText('1', { timeout: 1_000 });
   await page.waitForTimeout(400);
   await expect(page.locator('[data-cf="score"]')).toHaveText('1');
+});
+
+test('Color Flip keeps direct color controls visible in immersive mode', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(document, 'fullscreenEnabled', { configurable: true, get: () => false });
+  });
+  await page.goto('/games/color-flip/');
+  const enter = page.getByRole('button', { name: 'Enter immersive mode' });
+  test.skip((await enter.count()) === 0, 'This browser does not allow the Fullscreen feature-detection override.');
+  await enter.click();
+
+  await expect(page.locator('[data-game-viewport]')).toHaveClass(/is-immersive/);
+  for (const name of ['Green', 'Blue', 'Amber', 'Rose']) {
+    await expect(page.getByRole('button', { name: `Set player color to ${name}` })).toBeVisible();
+  }
+  const chooserBox = await page.locator('.cf__color-chooser').boundingBox();
+  const viewport = page.viewportSize();
+  expect(chooserBox).not.toBeNull();
+  expect(viewport).not.toBeNull();
+  expect(chooserBox!.y).toBeGreaterThanOrEqual(0);
+  expect(chooserBox!.y + chooserBox!.height).toBeLessThanOrEqual(viewport!.height);
 });
 
 test('Color Flip offers a complete turn-based mode', async ({ page }) => {
