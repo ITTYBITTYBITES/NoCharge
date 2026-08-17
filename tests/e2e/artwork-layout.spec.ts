@@ -29,7 +29,7 @@ test('Memory Match artwork preserves crops, focus visibility, and layout stabili
   });
   expect(desktopRatio).toBeCloseTo(16 / 9, 1);
 
-  const restart = page.locator('[data-mm="restart"]');
+  const restart = page.locator('[data-game-toolbar="restart"]');
   await restart.focus();
   await expect(restart).toBeFocused();
   expect(await restart.evaluate((element) => getComputedStyle(element).outlineWidth)).not.toBe('0px');
@@ -55,14 +55,28 @@ test('consent UI remains above the Memory Match artwork at mobile size', async (
 
   const banner = page.locator('[data-consent-banner]');
   await expect(banner).toBeVisible();
-  expect(await banner.evaluate((element) => Number(getComputedStyle(element).zIndex))).toBeGreaterThan(1);
+  // WebKit reports `auto` for some computed z-index values. Check the actual
+  // stacking outcome instead of relying on that browser-specific string.
+  expect(
+    await banner.evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+      return !!hit && element.contains(hit);
+    }),
+  ).toBe(true);
   await expect(page.locator('.game-shell__artwork')).toBeVisible();
 
   await page.getByRole('button', { name: 'Customize' }).click();
   const modal = page.locator('[data-consent-modal]');
   await expect(modal).toBeVisible();
-  expect(await modal.evaluate((element) => Number(getComputedStyle(element).zIndex))).toBeGreaterThan(
-    await banner.evaluate((element) => Number(getComputedStyle(element).zIndex)),
-  );
+  expect(
+    await modal.evaluate((element) => {
+      const panel = element.querySelector('.consent-modal__panel');
+      if (!panel) return false;
+      const rect = panel.getBoundingClientRect();
+      const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+      return !!hit && panel.contains(hit);
+    }),
+  ).toBe(true);
   await expect(page.locator('[data-consent-analytics]')).toBeFocused();
 });

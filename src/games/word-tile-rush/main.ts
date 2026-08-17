@@ -1,5 +1,6 @@
 import { play, unlockAudio } from '../shared/audio';
 import { loadScore, saveScore } from '../shared/storage';
+import type { GameController, PauseReason } from '../shared/types';
 import './styles.css';
 
 const GAME_ID = 'word-tile-rush';
@@ -43,7 +44,7 @@ const LETTER_POOL = 'EEEEEEEEEEEEAAAAAAAAAIIIIIIIIIOOOOOOOONNNNNNRRRRRRTTTTTTLLL
 
 type Cell = { letter: string | null; selected: boolean };
 
-export function mountWordTileRush(root: HTMLElement): () => void {
+export function mountWordTileRush(root: HTMLElement): GameController {
   root.innerHTML = `
     <div class="wtr">
       <div class="wtr__hud">
@@ -54,7 +55,6 @@ export function mountWordTileRush(root: HTMLElement): () => void {
         <div class="wtr__actions">
           <button type="button" class="btn btn--ghost btn--sm" data-wtr="submit" disabled>Submit</button>
           <button type="button" class="btn btn--ghost btn--sm" data-wtr="clear">Clear</button>
-          <button type="button" class="btn btn--ghost btn--sm" data-wtr="restart">New</button>
         </div>
       </div>
       <div class="wtr__word" data-wtr="word" aria-live="polite"></div>
@@ -78,7 +78,6 @@ export function mountWordTileRush(root: HTMLElement): () => void {
   const resultEl = root.querySelector<HTMLElement>('[data-wtr="result"]')!;
   const submitBtn = root.querySelector<HTMLButtonElement>('[data-wtr="submit"]')!;
   const clearBtn = root.querySelector<HTMLButtonElement>('[data-wtr="clear"]')!;
-  const restartBtn = root.querySelector<HTMLButtonElement>('[data-wtr="restart"]')!;
   const againBtn = root.querySelector<HTMLButtonElement>('[data-wtr="again"]')!;
 
   let grid: Cell[][] = [];
@@ -91,6 +90,7 @@ export function mountWordTileRush(root: HTMLElement): () => void {
   let alive = true;
   let started = false;
   let rejecting = false;
+  let paused = false;
   const cellEls: HTMLButtonElement[][] = [];
 
   bestEl.textContent = String(best);
@@ -113,7 +113,7 @@ export function mountWordTileRush(root: HTMLElement): () => void {
         const cell = grid[r]![c]!;
         const el = cellEls[r]![c]!;
         el.textContent = cell.letter ?? '';
-        el.disabled = !cell.letter;
+        el.disabled = !cell.letter || paused || !alive;
         el.classList.toggle('is-empty', !cell.letter);
         el.classList.toggle('is-selected', cell.selected);
         el.classList.remove('is-invalid');
@@ -124,7 +124,8 @@ export function mountWordTileRush(root: HTMLElement): () => void {
         );
       }
     }
-    submitBtn.disabled = path.length === 0;
+    submitBtn.disabled = paused || !alive || path.length === 0;
+    clearBtn.disabled = paused || !alive || path.length === 0;
     wordEl.textContent = path.map((p) => grid[p.r]![p.c]!.letter).join('');
   }
 
@@ -142,7 +143,7 @@ export function mountWordTileRush(root: HTMLElement): () => void {
         // Pointer input is handled as a drag on the board. A keyboard-created
         // click has detail 0 and builds the same path one letter at a time.
         el.addEventListener('click', (event) => {
-          if (event.detail !== 0 || !grid[r]?.[c]?.letter) return;
+          if (paused || event.detail !== 0 || !grid[r]?.[c]?.letter) return;
           prepareForInput();
           ensureStarted();
           addToPath({ r, c });
@@ -208,7 +209,7 @@ export function mountWordTileRush(root: HTMLElement): () => void {
   }
 
   function addToPath(pos: { r: number; c: number }) {
-    if (!alive) return;
+    if (paused || !alive) return;
     const last = path[path.length - 1];
     if (last && last.r === pos.r && last.c === pos.c) return;
     // Allow backtrack one step
@@ -230,6 +231,7 @@ export function mountWordTileRush(root: HTMLElement): () => void {
   }
 
   function submitWord() {
+    if (paused || !alive) return;
     const word = path.map((p) => grid[p.r]![p.c]!.letter).join('').toLowerCase();
     if (word.length < 3) {
       clearSelection();
@@ -274,7 +276,7 @@ export function mountWordTileRush(root: HTMLElement): () => void {
   }
 
   function dropRow() {
-    if (!alive || document.hidden || dragging || path.length > 0) return;
+    if (paused || !alive || document.hidden || dragging || path.length > 0) return;
     // If top row has any letter, game over
     if (grid[0]!.some((c) => c.letter)) {
       endGame();
@@ -311,7 +313,7 @@ export function mountWordTileRush(root: HTMLElement): () => void {
   function startLoop() {
     clearInterval(dropTimer);
     started = true;
-    dropTimer = window.setInterval(dropRow, 2800);
+    if (!paused && alive) dropTimer = window.setInterval(dropRow, 2800);
   }
 
   function ensureStarted() {
@@ -319,7 +321,7 @@ export function mountWordTileRush(root: HTMLElement): () => void {
   }
 
   function onPointerDown(e: PointerEvent) {
-    if (!alive) return;
+    if (paused || !alive) return;
     e.preventDefault();
     unlockAudio();
     prepareForInput();
@@ -334,13 +336,13 @@ export function mountWordTileRush(root: HTMLElement): () => void {
   }
 
   function onPointerMove(e: PointerEvent) {
-    if (!dragging || !alive) return;
+    if (paused || !dragging || !alive) return;
     const pos = cellFromPoint(e.clientX, e.clientY);
     if (pos) addToPath(pos);
   }
 
   function onPointerUp() {
-    if (!dragging) return;
+    if (paused || !dragging) return;
     dragging = false;
     submitWord();
   }
@@ -353,10 +355,12 @@ export function mountWordTileRush(root: HTMLElement): () => void {
   boardEl.addEventListener('pointerup', onPointerUp);
   boardEl.addEventListener('pointercancel', onPointerUp);
   submitBtn.addEventListener('click', () => {
+    if (paused) return;
     unlockAudio();
     submitWord();
   });
   clearBtn.addEventListener('click', () => {
+    if (paused) return;
     unlockAudio();
     clearTimeout(feedbackTimer);
     clearSelection();
@@ -365,13 +369,41 @@ export function mountWordTileRush(root: HTMLElement): () => void {
     unlockAudio();
     resetGrid();
   };
-  restartBtn.addEventListener('click', restart);
-  againBtn.addEventListener('click', restart);
+  againBtn.addEventListener('click', () => {
+    if (paused) return;
+    restart();
+  });
 
-  return () => {
-    alive = false;
-    clearInterval(dropTimer);
-    clearTimeout(feedbackTimer);
-    root.innerHTML = '';
+  return {
+    destroy() {
+      alive = false;
+      clearInterval(dropTimer);
+      clearTimeout(feedbackTimer);
+      root.innerHTML = '';
+    },
+    pause(_reason?: PauseReason) {
+      if (paused) return;
+      paused = true;
+      dragging = false;
+      clearInterval(dropTimer);
+      // Do not let a pending invalid-word timeout clear a selected path while
+      // the player is away.
+      clearTimeout(feedbackTimer);
+      renderCells();
+    },
+    resume() {
+      if (!paused) return;
+      paused = false;
+      // A fresh interval deliberately starts after resuming; hidden time is
+      // never converted into missed row drops.
+      if (alive && started) startLoop();
+      renderCells();
+    },
+    isPaused() {
+      return paused;
+    },
+    restart() {
+      resetGrid();
+    },
   };
 }

@@ -1,0 +1,172 @@
+---
+import { getCollection } from 'astro:content';
+import ArticleCard from '../../components/ArticleCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+
+const games = (await getCollection('games')).filter((game) => !game.data.draft);
+const gameById = new Map(games.map((game) => [game.id, game]));
+const articles = (await getCollection('articles'))
+  .filter((article) => !article.data.draft)
+  .sort((a, b) => b.data.published.localeCompare(a.data.published) || a.data.title.localeCompare(b.data.title));
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'NoCharge Articles',
+  description: 'Original play notes for Memory Match, Word Tile Rush, and Color Flip.',
+  url: 'https://nocharge.net/articles/',
+  mainEntity: {
+    '@type': 'ItemList',
+    numberOfItems: articles.length,
+    itemListElement: articles.map((article, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: article.data.title,
+      url: `https://nocharge.net/articles/${article.id}/`,
+    })),
+  },
+};
+---
+
+<BaseLayout
+  title="Game Articles"
+  description="Original NoCharge articles about the real rules, scoring, controls, and choices in Memory Match, Word Tile Rush, and Color Flip."
+  path="/articles/"
+  schema={schema}
+>
+  <div class="articles-page">
+    <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Articles' }]} />
+    <header class="articles-hero">
+      <p class="eyebrow">Player notes</p>
+      <h1 class="page-title">Useful reads for the next run.</h1>
+      <p class="lede">
+        These articles examine one real game behavior at a time: a board scan, a score formula, a path rule, a
+        timing choice, or an accessible way to play. They complement rather than repeat the full guides.
+      </p>
+    </header>
+
+    <section aria-labelledby="articles-list-heading">
+      <div class="articles-heading">
+        <div>
+          <p class="section-kicker">All articles</p>
+          <h2 id="articles-list-heading">Strategies, systems, and controls</h2>
+        </div>
+        <a class="section-link" href="/guides/">Read the definitive guides →</a>
+      </div>
+      <div class="articles-grid">
+        {
+          articles.map((article) => {
+            const game = gameById.get(article.data.game);
+            if (!game) return null;
+            return (
+              <ArticleCard
+                slug={article.id}
+                title={article.data.title}
+                description={article.data.description}
+                gameTitle={game.data.title}
+                readTime={article.data.readTime}
+                published={article.data.published}
+                topics={article.data.topics}
+                accent={game.data.accent}
+              />
+            );
+          })
+        }
+      </div>
+    </section>
+
+    <section class="articles-note panel" aria-labelledby="articles-note-heading">
+      <div>
+        <p class="section-kicker">How these are written</p>
+        <h2 id="articles-note-heading">Grounded in the games on this site.</h2>
+      </div>
+      <p>
+        Every article is checked against the current game behavior and links back to both the game and its
+        definitive guide. They offer examples and decisions to try, not promises about performance or benefits.
+      </p>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .articles-page {
+    display: grid;
+    gap: clamp(2.5rem, 7vw, 5rem);
+  }
+
+  .articles-hero {
+    max-width: 54rem;
+    padding-top: 1rem;
+  }
+
+  .articles-heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .articles-heading > div {
+    display: grid;
+    gap: 0.4rem;
+    max-width: 45rem;
+  }
+
+  .articles-heading h2,
+  .articles-note h2 {
+    font-size: clamp(1.65rem, 4vw, 2.4rem);
+    letter-spacing: -0.035em;
+    line-height: 1.1;
+  }
+
+  .section-kicker {
+    color: var(--accent-strong);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .section-link {
+    min-height: 44px;
+    color: var(--accent-strong);
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  .articles-grid {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .articles-note {
+    display: grid;
+    gap: 1rem 3rem;
+    padding: clamp(1.25rem, 4vw, 2rem);
+  }
+
+  .articles-note > div {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .articles-note > p {
+    max-width: 42rem;
+    color: var(--muted);
+  }
+
+  @media (min-width: 52rem) {
+    .articles-note {
+      grid-template-columns: minmax(0, 0.9fr) minmax(20rem, 1.1fr);
+    }
+  }
+
+  @media (min-width: 60rem) {
+    .articles-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

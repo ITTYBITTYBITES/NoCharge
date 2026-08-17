@@ -120,6 +120,14 @@ const { slug, title, tagline, emoji, accent = '#0f9d58', artwork, genre, session
   }
 
   .game-card__cta {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.45rem;
+    /* The local opaque backdrop preserves contrast even in engines that do
+       not calculate a parent gradient for a transparent inline element. */
+    background-color: #1c1c1c;
     color: var(--card-accent);
     font-size: 0.9rem;
     font-weight: 700;

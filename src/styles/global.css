@@ -26,7 +26,10 @@
 
 html {
   min-height: 100%;
-  background: var(--bg);
+  /* Keep a literal canvas color alongside the custom property. This gives
+     WebKit and accessibility engines an unambiguous dark backdrop before
+     gradients and custom properties are resolved. */
+  background-color: #121212;
   -webkit-text-size-adjust: 100%;
 }
 
@@ -35,10 +38,10 @@ body {
   min-height: 100svh;
   margin: 0;
   color: var(--text);
-  background:
+  background-color: #121212;
+  background-image:
     radial-gradient(circle at 12% 8%, rgba(15, 157, 88, 0.1), transparent 28rem),
-    radial-gradient(circle at 88% 92%, rgba(15, 157, 88, 0.06), transparent 26rem),
-    var(--bg);
+    radial-gradient(circle at 88% 92%, rgba(15, 157, 88, 0.06), transparent 26rem);
   font-family: var(--font);
   font-size: 1rem;
   line-height: 1.55;
@@ -364,19 +367,8 @@ p {
   text-underline-offset: 3px;
 }
 
-.ad-banner[hidden],
 .site-banner[hidden] {
   display: none;
-}
-
-.ad-banner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 250px;
-  margin: 0.25rem 0 0.5rem;
-  border-radius: var(--radius);
 }
 
 /* Shared ad slot ---------------------------------------------------------- */
@@ -490,8 +482,7 @@ body:has(.site-banner--sticky) .site-shell {
 
 /* Ads are visual-only; hide them from print. */
 @media print {
-  .site-banner,
-  .ad-banner {
+  .site-banner {
     display: none;
   }
 }

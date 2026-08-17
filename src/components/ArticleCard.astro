@@ -1,0 +1,105 @@
+---
+interface Props {
+  slug: string;
+  title: string;
+  description: string;
+  gameTitle: string;
+  readTime: number;
+  published: string;
+  topics: string[];
+  accent?: string;
+}
+
+const { slug, title, description, gameTitle, readTime, published, topics, accent = '#12b66a' } = Astro.props;
+const publishedLabel = new Date(`${published}T12:00:00`).toLocaleDateString('en-US', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+});
+---
+
+<article class="article-card" style={`--article-accent:${accent}`}>
+  <p class="article-card__game">{gameTitle}</p>
+  <h3><a href={`/articles/${slug}/`}>{title}</a></h3>
+  <p class="article-card__description">{description}</p>
+  <ul class="article-card__topics" aria-label="Topics">
+    {topics.slice(0, 3).map((topic) => <li>{topic}</li>)}
+  </ul>
+  <footer>
+    <span>{readTime} min read</span>
+    <span aria-hidden="true">·</span>
+    <time datetime={published}>{publishedLabel}</time>
+  </footer>
+</article>
+
+<style>
+  .article-card {
+    display: grid;
+    align-content: start;
+    gap: 0.7rem;
+    min-height: 100%;
+    padding: 1.1rem;
+    border: 1px solid var(--line);
+    border-top: 3px solid color-mix(in srgb, var(--article-accent) 70%, transparent);
+    border-radius: var(--radius);
+    background: var(--panel);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16);
+  }
+
+  .article-card__game {
+    color: var(--accent-strong);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  .article-card h3 {
+    font-size: 1.08rem;
+    letter-spacing: -0.022em;
+    line-height: 1.25;
+  }
+
+  .article-card h3 a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .article-card h3 a {
+    position: relative;
+  }
+
+  .article-card__description {
+    color: var(--muted);
+    font-size: 0.87rem;
+    line-height: 1.55;
+  }
+
+  .article-card__topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .article-card__topics li {
+    padding: 0.15rem 0.45rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: 0.7rem;
+  }
+
+  .article-card footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: auto;
+    padding-top: 0.2rem;
+    color: var(--muted);
+    font-size: 0.76rem;
+  }
+</style>

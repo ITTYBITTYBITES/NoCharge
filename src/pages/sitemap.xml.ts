@@ -9,12 +9,21 @@ export const GET: APIRoute = async ({ site }) => {
   const guides = (await getCollection('guides'))
     .filter((guide) => !guide.data.draft)
     .sort((a, b) => a.data.order - b.data.order);
+  const articles = (await getCollection('articles'))
+    .filter((article) => !article.data.draft)
+    .sort((a, b) => a.data.title.localeCompare(b.data.title));
   const paths = [
     '/',
     '/arcade/',
     ...games.map((game) => `/games/${game.id}/`),
     '/guides/',
     ...guides.map((guide) => `/guides/${guide.id}/`),
+    '/articles/',
+    ...articles.map((article) => `/articles/${article.id}/`),
+    '/about/',
+    '/terms/',
+    '/advertising/',
+    '/changelog/',
     '/privacy/',
   ];
   const urls = paths

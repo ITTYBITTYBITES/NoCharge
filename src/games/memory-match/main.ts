@@ -1,10 +1,12 @@
 import { play, unlockAudio } from '../shared/audio';
 import { loadScore, saveScore } from '../shared/storage';
+import type { GameController, PauseReason } from '../shared/types';
 import { shuffle } from '../shared/utils';
 import './styles.css';
 
 const GAME_ID = 'memory-match';
 const PAIRS = ['🔷', '🔶', '🟣', '🟢', '🔵', '🟡', '⚪', '🔺'] as const;
+const MISMATCH_DELAY = 650;
 
 type Card = {
   id: number;
@@ -14,7 +16,16 @@ type Card = {
   matched: boolean;
 };
 
-export function mountMemoryMatch(root: HTMLElement): () => void {
+type PendingMismatch = {
+  firstCard: Card;
+  secondCard: Card;
+  activeRound: number;
+  remaining: number;
+  startedAt: number;
+  timer: number | null;
+};
+
+export function mountMemoryMatch(root: HTMLElement): GameController {
   root.innerHTML = `
     <div class="mm">
       <div class="mm__hud">
@@ -22,7 +33,6 @@ export function mountMemoryMatch(root: HTMLElement): () => void {
           <span>Moves <strong data-mm="moves">0</strong></span>
           <span>Best <strong data-mm="best">—</strong></span>
         </div>
-        <button type="button" class="btn btn--ghost btn--sm" data-mm="restart">New game</button>
       </div>
       <div class="mm__board" data-mm="board" role="group" aria-label="Memory cards"></div>
       <div class="mm__overlay" data-mm="overlay">
@@ -38,16 +48,17 @@ export function mountMemoryMatch(root: HTMLElement): () => void {
   const bestEl = root.querySelector<HTMLElement>('[data-mm="best"]')!;
   const overlay = root.querySelector<HTMLElement>('[data-mm="overlay"]')!;
   const resultEl = root.querySelector<HTMLElement>('[data-mm="result"]')!;
-  const restartBtn = root.querySelector<HTMLButtonElement>('[data-mm="restart"]')!;
   const againBtn = root.querySelector<HTMLButtonElement>('[data-mm="again"]')!;
 
   let cards: Card[] = [];
   let lock = false;
+  let paused = false;
   let first: Card | null = null;
   let moves = 0;
   let matched = 0;
   let round = 0;
   let best = loadScore(GAME_ID);
+  let pendingMismatch: PendingMismatch | null = null;
 
   bestEl.textContent = best > 0 ? String(best) : '—';
 
@@ -58,8 +69,49 @@ export function mountMemoryMatch(root: HTMLElement): () => void {
     movesEl.classList.add('score-pop');
   }
 
+  function clearPendingMismatch() {
+    if (pendingMismatch?.timer != null) window.clearTimeout(pendingMismatch.timer);
+    pendingMismatch = null;
+  }
+
+  function settleMismatch(mismatch: PendingMismatch) {
+    if (pendingMismatch !== mismatch || mismatch.activeRound !== round) return;
+    pendingMismatch = null;
+    if (paused) return;
+    mismatch.firstCard.flipped = false;
+    mismatch.secondCard.flipped = false;
+    mismatch.firstCard.el.classList.remove('is-flipped');
+    mismatch.secondCard.el.classList.remove('is-flipped');
+    mismatch.firstCard.el.setAttribute('aria-label', `Card ${mismatch.firstCard.id + 1} of ${cards.length}, hidden`);
+    mismatch.secondCard.el.setAttribute('aria-label', `Card ${mismatch.secondCard.id + 1} of ${cards.length}, hidden`);
+    first = null;
+    lock = false;
+  }
+
+  function scheduleMismatch(mismatch: PendingMismatch) {
+    if (paused || mismatch.activeRound !== round) return;
+    mismatch.startedAt = performance.now();
+    mismatch.timer = window.setTimeout(() => settleMismatch(mismatch), mismatch.remaining);
+  }
+
+  function queueMismatch(firstCard: Card, secondCard: Card, activeRound: number) {
+    clearPendingMismatch();
+    const mismatch: PendingMismatch = {
+      firstCard,
+      secondCard,
+      activeRound,
+      remaining: MISMATCH_DELAY,
+      startedAt: performance.now(),
+      timer: null,
+    };
+    pendingMismatch = mismatch;
+    scheduleMismatch(mismatch);
+  }
+
   function build() {
     round += 1;
+    root.classList.remove('game-root--complete');
+    clearPendingMismatch();
     lock = false;
     first = null;
     moves = 0;
@@ -81,16 +133,17 @@ export function mountMemoryMatch(root: HTMLElement): () => void {
       `;
       const card: Card = { id, symbol, el, flipped: false, matched: false };
       el.addEventListener('click', () => {
+        if (paused) return;
         unlockAudio();
-        void onFlip(card);
+        onFlip(card);
       });
       board.appendChild(el);
       return card;
     });
   }
 
-  async function onFlip(card: Card) {
-    if (lock || card.flipped || card.matched) return;
+  function onFlip(card: Card) {
+    if (paused || lock || card.flipped || card.matched) return;
 
     card.flipped = true;
     card.el.classList.add('is-flipped');
@@ -136,9 +189,10 @@ export function mountMemoryMatch(root: HTMLElement): () => void {
         }
         bestEl.textContent = String(best);
         resultEl.textContent = `Finished in ${moves} moves. Best: ${best}.`;
+        root.classList.add('game-root--complete');
         overlay.classList.add('is-open');
         board.hidden = true;
-        againBtn.focus();
+        if (!paused) againBtn.focus();
         void play('win');
       } else {
         cards.find((candidate) => !candidate.matched)?.el.focus();
@@ -146,18 +200,9 @@ export function mountMemoryMatch(root: HTMLElement): () => void {
       return;
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 650));
-    // A restart can happen while the mismatch delay is pending. Do not let an
-    // old round mutate or unlock the newly-created board.
-    if (activeRound !== round) return;
-    firstCard.flipped = false;
-    card.flipped = false;
-    firstCard.el.classList.remove('is-flipped');
-    card.el.classList.remove('is-flipped');
-    firstCard.el.setAttribute('aria-label', `Card ${firstCard.id + 1} of ${cards.length}, hidden`);
-    card.el.setAttribute('aria-label', `Card ${card.id + 1} of ${cards.length}, hidden`);
-    first = null;
-    lock = false;
+    // Keep the reveal delay as game state. Pausing clears its timer and stores
+    // its remaining duration so an old timeout cannot mutate a resumed board.
+    queueMismatch(firstCard, card, activeRound);
   }
 
   // Load the lower-is-better score used by this game, if present.
@@ -171,19 +216,42 @@ export function mountMemoryMatch(root: HTMLElement): () => void {
     /* Storage may be unavailable. */
   }
 
-  restartBtn.addEventListener('click', () => {
-    unlockAudio();
-    build();
-  });
   againBtn.addEventListener('click', () => {
+    if (paused) return;
     unlockAudio();
     build();
   });
 
   build();
 
-  return () => {
-    round += 1;
-    root.innerHTML = '';
+  return {
+    destroy() {
+      round += 1;
+      clearPendingMismatch();
+      root.innerHTML = '';
+    },
+    pause(_reason?: PauseReason) {
+      if (paused) return;
+      paused = true;
+      if (pendingMismatch?.timer != null) {
+        window.clearTimeout(pendingMismatch.timer);
+        pendingMismatch.timer = null;
+        pendingMismatch.remaining = Math.max(0, pendingMismatch.remaining - (performance.now() - pendingMismatch.startedAt));
+      }
+    },
+    resume() {
+      if (!paused) return;
+      paused = false;
+      if (pendingMismatch) {
+        if (pendingMismatch.remaining <= 0) settleMismatch(pendingMismatch);
+        else scheduleMismatch(pendingMismatch);
+      }
+    },
+    isPaused() {
+      return paused;
+    },
+    restart() {
+      build();
+    },
   };
 }

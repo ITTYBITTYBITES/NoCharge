@@ -77,4 +77,32 @@ const guides = defineCollection({
   }),
 });
 
-export const collections = { games, guides };
+const articles = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/articles' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    game: z.enum(['memory-match', 'word-tile-rush', 'color-flip']),
+    published: z.string(),
+    updated: z.string(),
+    author: z.string().default('NoCharge'),
+    reviewer: z.string().optional(),
+    readTime: z.number().positive(),
+    topics: z.array(z.string()).min(1),
+    featured: z.boolean().default(false),
+    draft: z.boolean().default(false),
+  }),
+});
+
+const changelog = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/changelog' }),
+  schema: z.object({
+    title: z.string(),
+    date: z.string(),
+    summary: z.string(),
+    type: z.enum(['launch', 'privacy', 'artwork', 'quality', 'update']),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { games, guides, articles, changelog };

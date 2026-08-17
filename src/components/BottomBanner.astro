@@ -43,7 +43,11 @@ const hasSmartlink = SMARTLINK_URL.length > 0;
     const banner = document.querySelector('.site-banner');
     if (!banner) return;
 
-    const visible = (slot) => slot.offsetParent !== null;
+    const visible = (slot) => {
+      if (slot.classList.contains('site-banner__slot--mobile')) return window.matchMedia('(max-width: 48rem)').matches;
+      if (slot.classList.contains('site-banner__slot--desktop')) return !window.matchMedia('(max-width: 48rem)').matches;
+      return slot.offsetParent !== null;
+    };
     let advertisingAllowed = window.NoChargeConsent?.get().advertising ?? false;
     const reported = new Set();
 
@@ -107,7 +111,7 @@ const hasSmartlink = SMARTLINK_URL.length > 0;
         document.querySelectorAll('.ad-slot').forEach((slot) => {
           if (!reported.has(slot) && visible(slot)) apply(slot, false);
         });
-      }, 6000);
+      }, 1500);
     }
   })();
 </script>

@@ -7,12 +7,15 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('Memory Match survives restart during a pending mismatch', async ({ page }) => {
-  const errors: Error[] = [];
-  page.on('pageerror', (error) => errors.push(error));
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(`pageerror: ${error.message}`));
+  page.on('console', (message) => {
+    if (message.type() === 'error') errors.push(`console: ${message.text()}`);
+  });
   await page.goto('/games/memory-match/');
 
   const cards = page.locator('.mm__card');
-  await expect(cards).toHaveCount(16);
+  await expect(cards, `Client errors: ${errors.join(' | ') || 'none observed'}`).toHaveCount(16);
   const symbols = await cards.evaluateAll((elements) =>
     elements.map((element) => element.querySelector('.mm__face--front')?.textContent ?? ''),
   );
@@ -28,6 +31,30 @@ test('Memory Match survives restart during a pending mismatch', async ({ page })
   const labels = await cards.evaluateAll((elements) => elements.map((element) => element.getAttribute('aria-label')));
   expect(labels.every((label) => label?.includes('hidden'))).toBe(true);
   expect(errors).toEqual([]);
+});
+
+test('Memory Match replaces the cleared board with a visible result panel', async ({ page }) => {
+  await page.goto('/games/memory-match/');
+  const cards = page.locator('.mm__card');
+  const symbols = await cards.evaluateAll((elements) =>
+    elements.map((element, index) => ({
+      index,
+      symbol: element.querySelector('.mm__face--front')?.textContent ?? '',
+    })),
+  );
+  const pairs = new Map<string, number[]>();
+  symbols.forEach(({ index, symbol }) => pairs.set(symbol, [...(pairs.get(symbol) ?? []), index]));
+
+  for (const indexes of pairs.values()) {
+    await cards.nth(indexes[0]!).click();
+    await cards.nth(indexes[1]!).click();
+  }
+
+  await expect(page.locator('.mm__board')).toBeHidden();
+  await expect(page.locator('.mm__overlay')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Cleared' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Play again' })).toBeVisible();
+  await expect(page.locator('[data-game-root="memory-match"]')).toHaveClass(/game-root--complete/);
 });
 
 test('Word Tile Rush waits for input and supports keyboard selection', async ({ page }) => {
@@ -52,7 +79,7 @@ test('Color Flip waits to start and offers a complete turn-based mode', async ({
   await expect(page.locator('[data-cf="score"]')).toHaveText('0');
 
   await page.getByRole('button', { name: 'Turn-based mode' }).click();
-  await expect(page.getByRole('heading', { name: 'Turn-based Color Flip' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Turn-based Color Flip', exact: true })).toBeVisible();
   await expect(page.locator('[data-cf="stage"]')).toBeHidden();
 
   const current = page.locator('[data-cf="accessible-current"]');
