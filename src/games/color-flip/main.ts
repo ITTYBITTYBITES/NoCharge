@@ -458,6 +458,18 @@ export function mountColorFlip(root: HTMLElement): GameController {
     }
   };
 
+  const onWindowKey = (e: KeyboardEvent) => {
+    if (paused || !alive || turnBased) return;
+    const target = e.target as HTMLElement | null;
+    if (target && target !== canvas && target !== document.body) {
+      if (['BUTTON', 'INPUT', 'A', 'TEXTAREA', 'SELECT'].includes(target.tagName)) return;
+    }
+    if (e.code === 'Space' || e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      flipColor();
+    }
+  };
+
   const onPointer = (e: PointerEvent) => {
     if (paused) return;
     e.preventDefault();
@@ -466,6 +478,7 @@ export function mountColorFlip(root: HTMLElement): GameController {
 
   canvas.addEventListener('pointerdown', onPointer);
   canvas.addEventListener('keydown', onKey);
+  window.addEventListener('keydown', onWindowKey);
   window.addEventListener('resize', resize);
 
   modeBtn.addEventListener('click', () => {
@@ -496,6 +509,7 @@ export function mountColorFlip(root: HTMLElement): GameController {
       cancelAnimationFrame(raf);
       canvas.removeEventListener('pointerdown', onPointer);
       canvas.removeEventListener('keydown', onKey);
+      window.removeEventListener('keydown', onWindowKey);
       window.removeEventListener('resize', resize);
       root.innerHTML = '';
     },
