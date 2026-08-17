@@ -25,6 +25,51 @@ const setVisibility = async (page: import('@playwright/test').Page, state: 'hidd
   }, state);
 };
 
+const setVisibilityWithoutEvent = async (page: import('@playwright/test').Page, state: 'hidden' | 'visible') => {
+  await page.evaluate((nextState) => {
+    Object.defineProperty(document, 'visibilityState', {
+      configurable: true,
+      get: () => nextState,
+    });
+  }, state);
+};
+
+const resumeFromOverlay = (page: import('@playwright/test').Page) =>
+  page.locator('[data-game-pause-resume]');
+
+type ColorFlipLifecycleApi = {
+  setVisualScenario(config: {
+    tiles: Array<{ x?: number; y: number; color: 'green' | 'blue' | 'amber' | 'rose' }>;
+    speed?: number;
+  }): void;
+  getVisualState(): {
+    alive: boolean;
+    paused: boolean;
+    score: number;
+    playerColor: 'green' | 'blue' | 'amber' | 'rose';
+    tiles: Array<{ y: number; evaluated: boolean }>;
+  };
+};
+
+const getColorFlipLifecycleState = (page: import('@playwright/test').Page) =>
+  page.evaluate(() => {
+    const api = (window as typeof window & { __NOCHARGE_COLOR_FLIP_TEST__?: ColorFlipLifecycleApi })
+      .__NOCHARGE_COLOR_FLIP_TEST__;
+    if (!api) throw new Error('Color Flip checkpoint test seam is unavailable.');
+    return api.getVisualState();
+  });
+
+const setColorFlipLifecycleScenario = (
+  page: import('@playwright/test').Page,
+  config: Parameters<ColorFlipLifecycleApi['setVisualScenario']>[0],
+) =>
+  page.evaluate((scenario) => {
+    const api = (window as typeof window & { __NOCHARGE_COLOR_FLIP_TEST__?: ColorFlipLifecycleApi })
+      .__NOCHARGE_COLOR_FLIP_TEST__;
+    if (!api) throw new Error('Color Flip checkpoint test seam is unavailable.');
+    api.setVisualScenario(scenario);
+  }, config);
+
 test.describe('shared game lifecycle controls', () => {
   test.beforeEach(async ({ page }) => {
     await denyOptionalServices(page);
@@ -133,6 +178,140 @@ test.describe('shared game lifecycle controls', () => {
     await setVisibility(page, 'hidden');
     await setVisibility(page, 'visible');
     await expect(page.locator('[data-game-toolbar="pause"]')).toBeVisible();
+  });
+
+  test('recovers a stale hidden pause without reloading or resetting Memory Match', async ({ page }) => {
+    await page.goto('/games/memory-match/');
+    const navigationEntries = await page.evaluate(() => performance.getEntriesByType('navigation').length);
+    const firstCard = page.locator('.mm__card').first();
+    await firstCard.click();
+    const revealedLabel = await firstCard.getAttribute('aria-label');
+
+    await setVisibility(page, 'hidden');
+    await expect(page.locator('[data-game-pause-overlay]')).toBeVisible();
+    await setVisibilityWithoutEvent(page, 'visible');
+    await expect(page.locator('[data-game-pause-overlay]')).toBeVisible();
+    await resumeFromOverlay(page).click();
+
+    await expect(page.locator('[data-game-pause-overlay]')).toBeHidden();
+    await expect(page.getByRole('button', { name: 'Pause game' })).toBeFocused();
+    await expect(firstCard).toHaveClass(/is-flipped/);
+    await expect(firstCard).toHaveAttribute('aria-label', revealedLabel ?? '');
+    expect(await page.evaluate(() => performance.getEntriesByType('navigation').length)).toBe(navigationEntries);
+  });
+
+  test('keeps manual and hidden pause reasons independent until Resume', async ({ page }) => {
+    await page.goto('/games/memory-match/');
+    await page.getByRole('button', { name: 'Pause game' }).click();
+    await setVisibility(page, 'hidden');
+    await setVisibility(page, 'visible');
+
+    await expect(page.locator('[data-game-pause-overlay]')).toBeVisible();
+    await resumeFromOverlay(page).click();
+    await expect(page.locator('[data-game-pause-overlay]')).toBeHidden();
+    await expect(page.getByRole('button', { name: 'Pause game' })).toBeFocused();
+  });
+
+  test('does not clear a hidden reason while the document is actually hidden', async ({ page }) => {
+    await page.goto('/games/memory-match/');
+    await setVisibility(page, 'hidden');
+    await resumeFromOverlay(page).evaluate((button: HTMLButtonElement) => button.click());
+
+    await expect(page.locator('[data-game-pause-overlay]')).toBeVisible();
+    await expect(page.locator('[data-game-toolbar-status]')).toHaveText('Return to this tab before resuming the game.');
+
+    await setVisibility(page, 'visible');
+    await expect(page.locator('[data-game-pause-overlay]')).toBeHidden();
+    await expect(page.getByRole('button', { name: 'Pause game' })).toBeVisible();
+  });
+
+  test('does not bypass consent when hidden and consent reasons overlap', async ({ page }) => {
+    await page.goto('/games/memory-match/');
+    await page.getByRole('button', { name: 'Privacy choices' }).click();
+    await setVisibility(page, 'hidden');
+    await setVisibility(page, 'visible');
+    await resumeFromOverlay(page).evaluate((button: HTMLButtonElement) => button.click());
+
+    await expect(page.locator('[data-consent-modal]')).toBeVisible();
+    await expect(page.locator('[data-game-pause-overlay]')).toBeVisible();
+    await expect(page.locator('[data-game-toolbar-status]')).toHaveText(
+      'Close Privacy choices before resuming the game.',
+    );
+
+    await page.getByRole('button', { name: 'Close privacy choices' }).click();
+    await expect(page.locator('[data-game-pause-overlay]')).toBeHidden();
+    await expect(page.getByRole('button', { name: 'Pause game' })).toBeVisible();
+  });
+
+  test('stale hidden recovery preserves Word Tile Rush path and restarts a fresh timer', async ({ page }) => {
+    await page.goto('/games/word-tile-rush/');
+    const firstLetter = page.locator('.wtr__cell:not(:disabled)').first();
+    const coordinates = await firstLetter.evaluate((cell) => ({ r: cell.dataset.r, c: cell.dataset.c }));
+    const selectedLetter = page.locator(`.wtr__cell[data-r="${coordinates.r}"][data-c="${coordinates.c}"]`);
+    await firstLetter.focus();
+    await page.keyboard.press('Enter');
+    const gridBeforePause = await page.locator('.wtr__cell').allTextContents();
+
+    await setVisibility(page, 'hidden');
+    await page.waitForTimeout(3_050);
+    await expect(page.locator('.wtr__cell')).toHaveText(gridBeforePause);
+    await expect(selectedLetter).toHaveAttribute('aria-pressed', 'true');
+
+    await setVisibilityWithoutEvent(page, 'visible');
+    await resumeFromOverlay(page).click();
+    await expect(selectedLetter).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('.wtr__cell')).toHaveText(gridBeforePause);
+
+    await page.getByRole('button', { name: 'Clear' }).click();
+    await page.waitForTimeout(1_500);
+    await expect(page.locator('.wtr__cell')).toHaveText(gridBeforePause);
+    await page.waitForTimeout(1_700);
+    expect(await page.locator('.wtr__cell').allTextContents()).not.toEqual(gridBeforePause);
+  });
+
+  test('stale hidden recovery preserves Color Flip direct state and one checkpoint evaluation', async ({ page }) => {
+    await page.goto('/games/color-flip/?colorFlipTest=checkpoint');
+    await page.getByRole('button', { name: 'Start' }).click();
+    await page.getByRole('button', { name: 'Set player color to Amber' }).click();
+    await setVisibility(page, 'hidden');
+    await setColorFlipLifecycleScenario(page, {
+      speed: 0.2,
+      tiles: [{ y: 0.77, color: 'amber' }],
+    });
+    const pausedState = await getColorFlipLifecycleState(page);
+
+    await page.waitForTimeout(400);
+    expect(await getColorFlipLifecycleState(page)).toEqual(pausedState);
+    await setVisibilityWithoutEvent(page, 'visible');
+    await resumeFromOverlay(page).click();
+
+    await expect(page.getByRole('button', { name: 'Set player color to Amber' })).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('[data-cf="score"]')).toHaveText('1', { timeout: 1_000 });
+    await resumeFromOverlay(page).evaluate((button: HTMLButtonElement) => button.click());
+    await page.waitForTimeout(500);
+    const resumedState = await getColorFlipLifecycleState(page);
+    expect(resumedState.playerColor).toBe('amber');
+    expect(resumedState.tiles[0]?.y).toBeGreaterThan(pausedState.tiles[0]?.y ?? 0);
+    expect(resumedState.tiles[0]?.evaluated).toBe(true);
+    expect(resumedState.score).toBe(1);
+  });
+
+  test('stale hidden recovery leaves turn-based Color Flip usable', async ({ page }) => {
+    await page.goto('/games/color-flip/');
+    await page.getByRole('button', { name: 'Turn-based mode' }).click();
+    const current = page.locator('[data-cf="accessible-current"]');
+    const next = page.locator('[data-cf="accessible-next"]');
+    const before = { current: await current.textContent(), next: await next.textContent() };
+
+    await setVisibility(page, 'hidden');
+    await setVisibilityWithoutEvent(page, 'visible');
+    await resumeFromOverlay(page).click();
+    await expect(current).toHaveText(before.current ?? '');
+    await expect(next).toHaveText(before.next ?? '');
+    await expect(page.getByRole('button', { name: 'Cycle color' })).toBeEnabled();
+
+    await page.getByRole('button', { name: 'Cycle color' }).click();
+    await expect(current).not.toHaveText(before.current ?? '');
   });
 
   test('pauses for the privacy choices modal and resumes only its matching reason', async ({ page }) => {

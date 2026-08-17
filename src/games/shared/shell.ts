@@ -1,5 +1,12 @@
 import { mountGame } from '../registry';
 import { isMuted, toggleMuted, unlockAudio } from './audio';
+import {
+  addVisibleRecoveryListeners,
+  pauseReasonsAfterResumeRequest,
+  resumeBlockedMessage,
+  resumeControllerIfReady,
+  type PauseEnvironment,
+} from './pause-recovery';
 import type { GameController, PauseReason } from './types';
 
 type PlatformModalEvent = CustomEvent<{ open?: boolean }>;
@@ -97,6 +104,32 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     updatePaused(pauseReasons.size === 0 ? message : undefined);
   };
 
+  const getPauseEnvironment = (): PauseEnvironment => ({
+    documentVisible: document.visibilityState === 'visible',
+    consentModalOpen: document.querySelector('[data-consent-modal]:not([hidden])') !== null,
+  });
+
+  const resumeFromSharedControl = () => {
+    const wasPaused = pauseReasons.size > 0 || controller.isPaused();
+    const environment = getPauseEnvironment();
+    const remaining = pauseReasonsAfterResumeRequest(pauseReasons, environment);
+
+    // Apply only transitions that were checked against current browser and
+    // modal state. Active automatic blockers remain in the set.
+    for (const reason of [...pauseReasons]) {
+      if (!remaining.has(reason)) pauseReasons.delete(reason);
+    }
+
+    if (resumeControllerIfReady(controller, wasPaused, pauseReasons)) {
+      updatePaused('Game resumed.');
+      window.setTimeout(() => pauseButton?.focus({ preventScroll: true }), 0);
+      return;
+    }
+
+    updatePaused();
+    if (pauseReasons.size > 0) announce(resumeBlockedMessage(pauseReasons, environment));
+  };
+
   const exitImmersive = (returnFocus = true) => {
     if (!immersive) return;
     immersive = false;
@@ -151,9 +184,14 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     }
   };
 
+  const recoverHiddenPauseWhenVisible = () => {
+    if (document.visibilityState !== 'visible') return;
+    removePauseReason('hidden', 'Game resumed after returning to this tab.');
+  };
+
   const onVisibilityChange = () => {
     if (document.visibilityState === 'hidden') addPauseReason('hidden');
-    else removePauseReason('hidden', 'Game resumed after returning to this tab.');
+    else recoverHiddenPauseWhenVisible();
   };
 
   const onPlatformModal = (event: Event) => {
@@ -186,10 +224,10 @@ export function mountGameShell(viewport: HTMLElement): () => void {
   };
 
   pauseButton?.addEventListener('click', () => {
-    if (pauseReasons.has('player')) removePauseReason('player');
+    if (pauseReasons.size > 0 || controller.isPaused()) resumeFromSharedControl();
     else addPauseReason('player');
   });
-  overlayResume?.addEventListener('click', () => removePauseReason('player'));
+  overlayResume?.addEventListener('click', resumeFromSharedControl);
   muteButton?.addEventListener('click', () => {
     const muted = toggleMuted();
     updateMute();
@@ -203,6 +241,10 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     announce('New game started.');
   });
 
+  const removeVisibleRecoveryListeners = addVisibleRecoveryListeners(
+    window,
+    recoverHiddenPauseWhenVisible as EventListener,
+  );
   document.addEventListener('visibilitychange', onVisibilityChange);
   window.addEventListener('nocharge:modalchange', onPlatformModal as EventListener);
   document.addEventListener('fullscreenchange', onFullscreenChange);
@@ -219,6 +261,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     if (destroyed) return;
     destroyed = true;
     exitImmersive(false);
+    removeVisibleRecoveryListeners();
     document.removeEventListener('visibilitychange', onVisibilityChange);
     window.removeEventListener('nocharge:modalchange', onPlatformModal as EventListener);
     document.removeEventListener('fullscreenchange', onFullscreenChange);
