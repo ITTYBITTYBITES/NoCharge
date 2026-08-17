@@ -13,7 +13,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <header>
       <h1 class="page-title">Privacy</h1>
       <p class="lede">The short version: no accounts, and game data stays on your device.</p>
-      <p class="privacy__updated">Last updated: August 15, 2026</p>
+      <p class="privacy__updated">Last updated: August 17, 2026</p>
     </header>
 
     <div class="privacy__body panel">
@@ -31,8 +31,14 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <section aria-labelledby="local-data">
         <h2 id="local-data">Data on your device</h2>
         <p>
-          NoCharge uses your browser’s local storage for high scores and game preferences. That information is
-          not sent to NoCharge and remains until you clear it in your browser or use the button below.
+          NoCharge uses your browser’s local storage for high scores, game preferences, and your shared sound
+          preference. That information is not sent to NoCharge and remains until you clear it in your browser or
+          use the button below.
+        </p>
+        <p>
+          Clear game data removes local scores, game preferences, and the shared sound preference. It does not
+          remove your privacy or consent choice, which stays saved so analytics and advertising remain exactly as
+          you left them.
         </p>
         <button class="btn btn--ghost btn--sm" type="button" data-clear-games>Clear game data</button>
         <p class="privacy__status" data-game-status aria-live="polite"></p>
@@ -94,15 +100,19 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
   clearGames?.addEventListener('click', () => {
     try {
-      const gameKeys: string[] = [];
-      for (let index = 0; index < localStorage.length; index += 1) {
-        const key = localStorage.key(index);
-        if (key?.startsWith('nocharge:') && (key.endsWith(':high') || key.endsWith(':best-moves'))) {
-          gameKeys.push(key);
-        }
-      }
+      // Explicit allowlist of current game-only keys. The privacy/consent key is
+      // intentionally omitted so clearing game data never touches the consent
+      // choice, its categories, timestamp, or schema version. Unrelated origin
+      // storage is left untouched.
+      const gameScoreIds = ['memory-match', 'word-tile-rush', 'color-flip', 'color-flip-turn-based'];
+      const gamePreferenceKeys = ['game-muted'];
+      const gameKeys = [
+        ...gameScoreIds.map((id) => `nocharge:${id}:high`),
+        'nocharge:memory-match:best-moves',
+        ...gamePreferenceKeys.map((pref) => `nocharge:pref:${pref}`),
+      ];
       gameKeys.forEach((key) => localStorage.removeItem(key));
-      if (gameStatus) gameStatus.textContent = 'Game scores were cleared from this browser.';
+      if (gameStatus) gameStatus.textContent = 'Game scores and preferences were cleared from this browser.';
     } catch {
       if (gameStatus) gameStatus.textContent = 'This browser did not allow game data to be cleared.';
     }

@@ -1,0 +1,157 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+---
+
+<BaseLayout
+  title="Accessibility Statement"
+  description="How NoCharge approaches keyboard, touch, pointer, focus, motion, color, and assistive-technology support, plus how to report an accessibility barrier."
+  path="/accessibility/"
+  showAds={false}
+>
+  <article class="trust-page prose">
+    <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Accessibility Statement' }]} />
+    <header>
+      <p class="eyebrow">Accessibility Statement</p>
+      <h1 class="page-title">A quiet place to play, built to be usable.</h1>
+      <p class="lede">
+        NoCharge aims for Web Content Accessibility Guidelines (WCAG) 2.2 level AA as a target for this site and
+        its current games. This statement describes what is supported today and what is still being verified.
+      </p>
+      <p class="trust-page__date">Last reviewed: August 17, 2026</p>
+    </header>
+
+    <section aria-labelledby="accessibility-target">
+      <h2 id="accessibility-target">Conformance target</h2>
+      <p>
+        WCAG 2.2 level AA is a target, not a certification. NoCharge has not been formally certified against any
+        accessibility standard, and this statement does not claim that the site meets WCAG in every case. We treat
+        the guidelines as a working standard and keep automated checks in the repository while manual testing
+        continues.
+      </p>
+    </section>
+
+    <section aria-labelledby="accessibility-input">
+      <h2 id="accessibility-input">Keyboard, touch, and pointer support</h2>
+      <p>
+        The site is designed to be operated with keyboard, touch, and pointer input. Navigation and game controls
+        use standard buttons and links, game boards expose focused elements with meaningful accessible names, and
+        timed games can be paused and resumed from the shared toolbar. Memory Match and Word Tile Rush include
+        native keyboard play, and Color Flip offers keyboard play plus an untimed turn-based mode.
+      </p>
+    </section>
+
+    <section aria-labelledby="accessibility-focus">
+      <h2 id="accessibility-focus">Visible focus and feedback</h2>
+      <p>
+        Focused controls show a visible focus state so keyboard users can tell where they are. Interactive state is
+        announced through accessible names and status text, and feedback is not communicated by color alone.
+        Buttons expose labels or accessible names that describe the action, including pause, mute, full screen,
+        immersive mode, and restart.
+      </p>
+    </section>
+
+    <section aria-labelledby="accessibility-motion">
+      <h2 id="accessibility-motion">Motion and color</h2>
+      <p>
+        The site respects the reduced-motion preference where animations and transitions are used, and gameplay does
+        not depend on rapid motion. Game information is labeled in text so it does not rely on color alone, and
+        Color Flip’s turn-based mode removes the timing pressure from the color-matching challenge.
+      </p>
+    </section>
+
+    <section aria-labelledby="accessibility-pause">
+      <h2 id="accessibility-pause">Shared pause controls</h2>
+      <p>
+        Every current game shares a pause control. Timed play pauses when the page or tab is hidden and when the
+        privacy choices dialog opens, and it resumes only for the matching reason. A manual pause remains paused
+        until you resume it.
+      </p>
+    </section>
+
+    <section aria-labelledby="accessibility-fullscreen">
+      <h2 id="accessibility-fullscreen">Full screen and immersive controls</h2>
+      <p>
+        Games provide an accessible full screen control where the browser supports it, with an immersive fallback
+        where it does not. The pause, sound, and exit controls stay available in either mode, and exiting returns
+        focus to the game.
+      </p>
+    </section>
+
+    <section aria-labelledby="accessibility-responsive">
+      <h2 id="accessibility-responsive">Responsive layout and zoom</h2>
+      <p>
+        Pages are responsive across phone and desktop widths and are intended to reflow when you use browser zoom.
+        Text scales without clipping, and game boards stay within a single viewport where practical.
+      </p>
+    </section>
+
+    <section aria-labelledby="accessibility-limitations">
+      <h2 id="accessibility-limitations">Known limitations</h2>
+      <ul>
+        <li>Some game boards are visual by design and rely on accessible names and text status for non-visual play.</li>
+        <li>Manual testing with specific assistive technologies and devices is ongoing and not yet fully recorded.</li>
+        <li>No formal conformance review has been completed.</li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="accessibility-testing">
+      <h2 id="accessibility-testing">Testing status</h2>
+      <p>
+        Automated accessibility checks are part of the repository test suite and run against the public pages on
+        every required check. These checks catch many detectable issues but do not replace manual testing.
+      </p>
+      <p>
+        Manual assistive-technology testing remains ongoing. NoCharge does not claim completed testing with NVDA,
+        JAWS, VoiceOver, TalkBack, or specific devices until that testing has been performed and recorded.
+      </p>
+    </section>
+
+    <section aria-labelledby="accessibility-report">
+      <h2 id="accessibility-report">Report an accessibility barrier</h2>
+      <p>
+        If you encounter a barrier, email <a href="mailto:hello@nocharge.net">hello@nocharge.net</a>. When possible,
+        include:
+      </p>
+      <ul>
+        <li>The page or game where the barrier appeared</li>
+        <li>Your input method or assistive technology</li>
+        <li>Your browser and device</li>
+        <li>What you expected to happen</li>
+        <li>What prevented you from completing the task</li>
+      </ul>
+      <p>
+        Reports help us prioritize fixes. NoCharge cannot guarantee a response time, but every report is reviewed
+        against the current games and pages.
+      </p>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .trust-page {
+    display: grid;
+    gap: 1.15rem;
+    max-width: 48rem;
+    margin-inline: auto;
+  }
+
+  .trust-page > header {
+    padding: 0.75rem 0 1.25rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .trust-page__date {
+    margin-top: 0.75rem;
+    color: var(--muted);
+    font-size: 0.82rem;
+  }
+
+  .trust-page section {
+    padding-top: 0.25rem;
+  }
+
+  .trust-page section + section {
+    border-top: 1px solid var(--line);
+  }
+</style>

@@ -14,6 +14,7 @@ for (const path of [
   '/about/',
   '/terms/',
   '/advertising/',
+  '/accessibility/',
   '/changelog/',
   '/articles/',
   '/articles/memory-match-systematic-board-scan/',
@@ -50,9 +51,46 @@ test('ships a restrictive document policy and sandboxed ad frames', async ({ pag
 test('publishes security contact details and the custom 404', async ({ request }) => {
   const security = await request.get('/.well-known/security.txt');
   expect(security.ok()).toBe(true);
-  expect(await security.text()).toContain('Contact: mailto:hello@nocharge.net');
+  const securityBody = await security.text();
+  expect(securityBody).toContain('Contact: mailto:hello@nocharge.net');
+  expect(securityBody).toContain('Canonical: https://nocharge.net/.well-known/security.txt');
+  expect(securityBody).toContain('Expires:');
 
   const missing = await request.get('/this-page-does-not-exist/');
   expect(missing.status()).toBe(404);
   expect(await missing.text()).toContain('That page slipped away.');
+});
+
+test('links the verified contact address from the footer and every trust page', async ({ page }) => {
+  await denyOptionalServices(page);
+  const trustPaths = ['/about/', '/privacy/', '/terms/', '/advertising/', '/accessibility/'];
+
+  for (const path of trustPaths) {
+    await page.goto(path);
+    const mailtoLinks = await page
+      .getByRole('link')
+      .evaluateAll((links) =>
+        links
+          .map((link) => link.getAttribute('href'))
+          .filter((href): href is string => typeof href === 'string' && href.startsWith('mailto:')),
+      );
+    expect(mailtoLinks.length, `${path} should expose a contact mailto link`).toBeGreaterThan(0);
+    for (const href of mailtoLinks) {
+      expect(href, `${path} must only reference the verified address`).toBe('mailto:hello@nocharge.net');
+    }
+  }
+});
+
+test('footer links to the verified address and the accessibility page', async ({ page }) => {
+  await denyOptionalServices(page);
+  await page.goto('/');
+  const footer = page.locator('.site-footer');
+  await expect(footer.getByRole('link', { name: 'hello@nocharge.net' })).toHaveAttribute(
+    'href',
+    'mailto:hello@nocharge.net',
+  );
+  await expect(footer.getByRole('link', { name: 'Accessibility', exact: true })).toHaveAttribute(
+    'href',
+    '/accessibility/',
+  );
 });

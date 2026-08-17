@@ -228,13 +228,13 @@ test.describe('fullscreen and immersive game viewport', () => {
 
 test('trust pages publish one H1, canonical metadata, footer links, and public responses', async ({ page, request }) => {
   await denyOptionalServices(page);
-  for (const path of ['/about/', '/terms/', '/advertising/', '/changelog/']) {
+  for (const path of ['/about/', '/terms/', '/advertising/', '/changelog/', '/accessibility/']) {
     const response = await request.get(path);
     expect(response.status()).toBe(200);
     await page.goto(path);
     await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://nocharge.net${path}`);
-    await expect(page.locator('.site-footer').getByRole('link', { name: /About|Terms|Advertising|Changelog/ }).first()).toBeVisible();
+    await expect(page.locator('.site-footer').getByRole('link', { name: /About|Terms|Advertising|Changelog|Accessibility/ }).first()).toBeVisible();
   }
 });
 
