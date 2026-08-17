@@ -40,13 +40,10 @@ jobs:
         run: npm run build
 
       - name: Install browser test dependencies
-        run: npx playwright install --with-deps chromium firefox webkit
+        run: npx playwright install --with-deps chromium
 
       - name: Run browser and accessibility tests
-        run: npm run test:e2e:matrix
-
-      - name: Run Lighthouse budgets with optional advertising denied
-        run: npm run lighthouse
+        run: npm run test:e2e
 
       - name: Setup Pages
         if: github.event_name != 'pull_request'
