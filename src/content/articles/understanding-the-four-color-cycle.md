@@ -1,6 +1,6 @@
 ---
 title: "Understanding the four-color cycle in Color Flip"
-description: "Learn the fixed Green, Blue, Amber, Rose color order and use it to make deliberate Color Flip changes."
+description: "Learn the four Color Flip labels, use direct choices in visual mode, and understand the fixed cycle retained in turn-based mode."
 game: color-flip
 published: "2026-08-15"
 updated: "2026-08-17"
@@ -12,13 +12,36 @@ featured: true
 draft: false
 ---
 
-Color Flip uses four player colors in one fixed cycle: Green, Blue, Amber, then Rose, before returning to Green. In visual mode, tap or click the playfield, or press Space or Enter while it has focus, to advance exactly one step. The required final color must be active when the tile center crosses the dashed checkpoint line. Learning the sequence turns each input from a reaction into a small, predictable calculation.
+Color Flip uses four player colors: Green, Blue, Amber, and Rose. Visual mode now presents all four as direct choices, while the untimed turn-based mode retains the fixed Green → Blue → Amber → Rose cycle. In either mode, the goal is to make the player color match the required tile.
 
-[Play Color Flip](/games/color-flip/) to try the sequence, and use the [Color Flip guide](/guides/color-flip/) for the full rules and accessible mode details.
+[Play Color Flip](/games/color-flip/) to try both input styles, and use the [Color Flip guide](/guides/color-flip/) for the full rules and accessibility details.
 
-## The order never changes
+## Visual mode offers four direct choices
 
-The cycle is always:
+The visual controls are:
+
+1. **G · Green**
+2. **B · Blue**
+3. **A · Amber**
+4. **R · Rose**
+
+Choosing a button sets that color immediately. The same letters work as direct keyboard shortcuts while visual mode is active, started, and unpaused. Green to Amber requires one Amber choice. Rose to Blue requires one Blue choice. There is no intermediate Blue or Amber state unless you deliberately choose it.
+
+The current choice is communicated with a strong border, a check mark, “Selected” text, the current-color label, and the letter in the player circle. Color is only one of several cues. Choosing the currently selected color is a safe no-op: Green while Green remains Green.
+
+The moving canvas is display-only input-wise. Clicking a colored tile or another part of the canvas does not choose that color. Pointer and touch players use the nearby labeled buttons; keyboard players can use G, B, A, or R, or Tab plus Enter or Space on those native buttons.
+
+## Match at the single checkpoint
+
+Every moving tile displays a color and its first letter. To stay on the path, match the player circle to that tile when its center crosses the dashed checkpoint line. Each tile is evaluated exactly once. A correct crossing adds one point; a wrong color or missed path ends the run; off-screen cleanup adds no score.
+
+If the player is already the required color, leave it unchanged or select the same button again. This is especially clear in the opening Green-on-Green case: the run starts Green, a Green tile approaches, and the unchanged Green circle scores once at the checkpoint.
+
+Focus on the next tile rather than the whole lane. Identify its letter, choose the matching direct control if needed, confirm the selected state, and then read the next target after the crossing. As speed increases, look earlier rather than making extra inputs.
+
+## The fixed order remains in turn-based mode
+
+Turn-based mode has no moving canvas timer. It announces the current player color and next tile, then provides **Cycle color** and **Step forward**. Its cycle is always:
 
 1. **Green**
 2. **Blue**
@@ -26,38 +49,18 @@ The cycle is always:
 4. **Rose**
 5. back to **Green**
 
-The current color is shown in the game’s color label and swatch. Each input advances to the next item in that list; there is no reverse button and no random jump. If you are Green and need Amber, use two changes. If you are Rose and need Green, use one. If you are Blue and need Rose, use two.
+Each Cycle color activation advances one position in that list. If you are Green and need Amber, cycle twice. If you are Rose and need Green, cycle once. When the names match, choose Step forward. This sequence advice applies to turn-based mode only; visual mode uses direct selection.
 
-Thinking in steps is useful because it prevents a rushed double input. A tap cycles to the next color; it does not select the displayed tile color. A double tap is two complete advances through the fixed order. Watch the label after each deliberate change, especially when the next tile is close.
+A correct turn-based step adds to its separate score and produces a new target. An incorrect color ends that run. The mode keeps its existing target generation, announcements, and locally stored best score.
 
-## Read both the tile and the player
+## Choose the input model that fits
 
-Every moving tile displays a color and its first letter. The player marker also shows the current color. The letter is a backup cue, not a separate target: G means Green, B means Blue, A means Amber, and R means Rose. To stay on the path, match the player color to the tile’s color when its center crosses the dashed checkpoint line. Each tile is evaluated once, so intermediate colors are safe between checkpoints.
+Visual mode combines direct color choice with a moving deadline. It is useful when you want the lane movement and speed progression. Turn-based mode keeps the same four-color match but replaces timing with an explicit step and retains the cycle as part of its untimed decision.
 
-A useful visual check is: first identify the upcoming tile’s letter, then count forward from the current player color. Do not rely only on the shade; the label and letter keep the state understandable when you are playing quickly or prefer text confirmation.
-
-For example, if the player is Blue and the next tile is marked R, count Blue → Amber → Rose. Two deliberate changes are needed. If the player is Amber and the tile is marked G, count Amber → Rose → Green. Again, two changes. The four-color loop makes these small calculations consistent.
-
-## Plan from the next tile, not the whole lane
-
-Visual mode has moving tiles, but you do not need to solve the entire path at once. Focus on the next tile that will reach the player. Change early enough to land on its color, then immediately read the tile after it. The game begins with several Green tiles aligned near the start so you can learn the rhythm before the sequence becomes more varied.
-
-As the score increases, the movement speed can rise. That makes economy of input more important, not less. A sequence of rapid changes without checking the label can overshoot the intended color. One confirmed press per step is safer than trying to tap to a remembered count.
-
-## Use the turn-based mode to rehearse
-
-Color Flip also offers an untimed turn-based mode. It announces the current player color and the next tile, then gives separate **Cycle color** and **Step forward** controls. A correct step adds to the score and produces a new target; an incorrect color ends that run. The next target after a correct step differs from the tile just cleared, so you have a fresh cycle decision each turn.
-
-This mode is a useful way to practice the four-color order without moving-canvas timing. It is not a different set of colors or scoring rules; it is the same match decision presented one tile at a time. You can use it whenever visual motion is not the preferred way to play.
+The shared Pause behavior reflects that distinction. A visual pause preserves the exact selected direct color and disables all four choices. A turn-based pause preserves the current and next colors and disables Cycle color and Step forward. Resume does not generate a new target or change a color in either mode.
 
 ## Keep sound optional
 
-Color Flip has game sounds, but they are not required to follow the color cycle. The swatch, current-color text, tile color, and tile letter all communicate the necessary state. The shared Mute control remembers its preference on this browser, so you can turn sound off and continue using the visual or turn-based cues.
+Color Flip has short interaction sounds, but they are not required. The selected-control text, current label, player letter, and tile letter communicate the necessary state. The shared Mute preference persists in this browser, and fullscreen or immersive mode keeps the controls visible with the playfield.
 
-The same shared controls can pause a visual run without discarding the player color, tile positions, score, or speed. On resume, animation timing is reset so hidden time does not create a sudden jump.
-
-## Turn the loop into a habit
-
-On your next run, say the sequence once before pressing Start: Green, Blue, Amber, Rose. Then use the current-color label to count forward rather than guessing at the shades. A fixed four-step loop is small enough to internalize, but it rewards deliberate input.
-
-For the timing side of the game, read [Timing a color change near tile boundaries](/articles/timing-a-color-change-near-tile-boundaries/). For a mode-by-mode comparison, read [Visual mode versus turn-based Color Flip](/articles/visual-mode-versus-turn-based-color-flip/). Then [play Color Flip](/games/color-flip/) and follow one clear step at a time.
+For the timing side of direct selection, read [Timing a color change near tile boundaries](/articles/timing-a-color-change-near-tile-boundaries/). For a mode-by-mode comparison, read [Visual mode versus turn-based Color Flip](/articles/visual-mode-versus-turn-based-color-flip/). Then [play Color Flip](/games/color-flip/) with one clear choice at a time.
