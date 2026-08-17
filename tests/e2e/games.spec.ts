@@ -2,6 +2,40 @@ import { expect, test } from '@playwright/test';
 
 import { denyOptionalServices } from './helpers/consent';
 
+type VisualScenario = {
+  tiles: Array<{ x?: number; y: number; color: 'green' | 'blue' | 'amber' | 'rose' }>;
+  speed?: number;
+  playerX?: number;
+  playerColor?: 'green' | 'blue' | 'amber' | 'rose';
+};
+
+const setColorFlipScenario = async (page: import('@playwright/test').Page, scenario: VisualScenario) => {
+  await page.evaluate((config) => {
+    const api = (
+      window as typeof window & {
+        __NOCHARGE_COLOR_FLIP_TEST__?: { setVisualScenario(value: VisualScenario): void };
+      }
+    ).__NOCHARGE_COLOR_FLIP_TEST__;
+    if (!api) throw new Error('Color Flip checkpoint test seam is unavailable.');
+    api.setVisualScenario(config);
+  }, scenario);
+};
+
+const openColorFlipTestRun = async (page: import('@playwright/test').Page) => {
+  await page.goto('/games/color-flip/?colorFlipTest=checkpoint');
+  await page.getByRole('button', { name: 'Start' }).click();
+};
+
+const setPageVisibility = async (page: import('@playwright/test').Page, state: 'hidden' | 'visible') => {
+  await page.evaluate((nextState) => {
+    Object.defineProperty(document, 'visibilityState', {
+      configurable: true,
+      get: () => nextState,
+    });
+    document.dispatchEvent(new Event('visibilitychange'));
+  }, state);
+};
+
 test.beforeEach(async ({ page }) => {
   await denyOptionalServices(page);
 });
@@ -71,25 +105,119 @@ test('Word Tile Rush waits for input and supports keyboard selection', async ({ 
   await expect(page.getByRole('button', { name: 'Submit' })).toBeEnabled();
 });
 
-test('Color Flip waits to start and allows multi-step changes between checkpoints', async ({ page }) => {
-  await page.goto('/games/color-flip/');
+test('Color Flip waits to start and permits Green to Blue to Amber across animation frames', async ({ page }) => {
+  await page.goto('/games/color-flip/?colorFlipTest=checkpoint');
   await expect(page.getByRole('button', { name: 'Start' })).toBeVisible();
   await expect(page.locator('[data-cf="score"]')).toHaveText('0');
-  await page.waitForTimeout(800);
+  await page.waitForTimeout(500);
   await expect(page.locator('[data-cf="score"]')).toHaveText('0');
 
   await page.getByRole('button', { name: 'Start' }).click();
+  await setColorFlipScenario(page, {
+    speed: 0.2,
+    tiles: [
+      { y: 0.72, color: 'green' },
+      { y: 0.5, color: 'amber' },
+    ],
+  });
+  await expect(page.locator('[data-cf="score"]')).toHaveText('1', { timeout: 1_000 });
 
-  // A full four-color cycle takes several inputs. Intermediate colors must not
-  // lose on the tile that was already matched while the next target approaches.
-  for (let step = 0; step < 4; step += 1) {
+  // Inputs deliberately span several animation frames while the evaluated
+  // Green tile is still overlapping the player marker.
+  await page.keyboard.press('Space');
+  await page.waitForTimeout(100);
+  await expect(page.locator('[data-cf="color-label"]')).toHaveText('Blue');
+  await page.keyboard.press('Space');
+  await page.waitForTimeout(100);
+  await expect(page.locator('[data-cf="color-label"]')).toHaveText('Amber');
+  await expect(page.locator('[data-cf="overlay"]')).not.toHaveClass(/is-open/);
+  await expect(page.locator('[data-cf="score"]')).toHaveText('2', { timeout: 1_500 });
+});
+
+test('Color Flip keeps a complete four-color cycle safe between checkpoints', async ({ page }) => {
+  await openColorFlipTestRun(page);
+  await setColorFlipScenario(page, {
+    speed: 0.2,
+    tiles: [
+      { y: 0.72, color: 'green' },
+      { y: 0.42, color: 'green' },
+    ],
+  });
+  await expect(page.locator('[data-cf="score"]')).toHaveText('1', { timeout: 1_000 });
+
+  for (const expected of ['Blue', 'Amber', 'Rose', 'Green']) {
     await page.keyboard.press('Space');
-    await page.waitForTimeout(35);
+    await page.waitForTimeout(100);
+    await expect(page.locator('[data-cf="color-label"]')).toHaveText(expected);
+    await expect(page.locator('[data-cf="overlay"]')).not.toHaveClass(/is-open/);
   }
 
-  await expect(page.locator('[data-cf="color-label"]')).toHaveText('Green');
+  await expect(page.locator('[data-cf="score"]')).toHaveText('2', { timeout: 1_500 });
+});
+
+test('Color Flip scores a matching checkpoint once and not again during cleanup', async ({ page }) => {
+  await openColorFlipTestRun(page);
+  await setColorFlipScenario(page, { speed: 0.2, tiles: [{ y: 0.72, color: 'green' }] });
+
+  await expect(page.locator('[data-cf="score"]')).toHaveText('1', { timeout: 1_000 });
+  await page.waitForTimeout(2_600);
+  await expect(page.locator('[data-cf="score"]')).toHaveText('1');
   await expect(page.locator('[data-cf="overlay"]')).not.toHaveClass(/is-open/);
-  await expect(page.locator('[data-cf="score"]')).toHaveText('1', { timeout: 1_500 });
+});
+
+test('Color Flip consistently ends on a wrong final color at the next checkpoint', async ({ page }) => {
+  await openColorFlipTestRun(page);
+  await setColorFlipScenario(page, {
+    speed: 0.2,
+    tiles: [
+      { y: 0.72, color: 'green' },
+      { y: 0.5, color: 'amber' },
+    ],
+  });
+
+  await expect(page.locator('[data-cf="score"]')).toHaveText('1', { timeout: 1_000 });
+  await expect(page.locator('[data-cf="overlay"]')).toHaveClass(/is-open/, { timeout: 1_500 });
+  await expect(page.locator('[data-cf="result"]')).toContainText('Score 1.');
+});
+
+test('Color Flip pause and resume near a checkpoint neither skips nor duplicates scoring', async ({ page }) => {
+  await openColorFlipTestRun(page);
+  await page.getByRole('button', { name: 'Pause game' }).click();
+  await setColorFlipScenario(page, { speed: 0.2, tiles: [{ y: 0.77, color: 'green' }] });
+
+  await page.waitForTimeout(500);
+  await expect(page.locator('[data-cf="score"]')).toHaveText('0');
+  await page.locator('[data-game-toolbar="pause"]').click();
+  await expect(page.locator('[data-cf="score"]')).toHaveText('1', { timeout: 1_000 });
+  await page.waitForTimeout(500);
+  await expect(page.locator('[data-cf="score"]')).toHaveText('1');
+});
+
+test('Color Flip hidden-tab pause preserves the pending checkpoint', async ({ page }) => {
+  await openColorFlipTestRun(page);
+  await setPageVisibility(page, 'hidden');
+  await setColorFlipScenario(page, { speed: 0.2, tiles: [{ y: 0.77, color: 'green' }] });
+
+  await page.waitForTimeout(500);
+  await expect(page.locator('[data-cf="score"]')).toHaveText('0');
+  await setPageVisibility(page, 'visible');
+  await expect(page.locator('[data-cf="score"]')).toHaveText('1', { timeout: 1_000 });
+  await page.waitForTimeout(400);
+  await expect(page.locator('[data-cf="score"]')).toHaveText('1');
+});
+
+test('Color Flip consent-modal pause preserves the pending checkpoint', async ({ page }) => {
+  await openColorFlipTestRun(page);
+  await page.getByRole('button', { name: 'Privacy choices' }).click();
+  await expect(page.locator('[data-consent-modal]')).toBeVisible();
+  await setColorFlipScenario(page, { speed: 0.2, tiles: [{ y: 0.77, color: 'green' }] });
+
+  await page.waitForTimeout(500);
+  await expect(page.locator('[data-cf="score"]')).toHaveText('0');
+  await page.getByRole('button', { name: 'Close privacy choices' }).click();
+  await expect(page.locator('[data-cf="score"]')).toHaveText('1', { timeout: 1_000 });
+  await page.waitForTimeout(400);
+  await expect(page.locator('[data-cf="score"]')).toHaveText('1');
 });
 
 test('Color Flip offers a complete turn-based mode', async ({ page }) => {

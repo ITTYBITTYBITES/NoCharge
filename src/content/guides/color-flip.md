@@ -32,13 +32,13 @@ Choose **Start** to begin the moving path.
 - **Keyboard:** focus the playfield and press Space or Enter to cycle once.
 - **New:** ends the current attempt and begins a fresh run.
 
-The opening tiles are green to give you a brief setup period. After that, colors vary and the path gradually becomes faster. Your score increases as tiles pass safely behind the player.
+The opening tiles are green to give you a brief setup period. After that, colors vary and the path gradually becomes faster. Each correctly matched tile adds exactly one point when its center crosses the dashed checkpoint line; moving off screen does not add another point.
 
 ## Timing tips
 
 ### Use the checkpoint line
 
-A tile is checked once, when its center reaches the dashed line through the player. After a correct match, you can begin cycling immediately for the next tile. Intermediate colors between checkpoints are safe; only the selected color at the next checkpoint is judged.
+A tile is checked once, when its center reaches the dashed line through the player. Clicking, tapping, Space, or Enter cycles to the next color; it does not confirm or directly select the displayed color. After a correct match, you can begin cycling immediately for the next tile. Intermediate colors between checkpoints are safe; the required final color must be active when the next tile reaches the line.
 
 ### Count the sequence
 

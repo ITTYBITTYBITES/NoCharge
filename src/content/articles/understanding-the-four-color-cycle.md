@@ -3,7 +3,7 @@ title: "Understanding the four-color cycle in Color Flip"
 description: "Learn the fixed Green, Blue, Amber, Rose color order and use it to make deliberate Color Flip changes."
 game: color-flip
 published: "2026-08-15"
-updated: "2026-08-15"
+updated: "2026-08-17"
 author: "NoCharge"
 reviewer: "NoCharge"
 readTime: 5
@@ -12,7 +12,7 @@ featured: true
 draft: false
 ---
 
-Color Flip uses four player colors in one fixed cycle: Green, Blue, Amber, then Rose, before returning to Green. In visual mode, tap or click the playfield, or press Space or Enter while it has focus, to advance exactly one step. The tile under the player must match the player’s current color. Learning the sequence turns each input from a reaction into a small, predictable calculation.
+Color Flip uses four player colors in one fixed cycle: Green, Blue, Amber, then Rose, before returning to Green. In visual mode, tap or click the playfield, or press Space or Enter while it has focus, to advance exactly one step. The required final color must be active when the tile center crosses the dashed checkpoint line. Learning the sequence turns each input from a reaction into a small, predictable calculation.
 
 [Play Color Flip](/games/color-flip/) to try the sequence, and use the [Color Flip guide](/guides/color-flip/) for the full rules and accessible mode details.
 
@@ -28,11 +28,11 @@ The cycle is always:
 
 The current color is shown in the game’s color label and swatch. Each input advances to the next item in that list; there is no reverse button and no random jump. If you are Green and need Amber, use two changes. If you are Rose and need Green, use one. If you are Blue and need Rose, use two.
 
-Thinking in steps is useful because it prevents a rushed double input. A double tap is not “change to the next visible color”; it is two complete advances through the fixed order. Watch the label after each deliberate change, especially when the next tile is close.
+Thinking in steps is useful because it prevents a rushed double input. A tap cycles to the next color; it does not select the displayed tile color. A double tap is two complete advances through the fixed order. Watch the label after each deliberate change, especially when the next tile is close.
 
 ## Read both the tile and the player
 
-Every moving tile displays a color and its first letter. The player marker also shows the current color. The letter is a backup cue, not a separate target: G means Green, B means Blue, A means Amber, and R means Rose. To stay on the path, match the player color to the tile’s color at the point they meet.
+Every moving tile displays a color and its first letter. The player marker also shows the current color. The letter is a backup cue, not a separate target: G means Green, B means Blue, A means Amber, and R means Rose. To stay on the path, match the player color to the tile’s color when its center crosses the dashed checkpoint line. Each tile is evaluated once, so intermediate colors are safe between checkpoints.
 
 A useful visual check is: first identify the upcoming tile’s letter, then count forward from the current player color. Do not rely only on the shade; the label and letter keep the state understandable when you are playing quickly or prefer text confirmation.
 

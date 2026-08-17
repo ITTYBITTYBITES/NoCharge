@@ -20,6 +20,8 @@ const required = [
   '/terms/',
   '/advertising/',
   '/changelog/',
+  '/privacy/',
+  '/accessibility/',
   '/games/memory-match/',
   '/games/word-tile-rush/',
   '/games/color-flip/',

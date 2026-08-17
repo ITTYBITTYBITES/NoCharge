@@ -1,12 +1,18 @@
-# Lighthouse CI handoff
+# Lighthouse CI
 
-`npm run lighthouse` uses the production build in `dist`, starts Astro preview through Lighthouse CI, and seeds a denied optional-consent choice before page load. This keeps advertising and analytics optional requests out of the audit.
+Lighthouse no longer blocks every deployment. It remains available as a manual
+check through `npm run lighthouse`, which uses the production build in `dist`,
+starts Astro preview through Lighthouse CI, and seeds a denied optional-consent
+choice before page load. This keeps advertising and analytics optional requests
+out of the audit.
 
-The repository workflow has been prepared with a Lighthouse step. If workflow edits cannot be pushed by the GitHub App or are intentionally managed by the owner, add this block after the production build and browser setup steps:
+Run Lighthouse before major releases and after performance-sensitive changes:
 
-```yaml
-- name: Run Lighthouse budgets with optional advertising denied
-  run: npm run lighthouse
+```bash
+npm run lighthouse
 ```
 
-Lighthouse CI is not active merely because this configuration exists. Call it active only after the owner applies the workflow change and GitHub reports a passing Lighthouse job.
+Lighthouse CI is not active in the required PR or deployment workflow. Treat the
+reported performance, accessibility, best-practices, and SEO budgets as release
+guidance rather than a merge requirement, and review any budget failures before
+publishing.

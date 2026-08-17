@@ -1,3 +1,8 @@
+import {
+  advanceTileForFrame,
+  cleanupOffscreenTiles,
+  evaluateCheckpoint,
+} from './checkpoint-rules';
 import { play, unlockAudio } from '../shared/audio';
 import { loadScore, saveScore } from '../shared/storage';
 import type { GameController, PauseReason } from '../shared/types';
@@ -17,9 +22,28 @@ const COLORS = [
 type ColorId = (typeof COLORS)[number]['id'];
 
 type Tile = {
+  id: number;
   x: number;
   y: number;
+  previousY: number;
   color: ColorId;
+  evaluated: boolean;
+};
+
+type ColorFlipTestApi = {
+  setVisualScenario(config: {
+    tiles: Array<{ x?: number; y: number; color: ColorId }>;
+    speed?: number;
+    playerX?: number;
+    playerColor?: ColorId;
+  }): void;
+  getVisualState(): {
+    alive: boolean;
+    paused: boolean;
+    score: number;
+    playerColor: ColorId;
+    tiles: Tile[];
+  };
 };
 
 export function mountColorFlip(root: HTMLElement): GameController {
@@ -38,7 +62,7 @@ export function mountColorFlip(root: HTMLElement): GameController {
           <button type="button" class="btn btn--ghost btn--sm" data-cf="mode">Turn-based mode</button>
         </div>
       </div>
-      <p class="cf__hint" id="cf-instructions" data-cf="hint">Select Start, then tap the playfield or press Space to cycle colors. Match both color and letter.</p>
+      <p class="cf__hint" id="cf-instructions" data-cf="hint">Select Start, then tap the playfield or press Space or Enter to cycle to the next color. Your final color is checked once at the dashed line.</p>
       <div class="cf__stage" data-cf="stage">
         <canvas data-cf="canvas" width="360" height="480" tabindex="0" aria-label="Color Flip playfield" aria-describedby="cf-instructions">Color Flip requires a browser with canvas support.</canvas>
         <div class="cf__overlay" data-cf="overlay">
@@ -109,6 +133,12 @@ export function mountColorFlip(root: HTMLElement): GameController {
   let nextTileY = 1.05;
   let dpr = 1;
   let paused = false;
+  let nextTileId = 1;
+  let controlledTestScenario = false;
+  const testMode =
+    navigator.webdriver && new URLSearchParams(window.location.search).get('colorFlipTest') === 'checkpoint';
+  const testWindow = window as typeof window & { __NOCHARGE_COLOR_FLIP_TEST__?: ColorFlipTestApi };
+  let testApi: ColorFlipTestApi | undefined;
 
   const TILE_H = 0.09;
   const TILE_W = 0.42;
@@ -190,7 +220,8 @@ export function mountColorFlip(root: HTMLElement): GameController {
     accessible.hidden = true;
     stage.hidden = false;
     modeBtn.textContent = 'Turn-based mode';
-    hint.textContent = 'Select Start, then tap the playfield or press Space to cycle colors. Match both color and letter.';
+    hint.textContent =
+      'Select Start, then tap the playfield or press Space or Enter to cycle to the next color. Your final color is checked once at the dashed line.';
     best = loadScore(GAME_ID);
     bestEl.textContent = String(best);
     reset(false);
@@ -244,6 +275,7 @@ export function mountColorFlip(root: HTMLElement): GameController {
   }
 
   function spawnTiles() {
+    if (controlledTestScenario) return;
     while (nextTileY > -0.2) {
       pathAngle += (Math.random() - 0.5) * 0.7;
       pathAngle = Math.max(-0.9, Math.min(0.9, pathAngle));
@@ -259,7 +291,14 @@ export function mountColorFlip(root: HTMLElement): GameController {
       if (tiles.length && tiles[tiles.length - 1]!.color === color && Math.random() < 0.5) {
         color = pick(COLORS.filter((c) => c.id !== color)).id;
       }
-      tiles.push({ x, y: nextTileY, color });
+      tiles.push({
+        id: nextTileId++,
+        x,
+        y: nextTileY,
+        previousY: nextTileY,
+        color,
+        evaluated: false,
+      });
       nextTileY -= TILE_H * 0.92;
     }
   }
@@ -268,6 +307,8 @@ export function mountColorFlip(root: HTMLElement): GameController {
     cancelAnimationFrame(raf);
     tiles = [];
     nextTileY = 1.05;
+    nextTileId = 1;
+    controlledTestScenario = false;
     pathAngle = 0;
     playerX = 0.5;
     playerY = 0.78;
@@ -328,49 +369,41 @@ export function mountColorFlip(root: HTMLElement): GameController {
     const dt = Math.min(0.05, (ts - lastTs) / 1000);
     lastTs = ts;
 
-    // Scroll world toward player (tiles move down in screen space = y increases)
+    // Scroll world toward the checkpoint (tiles move down in screen space).
+    // Each tile retains its pre-frame position so crossing cannot be skipped,
+    // including after a pause where lastTs is reset before movement resumes.
     const dy = speed * dt;
-    for (const t of tiles) t.y += dy;
+    tiles = tiles.map((tile) => advanceTileForFrame(tile, dy, false));
     nextTileY += dy;
 
-    // Remove off-screen tiles, award score
-    const before = tiles.length;
-    tiles = tiles.filter((t) => t.y < 1.2);
-    const passed = before - tiles.length;
-    if (passed > 0) {
-      setScore(score + passed);
-      speed = Math.min(0.42, speed + passed * 0.004);
-    }
-
+    // Off-screen cleanup is deliberately score-neutral. Points are awarded only
+    // by a successful, one-time checkpoint evaluation below.
+    tiles = cleanupOffscreenTiles(tiles, 1.2).tiles;
     spawnTiles();
 
-    // Player gently steers toward nearest tile ahead
+    // Preserve the gentle steering toward the nearest tile ahead.
     const ahead = tiles
-      .filter((t) => t.y < playerY && t.y > playerY - 0.25)
+      .filter((tile) => !tile.evaluated && tile.y < playerY && tile.y > playerY - 0.25)
       .sort((a, b) => b.y - a.y)[0];
     if (ahead) {
       playerX += (ahead.x - playerX) * Math.min(1, dt * 6);
     }
 
-    // Collision: tile under player
-    const under = tiles.find(
-      (t) =>
-        Math.abs(t.y - playerY) < TILE_H * 0.55 &&
-        Math.abs(t.x - playerX) < TILE_W * 0.55,
-    );
+    // A tile is judged exactly once, when its center crosses the player's
+    // dashed checkpoint line. Intermediate colors between crossings are safe.
+    const horizontalTolerance = TILE_W / 2 + PLAYER_R;
+    for (const tile of tiles) {
+      const result = evaluateCheckpoint(tile, playerY, playerX, playerColor, horizontalTolerance);
+      if (result.status === 'not-crossed' || result.status === 'already-evaluated') continue;
 
-    if (under) {
-      if (under.color !== playerColor) {
+      tile.evaluated = true;
+      if (result.status === 'correct') {
+        setScore(score + result.scoreDelta);
+        speed = Math.min(0.42, speed + 0.004);
+        void play('pop');
+      } else {
         endGame();
-      }
-    } else {
-      // Off path
-      const near = tiles.some(
-        (t) => Math.abs(t.y - playerY) < TILE_H * 0.7 && Math.abs(t.x - playerX) < TILE_W * 0.75,
-      );
-      if (!near && tiles.some((t) => t.y > playerY - 0.15)) {
-        // grace at start
-        if (score > 2) endGame();
+        break;
       }
     }
 
@@ -386,6 +419,18 @@ export function mountColorFlip(root: HTMLElement): GameController {
     // subtle grid
     ctx.fillStyle = '#101010';
     ctx.fillRect(0, 0, w, h);
+
+    // The player's center is the single checkpoint used for path and color
+    // evaluation. Keep it visible independently of tile overlap.
+    ctx.save();
+    ctx.setLineDash([7, 7]);
+    ctx.strokeStyle = 'rgba(255,255,255,0.42)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(0, playerY * h);
+    ctx.lineTo(w, playerY * h);
+    ctx.stroke();
+    ctx.restore();
 
     for (const t of tiles) {
       const tw = TILE_W * w;
@@ -486,6 +531,43 @@ export function mountColorFlip(root: HTMLElement): GameController {
     startTurnBased();
   });
 
+  // An opt-in deterministic seam lets browser tests position known tiles
+  // without coupling gameplay to random generation or animation-frame races.
+  // It is unavailable during ordinary play and does not change player input.
+  if (testMode) {
+    testApi = {
+      setVisualScenario(config) {
+        controlledTestScenario = true;
+        nextTileY = -1;
+        nextTileId = 1;
+        playerX = config.playerX ?? 0.5;
+        speed = config.speed ?? 0.14;
+        setScore(0);
+        setPlayerColor(config.playerColor ?? 'green');
+        tiles = config.tiles.map((tile) => ({
+          id: nextTileId++,
+          x: tile.x ?? 0.5,
+          y: tile.y,
+          previousY: tile.y,
+          color: tile.color,
+          evaluated: false,
+        }));
+        lastTs = 0;
+        draw();
+      },
+      getVisualState() {
+        return {
+          alive,
+          paused,
+          score,
+          playerColor,
+          tiles: tiles.map((tile) => ({ ...tile })),
+        };
+      },
+    };
+    testWindow.__NOCHARGE_COLOR_FLIP_TEST__ = testApi;
+  }
+
   // Do not run behind the above-game ad before the player reaches the stage.
   reset(false);
 
@@ -497,6 +579,9 @@ export function mountColorFlip(root: HTMLElement): GameController {
       canvas.removeEventListener('pointerdown', onPointer);
       canvas.removeEventListener('keydown', onKey);
       window.removeEventListener('resize', resize);
+      if (testApi && testWindow.__NOCHARGE_COLOR_FLIP_TEST__ === testApi) {
+        delete testWindow.__NOCHARGE_COLOR_FLIP_TEST__;
+      }
       root.innerHTML = '';
     },
     pause(_reason?: PauseReason) {

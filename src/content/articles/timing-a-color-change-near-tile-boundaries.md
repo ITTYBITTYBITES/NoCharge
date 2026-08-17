@@ -3,7 +3,7 @@ title: "Timing a color change near tile boundaries"
 description: "Use the next tile, current player color, and a small input buffer to make more deliberate Color Flip changes in visual mode."
 game: color-flip
 published: "2026-08-15"
-updated: "2026-08-15"
+updated: "2026-08-17"
 author: "NoCharge"
 reviewer: "NoCharge"
 readTime: 5
@@ -12,21 +12,21 @@ featured: false
 draft: false
 ---
 
-Visual Color Flip is about matching the player marker to the tile that reaches it. The most reliable changes happen before the boundary, not after the tile is already under the player. The game gives you a color label, a colored swatch, and a letter on each tile so you can make a deliberate adjustment instead of reacting to the collision itself.
+Visual Color Flip is about choosing the final player color before a tile reaches the dashed checkpoint line. Each tile is evaluated exactly once as its center crosses that line. The game gives you a color label, a colored swatch, and a letter on each tile so you can make a deliberate adjustment before the checkpoint.
 
 Open [Color Flip](/games/color-flip/) to watch the movement, and consult the [Color Flip guide](/guides/color-flip/) for the core rules and controls.
 
-## Identify the next collision point
+## Identify the next checkpoint
 
 Tiles move down the playfield toward the player marker. The one closest above the marker is normally the immediate decision. Read its letter and color before it reaches the marker. Then compare it with the player’s current label.
 
 If the tile and player already match, do nothing. Extra input can move you away from the correct color. If they differ, count forward through the fixed sequence—Green, Blue, Amber, Rose—to find the number of changes needed. Press or tap once for each step and verify the player label as you go.
 
-This creates a small timing buffer: you have a moment to reach the required color before the tile meets the player. Waiting until contact turns that decision into a last-second reaction and makes accidental extra changes more likely.
+This creates a small timing buffer: you have a moment to reach the required final color before the tile center crosses the dashed line. Intermediate colors are safe after the preceding tile has been evaluated and before the next tile reaches the checkpoint.
 
 ## Use one input per color step
 
-A pointer press, tap, Space press, or Enter press advances one color. Treat each action as a discrete step. For a tile that is two colors ahead, use two deliberate inputs with a brief label check between them. Avoid assuming that a quick double tap will land exactly where expected; touch devices and keyboards can register repeats differently if you rush.
+A pointer press, tap, Space press, or Enter press cycles to the next color; it does not select or confirm the color currently shown. Treat each action as a discrete step. For a tile that is two colors ahead, use two deliberate inputs with a brief label check between them. Avoid assuming that a quick double tap will land exactly where expected; touch devices and keyboards can register repeats differently if you rush.
 
 For example, if the player is Green and the next tile is Amber, make one change to Blue and a second to Amber. If the next tile is Rose, count Green → Blue → Amber → Rose. The visual label is the confirmation, so it is always better to check than to rely on an uncounted burst.
 
@@ -38,7 +38,7 @@ The player marker also displays its current letter. Matching the two letters is 
 
 ## Account for increasing speed
 
-A visual run can accelerate as tiles pass. The correct response to higher speed is to move your attention earlier in the lane, not to tap faster without a target. Shift your focus from the collision point to the incoming tile above it. That gives you the same sequence calculation with more time to act.
+A visual run can accelerate as tiles pass. The correct response to higher speed is to move your attention earlier in the lane, not to tap faster without a target. Shift your focus from the checkpoint line to the incoming tile above it. That gives you the same sequence calculation with more time to act.
 
 At the start, several Green tiles make it possible to settle into the controls. Use that opening to confirm that a tap or key press advances the swatch one step. As colors vary, carry the same rhythm forward: identify, count, press, confirm.
 
