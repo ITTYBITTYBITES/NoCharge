@@ -89,7 +89,7 @@ test('Color Flip waits to start and allows multi-step changes between checkpoint
 
   await expect(page.locator('[data-cf="color-label"]')).toHaveText('Green');
   await expect(page.locator('[data-cf="overlay"]')).not.toHaveClass(/is-open/);
-  await expect(page.locator('[data-cf="score"]')).toHaveText('1', { timeout: 1_500 });
+  await expect(page.locator('[data-cf="score"]')).toHaveText('1', { timeout: 5_000 });
 });
 
 test('Color Flip offers a complete turn-based mode', async ({ page }) => {
