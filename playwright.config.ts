@@ -10,9 +10,6 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: process.env.CI ? [['github'], ['line']] : [['list']],
   use: {
-    // `upgrade-insecure-requests` intentionally protects the deployed HTTPS
-    // site. WebKit treats a numeric loopback host as upgradeable, so use the
-    // trusted localhost name for the plain-HTTP preview server.
     baseURL: 'http://localhost:4321',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
