@@ -3,7 +3,7 @@ title: "Visual mode versus turn-based Color Flip"
 description: "Compare Color Flip’s moving-canvas visual mode with its untimed turn-based mode without changing the core color-match decision."
 game: color-flip
 published: "2026-08-15"
-updated: "2026-08-15"
+updated: "2026-08-17"
 author: "NoCharge"
 reviewer: "NoCharge"
 readTime: 5
@@ -18,7 +18,7 @@ Try either option on [Color Flip](/games/color-flip/), and use the [Color Flip g
 
 ## What visual mode asks you to do
 
-Visual mode starts when you select Start. Tiles move down a canvas toward the player marker. Tap or click the playfield, or press Space or Enter while the canvas has focus, to advance the player’s color by one step. Match the player marker to the tile at the point they meet. If the colors do not match, the run ends.
+Visual mode starts when you select Start. Tiles move down a canvas toward the player marker. Tap or click the playfield, or press Space or Enter while the canvas has focus, to cycle the player’s color forward by one step; input does not select or confirm the displayed color. Each tile is evaluated once when its center crosses the dashed checkpoint line. Intermediate colors are safe between checkpoints, but the required final color must be active at crossing. A correct crossing adds one point; a wrong color or missed path ends the run.
 
 The playfield shows multiple tiles and can increase in speed as the run progresses. That makes visual mode a combination of color sequencing and timing. The current player color appears as a swatch and label, and each tile carries both a color and a first-letter cue. Those visible signals are enough to understand the next decision without sound.
 
@@ -36,7 +36,7 @@ Turn-based mode is not a simplified score display or a tutorial overlay. It is a
 
 Both modes use the same color order and the same requirement: make the player color equal to the target color. In visual mode, the target is the tile approaching the player. In turn-based mode, it is the next tile announced in the state panel. In both cases, a single input advances exactly one step through the cycle.
 
-For example, if the current color is Amber and the target is Green, you need two changes: Amber → Rose → Green. In visual mode, complete those changes before the tile reaches the player. In turn-based mode, complete them before selecting Step forward. The calculation is identical; only the timing changes.
+For example, if the current color is Amber and the target is Green, you need two changes: Amber → Rose → Green. In visual mode, complete those changes before the tile reaches the dashed checkpoint line. In turn-based mode, complete them before selecting Step forward. The calculation is identical; only the timing changes.
 
 ## Choose based on input and pace
 
