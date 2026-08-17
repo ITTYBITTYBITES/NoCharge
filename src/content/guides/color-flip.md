@@ -3,12 +3,12 @@ title: "Color Flip Guide: Visual and Turn-Based Modes"
 description: Learn the Color Flip sequence, visual controls, scoring, timing tips, and how to use the accessible untimed turn-based mode.
 game: color-flip
 readTime: 4
-updated: "2026-08-15"
+updated: "2026-08-17"
 featured: true
 order: 3
 ---
 
-Color Flip asks you to match your current color to the tile under your player. The path moves automatically in visual mode, so your only action is choosing when to cycle colors. A wrong color—or leaving the path—ends the run.
+Color Flip asks you to match your current color to each tile as it reaches the player’s checkpoint line. The path moves automatically in visual mode, so your only action is choosing when to cycle colors. A wrong color at the checkpoint ends the run.
 
 Every color also has a letter label: **G** for green, **B** for blue, **A** for amber, and **R** for rose. The labels make the match readable without relying on color alone.
 
@@ -36,13 +36,13 @@ The opening tiles are green to give you a brief setup period. After that, colors
 
 ## Timing tips
 
-### Change late, not early
+### Use the checkpoint line
 
-Your current tile still matters until the player reaches the next one. Cycling too early can turn a safe match into a loss. Wait until the player is close to crossing the boundary.
+A tile is checked once, when its center reaches the dashed line through the player. After a correct match, you can begin cycling immediately for the next tile. Intermediate colors between checkpoints are safe; only the selected color at the next checkpoint is judged.
 
 ### Count the sequence
 
-If you are green and the next tile is amber, you need two changes: green to blue, then blue to amber. Make the count before the boundary arrives instead of reacting with several rushed taps.
+If you are green and the next tile is amber, you need two changes: green to blue, then blue to amber. Make both changes before amber reaches the checkpoint instead of reacting with several rushed taps at the line.
 
 ### Watch the letter as well as the color
 

@@ -71,13 +71,29 @@ test('Word Tile Rush waits for input and supports keyboard selection', async ({ 
   await expect(page.getByRole('button', { name: 'Submit' })).toBeEnabled();
 });
 
-test('Color Flip waits to start and offers a complete turn-based mode', async ({ page }) => {
+test('Color Flip waits to start and allows multi-step changes between checkpoints', async ({ page }) => {
   await page.goto('/games/color-flip/');
   await expect(page.getByRole('button', { name: 'Start' })).toBeVisible();
   await expect(page.locator('[data-cf="score"]')).toHaveText('0');
   await page.waitForTimeout(800);
   await expect(page.locator('[data-cf="score"]')).toHaveText('0');
 
+  await page.getByRole('button', { name: 'Start' }).click();
+
+  // A full four-color cycle takes several inputs. Intermediate colors must not
+  // lose on the tile that was already matched while the next target approaches.
+  for (let step = 0; step < 4; step += 1) {
+    await page.keyboard.press('Space');
+    await page.waitForTimeout(35);
+  }
+
+  await expect(page.locator('[data-cf="color-label"]')).toHaveText('Green');
+  await expect(page.locator('[data-cf="overlay"]')).not.toHaveClass(/is-open/);
+  await expect(page.locator('[data-cf="score"]')).toHaveText('1', { timeout: 1_500 });
+});
+
+test('Color Flip offers a complete turn-based mode', async ({ page }) => {
+  await page.goto('/games/color-flip/');
   await page.getByRole('button', { name: 'Turn-based mode' }).click();
   await expect(page.getByRole('heading', { name: 'Turn-based Color Flip', exact: true })).toBeVisible();
   await expect(page.locator('[data-cf="stage"]')).toBeHidden();
