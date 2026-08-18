@@ -10,9 +10,11 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: process.env.CI ? [['github'], ['line']] : [['list']],
   use: {
-    // `upgrade-insecure-requests` intentionally protects the deployed HTTPS
-    // site. WebKit treats a numeric loopback host as upgradeable, so use the
-    // trusted localhost name for the plain-HTTP preview server.
+    // The meta CSP intentionally omits `upgrade-insecure-requests`: WebKit
+    // applies the meta directive to plain-HTTP preview servers too, upgrading
+    // `http://localhost` to HTTPS and failing the TLS handshake. The directive
+    // is applied only at the production edge via response headers (see
+    // SECURITY.md). Keep the trusted `localhost` name for the preview server.
     baseURL: 'http://localhost:4321',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',

@@ -4,7 +4,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 <BaseLayout
   title="Privacy"
-  description="How NoCharge handles analytics, advertising, and data stored on your device."
+  description="How NoCharge handles analytics, Google advertising, and data stored on your device."
   path="/privacy/"
   showAds={false}
 >
@@ -13,18 +13,18 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <header>
       <h1 class="page-title">Privacy</h1>
       <p class="lede">The short version: no accounts, and game data stays on your device.</p>
-      <p class="privacy__updated">Last updated: August 17, 2026</p>
+      <p class="privacy__updated">Last updated: August 18, 2026</p>
     </header>
 
     <div class="privacy__body panel">
       <section aria-labelledby="privacy-choices">
         <h2 id="privacy-choices">Your privacy choices</h2>
         <p>
-          Analytics and advertising are off by default. They load only after you allow their categories. You can
-          review or withdraw that choice at any time; necessary storage remains available for this choice and
-          local game features.
+          Analytics is off by default and loads only after you allow it. You can review or withdraw that choice at
+          any time; necessary storage remains available for this choice and local game features. Advertising choices
+          are separate and are shown by Google&rsquo;s own consent message.
         </p>
-        <button class="btn btn--ghost btn--sm" type="button" data-consent-open>Review privacy choices</button>
+        <button class="btn btn--ghost btn--sm" type="button" data-consent-open>Review analytics choices</button>
         <p class="privacy__status" data-consent-summary aria-live="polite">Loading your current choices…</p>
       </section>
 
@@ -37,8 +37,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </p>
         <p>
           Clear game data removes local scores, game preferences, and the shared sound preference. It does not
-          remove your privacy or consent choice, which stays saved so analytics and advertising remain exactly as
-          you left them.
+          remove your privacy or consent choice, which stays saved so analytics remain exactly as you left them.
         </p>
         <button class="btn btn--ghost btn--sm" type="button" data-clear-games>Clear game data</button>
         <p class="privacy__status" data-game-status aria-live="polite"></p>
@@ -57,20 +56,26 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </section>
 
       <section aria-labelledby="advertising">
-        <h2 id="advertising">Advertising</h2>
+        <h2 id="advertising">Google advertising</h2>
         <p>
-          If you allow advertising, NoCharge loads sandboxed banner ads supplied by Adsterra on the home and
-          game pages. Your browser then connects directly to the advertising provider. The provider may receive
-          technical data such as your IP address, browser and device details, the referring site, and ad
-          interactions, and may use cookies or similar identifiers. No ad frame or Adsterra script is requested
-          while advertising is off. Read Adsterra’s
-          <a href="https://adsterra.com/privacy-policy-managed/">Privacy Policy</a> and
-          <a href="https://adsterra.com/cookies/">Cookies Policy</a> for its practices and controls.
+          NoCharge shows one manual, responsive Google AdSense banner near the bottom of eligible pages. The banner
+          is labeled &ldquo;Advertisement&rdquo; and never appears over gameplay or inside game controls. Auto ads are
+          off, and NoCharge does not run interstitials, anchors, popups, popunders, or sponsored Smartlink fallbacks.
         </p>
         <p>
-          If a banner does not fill, NoCharge may show a clearly labeled sponsored link using Adsterra’s
-          provider-controlled anti-adblock domain. It remains hidden until advertising is allowed and opens only
-          after you select it. NoCharge does not place popups or full-screen interstitials over gameplay.
+          Google Privacy &amp; messaging is the advertising consent platform: where applicable, Google shows its
+          consent message before any advertising is served. You can review or withdraw your Google advertising
+          choices at any time using the Privacy and cookie settings control, which reopens Google&rsquo;s message.
+          See the <a href="/advertising/">Advertising Disclosure</a> for details.
+        </p>
+        <button class="btn btn--ghost btn--sm" type="button" data-google-ad-choices>Privacy and cookie settings</button>
+        <p>
+          When a banner loads, your browser connects directly to Google, and Google may use cookies or similar
+          storage and process data such as your IP address, browser and device details, page context, consent
+          signals, measurement data, and information about ad interactions. This processing is governed by Google&rsquo;s
+          own policies; see the
+          <a href="https://policies.google.com/privacy">Google Privacy Policy</a> and
+          <a href="https://policies.google.com/technologies/partner-sites">How Google uses information from sites that use Google services</a>.
         </p>
       </section>
 
@@ -78,15 +83,16 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         <h2 id="accounts-retention">Accounts and retention</h2>
         <p>
           NoCharge has no user accounts, passwords, or database of player scores. Local game data remains on
-          your device until you remove it. Google and Adsterra control retention for information they process
-          under their own policies.
+          your device until you remove it. Google controls retention for the analytics and advertising information
+          it processes under its own policies.
         </p>
       </section>
 
       <section aria-labelledby="contact">
         <h2 id="contact">Contact</h2>
         <p>
-          This site is intended for users 13 and older. For privacy questions or requests, email
+          NoCharge is a general-audience website and is not directed to children. For privacy questions or
+          requests, or to report a problematic advertisement, email
           <a href="mailto:hello@nocharge.net">hello@nocharge.net</a>.
         </p>
       </section>

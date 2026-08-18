@@ -5,7 +5,7 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 
 <BaseLayout
   title="Advertising Disclosure"
-  description="How NoCharge handles optional Adsterra banners, sponsored Smartlink no-fill links, consent, and ad reports."
+  description="How NoCharge runs one labeled, responsive Google AdSense banner with Google Privacy & messaging consent, and how to report a problematic ad."
   path="/advertising/"
   showAds={false}
 >
@@ -14,65 +14,73 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
     <header>
       <p class="eyebrow">Advertising Disclosure</p>
       <h1 class="page-title">How advertising works on NoCharge.</h1>
-      <p class="lede">Advertising is optional, labeled, separated from game play, and never required to understand a game.</p>
+      <p class="lede">One labeled banner, Google-managed consent, and no ads over gameplay.</p>
+      <p class="trust-page__date">Last updated: August 18, 2026</p>
     </header>
 
     <section aria-labelledby="ads-relationship">
-      <h2 id="ads-relationship">Adsterra banner relationship</h2>
+      <h2 id="ads-relationship">Google AdSense banner relationship</h2>
       <p>
-        If you allow advertising, NoCharge may display banner advertising supplied through Adsterra. Those banners
-        are third-party advertising, not NoCharge editorial content. Advertising consent is required before
-        NoCharge requests ad frames or the related provider content.
+        NoCharge displays exactly one manual, responsive Google AdSense banner near the bottom of eligible pages,
+        before the footer. The banner is clearly labeled &ldquo;Advertisement&rdquo; and is third-party advertising
+        supplied through Google AdSense, not NoCharge editorial content. NoCharge does not run Google Auto ads and
+        does not add more than one banner to a page.
       </p>
     </section>
 
     <section aria-labelledby="ads-consent">
       <h2 id="ads-consent">Your advertising choice</h2>
       <p>
-        Advertising is off by default. You can allow it through the consent banner or Privacy choices dialog, and
-        withdraw it at any time through the <a href="/privacy/">Privacy page</a> or the footer’s Privacy choices
-        button. Withdrawing consent hides ad placements and stops future optional advertising requests initiated by
-        NoCharge in that tab.
+        Google Privacy &amp; messaging is the advertising consent platform. Where applicable, Google shows its own
+        consent message before advertising is served, and the official AdSense tag follows the choice recorded
+        there. NoCharge does not keep its own advertising consent toggle and does not translate any older site
+        preference into Google&rsquo;s consent system.
+      </p>
+      <p>
+        You can review or revoke your Google advertising choices at any time with the Privacy and cookie settings
+        control in the footer or on the <a href="/privacy/">Privacy page</a>. It reopens Google&rsquo;s consent message.
       </p>
     </section>
 
-    <section aria-labelledby="ads-smartlink">
-      <h2 id="ads-smartlink">Sponsored Smartlink no-fill fallback</h2>
+    <section aria-labelledby="ads-data">
+      <h2 id="ads-data">Data Google may process</h2>
       <p>
-        If an allowed Adsterra banner does not fill, NoCharge may show a clearly labeled sponsored link as a
-        no-fill fallback. It is not shown before advertising consent, does not open on its own, and opens only
-        after you choose the labeled link. The destination is external and may change under the advertising
-        provider’s control.
+        When a banner loads, your browser connects directly to Google. Google may use cookies or similar storage
+        and may process data such as your IP address, browser and device details, page context, consent signals,
+        measurement data, and information about ad interactions. See Google&rsquo;s
+        <a href="https://policies.google.com/privacy">Privacy Policy</a> and
+        <a href="https://policies.google.com/technologies/partner-sites">How Google uses information from sites that use Google services</a>.
       </p>
     </section>
 
     <section aria-labelledby="ads-labeling">
       <h2 id="ads-labeling">Labels, external destinations, and endorsement</h2>
       <p>
-        Sponsored links are labeled, and advertising frames are identified as advertisements. An advertisement or
-        external link does not mean NoCharge endorses, verifies, or guarantees the destination, offer, product,
-        service, safety, availability, or claims made there. Use your own judgment and review an external site’s
-        terms and privacy information before interacting with it.
+        The banner is identified as an advertisement. An advertisement or external link does not mean NoCharge
+        endorses, verifies, or guarantees the destination, offer, product, service, safety, availability, or claims
+        made there. Use your own judgment and review an external site&rsquo;s terms and privacy information before
+        interacting with it.
       </p>
     </section>
 
     <section aria-labelledby="ads-isolation">
       <h2 id="ads-isolation">No ads over active gameplay</h2>
       <p>
-        NoCharge does not place advertising over an active game viewport. Ads are outside the interactive game
-        area, and shared full-screen or immersive game mode contains only the game viewport and its controls.
-        Advertising is isolated in sandboxed frames. NoCharge does not trigger automatic top-level redirects to an
-        advertiser or Smartlink destination.
+        NoCharge does not place advertising over an active game viewport or inside game controls. On game pages the
+        banner sits after the game details and related content, at least 150 pixels below the interactive game area,
+        and it is never sticky or floating. Shared full-screen or immersive game mode contains only the game viewport
+        and its controls. NoCharge does not run interstitials, anchors, popups, popunders, Smartlink fallbacks,
+        automatic ad refreshes, or automatic top-level redirects to an advertiser destination.
       </p>
     </section>
 
     <section aria-labelledby="ads-report">
       <h2 id="ads-report">Report a problematic advertisement</h2>
       <p>
-        If you see an advertisement or sponsored destination that appears harmful, misleading, inappropriate, or
+        If you see an advertisement or advertising destination that appears harmful, misleading, inappropriate, or
         broken, email <a href="mailto:hello@nocharge.net">hello@nocharge.net</a>. If possible, include the page
         where it appeared, the approximate date and time, and a description or screenshot. Do not send sensitive
-        personal information. Reports help us review the placement, but we cannot guarantee an external provider’s
+        personal information. Reports help us review the placement, but NoCharge cannot guarantee Google&rsquo;s
         response or content removal.
       </p>
     </section>
@@ -90,6 +98,12 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
   .trust-page > header {
     padding: 0.75rem 0 1.25rem;
     border-bottom: 1px solid var(--line);
+  }
+
+  .trust-page__date {
+    margin-top: 0.75rem;
+    color: var(--muted);
+    font-size: 0.82rem;
   }
 
   .trust-page section {

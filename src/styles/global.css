@@ -367,122 +367,39 @@ p {
   text-underline-offset: 3px;
 }
 
-.site-banner[hidden] {
-  display: none;
-}
+/* Single bottom AdSense banner -------------------------------------------- */
 
-/* Shared ad slot ---------------------------------------------------------- */
-
-.ad-slot {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.ad-banner {
   width: 100%;
-  max-width: var(--ad-w);
-  /* Reserve the slot height so a late creative doesn't shift layout. */
-  min-height: var(--ad-h);
-}
-
-.ad-slot__frame {
-  display: block;
-  width: var(--ad-w);
-  height: var(--ad-h);
-  /* A 300px creative must never overflow a 320px phone. */
-  max-width: 100%;
-  border: 0;
-  background: transparent;
-  color-scheme: light;
-}
-
-/* Smartlink backfill CTA, revealed only when a slot fails to fill. */
-.ad-slot__fallback {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: var(--ad-h);
-  padding: 0.75rem 1.25rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: linear-gradient(145deg, var(--panel-2), var(--panel));
-  color: var(--text);
-  font-size: 0.95rem;
-  font-weight: 600;
-  text-align: center;
-  transition: border-color 160ms ease, color 160ms ease;
-}
-
-.ad-slot__fallback[hidden] {
-  display: none;
-}
-
-.ad-slot__fallback:hover {
-  border-color: var(--accent);
-  color: var(--accent-strong);
-}
-
-/* Site-wide bottom banner ------------------------------------------------- */
-
-.site-banner {
-  width: 100%;
-  padding: 0.75rem 0 1rem;
+  padding: 1rem 0 1.25rem;
   border-top: 1px solid var(--line);
 }
 
-.site-banner__inner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: min(100% - 2rem, var(--max));
-  margin-inline: auto;
+.ad-banner__label {
+  margin: 0 0 0.4rem;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* Reserve the responsive slot so a late creative doesn't shift layout.
+   Typical fills are 728x90 on desktop and 320x100 on phones. */
+.ad-banner__slot {
   min-height: 90px;
 }
 
-/* Show exactly one unit per breakpoint. BottomBanner assigns an iframe src
-   only after CSS makes that unit visible, avoiding a hidden impression. */
-.site-banner__slot--mobile {
-  display: none;
-}
-
-/* Sticky variant: floats above content, pinned to the viewport bottom. */
-.site-banner--sticky {
-  position: fixed;
-  inset-inline: 0;
-  bottom: 0;
-  z-index: 50;
-  padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
-  background: color-mix(in srgb, var(--bg) 92%, transparent);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
-/* When sticky, push page content up so the fixed bar never covers the footer. */
-body:has(.site-banner--sticky) .site-shell {
-  padding-bottom: calc(90px + 1.5rem + env(safe-area-inset-bottom, 0px));
-}
-
 @media (max-width: 48rem) {
-  .site-banner__inner {
-    width: min(100% - 1.25rem, var(--max));
-    min-height: 50px;
-  }
-
-  .site-banner__slot--desktop {
-    display: none;
-  }
-
-  .site-banner__slot--mobile {
-    display: flex;
-  }
-
-  body:has(.site-banner--sticky) .site-shell {
-    padding-bottom: calc(50px + 1.5rem + env(safe-area-inset-bottom, 0px));
+  .ad-banner__slot {
+    min-height: 100px;
   }
 }
 
 /* Ads are visual-only; hide them from print. */
 @media print {
-  .site-banner {
+  .ad-banner {
     display: none;
   }
 }

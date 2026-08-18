@@ -2,24 +2,40 @@ import type { Page } from '@playwright/test';
 
 export const CONSENT_KEY = 'nocharge:consent';
 
-/** A stored "reject optional" decision, so no banner or ad interferes with a test. */
+/** A stored "keep analytics off" decision, so no banner or request interferes with a test. */
 export const DENIED_CONSENT = {
   version: 1,
   analytics: false,
-  advertising: false,
   updatedAt: '2026-08-15T12:00:00.000Z',
 } as const;
 
 /**
- * Seed a stored consent decision before page scripts run.
+ * Stub every Google endpoint (analytics, AdSense, Privacy & messaging) so no
+ * test ever contacts or clicks a live third party. Routed requests still emit
+ * Playwright request events, so consent-order assertions keep working.
+ */
+export const blockGoogleEndpoints = async (page: Page) => {
+  await page.route(
+    /(?:googletagmanager|google-analytics|pagead2\.googlesyndication|fundingchoicesmessages\.google|googleads\.g\.doubleclick|tpc\.googlesyndication|securepubads\.g\.doubleclick)\.com/,
+    async (route) => {
+      await route.fulfill({ status: 204, contentType: 'text/javascript', body: '' });
+    },
+  );
+};
+
+/**
+ * Seed a stored analytics-consent decision and stub Google endpoints before
+ * page scripts run.
  *
  * The script is installed on both the page and its browser context. WebKit can
  * create an initial opaque about:blank document before the navigated document;
  * retrying on DOMContentLoaded/pageshow makes the same seed available once the
- * top-level page has a storage origin. Opaque sandboxed ad frames still safely
- * ignore the failed storage write.
+ * top-level page has a storage origin. Google's consent tag is independent of
+ * this site-side analytics choice and is not touched here.
  */
 export const denyOptionalServices = async (page: Page) => {
+  await blockGoogleEndpoints(page);
+
   const persistChoice = ({ key, choice }: { key: string; choice: typeof DENIED_CONSENT }) => {
     const persist = () => {
       try {

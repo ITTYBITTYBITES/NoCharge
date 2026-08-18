@@ -16,7 +16,7 @@ A growing collection of browser games and practical player guides built with **A
 | Styling      | Plain CSS (“Quiet Arcade”)                  |
 | Storage      | `localStorage`                              |
 | Analytics    | GA4 (`G-GYQ8TEM6DS`), consent-gated          |
-| Ads          | Consent-gated, sandboxed Adsterra banners    |
+| Ads          | One manual, responsive Google AdSense banner; consent via Google Privacy & messaging |
 
 ## Games (v1)
 
@@ -64,13 +64,12 @@ public/           # favicon, icons, manifest, robots, sound assets
 
 ## Notes
 
-- Intended for users **13+** (not child-directed).  
-- Scores never leave the device.  
-- Analytics and ads are blocked until the visitor allows their separate consent categories.
+- NoCharge is a general-audience website and is not directed to children.
+- Scores never leave the device.
+- Analytics stays blocked until the visitor allows it.
 - With analytics consent, GA loads only in production and requests `anonymize_ip`.
-- Adsterra documents run in sandboxed iframes without same-origin or top-navigation access.
-- The configured Smartlink is a sponsored no-fill fallback and never loads before advertising consent.
-- Responsive banner units load only when their breakpoint is visible.
+- Eligible pages show exactly one manual, responsive Google AdSense banner, labeled “Advertisement”, before the footer. Auto ads, interstitials, anchors, popups, and Smartlink fallbacks are off, and ads never appear over gameplay.
+- Advertising consent is handled by Google's Privacy & messaging consent message; the official AdSense tag consumes those choices. The footer's “Privacy and cookie settings” control reopens Google's message.
 - `npm run test:e2e:matrix` enables the cross-browser Playwright matrix; see `docs/CI_BROWSER_MATRIX.md` for CI activation status.
-- `npm run lighthouse` audits the production build with optional advertising denied; see `docs/CI_LIGHTHOUSE.md`.
+- `npm run lighthouse` audits the production build with optional analytics denied; see `docs/CI_LIGHTHOUSE.md`.
 - `/health.json` and `scripts/check-production.mjs` prepare privacy-safe uptime checks. Scheduled monitoring is not active until the owner configures it; see `docs/CI_UPTIME.md`.

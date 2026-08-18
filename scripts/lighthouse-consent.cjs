@@ -1,7 +1,8 @@
 /**
- * Lighthouse opens a fresh page for each URL. Seed a persisted denied optional
- * choice in the shared browser context first so advertising and analytics stay
- * unrequested during every audit.
+ * Lighthouse opens a fresh page for each URL. Seed a persisted denied analytics
+ * choice in the shared browser context first so optional analytics stays
+ * unrequested during every audit. Advertising consent is managed by Google's
+ * own consent message and is not part of this site-side choice.
  */
 module.exports = async (browser, { url }) => {
   const page = await browser.newPage();
@@ -12,7 +13,6 @@ module.exports = async (browser, { url }) => {
       JSON.stringify({
         version: 1,
         analytics: false,
-        advertising: false,
         updatedAt: '2026-08-15T00:00:00.000Z',
       }),
     );

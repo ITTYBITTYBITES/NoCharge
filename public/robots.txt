@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /ads/
 
 Sitemap: https://nocharge.net/sitemap.xml

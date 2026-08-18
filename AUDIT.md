@@ -1,5 +1,7 @@
 # NoCharge site audit
 
+> **Historical note (August 18, 2026):** this audit describes the site as it was on August 15, 2026. The Adsterra banner, Smartlink fallback, sandboxed ad-host pages, and the advertising consent toggle described below were removed on August 18, 2026 and replaced with a single manual, responsive Google AdSense banner with Google Privacy & messaging consent. See the public changelog for the current state.
+
 **Audit date:** August 15, 2026  
 **Scope:** Home, Arcade, Guides, privacy, three game routes, three guide articles, ad host routes, metadata/indexing, accessibility, performance, security/privacy, game runtime, build/deployment, and mobile behavior visible from the source and production build.
 

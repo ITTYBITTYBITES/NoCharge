@@ -2,9 +2,10 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import BottomBanner from '../components/BottomBanner.astro';
+import AdSenseBanner from '../components/AdSenseBanner.astro';
 import ConsentManager from '../components/ConsentManager.astro';
 import SeoHead from '../components/SeoHead.astro';
+import { ADSENSE_CONSENT_TAG_URL } from '../config/adsense';
 
 interface Props {
   title?: string;
@@ -62,8 +63,24 @@ const release = import.meta.env.PUBLIC_RELEASE ?? '1.0.0';
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.google-analytics.com https://*.google-analytics.com; font-src 'self'; media-src 'self'; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com; frame-src 'self'; form-action 'self'; upgrade-insecure-requests"
+      content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com https://fundingchoicesmessages.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.google-analytics.com https://*.google-analytics.com https://pagead2.googlesyndication.com https://tpc.googlesyndication.com https://googleads.g.doubleclick.net https://securepubads.g.doubleclick.net https://www.google.com; font-src 'self'; media-src 'self'; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://securepubads.g.doubleclick.net https://tpc.googlesyndication.com https://fundingchoicesmessages.google.com https://www.google.com; frame-src 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com https://fundingchoicesmessages.google.com; form-action 'self'"
     />
+    {
+      isProd && (
+        <>
+          <!--
+            Official Google Privacy & messaging (Funding Choices) message tag.
+            Google's consent message is the advertising consent platform; the
+            AdSense tag reads its choices itself. Loaded on every page so the
+            "Privacy and cookie settings" revocation link works everywhere.
+          -->
+          <script is:inline async src={ADSENSE_CONSENT_TAG_URL}></script>
+          <script is:inline>
+            (function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();
+          </script>
+        </>
+      )
+    }
     {
       isProd && (
         <script is:inline>
@@ -137,9 +154,9 @@ const release = import.meta.env.PUBLIC_RELEASE ?? '1.0.0';
       <main class="site-main" id="main-content">
         <slot />
       </main>
+      {isProd && showAds && <AdSenseBanner />}
       <Footer />
     </div>
-    {showAds && <BottomBanner />}
     <ConsentManager />
     <script>
       import { startPrivacyAwareErrorReporting } from '../lib/error-monitoring';

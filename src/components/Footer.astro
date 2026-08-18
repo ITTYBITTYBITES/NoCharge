@@ -3,7 +3,7 @@ const year = new Date().getFullYear();
 ---
 
 <footer class="site-footer">
-  <span>&copy; {year} NoCharge · Intended for users 13+.</span>
+  <span>&copy; {year} NoCharge · General-audience site, not directed to children.</span>
   <div class="footer-links">
     <a href="/arcade/">Arcade</a>
     <a href="/guides/">Guides</a>
@@ -14,7 +14,28 @@ const year = new Date().getFullYear();
     <a href="/terms/">Terms</a>
     <a href="/advertising/">Advertising</a>
     <a href="/accessibility/">Accessibility</a>
-    <button type="button" data-consent-open>Privacy choices</button>
+    <button type="button" data-consent-open>Analytics choices</button>
+    <button type="button" data-google-ad-choices>Privacy and cookie settings</button>
     <a href="mailto:hello@nocharge.net">hello@nocharge.net</a>
   </div>
 </footer>
+
+<script is:inline>
+  // Advertising consent is managed by Google's Privacy & messaging consent
+  // platform. Reopen Google's own message so visitors can review or revoke
+  // their Google advertising choices. When the Google tag is unavailable
+  // (offline, blocked, or a non-production build), point at Google's privacy
+  // policy instead of showing a second, site-built advertising dialog.
+  (() => {
+    document.querySelectorAll('[data-google-ad-choices]').forEach((control) => {
+      control.addEventListener('click', () => {
+        const googlefc = window.googlefc;
+        if (googlefc && typeof googlefc.showRevocationMessage === 'function') {
+          googlefc.showRevocationMessage();
+          return;
+        }
+        window.open('https://policies.google.com/privacy', '_blank', 'noopener');
+      });
+    });
+  })();
+</script>

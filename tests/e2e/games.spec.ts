@@ -276,7 +276,7 @@ test('Color Flip hidden-tab pause preserves the pending checkpoint', async ({ pa
 
 test('Color Flip consent-modal pause preserves the pending checkpoint', async ({ page }) => {
   await openColorFlipTestRun(page);
-  await page.getByRole('button', { name: 'Privacy choices' }).click();
+  await page.getByRole('button', { name: 'Analytics choices' }).click();
   await expect(page.locator('[data-consent-modal]')).toBeVisible();
   await setColorFlipScenario(page, { speed: 0.2, tiles: [{ y: 0.77, color: 'green' }] });
 

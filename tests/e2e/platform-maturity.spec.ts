@@ -227,7 +227,7 @@ test.describe('shared game lifecycle controls', () => {
 
   test('does not bypass consent when hidden and consent reasons overlap', async ({ page }) => {
     await page.goto('/games/memory-match/');
-    await page.getByRole('button', { name: 'Privacy choices' }).click();
+    await page.getByRole('button', { name: 'Analytics choices' }).click();
     await setVisibility(page, 'hidden');
     await setVisibility(page, 'visible');
     await resumeFromOverlay(page).evaluate((button: HTMLButtonElement) => button.click());
@@ -316,7 +316,7 @@ test.describe('shared game lifecycle controls', () => {
 
   test('pauses for the privacy choices modal and resumes only its matching reason', async ({ page }) => {
     await page.goto('/games/memory-match/');
-    await page.getByRole('button', { name: 'Privacy choices' }).click();
+    await page.getByRole('button', { name: 'Analytics choices' }).click();
     await expect(page.locator('[data-consent-modal]')).toBeVisible();
     await expect(page.locator('[data-game-toolbar="pause"]')).toBeVisible();
     await page.getByRole('button', { name: 'Close privacy choices' }).click();
