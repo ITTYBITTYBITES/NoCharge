@@ -49,6 +49,10 @@ test('ships a restrictive document policy with only the documented Google origin
   expect(policy).not.toContain('*.googlesyndication.com');
   // The removed Adsterra provider is gone from the policy.
   expect(policy).not.toContain('highperformanceformat');
+  // The meta CSP must not force HTTPS upgrades: WebKit applies the meta
+  // directive to plain-HTTP local previews and fails the TLS handshake.
+  // upgrade-insecure-requests is applied only at the production edge.
+  expect(policy).not.toContain('upgrade-insecure-requests');
 
   // The banner is a native AdSense <ins>, never a custom sandboxed iframe.
   await expect(page.locator('[data-ad-banner] ins.adsbygoogle')).toHaveCount(1);
