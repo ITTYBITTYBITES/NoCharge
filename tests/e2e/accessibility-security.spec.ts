@@ -47,6 +47,14 @@ test('ships a restrictive document policy with only the documented Google origin
   expect(policy).toContain('https://tpc.googlesyndication.com');
   expect(policy).not.toContain('*.google.com');
   expect(policy).not.toContain('*.googlesyndication.com');
+  // Google's ad-quality (invalid-traffic detection) endpoint is reachable
+  // for connections only; it is not a script, image, or frame source.
+  const directive = (name: string) => policy?.match(new RegExp(`${name}\\s+([^;]+)`))?.[1] ?? '';
+  const connectSrc = directive('connect-src');
+  expect(connectSrc).toContain('https://*.adtrafficquality.google');
+  expect(directive('script-src')).not.toContain('adtrafficquality');
+  expect(directive('img-src')).not.toContain('adtrafficquality');
+  expect(directive('frame-src')).not.toContain('adtrafficquality');
   // The removed Adsterra provider is gone from the policy.
   expect(policy).not.toContain('highperformanceformat');
   // The meta CSP must not force HTTPS upgrades: WebKit applies the meta
