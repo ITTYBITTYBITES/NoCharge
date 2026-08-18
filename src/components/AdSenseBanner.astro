@@ -1,0 +1,37 @@
+---
+/**
+ * The single manual, responsive Google AdSense banner rendered near the bottom
+ * of eligible pages, before the footer.
+ *
+ * This component renders the exact AdSense code block (script, ins, push)
+ * exactly once per page. The container reserves space so a late creative does
+ * not shift layout, and it is a plain in-flow element: never sticky, floating,
+ * auto-refreshed, or rendered inside game controls or gameplay. Whether the
+ * slot may fill is decided by Google's Privacy & messaging consent platform;
+ * the official tag consumes those choices without any NoCharge consent flag.
+ */
+import { ADSENSE_BOTTOM_SLOT_ID, ADSENSE_PUBLISHER_ID, ADSENSE_SCRIPT_URL } from '../config/adsense';
+---
+
+<aside class="ad-banner" aria-label="Advertisement" data-ad-banner>
+  <p class="ad-banner__label">Advertisement</p>
+  <div class="ad-banner__slot">
+    <script
+      is:inline
+      async
+      src={ADSENSE_SCRIPT_URL}
+      crossorigin="anonymous"
+    ></script>
+    <ins
+      class="adsbygoogle"
+      style="display:block"
+      data-ad-client={ADSENSE_PUBLISHER_ID}
+      data-ad-slot={ADSENSE_BOTTOM_SLOT_ID}
+      data-ad-format="auto"
+      data-full-width-responsive="true"
+    ></ins>
+    <script is:inline>
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </div>
+</aside>

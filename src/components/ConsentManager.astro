@@ -1,4 +1,15 @@
 ---
+/**
+ * Analytics-only consent UI.
+ *
+ * NoCharge Analytics consent is kept fully separate from advertising: Google's
+ * Privacy & messaging consent message is the advertising consent platform and
+ * the official AdSense tag consumes its choices itself. This dialog therefore
+ * never claims to control Google advertising, and the old Adsterra advertising
+ * toggle has been removed. Legacy stored choices that carried an `advertising`
+ * field keep their analytics value; the obsolete field is ignored and is never
+ * translated into Google consent.
+ */
 ---
 
 <div
@@ -11,16 +22,16 @@
 >
   <div class="consent-banner__copy">
     <p class="eyebrow">Your choice</p>
-    <h2 id="consent-banner-title">Optional analytics and ads</h2>
+    <h2 id="consent-banner-title">Optional analytics</h2>
     <p id="consent-banner-description">
-      Necessary storage keeps your scores and privacy choice. Analytics and advertising stay off unless you
-      allow them. You can change this anytime.
+      Necessary storage keeps your scores and this choice. Analytics stays off unless you allow it, and Google shows
+      its own consent message for advertising. You can change this anytime.
     </p>
   </div>
   <div class="consent-actions">
-    <button class="btn btn--ghost btn--sm" type="button" data-consent-reject>Reject optional</button>
+    <button class="btn btn--ghost btn--sm" type="button" data-consent-reject>Keep analytics off</button>
     <button class="btn btn--ghost btn--sm" type="button" data-consent-customize>Customize</button>
-    <button class="btn btn--sm" type="button" data-consent-allow>Allow all</button>
+    <button class="btn btn--sm" type="button" data-consent-allow>Allow analytics</button>
   </div>
   <a class="consent-banner__link" href="/privacy/">Read the privacy policy</a>
 </div>
@@ -40,8 +51,9 @@
     <p class="eyebrow">Privacy choices</p>
     <h2 id="consent-settings-title">Choose what may load</h2>
     <p id="consent-settings-description" class="consent-modal__intro">
-      Optional services remain blocked until you allow them. Turning a category off unloads ads and stops future
-      optional requests initiated by NoCharge in this tab.
+      Analytics remains blocked until you allow it. Turning it off stops future optional analytics requests
+      initiated by NoCharge in this tab. Advertising choices are shown by Google&rsquo;s own consent message and are
+      managed with the footer&rsquo;s Privacy and cookie settings link.
     </p>
 
     <div class="consent-option">
@@ -60,16 +72,8 @@
       <input id="consent-analytics" type="checkbox" data-consent-analytics />
     </div>
 
-    <div class="consent-option">
-      <div>
-        <h3><label for="consent-advertising">Advertising</label></h3>
-        <p>Allows sandboxed Adsterra banners and their required network requests.</p>
-      </div>
-      <input id="consent-advertising" type="checkbox" data-consent-advertising />
-    </div>
-
     <div class="consent-modal__actions">
-      <button class="btn btn--ghost" type="button" data-consent-modal-allow>Allow all</button>
+      <button class="btn btn--ghost" type="button" data-consent-modal-allow>Allow analytics</button>
       <button class="btn" type="button" data-consent-save>Save choices</button>
     </div>
   </section>
@@ -79,7 +83,6 @@
   type ConsentChoice = {
     version: number;
     analytics: boolean;
-    advertising: boolean;
     updatedAt: string;
   };
 
@@ -98,7 +101,6 @@
   const root = document.querySelector<HTMLElement>('[data-consent-banner]');
   const modal = document.querySelector<HTMLElement>('[data-consent-modal]');
   const analyticsInput = document.querySelector<HTMLInputElement>('[data-consent-analytics]');
-  const advertisingInput = document.querySelector<HTMLInputElement>('[data-consent-advertising]');
   const storageKey = 'nocharge:consent';
   const consentVersion = 1;
   let lastFocused: HTMLElement | null = null;
@@ -107,7 +109,6 @@
   const defaults = (): ConsentChoice => ({
     version: consentVersion,
     analytics: false,
-    advertising: false,
     updatedAt: new Date().toISOString(),
   });
 
@@ -115,18 +116,13 @@
     try {
       const raw = localStorage.getItem(storageKey);
       if (!raw) return null;
-      const parsed = JSON.parse(raw) as Partial<ConsentChoice>;
-      if (
-        parsed.version !== consentVersion ||
-        typeof parsed.analytics !== 'boolean' ||
-        typeof parsed.advertising !== 'boolean'
-      ) {
+      const parsed = JSON.parse(raw) as Partial<ConsentChoice> & { advertising?: unknown };
+      if (parsed.version !== consentVersion || typeof parsed.analytics !== 'boolean') {
         return null;
       }
       return {
         version: consentVersion,
         analytics: parsed.analytics,
-        advertising: parsed.advertising,
         updatedAt: typeof parsed.updatedAt === 'string' ? parsed.updatedAt : new Date().toISOString(),
       };
     } catch {
@@ -139,46 +135,12 @@
 
   const setBackgroundInert = (value: boolean) => {
     document.querySelector<HTMLElement>('.site-shell')?.toggleAttribute('inert', value);
-    document.querySelector<HTMLElement>('.site-banner')?.toggleAttribute('inert', value);
     root?.toggleAttribute('inert', value);
   };
 
   const updateSummary = () => {
     document.querySelectorAll<HTMLElement>('[data-consent-summary]').forEach((summary) => {
-      summary.textContent = `Analytics: ${currentChoice.analytics ? 'allowed' : 'off'}. Advertising: ${currentChoice.advertising ? 'allowed' : 'off'}.`;
-    });
-  };
-
-  const isVisibleAdSlot = (slot: HTMLElement | null) => {
-    if (!slot) return false;
-    // WebKit can report a layout parent for both responsive slots before its
-    // media query layout settles. The breakpoint is the source of truth for
-    // the two fixed-size bottom-banner units.
-    if (slot.classList.contains('site-banner__slot--mobile')) return window.matchMedia('(max-width: 48rem)').matches;
-    if (slot.classList.contains('site-banner__slot--desktop')) return !window.matchMedia('(max-width: 48rem)').matches;
-    return slot.offsetParent !== null;
-  };
-
-  const loadVisibleAds = () => {
-    requestAnimationFrame(() => {
-      document.querySelectorAll<HTMLIFrameElement>('[data-consent-ad] .ad-slot__frame[data-src]').forEach((frame) => {
-        const slot = frame.closest<HTMLElement>('.ad-slot');
-        const src = frame.dataset.src;
-        if (isVisibleAdSlot(slot) && src && frame.getAttribute('src') !== src) frame.src = src;
-      });
-    });
-  };
-
-  const unloadAds = () => {
-    document.querySelectorAll<HTMLIFrameElement>('.ad-slot__frame[data-src]').forEach((frame) => {
-      frame.style.display = '';
-      if (frame.getAttribute('src')) {
-        frame.src = 'about:blank';
-        frame.removeAttribute('src');
-      }
-    });
-    document.querySelectorAll<HTMLElement>('.ad-slot__fallback').forEach((fallback) => {
-      fallback.hidden = true;
+      summary.textContent = `Analytics: ${currentChoice.analytics ? 'allowed' : 'off'}.`;
     });
   };
 
@@ -194,12 +156,6 @@
         // Keep the choice for this page even when storage is unavailable.
       }
     }
-
-    document.querySelectorAll<HTMLElement>('[data-consent-ad]').forEach((container) => {
-      container.hidden = !choice.advertising;
-    });
-    if (choice.advertising) loadVisibleAds();
-    else unloadAds();
 
     updateSummary();
     document.documentElement.dataset.consentReady = 'true';
@@ -217,21 +173,19 @@
   };
 
   const openSettings = () => {
-    if (!modal || !analyticsInput || !advertisingInput) return;
+    if (!modal || !analyticsInput) return;
     lastFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     analyticsInput.checked = currentChoice.analytics;
-    advertisingInput.checked = currentChoice.advertising;
     modal.hidden = false;
     window.dispatchEvent(new CustomEvent('nocharge:modalchange', { detail: { open: true, source: 'consent' } }));
     setBackgroundInert(true);
     analyticsInput.focus();
   };
 
-  const makeChoice = (analytics: boolean, advertising: boolean) => {
+  const makeChoice = (analytics: boolean) => {
     const choice: ConsentChoice = {
       version: consentVersion,
       analytics,
-      advertising,
       updatedAt: new Date().toISOString(),
     };
     applyChoice(choice, true);
@@ -245,12 +199,12 @@
     open: openSettings,
   };
 
-  document.querySelector('[data-consent-reject]')?.addEventListener('click', () => makeChoice(false, false));
-  document.querySelector('[data-consent-allow]')?.addEventListener('click', () => makeChoice(true, true));
+  document.querySelector('[data-consent-reject]')?.addEventListener('click', () => makeChoice(false));
+  document.querySelector('[data-consent-allow]')?.addEventListener('click', () => makeChoice(true));
   document.querySelector('[data-consent-customize]')?.addEventListener('click', openSettings);
-  document.querySelector('[data-consent-modal-allow]')?.addEventListener('click', () => makeChoice(true, true));
+  document.querySelector('[data-consent-modal-allow]')?.addEventListener('click', () => makeChoice(true));
   document.querySelector('[data-consent-save]')?.addEventListener('click', () => {
-    makeChoice(analyticsInput?.checked ?? false, advertisingInput?.checked ?? false);
+    makeChoice(analyticsInput?.checked ?? false);
   });
   document.querySelectorAll('[data-consent-close]').forEach((control) => {
     control.addEventListener('click', closeSettings);

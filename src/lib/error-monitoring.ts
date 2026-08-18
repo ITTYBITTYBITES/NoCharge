@@ -132,7 +132,6 @@ export function routeTemplate(pathname: string): string {
   if (/^\/games\/[^/]+\/$/.test(withSlash)) return '/games/[slug]/';
   if (/^\/guides\/[^/]+\/$/.test(withSlash)) return '/guides/[slug]/';
   if (/^\/articles\/[^/]+\/$/.test(withSlash)) return '/articles/[slug]/';
-  if (/^\/ads\/[^/]+\/$/.test(withSlash)) return '/ads/[unit]/';
 
   const publicRoutes = new Set([
     '/',

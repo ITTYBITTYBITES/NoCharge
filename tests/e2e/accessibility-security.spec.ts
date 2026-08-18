@@ -32,20 +32,28 @@ for (const path of [
   });
 }
 
-test('ships a restrictive document policy and sandboxed ad frames', async ({ page }) => {
+test('ships a restrictive document policy with only the documented Google origins', async ({ page }) => {
   await denyOptionalServices(page);
   await page.goto('/games/memory-match/');
 
   const policy = await page.locator('meta[http-equiv="Content-Security-Policy"]').getAttribute('content');
   expect(policy).toContain("default-src 'self'");
   expect(policy).toContain("object-src 'none'");
-  expect(policy).toContain("frame-src 'self'");
   expect(policy).toContain("form-action 'self'");
+  // Official AdSense and Privacy & messaging origins, no broad wildcards.
+  expect(policy).toContain('https://pagead2.googlesyndication.com');
+  expect(policy).toContain('https://fundingchoicesmessages.google.com');
+  expect(policy).toContain('https://googleads.g.doubleclick.net');
+  expect(policy).toContain('https://tpc.googlesyndication.com');
+  expect(policy).not.toContain('*.google.com');
+  expect(policy).not.toContain('*.googlesyndication.com');
+  // The removed Adsterra provider is gone from the policy.
+  expect(policy).not.toContain('highperformanceformat');
 
-  const frame = page.locator('.ad-slot__frame').first();
-  await expect(frame).toHaveAttribute('sandbox', 'allow-scripts allow-popups allow-popups-to-escape-sandbox');
-  await expect(frame).toHaveAttribute('allow', /camera 'none'.*microphone 'none'.*payment 'none'/);
-  await expect(frame).not.toHaveAttribute('src', /.+/);
+  // The banner is a native AdSense <ins>, never a custom sandboxed iframe.
+  await expect(page.locator('[data-ad-banner] ins.adsbygoogle')).toHaveCount(1);
+  await expect(page.locator('.ad-slot__frame, iframe[src*="/ads/"]')).toHaveCount(0);
+  await expect(page.locator('[data-ad-banner] iframe')).toHaveCount(0);
 });
 
 test('publishes security contact details and the custom 404', async ({ request }) => {

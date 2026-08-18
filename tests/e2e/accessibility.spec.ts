@@ -47,6 +47,6 @@ test('accessibility statement links the verified address and omits ads and struc
     );
   expect(mailtoLinks).toContain('mailto:hello@nocharge.net');
 
-  await expect(page.locator('[data-consent-ad]')).toHaveCount(0);
+  await expect(page.locator('[data-ad-banner]')).toHaveCount(0);
   await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(0);
 });
