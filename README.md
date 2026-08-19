@@ -23,6 +23,7 @@ A growing collection of browser games and practical player guides built with **A
 1. **Memory Match** — flip cards, find pairs  
 2. **Word Tile Rush** — drag adjacent tiles to spell words  
 3. **Color Flip** — tap to change color, stay on matching tiles  
+4. **Beacon Lattice** — place beacons for exact coverage
 
 ## Guides and articles
 

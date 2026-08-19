@@ -17,6 +17,7 @@
     "test:unit": "vitest run",
     "art:word": "node scripts/generate-word-tile-rush-art.mjs",
     "art:color": "node scripts/generate-color-flip-art.mjs",
+    "art:beacon": "node scripts/generate-beacon-lattice-art.mjs",
     "lighthouse": "lhci autorun",
     "validate:html": "html-validate \"dist/**/*.html\"",
     "check:links": "node scripts/check-internal-links.mjs",
