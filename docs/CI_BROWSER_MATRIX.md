@@ -6,7 +6,9 @@ Chromium is the required PR and deployment gate. On GitHub-hosted Ubuntu runners
 the `chromium` Playwright project uses the runner's preinstalled stable Google
 Chrome channel. CI prints the resolved Chrome and Playwright versions, does not
 download a Playwright browser, and runs against the production build already
-created by the preceding build step:
+created by the preceding build step. Playwright's small FFmpeg helper is retained
+for failure video: it is cached by runner OS, architecture, and exact lockfile
+hash, and downloaded only on a cold cache.
 
 ```yaml
 - name: Browser diagnostics
