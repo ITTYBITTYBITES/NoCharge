@@ -45,6 +45,17 @@ jobs:
           google-chrome --version 2>/dev/null || google-chrome-stable --version 2>/dev/null || true
           npx playwright --version
 
+      - name: Cache Playwright FFmpeg
+        id: playwright-ffmpeg-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright/ffmpeg-*
+          key: playwright-ffmpeg-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Playwright FFmpeg
+        if: steps.playwright-ffmpeg-cache.outputs.cache-hit != 'true'
+        run: npx playwright install ffmpeg
+
       - name: Run browser and accessibility tests
         run: npx playwright test --project=chromium
 
