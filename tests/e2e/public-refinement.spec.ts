@@ -59,3 +59,13 @@ test('editorial images use responsive width descriptors and decorative alt text'
     }
   }
 });
+
+test('browser selects smaller editorial sources on narrow screens and header sources at desktop width', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/help/');
+  await expect.poll(() => page.locator('.help-art img').evaluate((image: HTMLImageElement) => image.currentSrc)).toMatch(/help-800\.webp$/);
+
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto('/help/');
+  await expect.poll(() => page.locator('.help-art img').evaluate((image: HTMLImageElement) => image.currentSrc)).toMatch(/help-1200\.webp$/);
+});
