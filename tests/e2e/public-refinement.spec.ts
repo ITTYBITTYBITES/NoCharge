@@ -41,3 +41,21 @@ test('help is linked, crawlable, and distinguishes local data from analytics', a
   const sitemap = await (await request.get('/sitemap.xml')).text();
   expect(sitemap).toContain('https://nocharge.net/help/');
 });
+
+test('editorial images use responsive width descriptors and decorative alt text', async ({ page }) => {
+  for (const path of ['/articles/', '/articles/how-nocharge-tests-browser-games/', '/collections/', '/help/']) {
+    await page.goto(path);
+    const pictures = page.locator('picture:has(source[src*="editorial-art"])');
+    const count = await pictures.count();
+    expect(count, path).toBeGreaterThan(0);
+    for (let index = 0; index < count; index += 1) {
+      const picture = pictures.nth(index);
+      const source = picture.locator('source[type="image/webp"]');
+      await expect(source).toHaveAttribute('srcset', /800w/);
+      await expect(source).toHaveAttribute('srcset', /1200w/);
+      await expect(source).toHaveAttribute('srcset', /1600w/);
+      await expect(source).toHaveAttribute('sizes', /vw|rem/);
+      await expect(picture.locator('img')).toHaveAttribute('alt', '');
+    }
+  }
+});

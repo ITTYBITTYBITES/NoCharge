@@ -64,15 +64,15 @@ The per-asset hard ceiling is 180 KB; all committed game assets remain below it.
 
 ## Editorial illustration family (2026-08-19)
 
-These original AI-assisted editorial illustrations are concept art, not gameplay captures. They use a shared 1600×900 source/published canvas, WebP primary and JPEG fallback, and stay below the 150 KB WebP / 300 KB JPEG target. No rejected variants or temporary PNG review files are published.
+These original AI-assisted editorial illustrations are concept art, not gameplay captures. Each illustration preserves a 16:9 ratio and has three responsive widths. WebP is primary and JPEG is the fallback. Alt text is empty on all six because the adjacent title and copy carry the meaning; none adds information that requires a screen-reader description of abstract shapes.
 
-| Asset | Purpose and routes | Formats / sizes | Alt-text decision |
-| --- | --- | --- | --- |
-| `editorial-art/quiet-arcade` | Platform article card and header: What Quiet Arcade means at NoCharge | WebP 21.3 KB, JPEG 46.8 KB | Informative: “Abstract arcade board with open paths and a softly lit tile.” |
-| `editorial-art/local-scores` | Platform article card and header: How NoCharge saves scores without an account | WebP 19.4 KB, JPEG 51.5 KB | Informative: “Layered paths and a single glowing tile contained within a dark board.” |
-| `editorial-art/more-ways` | Platform article card and header: Designing browser games for more ways to play | WebP 44.8 KB, JPEG 101.9 KB | Informative: “A geometric game board approached by keyboard, pointer, and touch motifs.” |
-| `editorial-art/testing` | Platform article card and header: How NoCharge tests browser games | WebP 37.8 KB, JPEG 88.9 KB | Informative: “Abstract testing shapes, alignment guides, and a magnifying form.” |
-| `editorial-art/collections` | Collections index | WebP generated from 1600×900 source, JPEG fallback | Informative: “Several colorful paths converge on a small central arcade.” |
-| `editorial-art/help` | Help page | WebP generated from 1600×900 source, JPEG fallback | Informative: “Abstract controls and return paths surround a compact game board.” |
+| Asset | Routes | 800 WebP / JPEG | 1200 WebP / JPEG | 1600 WebP / JPEG | Alt decision |
+| --- | --- | ---: | ---: | ---: | --- |
+| `quiet-arcade` | Quiet Arcade platform article card/header | 9,978 / 15,765 B | 17,080 / 30,313 B | 24,536 / 46,820 B | `alt=""`; decorative reinforcement of title and description |
+| `local-scores` | Local scores platform article card/header | 8,690 / 19,474 B | 14,064 / 35,091 B | 20,424 / 51,514 B | `alt=""`; adjacent copy explains local browser storage |
+| `more-ways` | More ways to play platform article card/header | 19,376 / 33,911 B | 32,752 / 64,773 B | 49,944 / 101,805 B | `alt=""`; adjacent copy names the input methods |
+| `testing` | Browser-game testing platform article card/header | 15,862 / 28,330 B | 25,850 / 54,884 B | 40,278 / 88,915 B | `alt=""`; adjacent copy explains the checks |
+| `collections` | Collections index | 43,050 / 56,025 B | 68,006 / 99,829 B | 97,612 / 145,650 B | `alt=""`; heading and inclusion-method copy explain discovery |
+| `help` | Help page | 20,368 / 34,715 B | 32,680 / 63,801 B | 47,322 / 97,276 B | `alt=""`; support headings and instructions carry the information |
 
-Generated with the Arena image-generation tool from deliberate per-concept prompts, then resized/encoded with Sharp. Article titles and surrounding copy remain the source of meaning; images contain no essential text. All assets are editorial illustrations, never labeled as gameplay or used for screenshot provenance. Existing mounted-DOM gameplay screenshots were not changed.
+All published files are under `public/editorial-art/` with names `{asset}-{800|1200|1600}.{webp|jpg}`. The asset validator checks dimensions, ratio, existence, file budgets, and rejects unexpected published editorial files. No rejected variants or temporary PNG review files are committed. Generated with the Arena image-generation tool and resized/encoded with Sharp. Existing mounted-DOM gameplay screenshots were not changed.

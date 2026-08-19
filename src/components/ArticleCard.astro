@@ -8,7 +8,7 @@ interface Props {
   published: string;
   topics: string[];
   accent?: string;
-  image?: { webp: string; fallback: string; alt: string };
+  image?: { webp: string; fallback: string; alt: string; sizes?: string; fallbackSrcset?: string };
 }
 
 const { slug, title, description, label, readTime, published, topics, accent = '#12b66a', image } = Astro.props;
@@ -20,7 +20,7 @@ const publishedLabel = new Date(`${published}T12:00:00`).toLocaleDateString('en-
 ---
 
 <article class="article-card" style={`--article-accent:${accent}`}>
-  {image && <picture class="article-card__art"><source srcset={image.webp} type="image/webp" /><img src={image.fallback} alt={image.alt} width="1600" height="900" loading="lazy" decoding="async" /></picture>}
+  {image && <picture class="article-card__art"><source srcset={image.webp} sizes={image.sizes} type="image/webp" /><img src={image.fallback} srcset={image.fallbackSrcset} sizes={image.sizes} alt={image.alt} width="1600" height="900" loading="lazy" decoding="async" /></picture>}
   <p class="article-card__game">{label}</p>
   <h3><a href={`/articles/${slug}/`}>{title}</a></h3>
   <p class="article-card__description">{description}</p>

@@ -10,11 +10,11 @@ const articles = (await getCollection('articles')).filter((article) => !article.
   .sort((a, b) => b.data.published.localeCompare(a.data.published) || a.data.title.localeCompare(b.data.title));
 const platformArticles = articles.filter((article) => article.data.kind === 'platform');
 const gameArticles = articles.filter((article) => article.data.kind === 'game');
-const platformArt: Record<string, { webp: string; fallback: string; alt: string }> = {
-  'what-quiet-arcade-means-at-nocharge': { webp: '/editorial-art/quiet-arcade.webp', fallback: '/editorial-art/quiet-arcade.jpg', alt: 'Abstract arcade board with open paths and a softly lit tile.' },
-  'how-nocharge-saves-scores-without-an-account': { webp: '/editorial-art/local-scores.webp', fallback: '/editorial-art/local-scores.jpg', alt: 'Layered paths and a single glowing tile contained within a dark board.' },
-  'designing-browser-games-for-more-ways-to-play': { webp: '/editorial-art/more-ways.webp', fallback: '/editorial-art/more-ways.jpg', alt: 'A geometric game board approached by keyboard, pointer, and touch motifs.' },
-  'how-nocharge-tests-browser-games': { webp: '/editorial-art/testing.webp', fallback: '/editorial-art/testing.jpg', alt: 'Abstract testing shapes, alignment guides, and a magnifying form.' },
+const platformArt: Record<string, { webp: string; fallback: string; alt: string; sizes: string; fallbackSrcset: string }> = {
+  'what-quiet-arcade-means-at-nocharge': { webp: '/editorial-art/quiet-arcade-800.webp 800w, /editorial-art/quiet-arcade-1200.webp 1200w, /editorial-art/quiet-arcade-1600.webp 1600w', fallback: '/editorial-art/quiet-arcade-1600.jpg', alt: '', sizes: '(max-width: 48rem) 100vw, (max-width: 72rem) 50vw, 36rem', fallbackSrcset: '/editorial-art/quiet-arcade-800.jpg 800w, /editorial-art/quiet-arcade-1200.jpg 1200w, /editorial-art/quiet-arcade-1600.jpg 1600w' },
+  'how-nocharge-saves-scores-without-an-account': { webp: '/editorial-art/local-scores-800.webp 800w, /editorial-art/local-scores-1200.webp 1200w, /editorial-art/local-scores-1600.webp 1600w', fallback: '/editorial-art/local-scores-1600.jpg', alt: '', sizes: '(max-width: 48rem) 100vw, (max-width: 72rem) 50vw, 36rem', fallbackSrcset: '/editorial-art/local-scores-800.jpg 800w, /editorial-art/local-scores-1200.jpg 1200w, /editorial-art/local-scores-1600.jpg 1600w' },
+  'designing-browser-games-for-more-ways-to-play': { webp: '/editorial-art/more-ways-800.webp 800w, /editorial-art/more-ways-1200.webp 1200w, /editorial-art/more-ways-1600.webp 1600w', fallback: '/editorial-art/more-ways-1600.jpg', alt: '', sizes: '(max-width: 48rem) 100vw, (max-width: 72rem) 50vw, 36rem', fallbackSrcset: '/editorial-art/more-ways-800.jpg 800w, /editorial-art/more-ways-1200.jpg 1200w, /editorial-art/more-ways-1600.jpg 1600w' },
+  'how-nocharge-tests-browser-games': { webp: '/editorial-art/testing-800.webp 800w, /editorial-art/testing-1200.webp 1200w, /editorial-art/testing-1600.webp 1600w', fallback: '/editorial-art/testing-1600.jpg', alt: '', sizes: '(max-width: 48rem) 100vw, (max-width: 72rem) 50vw, 36rem', fallbackSrcset: '/editorial-art/testing-800.jpg 800w, /editorial-art/testing-1200.jpg 1200w, /editorial-art/testing-1600.jpg 1600w' },
 };
 const schema = {
   '@context': 'https://schema.org', '@type': 'CollectionPage', name: 'NoCharge Articles',
