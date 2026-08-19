@@ -16,14 +16,15 @@ const stageLongPlusMixedCoverage = async (page: import('@playwright/test').Page)
   await page.evaluate(() => document.fonts.ready);
 };
 
-const emitFourNotices = (label: string, filePath: string) => {
+const emitChunks = (kind: 'notice' | 'warning', label: string, filePath: string) => {
   const bytes = readFileSync(filePath);
   const encoded = bytes.toString('base64');
-  const chunkSize = Math.ceil(encoded.length / 4);
-  for (let index = 0; index < 4; index += 1) {
+  const chunkSize = 4000;
+  const total = Math.ceil(encoded.length / chunkSize);
+  for (let index = 0; index < total; index += 1) {
     const chunk = encoded.slice(index * chunkSize, (index + 1) * chunkSize);
     console.log(
-      `::notice title=${label}_${index}_of_4_bytes_${bytes.byteLength}_chars_${encoded.length}::${chunk}`,
+      `::${kind} title=${label}_${String(index).padStart(2, '0')}_of_${String(total).padStart(2, '0')}_bytes_${bytes.byteLength}::${chunk}`,
     );
   }
 };
@@ -32,21 +33,29 @@ test('captures actual Beacon Lattice gameplay screenshots', async ({ page }, tes
   test.skip(!process.env.CI && !process.env.CAPTURE_BEACON_SHOTS, 'CI or CAPTURE_BEACON_SHOTS=1 required.');
   await denyOptionalServices(page);
 
-  const shot = async (width: number, height: number, name: string, label: string) => {
-    await page.setViewportSize({ width, height });
-    await page.goto('/games/beacon-lattice/');
-    await stageLongPlusMixedCoverage(page);
-    const filePath = testInfo.outputPath(name);
-    await page.locator('[data-game-viewport]').screenshot({
-      path: filePath,
-      type: 'jpeg',
-      quality: 42,
-      animations: 'disabled',
-      caret: 'hide',
-    });
-    emitFourNotices(label, filePath);
-  };
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/games/beacon-lattice/');
+  await stageLongPlusMixedCoverage(page);
+  const desktopPath = testInfo.outputPath('beacon-desktop.jpg');
+  await page.locator('[data-game-viewport]').screenshot({
+    path: desktopPath,
+    type: 'jpeg',
+    quality: 48,
+    animations: 'disabled',
+    caret: 'hide',
+  });
+  emitChunks('notice', 'BEACON_DESKTOP', desktopPath);
 
-  await shot(1440, 900, 'beacon-desktop.jpg', 'BEACON_DESKTOP');
-  await shot(390, 844, 'beacon-mobile.jpg', 'BEACON_MOBILE');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/games/beacon-lattice/');
+  await stageLongPlusMixedCoverage(page);
+  const mobilePath = testInfo.outputPath('beacon-mobile.jpg');
+  await page.locator('[data-game-viewport]').screenshot({
+    path: mobilePath,
+    type: 'jpeg',
+    quality: 48,
+    animations: 'disabled',
+    caret: 'hide',
+  });
+  emitChunks('warning', 'BEACON_MOBILE', mobilePath);
 });
