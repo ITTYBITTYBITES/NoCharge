@@ -79,7 +79,7 @@ test('pause blocks placement and resume keeps coverage', async ({ page }) => {
   await expect(page.locator('[data-game-pause-overlay]')).toBeVisible();
   await page.locator('.bl__cell').nth(12).click({ force: true });
   await expect(page.locator('[data-bl="count"]')).toHaveText('0');
-  await page.locator('[data-game-toolbar="pause"]').click();
+  await page.locator('[data-game-pause-resume]').click();
   await expect(page.locator('[data-game-pause-overlay]')).toBeHidden();
 });
 
