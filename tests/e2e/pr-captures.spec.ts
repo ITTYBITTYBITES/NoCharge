@@ -28,6 +28,7 @@ test.skip(!process.env.CAPTURE_PR, 'PR review capture artifact is generated only
 test.describe.configure({ mode: 'serial' });
 
 test('captures desktop and mobile platform-maturity review screens', async ({ page }) => {
+  test.setTimeout(5 * 60_000);
   await mkdir(captures, { recursive: true });
   await denyOptionalServices(page);
 
