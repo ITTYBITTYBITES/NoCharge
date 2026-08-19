@@ -83,7 +83,7 @@ function mountBeaconLatticeInner(root: HTMLElement): GameController {
         <span>Solved <strong data-bl="solved">0</strong>/${PUZZLES.length}</span>
       </div>
       <p class="bl__note" data-bl="note"></p>
-      <div class="bl__types" role="group" aria-label="Beacon types"></div>
+      <div class="bl__types" data-bl="types" role="group" aria-label="Beacon types"></div>
       <div class="bl__legend" aria-hidden="true">
         <span>0 · Gap</span>
         <span>1 · Exact</span>
