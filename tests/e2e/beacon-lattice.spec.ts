@@ -31,6 +31,7 @@ test('Beacon Lattice mounts with selector, types, and coverage labels', async ({
   await expect(page.locator('[data-type="cross"]')).toBeVisible();
   await expect(page.locator('.bl__cell').first()).toContainText(/Gap|Exact|Overlap|Void|Block/);
   expect(clientErrors, clientErrors.join('\n')).toEqual([]);
+  expect(await page.evaluate(() => Object.hasOwn(window, '__NOCHARGE_BEACON_LATTICE_TEST__'))).toBe(false);
 });
 
 test('pointer placement solves the first puzzle and stores a best', async ({ page }) => {
@@ -64,9 +65,8 @@ test('invalid locked or blocked actions are announced', async ({ page }) => {
 
 test('undo and restart restore the current puzzle without dropping recorded bests', async ({ page }) => {
   await page.goto('/games/beacon-lattice/');
-  await page.evaluate(() => {
-    (window as Window & { __NOCHARGE_BEACON_LATTICE_TEST__?: { applySolution(): void } }).__NOCHARGE_BEACON_LATTICE_TEST__?.applySolution();
-  });
+  await page.locator('[data-type="cross"]').click();
+  await page.getByRole('button', { name: /Row 3, column 3/ }).click();
   await expect(page.getByRole('heading', { name: 'Lattice complete' })).toBeVisible();
   await page.getByRole('button', { name: 'New game' }).click();
   await expect(page.locator('[data-bl="count"]')).toHaveText('0');
@@ -77,9 +77,10 @@ test('pause blocks placement and resume keeps coverage', async ({ page }) => {
   await page.goto('/games/beacon-lattice/');
   await page.getByRole('button', { name: 'Pause game' }).click();
   await expect(page.locator('[data-game-pause-overlay]')).toBeVisible();
+  await expect(page.locator('[data-game-pause-resume]')).toBeVisible();
   await page.locator('.bl__cell').nth(12).click({ force: true });
   await expect(page.locator('[data-bl="count"]')).toHaveText('0');
-  await page.locator('[data-game-pause-resume]').click();
+  await page.locator('[data-game-toolbar="pause"]').click();
   await expect(page.locator('[data-game-pause-overlay]')).toBeHidden();
 });
 
@@ -157,25 +158,10 @@ test('ad banner stays below Beacon Lattice gameplay', async ({ page }) => {
 
 test('best count does not worsen after a longer solve', async ({ page }) => {
   await page.goto('/games/beacon-lattice/');
-  await page.evaluate(() => {
-    const api = (window as Window & { __NOCHARGE_BEACON_LATTICE_TEST__?: { applySolution(): void } })
-      .__NOCHARGE_BEACON_LATTICE_TEST__;
-    api?.applySolution();
-  });
+  await page.locator('[data-type="cross"]').click();
+  await page.getByRole('button', { name: /Row 3, column 3/ }).click();
   await expect(page.locator('[data-bl="best"]')).toHaveText('1');
   await page.getByRole('button', { name: 'New game' }).click();
-  await page.evaluate(() => {
-    localStorage.setItem(
-      'nocharge:pref:beacon-lattice-progress',
-      JSON.stringify({
-        currentId: 'bl-01-first-plus',
-        completed: ['bl-01-first-plus'],
-        bests: { 'bl-01-first-plus': 1 },
-        lastSolved: { 'bl-01-first-plus': 4 },
-      }),
-    );
-  });
-  await page.reload();
   await expect(page.locator('[data-bl="best"]')).toHaveText('1');
 });
 

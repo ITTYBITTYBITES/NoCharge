@@ -308,32 +308,9 @@ function mountBeaconLatticeInner(root: HTMLElement): GameController {
   render();
   announce(`${puzzle.title} ready. Cover every required cell exactly once.`);
 
-  const api = {
-    getState: () => ({ ...state, puzzleId: puzzle.id, complete: state.complete }),
-    loadPuzzle: (id: string) => loadPuzzle(id),
-    applySolution: () => {
-      state = createState(puzzle);
-      for (const placement of puzzle.solution) {
-        if (placement.locked) continue;
-        placeBeacon(state, puzzle, placement, placement.type);
-      }
-      if (state.complete) progress = recordSolve(progress, puzzle.id, state.beaconCount);
-      render();
-    },
-    applyPlacements: (placements: { x: number; y: number; type: BeaconType }[]) => {
-      state = createState(puzzle);
-      for (const placement of placements) {
-        placeBeacon(state, puzzle, placement, placement.type);
-      }
-      render();
-    },
-  };
-  (window as Window & { __NOCHARGE_BEACON_LATTICE_TEST__?: typeof api }).__NOCHARGE_BEACON_LATTICE_TEST__ = api;
-
   return {
     destroy() {
       document.removeEventListener('keydown', onKey);
-      delete (window as Window & { __NOCHARGE_BEACON_LATTICE_TEST__?: typeof api }).__NOCHARGE_BEACON_LATTICE_TEST__;
       root.innerHTML = '';
     },
     pause(_reason?: PauseReason) {

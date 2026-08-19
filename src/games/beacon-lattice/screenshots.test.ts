@@ -1,9 +1,19 @@
-import { statSync } from 'node:fs';
+import { readFileSync, statSync } from 'node:fs';
 
 import sharp from 'sharp';
 import { describe, expect, test } from 'vitest';
 
 describe('gameplay screenshots', () => {
+  test('art generator does not write gameplay screenshots', () => {
+    const source = readFileSync('scripts/generate-beacon-lattice-art.mjs', 'utf8');
+    expect(source).not.toMatch(/screenshot-desktop|screenshot-mobile/);
+  });
+
+  test('the mounted game does not expose a production debug seam', () => {
+    const source = readFileSync('src/games/beacon-lattice/main.ts', 'utf8');
+    expect(source).not.toContain('__NOCHARGE_BEACON_LATTICE_TEST__');
+  });
+
   test('desktop and mobile captures exist at the documented sizes', async () => {
     const desktop = await sharp('public/game-art/beacon-lattice/screenshot-desktop.webp').metadata();
     const mobile = await sharp('public/game-art/beacon-lattice/screenshot-mobile.webp').metadata();
