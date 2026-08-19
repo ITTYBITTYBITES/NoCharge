@@ -37,6 +37,7 @@ const stageLongPlusMixedCoverage = async (page) => {
   await page.locator('.bl__cell.is-gap').first().waitFor();
   await page.locator('.bl__cell.is-exact').first().waitFor();
   await page.locator('.bl__cell.is-overlap').first().waitFor();
+  await page.evaluate(() => document.fonts.ready);
 };
 
 await waitForServer();
@@ -51,7 +52,11 @@ const setup = async (width, height) => {
   });
   await page.goto('http://127.0.0.1:4327/games/beacon-lattice/', { waitUntil: 'networkidle' });
   await stageLongPlusMixedCoverage(page);
-  const png = await page.locator('[data-game-viewport]').screenshot({ type: 'png' });
+  const png = await page.locator('[data-game-viewport]').screenshot({
+    type: 'png',
+    animations: 'disabled',
+    caret: 'hide',
+  });
   await page.close();
   return png;
 };
@@ -59,8 +64,15 @@ const setup = async (width, height) => {
 try {
   const desktop = await setup(1440, 900);
   const mobile = await setup(390, 844);
-  await sharp(desktop).resize(1440, 900, { fit: 'cover' }).webp({ quality: 80 }).toFile(`${dir}screenshot-desktop.webp`);
-  await sharp(mobile).resize(720, 1280, { fit: 'cover' }).webp({ quality: 80 }).toFile(`${dir}screenshot-mobile.webp`);
+  const pad = { r: 16, g: 18, b: 16, alpha: 1 };
+  await sharp(desktop)
+    .resize(1440, 900, { fit: 'contain', background: pad })
+    .webp({ quality: 80 })
+    .toFile(`${dir}screenshot-desktop.webp`);
+  await sharp(mobile)
+    .resize(720, 1280, { fit: 'contain', background: pad })
+    .webp({ quality: 80 })
+    .toFile(`${dir}screenshot-mobile.webp`);
   console.log('Wrote DOM gameplay screenshots.');
 } finally {
   await browser.close();

@@ -54,8 +54,8 @@ All packages are original Quiet Arcade work. Raster covers are reproducible with
 | beacon-lattice / `guide-header.jpg` | 1280×640 | 17.3 KB |
 | beacon-lattice / `guide-header.webp` | 1280×640 | 30.3 KB |
 | beacon-lattice / `icon.svg` | vector | 0.4 KB |
-| beacon-lattice / `screenshot-desktop.webp` | 1440×900 | 16 KB |
-| beacon-lattice / `screenshot-mobile.webp` | 720×1280 | 12 KB |
+| beacon-lattice / `screenshot-desktop.webp` | 1440×900 | 29.2 KB |
+| beacon-lattice / `screenshot-mobile.webp` | 720×1280 | 36.5 KB |
 | beacon-lattice / `social-card.jpg` | 1200×630 | 17.3 KB |
 | beacon-lattice / `social-card.webp` | 1200×630 | 27.7 KB |
 | beacon-lattice / `source.svg` | vector | 2.4 KB |
