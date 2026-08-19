@@ -40,8 +40,10 @@ test('page, mode, start, and shared controls do not count as gameplay',async({pa
  await root.getByRole('button',{name:'Start',exact:true}).click();
  expect(await recent()).toBeNull();
  await page.getByRole('button',{name:'Mute game sound'}).click();
- await page.getByRole('button',{name:'Pause game'}).click();
- await page.getByRole('button',{name:'Resume game'}).click();
+ const pauseControl=page.locator('[data-game-toolbar="pause"]');
+ await pauseControl.click();
+ await expect(pauseControl).toHaveAccessibleName('Resume game');
+ await pauseControl.click();
  await page.getByRole('button',{name:'New game'}).click();
  expect(await recent()).toBeNull();
  await page.getByRole('button',{name:'Enter immersive mode'}).click();
