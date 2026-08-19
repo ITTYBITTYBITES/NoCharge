@@ -16,14 +16,18 @@ const registry: Record<string, GameModule> = {
 };
 
 export function mountGame(id: string, root: HTMLElement): GameController {
-  return (
-    registry[id]?.mount(root) ?? {
-      destroy() {},
-      pause() {},
-      resume() {},
-      isPaused: () => false,
-    }
-  );
+  const empty = {
+    destroy() {},
+    pause() {},
+    resume() {},
+    isPaused: () => false,
+  };
+  try {
+    return registry[id]?.mount(root) ?? empty;
+  } catch (error) {
+    root.textContent = error instanceof Error ? error.message : String(error);
+    return empty;
+  }
 }
 
 export type { GameController, PauseReason } from './shared/types';

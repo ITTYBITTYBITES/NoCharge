@@ -422,7 +422,7 @@ test('trust pages publish one H1, canonical metadata, footer links, and public r
 test('publishes the article index, nine routes, links, breadcrumbs, and Article structured data', async ({ page, request }) => {
   await denyOptionalServices(page);
   await page.goto('/articles/');
-  await expect(page.locator('.articles-grid .article-card')).toHaveCount(9);
+  await expect(page.locator('.articles-grid .article-card')).toHaveCount(12);
 
   for (const slug of articleSlugs) {
     const path = `/articles/${slug}/`;

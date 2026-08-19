@@ -20,14 +20,15 @@ test.beforeEach(async ({ page }) => {
 test('Beacon Lattice mounts with selector, types, and coverage labels', async ({ page }) => {
   await page.goto('/games/beacon-lattice/');
   await expect(page.locator('[data-game-root="beacon-lattice"]')).toBeVisible();
+  await expect(page.locator('.bl')).toBeVisible();
   await expect(page.getByLabel('Puzzle selector')).toBeVisible();
-  await expect(page.getByRole('button', { name: /Cross/ })).toBeVisible();
-  await expect(page.locator('.bl__cell').first()).toContainText(/Gap|Exact|Overlap|—/);
+  await expect(page.locator('[data-type="cross"]')).toBeVisible();
+  await expect(page.locator('.bl__cell').first()).toContainText(/Gap|Exact|Overlap|Void|Block/);
 });
 
 test('pointer placement solves the first puzzle and stores a best', async ({ page }) => {
   await page.goto('/games/beacon-lattice/');
-  await page.getByRole('button', { name: /Cross/ }).click();
+  await page.locator('[data-type="cross"]').click();
   await page.getByRole('gridcell', { name: /Row 3, column 3/ }).click();
   await expect(page.getByRole('heading', { name: 'Lattice complete' })).toBeVisible();
   await expect(page.locator('[data-bl="best"]')).toHaveText('1');
@@ -38,7 +39,7 @@ test('keyboard navigation places and removes a beacon', async ({ page }) => {
   await page.goto('/games/beacon-lattice/');
   await page.locator('[data-game-viewport]').click();
   await page.keyboard.press('1');
-  await expect(page.getByRole('button', { name: /Cross/ })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('[data-type="cross"]')).toHaveAttribute('aria-pressed', 'true');
   for (let step = 0; step < 12; step += 1) {
     await page.keyboard.press('ArrowRight');
     await page.keyboard.press('ArrowDown');
@@ -176,6 +177,31 @@ test('paused selector cannot change the puzzle', async ({ page }) => {
   await page.goto('/games/beacon-lattice/');
   await page.getByRole('button', { name: 'Pause game' }).click();
   await expect(page.getByLabel('Puzzle selector')).toBeDisabled();
+});
+
+test('320px layout and a 7×7 puzzle stay usable', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 720 });
+  await page.goto('/games/beacon-lattice/');
+  await expect(page.locator('.bl')).toBeVisible();
+  await page.getByLabel('Puzzle selector').selectOption('bl-23-seven-field');
+  await expect(page.locator('.bl__cell')).toHaveCount(49);
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
+  expect(overflow).toBe(false);
+});
+
+test('hidden-tab resume recovery does not reload Beacon Lattice', async ({ page }) => {
+  await page.goto('/games/beacon-lattice/');
+  const navigations = await page.evaluate(() => performance.getEntriesByType('navigation').length);
+  await page.locator('[data-type="cross"]').click();
+  await setPageVisibility(page, 'hidden');
+  await expect(page.locator('[data-game-pause-overlay]')).toBeVisible();
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'visible' });
+  });
+  await expect(page.locator('[data-game-pause-overlay]')).toBeVisible();
+  await page.locator('[data-game-pause-resume]').click();
+  await expect(page.locator('[data-game-pause-overlay]')).toBeHidden();
+  expect(await page.evaluate(() => performance.getEntriesByType('navigation').length)).toBe(navigations);
 });
 
 test('Beacon Lattice has no axe violations', async ({ page }) => {

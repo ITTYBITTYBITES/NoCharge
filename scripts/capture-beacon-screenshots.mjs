@@ -31,7 +31,8 @@ const setup = async (width, height) => {
   await page.addInitScript(() => {
     localStorage.setItem('nocharge:consent', JSON.stringify({ analytics: false }));
   });
-  await page.goto('http://127.0.0.1:4327/games/beacon-lattice/');
+  await page.goto('http://127.0.0.1:4327/games/beacon-lattice/', { waitUntil: 'networkidle' });
+  await page.locator('.bl').waitFor({ state: 'visible' });
   await page.evaluate(() => {
     const api = window.__NOCHARGE_BEACON_LATTICE_TEST__;
     if (!api) throw new Error('test seam missing');

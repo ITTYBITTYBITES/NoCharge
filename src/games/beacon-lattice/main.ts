@@ -49,6 +49,23 @@ function cellName(puzzle: PuzzleDefinition, state: GameState, x: number, y: numb
 }
 
 export function mountBeaconLattice(root: HTMLElement): GameController {
+  try {
+    return mountBeaconLatticeInner(root);
+  } catch (error) {
+    root.textContent = error instanceof Error ? error.message : String(error);
+    return {
+      destroy() {
+        root.innerHTML = '';
+      },
+      pause() {},
+      resume() {},
+      isPaused: () => false,
+      restart() {},
+    };
+  }
+}
+
+function mountBeaconLatticeInner(root: HTMLElement): GameController {
   root.innerHTML = `
     <div class="bl">
       <div class="bl__hud">
