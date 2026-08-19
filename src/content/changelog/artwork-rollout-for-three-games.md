@@ -1,9 +1,9 @@
 ---
-title: "Artwork rollout for three games"
+title: "Game artwork made the arcade easier to scan"
 date: "2026-08-15"
-summary: "Added dedicated cover, guide, icon, diagram, screenshot, and social artwork for the three current games."
+summary: "The game pages and guides gained distinct covers, diagrams, and real gameplay previews."
 type: artwork
 draft: false
 ---
 
-Memory Match, Word Tile Rush, and Color Flip each received their own artwork package for arcade cards, game pages, guides, and social sharing. The visual assets document the current three-game catalog and its controls without changing game rules.
+Each game received a visual set for its arcade card, guide, controls, and sharing previews. Gameplay previews remain captures of the mounted games; the artwork does not change game rules.

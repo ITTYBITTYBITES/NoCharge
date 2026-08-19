@@ -10,6 +10,12 @@ const articles = (await getCollection('articles')).filter((article) => !article.
   .sort((a, b) => b.data.published.localeCompare(a.data.published) || a.data.title.localeCompare(b.data.title));
 const platformArticles = articles.filter((article) => article.data.kind === 'platform');
 const gameArticles = articles.filter((article) => article.data.kind === 'game');
+const platformArt: Record<string, { webp: string; fallback: string; alt: string }> = {
+  'what-quiet-arcade-means-at-nocharge': { webp: '/editorial-art/quiet-arcade.webp', fallback: '/editorial-art/quiet-arcade.jpg', alt: 'Abstract arcade board with open paths and a softly lit tile.' },
+  'how-nocharge-saves-scores-without-an-account': { webp: '/editorial-art/local-scores.webp', fallback: '/editorial-art/local-scores.jpg', alt: 'Layered paths and a single glowing tile contained within a dark board.' },
+  'designing-browser-games-for-more-ways-to-play': { webp: '/editorial-art/more-ways.webp', fallback: '/editorial-art/more-ways.jpg', alt: 'A geometric game board approached by keyboard, pointer, and touch motifs.' },
+  'how-nocharge-tests-browser-games': { webp: '/editorial-art/testing.webp', fallback: '/editorial-art/testing.jpg', alt: 'Abstract testing shapes, alignment guides, and a magnifying form.' },
+};
 const schema = {
   '@context': 'https://schema.org', '@type': 'CollectionPage', name: 'NoCharge Articles',
   description: 'Platform explainers and original notes about the real rules, controls, and systems in NoCharge games.',
@@ -30,7 +36,7 @@ const schema = {
     </header>
     <section aria-labelledby="platform-articles-heading">
       <div class="articles-heading"><div><p class="section-kicker">Across NoCharge</p><h2 id="platform-articles-heading">Platform articles</h2><p>Evergreen explanations with no fake game association.</p></div></div>
-      <div class="articles-grid">{platformArticles.map((article) => <ArticleCard slug={article.id} title={article.data.title} description={article.data.description} label={`Platform · ${article.data.kind === 'platform' ? article.data.category : ''}`} readTime={article.data.readTime} published={article.data.published} topics={article.data.topics} accent="#2dd4bf" />)}</div>
+      <div class="articles-grid">{platformArticles.map((article) => <ArticleCard slug={article.id} title={article.data.title} description={article.data.description} label={`Platform · ${article.data.kind === 'platform' ? article.data.category : ''}`} readTime={article.data.readTime} published={article.data.published} topics={article.data.topics} accent="#2dd4bf" image={platformArt[article.id]} />)}</div>
     </section>
     <section aria-labelledby="game-articles-heading">
       <div class="articles-heading"><div><p class="section-kicker">Inside the games</p><h2 id="game-articles-heading">Game articles</h2><p>Focused notes checked against current game behavior.</p></div><a class="section-link" href="/guides/">Read the definitive guides →</a></div>

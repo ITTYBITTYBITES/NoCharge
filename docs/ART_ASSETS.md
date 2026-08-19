@@ -61,3 +61,18 @@ All packages are original Quiet Arcade work. Raster covers are reproducible with
 | beacon-lattice / `source.svg` | vector | 2.4 KB |
 
 The per-asset hard ceiling is 180 KB; all committed game assets remain below it. Homepage card artwork is lazy-loaded, while only the actual game or guide header LCP candidate is eager.
+
+## Editorial illustration family (2026-08-19)
+
+These original AI-assisted editorial illustrations are concept art, not gameplay captures. They use a shared 1600×900 source/published canvas, WebP primary and JPEG fallback, and stay below the 150 KB WebP / 300 KB JPEG target. No rejected variants or temporary PNG review files are published.
+
+| Asset | Purpose and routes | Formats / sizes | Alt-text decision |
+| --- | --- | --- | --- |
+| `editorial-art/quiet-arcade` | Platform article card and header: What Quiet Arcade means at NoCharge | WebP 21.3 KB, JPEG 46.8 KB | Informative: “Abstract arcade board with open paths and a softly lit tile.” |
+| `editorial-art/local-scores` | Platform article card and header: How NoCharge saves scores without an account | WebP 19.4 KB, JPEG 51.5 KB | Informative: “Layered paths and a single glowing tile contained within a dark board.” |
+| `editorial-art/more-ways` | Platform article card and header: Designing browser games for more ways to play | WebP 44.8 KB, JPEG 101.9 KB | Informative: “A geometric game board approached by keyboard, pointer, and touch motifs.” |
+| `editorial-art/testing` | Platform article card and header: How NoCharge tests browser games | WebP 37.8 KB, JPEG 88.9 KB | Informative: “Abstract testing shapes, alignment guides, and a magnifying form.” |
+| `editorial-art/collections` | Collections index | WebP generated from 1600×900 source, JPEG fallback | Informative: “Several colorful paths converge on a small central arcade.” |
+| `editorial-art/help` | Help page | WebP generated from 1600×900 source, JPEG fallback | Informative: “Abstract controls and return paths surround a compact game board.” |
+
+Generated with the Arena image-generation tool from deliberate per-concept prompts, then resized/encoded with Sharp. Article titles and surrounding copy remain the source of meaning; images contain no essential text. All assets are editorial illustrations, never labeled as gameplay or used for screenshot provenance. Existing mounted-DOM gameplay screenshots were not changed.

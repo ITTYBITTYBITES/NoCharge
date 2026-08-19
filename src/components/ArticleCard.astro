@@ -8,9 +8,10 @@ interface Props {
   published: string;
   topics: string[];
   accent?: string;
+  image?: { webp: string; fallback: string; alt: string };
 }
 
-const { slug, title, description, label, readTime, published, topics, accent = '#12b66a' } = Astro.props;
+const { slug, title, description, label, readTime, published, topics, accent = '#12b66a', image } = Astro.props;
 const publishedLabel = new Date(`${published}T12:00:00`).toLocaleDateString('en-US', {
   month: 'short',
   day: 'numeric',
@@ -19,6 +20,7 @@ const publishedLabel = new Date(`${published}T12:00:00`).toLocaleDateString('en-
 ---
 
 <article class="article-card" style={`--article-accent:${accent}`}>
+  {image && <picture class="article-card__art"><source srcset={image.webp} type="image/webp" /><img src={image.fallback} alt={image.alt} width="1600" height="900" loading="lazy" decoding="async" /></picture>}
   <p class="article-card__game">{label}</p>
   <h3><a href={`/articles/${slug}/`}>{title}</a></h3>
   <p class="article-card__description">{description}</p>
@@ -34,6 +36,7 @@ const publishedLabel = new Date(`${published}T12:00:00`).toLocaleDateString('en-
 
 <style>
   .article-card {
+    position: relative;
     display: grid;
     align-content: start;
     gap: 0.7rem;
@@ -45,6 +48,9 @@ const publishedLabel = new Date(`${published}T12:00:00`).toLocaleDateString('en-
     background: var(--panel);
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16);
   }
+
+  .article-card__art { display: block; margin: -1.1rem -1.1rem 0; aspect-ratio: 16 / 9; overflow: hidden; border-radius: calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0 0; }
+  .article-card__art img { width: 100%; height: 100%; object-fit: cover; }
 
   .article-card__game {
     color: var(--accent-strong);

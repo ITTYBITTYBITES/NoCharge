@@ -9,6 +9,7 @@ const captures = join(process.cwd(), 'artifacts', 'pr-captures');
 const games = ['memory-match', 'word-tile-rush', 'color-flip', 'beacon-lattice'] as const;
 const pages = [
   ['about', '/about/'],
+  ['help', '/help/'],
   ['terms', '/terms/'],
   ['advertising', '/advertising/'],
   ['changelog', '/changelog/'],

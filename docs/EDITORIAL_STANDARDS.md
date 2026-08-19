@@ -69,3 +69,9 @@ These are owner review recommendations; the repository does not automate all of 
 - Review advertising and privacy copy after any provider, tag, consent, storage, or policy change.
 
 Record each completed review in the content accuracy matrix, a changelog entry, or a linked issue. Never mark a review complete based only on its due date.
+
+## Public changelog and support
+
+The public changelog is written for visitors: it names meaningful games, guides, controls, navigation, privacy, and presentation changes without commit mechanics, test counts, package versions, or deployment details. The Help page is practical support, not a keyword-targeted article; it must distinguish local game data from optional analytics consent and avoid response-time promises.
+
+Platform article illustrations are editorial aids. Titles and surrounding copy carry the essential meaning, and illustrations must not be presented as gameplay screenshots or imply accounts, cloud sync, universal compatibility, certification, rewards, or ad-free operation.
