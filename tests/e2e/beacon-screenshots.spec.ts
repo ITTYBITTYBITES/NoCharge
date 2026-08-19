@@ -16,15 +16,17 @@ const stageLongPlusMixedCoverage = async (page: import('@playwright/test').Page)
   await page.evaluate(() => document.fonts.ready);
 };
 
-const emitMarkedBase64 = (label: string, filePath: string) => {
+const emitWorkflowNotices = (label: string, filePath: string) => {
   const encoded = readFileSync(filePath).toString('base64');
-  const chunk = 76;
-  console.log(`${label}_BEGIN`);
-  for (let index = 0; index < encoded.length; index += chunk) {
-    console.log(encoded.slice(index, index + chunk));
+  const chunkSize = 3500;
+  const total = Math.ceil(encoded.length / chunkSize);
+  console.log(`::notice title=${label}_META::bytes=${readFileSync(filePath).byteLength} chunks=${total} chars=${encoded.length}`);
+  for (let index = 0; index < total; index += 1) {
+    const chunk = encoded.slice(index * chunkSize, (index + 1) * chunkSize);
+    const padded = String(index).padStart(2, '0');
+    const count = String(total).padStart(2, '0');
+    console.log(`::notice title=${label}_${padded}_${count}::${chunk}`);
   }
-  console.log(`${label}_END`);
-  console.log(`${label}_BYTES ${readFileSync(filePath).byteLength}`);
 };
 
 test('captures actual Beacon Lattice gameplay screenshots', async ({ page }, testInfo) => {
@@ -41,7 +43,7 @@ test('captures actual Beacon Lattice gameplay screenshots', async ({ page }, tes
     animations: 'disabled',
     caret: 'hide',
   });
-  emitMarkedBase64('BEACON_DESKTOP_BASE64', desktopPath);
+  emitWorkflowNotices('BEACON_DESKTOP', desktopPath);
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/games/beacon-lattice/');
@@ -53,5 +55,5 @@ test('captures actual Beacon Lattice gameplay screenshots', async ({ page }, tes
     animations: 'disabled',
     caret: 'hide',
   });
-  emitMarkedBase64('BEACON_MOBILE_BASE64', mobilePath);
+  emitWorkflowNotices('BEACON_MOBILE', mobilePath);
 });
