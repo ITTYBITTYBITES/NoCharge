@@ -10,6 +10,7 @@ for (const path of [
   '/guides/memory-match/',
   '/guides/word-tile-rush/',
   '/guides/color-flip/',
+  '/guides/beacon-lattice/',
   '/privacy/',
   '/about/',
   '/terms/',
@@ -21,6 +22,7 @@ for (const path of [
   '/games/memory-match/',
   '/games/word-tile-rush/',
   '/games/color-flip/',
+  '/games/beacon-lattice/',
   '/404.html',
 ]) {
   test(`has no automatically detectable accessibility violations: ${path}`, async ({ page }) => {

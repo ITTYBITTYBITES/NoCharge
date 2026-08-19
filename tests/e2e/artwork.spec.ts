@@ -104,7 +104,7 @@ test('presentation metadata renders shared game and guide sections', async ({ pa
   await expect(page.locator('.gameplay-preview')).toHaveCount(1);
 });
 
-for (const slug of ['word-tile-rush', 'color-flip']) {
+for (const slug of ['word-tile-rush', 'color-flip', 'beacon-lattice']) {
   test(`${slug} uses complete responsive artwork`, async ({ page }) => {
     await denyOptionalServices(page);
     await page.goto(`/games/${slug}/`);

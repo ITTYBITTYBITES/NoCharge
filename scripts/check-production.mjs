@@ -16,6 +16,7 @@ export const expectedRoutes = [
   '/games/memory-match/',
   '/games/word-tile-rush/',
   '/games/color-flip/',
+  '/games/beacon-lattice/',
 ];
 
 function normaliseBaseUrl(value) {

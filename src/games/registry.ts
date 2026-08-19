@@ -1,3 +1,4 @@
+import { mountBeaconLattice } from './beacon-lattice/main';
 import { mountMemoryMatch } from './memory-match/main';
 import { mountWordTileRush } from './word-tile-rush/main';
 import { mountColorFlip } from './color-flip/main';
@@ -11,17 +12,22 @@ const registry: Record<string, GameModule> = {
   'memory-match': { mount: mountMemoryMatch },
   'word-tile-rush': { mount: mountWordTileRush },
   'color-flip': { mount: mountColorFlip },
+  'beacon-lattice': { mount: mountBeaconLattice },
 };
 
 export function mountGame(id: string, root: HTMLElement): GameController {
-  return (
-    registry[id]?.mount(root) ?? {
-      destroy() {},
-      pause() {},
-      resume() {},
-      isPaused: () => false,
-    }
-  );
+  const empty = {
+    destroy() {},
+    pause() {},
+    resume() {},
+    isPaused: () => false,
+  };
+  try {
+    return registry[id]?.mount(root) ?? empty;
+  } catch (error) {
+    root.textContent = error instanceof Error ? error.message : String(error);
+    return empty;
+  }
 }
 
 export type { GameController, PauseReason } from './shared/types';

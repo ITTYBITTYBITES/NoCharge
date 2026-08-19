@@ -17,6 +17,7 @@ const ELIGIBLE_PATHS = [
   '/games/memory-match/',
   '/games/word-tile-rush/',
   '/games/color-flip/',
+  '/games/beacon-lattice/',
 ] as const;
 
 const AD_FREE_PATHS = [

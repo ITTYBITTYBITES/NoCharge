@@ -8,7 +8,7 @@ import ArticleCard from '../components/ArticleCard.astro';
 const allGames = (await getCollection('games'))
   .filter((game) => !game.data.draft)
   .sort((a, b) => a.data.order - b.data.order);
-const featuredGames = allGames.filter((game) => game.data.featured).slice(0, 3);
+const featuredGames = allGames.filter((game) => game.data.featured);
 const gameById = new Map(allGames.map((game) => [game.id, game]));
 const featuredGuides = (await getCollection('guides'))
   .filter((guide) => !guide.data.draft && guide.data.featured)
@@ -55,7 +55,7 @@ const featuredArticles = (await getCollection('articles'))
         <div>
           <p class="section-kicker">Featured now</p>
           <h2 id="featured-games-heading">Start in the arcade</h2>
-          <p>Three small games, each designed for a quick session on phone or desktop.</p>
+          <p>Small games, each designed for a quick session on phone or desktop.</p>
         </div>
         <a class="section-link" href="/arcade/">See the full arcade →</a>
       </div>
@@ -184,7 +184,7 @@ const featuredArticles = (await getCollection('articles'))
         <details>
           <summary>Do the games work on mobile and keyboard?</summary>
           <p>
-            Each game supports phone and desktop input. Memory Match and Word Tile Rush have native keyboard
+            Each game supports phone and desktop input. Memory Match, Word Tile Rush, and Beacon Lattice have native keyboard
             controls, and Color Flip includes both keyboard play and an untimed turn-based mode.
           </p>
         </details>
@@ -461,7 +461,7 @@ const featuredArticles = (await getCollection('articles'))
     .card-grid--guides,
     .card-grid--articles,
     .home-library__points {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
     }
 
     .home-library {

@@ -34,6 +34,10 @@ These are review captures from the production build with optional services denie
 | --- | --- |
 | ![Color Flip normal mobile](./pr-captures/mobile-color-flip-normal.jpg) | ![Color Flip full screen or immersive mobile](./pr-captures/mobile-color-flip-fullscreen-or-immersive.jpg) |
 
+### Beacon Lattice
+
+Gameplay screenshots in `public/game-art/beacon-lattice/screenshot-*.webp` are captured from the mounted Long plus board with a mixed Gap / Exact / Overlap state.
+
 ### Pause overlay and shared toolbar
 
 | Desktop | Mobile |

@@ -11,7 +11,7 @@ const games = defineCollection({
     emoji: z.string(),
     accent: z.string().default('#0f9d58'),
     tier: z.enum(['quick', 'signature']).default('quick'),
-    runtime: z.enum(['memory-match', 'word-tile-rush', 'color-flip']),
+    runtime: z.enum(['memory-match', 'word-tile-rush', 'color-flip', 'beacon-lattice']),
     artwork: z
       .object({
         icon: z.string(),
@@ -82,7 +82,7 @@ const articles = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string(),
-    game: z.enum(['memory-match', 'word-tile-rush', 'color-flip']),
+    game: z.enum(['memory-match', 'word-tile-rush', 'color-flip', 'beacon-lattice']),
     published: z.string(),
     updated: z.string(),
     author: z.string().default('NoCharge'),
