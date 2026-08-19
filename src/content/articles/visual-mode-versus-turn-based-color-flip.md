@@ -1,5 +1,6 @@
 ---
 title: "Visual mode versus turn-based Color Flip"
+kind: game
 description: "Compare Color Flip’s direct-selection moving mode with its untimed turn-based cycle without changing the core color-match decision."
 game: color-flip
 published: "2026-08-15"

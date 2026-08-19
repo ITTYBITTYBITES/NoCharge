@@ -12,6 +12,9 @@ export const GET: APIRoute = async ({ site }) => {
   const articles = (await getCollection('articles'))
     .filter((article) => !article.data.draft)
     .sort((a, b) => a.data.title.localeCompare(b.data.title));
+  const curatedCollections = (await getCollection('collections'))
+    .filter((collection) => !collection.data.draft)
+    .sort((a, b) => a.data.order - b.data.order);
   const paths = [
     '/',
     '/arcade/',
@@ -20,6 +23,8 @@ export const GET: APIRoute = async ({ site }) => {
     ...guides.map((guide) => `/guides/${guide.id}/`),
     '/articles/',
     ...articles.map((article) => `/articles/${article.id}/`),
+    '/collections/',
+    ...curatedCollections.map((collection) => `/collections/${collection.id}/`),
     '/about/',
     '/terms/',
     '/advertising/',

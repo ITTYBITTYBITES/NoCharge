@@ -1,5 +1,6 @@
 ---
 title: "Keyboard strategy for Memory Match"
+kind: game
 description: "Use the browser’s focus order, clear location labels, and a deliberate reveal rhythm to play NoCharge Memory Match by keyboard."
 game: memory-match
 published: "2026-08-15"

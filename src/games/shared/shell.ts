@@ -8,6 +8,7 @@ import {
   type PauseEnvironment,
 } from './pause-recovery';
 import type { GameController, PauseReason } from './types';
+import { getBrowserStorage, recordRecentlyPlayed } from './recently-played';
 
 type PlatformModalEvent = CustomEvent<{ open?: boolean }>;
 
@@ -223,6 +224,11 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     if (document.fullscreenElement === viewport) void document.exitFullscreen().catch(() => {});
   };
 
+  // Game modules emit this only after a valid action in the mounted game.
+  // Shared toolbar, page, consent, and advertisement interactions never reach it.
+  const onMeaningfulInteraction = () => recordRecentlyPlayed(getBrowserStorage(), gameId);
+  root.addEventListener('nocharge:meaningful-game-interaction', onMeaningfulInteraction);
+
   pauseButton?.addEventListener('click', () => {
     if (pauseReasons.size > 0 || controller.isPaused()) resumeFromSharedControl();
     else addPauseReason('player');
@@ -267,6 +273,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     document.removeEventListener('fullscreenchange', onFullscreenChange);
     document.removeEventListener('keydown', onKeyDown);
     window.removeEventListener('pagehide', onPageHide);
+    root.removeEventListener('nocharge:meaningful-game-interaction', onMeaningfulInteraction);
     controller.destroy();
   };
 }

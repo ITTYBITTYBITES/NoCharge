@@ -7,6 +7,7 @@ import { INITIAL_PLAYER_COLOR, selectColorDirectly, type ColorId } from './color
 import { play, unlockAudio } from '../shared/audio';
 import { loadScore, saveScore } from '../shared/storage';
 import type { GameController, PauseReason } from '../shared/types';
+import { signalMeaningfulGameInteraction } from '../shared/recently-played';
 import { pick } from '../shared/utils';
 import './styles.css';
 
@@ -272,6 +273,7 @@ export function mountColorFlip(root: HTMLElement): GameController {
 
   function cycleTurnBasedColor() {
     if (paused || !turnBasedAlive) return;
+    signalMeaningfulGameInteraction(root);
     unlockAudio();
     cyclePlayerColor();
     announceTurnBased(`Current color ${colorName(playerColor)}. Next tile ${colorName(turnBasedTarget)}.`);
@@ -280,6 +282,7 @@ export function mountColorFlip(root: HTMLElement): GameController {
 
   function stepTurnBased() {
     if (paused || !turnBasedAlive) return;
+    signalMeaningfulGameInteraction(root);
     unlockAudio();
     if (playerColor !== turnBasedTarget) {
       turnBasedAlive = false;
@@ -394,6 +397,7 @@ export function mountColorFlip(root: HTMLElement): GameController {
 
   function selectVisualColor(requestedColor: ColorId) {
     if (turnBased || paused || !alive) return;
+    signalMeaningfulGameInteraction(root);
     unlockAudio();
     const nextColor = selectColorDirectly(playerColor, requestedColor, true);
     const changed = nextColor !== playerColor;

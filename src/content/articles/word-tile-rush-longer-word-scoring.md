@@ -1,5 +1,6 @@
 ---
 title: "How Word Tile Rush scoring rewards longer words"
+kind: game
 description: "Understand the length-squared scoring formula in Word Tile Rush and use it to compare valid paths without guessing."
 game: word-tile-rush
 published: "2026-08-15"

@@ -1,6 +1,7 @@
 import { play, unlockAudio } from '../shared/audio';
 import { loadScore, saveScore } from '../shared/storage';
 import type { GameController, PauseReason } from '../shared/types';
+import { signalMeaningfulGameInteraction } from '../shared/recently-played';
 import './styles.css';
 
 const GAME_ID = 'word-tile-rush';
@@ -224,6 +225,7 @@ export function mountWordTileRush(root: HTMLElement): GameController {
     }
     if (path.some((p) => p.r === pos.r && p.c === pos.c)) return;
     if (last && !isAdjacent(last, pos)) return;
+    signalMeaningfulGameInteraction(root);
     path.push(pos);
     grid[pos.r]![pos.c]!.selected = true;
     void play('blip');

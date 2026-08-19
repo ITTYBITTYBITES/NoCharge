@@ -1,0 +1,38 @@
+# Content accuracy matrix
+
+This matrix connects public claims to runtime or platform sources of truth. “Last verified” means the named review was performed against the repository on that date; it is not an automated freshness claim. Update the date only after review.
+
+| Public content | Gameplay or platform dependency | Source of truth file/system | Review trigger | Responsible review type | Last verified | Notes or issue link |
+|---|---|---|---|---|---|---|
+| Memory Match game page | Cards, move count, scoring, controls, storage | `src/games/memory-match/main.ts`, game metadata | Runtime/control/storage change | Gameplay + editorial | 2026-08-19 | Verify best score and best moves separately |
+| Word Tile Rush game page | Paths, dictionary, timer, scoring, controls | `src/games/word-tile-rush/main.ts`, game metadata | Runtime/dictionary/control change | Gameplay + editorial | 2026-08-19 | Timer begins on first selected tile |
+| Color Flip game page | Visual/turn-based modes, checkpoint, scoring | `src/games/color-flip/main.ts`, rule modules | Runtime/mode/control change | Gameplay + accessibility | 2026-08-19 | Turn-based is untimed; visual mode is not |
+| Beacon Lattice game page | 24 puzzles, exact coverage, beacon counts, progress | `src/games/beacon-lattice/`, game metadata | Puzzle/rule/progress change | Puzzle + editorial | 2026-08-19 | Distinguish void from blocked cells |
+| Memory Match definitive guide | Complete game behavior | Runtime + `src/content/guides/memory-match.md` | Related runtime change | Guide review | 2026-08-19 | — |
+| Word Tile Rush definitive guide | Complete game behavior | Runtime + guide markdown | Related runtime/dictionary change | Guide review | 2026-08-19 | — |
+| Color Flip definitive guide | Complete game behavior | Runtime/rule modules + guide markdown | Related runtime/mode change | Guide review | 2026-08-19 | — |
+| Beacon Lattice definitive guide | Patterns, puzzles, progress | Beacon modules + guide markdown | Puzzle/rule/progress change | Guide + puzzle review | 2026-08-19 | See `BEACON_LATTICE_PUZZLE_REVIEW.md` |
+| Memory Match supporting articles (3) | Move counting, card state, keyboard behavior | Memory Match runtime/tests | Related runtime change | Article gameplay review | 2026-08-19 | Group defined by `kind: game` and game ID |
+| Word Tile Rush supporting articles (3) | Scoring, paths, rising grid | Word Tile Rush runtime/tests | Related runtime/dictionary change | Article gameplay review | 2026-08-19 | — |
+| Color Flip supporting articles (3) | Cycle, checkpoint timing, modes | Color Flip runtime/rule tests | Related runtime/mode change | Article gameplay review | 2026-08-19 | — |
+| Beacon Lattice supporting articles (3) | Exact coverage, forced placements, keyboard | Beacon runtime/pattern tests | Related puzzle/rule change | Article + puzzle review | 2026-08-19 | — |
+| Accessibility Statement | Input, focus, motion, lifecycle, test status | Components, game runtime, e2e, manual checklist | UI/input/test-status change | Accessibility review | 2026-08-19 | WCAG 2.2 AA is a target, not certification |
+| Privacy | Local keys, analytics, AdSense/CMP, clearing | Storage modules, consent manager, Privacy script | Storage/provider/consent change | Privacy + technical review | 2026-08-19 | Consent intentionally excluded from game clear |
+| Advertising Disclosure | AdSense placement and Google CMP | `src/config/adsense.ts`, banner/layout | Provider/slot/CMP/presentation change | Advertising review | 2026-08-19 | Do not infer live ad delivery from tests |
+| Terms | Service, third parties, player obligations | `src/pages/terms.astro`, current implementation | Material product/legal change | Owner/legal review | 2026-08-19 | See `LEGAL_REVIEW.md` |
+| About | Games, trust model, contact | Registry, public routes, trust pages | Game/platform positioning change | Editorial review | 2026-08-19 | — |
+| Changelog | Public release history | Changelog collection + merged releases | Every public milestone | Release editorial review | 2026-08-19 | Historical entries must remain labeled |
+| AdSense implementation copy | One bottom slot, eligible/ad-free routes | Ad config, `AdSenseBanner`, `BaseLayout`, e2e | Ad implementation change | Advertising + technical | 2026-08-19 | IDs and `ads.txt` are protected invariants |
+| Google consent copy | CMP versus analytics responsibilities | Consent manager, base layout, consent tests | CMP/analytics change | Privacy + consent review | 2026-08-19 | Separate Google choices from NoCharge analytics |
+| Artwork and screenshots | Current UI, dimensions, provenance | `ART_ASSETS.md`, capture docs/scripts, asset tests | Relevant UI/art change | Visual + asset review | 2026-08-19 | Actual mounted captures only |
+| Controls diagrams | Current labels and sequences | Game metadata, runtime, SVG assets | Control change | Gameplay + accessibility | 2026-08-19 | Validate information beyond color |
+| Scoring/rules diagrams | Current formulas and rule states | Runtime rule modules, SVG assets | Scoring/rule change | Gameplay review | 2026-08-19 | Includes Beacon coverage diagram |
+| Curated collections | Qualification and member reasons | Collection metadata, game metadata/runtime | Library, mode, control, session change | Curation review | 2026-08-19 | Minimum three qualifying current games |
+| What Quiet Arcade means at NoCharge | Product behavior and positioning | Registry, trust pages, layout, guides | Platform/advertising/account change | Platform editorial | 2026-08-19 | Does not claim every game is untimed |
+| How NoCharge saves scores without an account | Exact keys and clear behavior | Shared storage, game modules, Privacy clear script | Storage/privacy change | Privacy + technical | 2026-08-19 | No encryption/security claim |
+| Designing browser games for more ways to play | Current input/accessibility/lifecycle behavior | Runtime, shell, statement, tests | Input/UI/accessibility change | Accessibility editorial | 2026-08-19 | Manual AT checks remain required |
+| How NoCharge tests browser games | CI scripts and documented manual gates | `package.json`, workflows, CI docs, tests | Test/CI/tooling change | QA editorial | 2026-08-19 | Firefox/WebKit/Lighthouse are manual release checks |
+
+## Review procedure
+
+When a source-of-truth file changes, locate its rows, review every named public page, update inaccurate copy in the same change, and record a new verified date or linked follow-up issue. Build/schema success alone does not verify gameplay wording.

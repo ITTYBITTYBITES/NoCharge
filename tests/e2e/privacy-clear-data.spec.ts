@@ -16,6 +16,7 @@ const seedGameData = async (page: import('@playwright/test').Page) => {
     localStorage.setItem('nocharge:pref:game-muted', 'true');
     localStorage.setItem('nocharge:beacon-lattice:high', '3');
     localStorage.setItem('nocharge:pref:beacon-lattice-progress', '{"currentId":"bl-01-first-plus"}');
+    localStorage.setItem('nocharge:pref:recently-played', '[{"gameId":"memory-match","playedAt":1}]');
     localStorage.setItem('unrelated-origin-key', 'keep-me');
   });
 };
@@ -44,6 +45,7 @@ test('clear game data removes scores and game preferences but preserves consent'
       muted: read('nocharge:pref:game-muted'),
       beaconHigh: read('nocharge:beacon-lattice:high'),
       beaconProgress: read('nocharge:pref:beacon-lattice-progress'),
+      recentlyPlayed: read('nocharge:pref:recently-played'),
       consent: read('nocharge:consent'),
       unrelated: read('unrelated-origin-key'),
     };
@@ -61,6 +63,7 @@ test('clear game data removes scores and game preferences but preserves consent'
   expect(after.colorHigh).toBeNull();
   expect(after.beaconHigh).toBeNull();
   expect(after.beaconProgress).toBeNull();
+  expect(after.recentlyPlayed).toBeNull();
   // 5. nocharge:consent remains exactly unchanged.
   expect(after.consent).toBe(consentBefore);
   // 7. Unrelated localStorage is not broadly cleared.
@@ -73,6 +76,6 @@ test('clear game data reports an accurate status', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Clear game data' }).click();
   await expect(page.locator('[data-game-status]')).toHaveText(
-    'Game scores and preferences were cleared from this browser.',
+    'Game scores, preferences, and Recently Played were cleared from this browser.',
   );
 });

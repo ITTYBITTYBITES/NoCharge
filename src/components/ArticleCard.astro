@@ -3,14 +3,14 @@ interface Props {
   slug: string;
   title: string;
   description: string;
-  gameTitle: string;
+  label: string;
   readTime: number;
   published: string;
   topics: string[];
   accent?: string;
 }
 
-const { slug, title, description, gameTitle, readTime, published, topics, accent = '#12b66a' } = Astro.props;
+const { slug, title, description, label, readTime, published, topics, accent = '#12b66a' } = Astro.props;
 const publishedLabel = new Date(`${published}T12:00:00`).toLocaleDateString('en-US', {
   month: 'short',
   day: 'numeric',
@@ -19,7 +19,7 @@ const publishedLabel = new Date(`${published}T12:00:00`).toLocaleDateString('en-
 ---
 
 <article class="article-card" style={`--article-accent:${accent}`}>
-  <p class="article-card__game">{gameTitle}</p>
+  <p class="article-card__game">{label}</p>
   <h3><a href={`/articles/${slug}/`}>{title}</a></h3>
   <p class="article-card__description">{description}</p>
   <ul class="article-card__topics" aria-label="Topics">

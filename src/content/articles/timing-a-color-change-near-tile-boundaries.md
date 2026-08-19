@@ -1,5 +1,6 @@
 ---
 title: "Timing a color change near tile boundaries"
+kind: game
 description: "Use the next tile, direct color controls, and a small input buffer to make deliberate Color Flip choices in visual mode."
 game: color-flip
 published: "2026-08-15"

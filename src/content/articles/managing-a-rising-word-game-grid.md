@@ -1,5 +1,6 @@
 ---
 title: "Managing a rising word-game grid"
+kind: game
 description: "Balance Word Tile Rush word length, clear timing, and column shape once the first selection starts the rising grid."
 game: word-tile-rush
 published: "2026-08-15"

@@ -1,5 +1,6 @@
 ---
 title: "Understanding the four-color cycle in Color Flip"
+kind: game
 description: "Learn the four Color Flip labels, use direct choices in visual mode, and understand the fixed cycle retained in turn-based mode."
 game: color-flip
 published: "2026-08-15"

@@ -1,5 +1,6 @@
 ---
 title: "A systematic way to scan a Memory Match board"
+kind: game
 description: "Use a repeatable four-by-four scan to turn each Memory Match reveal into useful location information."
 game: memory-match
 published: "2026-08-15"

@@ -38,13 +38,13 @@ Referrer-Policy: strict-origin-when-cross-origin
 X-Content-Type-Options: nosniff
 X-Frame-Options: DENY
 Cross-Origin-Opener-Policy: same-origin
-Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+Strict-Transport-Security: max-age=31536000
 ```
 
 The edge response CSP is the meta policy plus `frame-ancestors 'none'` and `upgrade-insecure-requests`, which are only meaningful as response headers. Keeping them out of the meta policy also keeps plain-HTTP local previews (Playwright, Astro dev) working in WebKit.
 
 **Owner action:** if the deployed domain is served through Cloudflare or another edge, update its CSP (or equivalent) security header with the policy above — repository changes cannot apply HTTP response headers on GitHub Pages.
 
-Before enabling HSTS `includeSubDomains` or submitting to the preload list, confirm every current and future subdomain supports HTTPS. Test the response policy in report-only mode first if ad or analytics providers change.
+The baseline intentionally omits HSTS `includeSubDomains` and `preload`. Before adding either, confirm every current and future subdomain supports HTTPS and review the long-lived preload commitment. Apply the CSP as `Content-Security-Policy-Report-Only` first, test games, AdSense, Google Privacy & messaging, and analytics, then enforce only after reviewing reports. See `docs/CLOUDFLARE_OWNER_CHECKLIST.md`; repository changes cannot confirm dashboard configuration.
 
 The remaining `'unsafe-inline'` allowance supports the current small inline boot scripts, the Google consent tag, and Astro-generated style variables. A future hardening pass can move those scripts to static files and use CSP hashes.
