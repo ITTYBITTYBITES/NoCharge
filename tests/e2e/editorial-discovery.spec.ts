@@ -74,6 +74,22 @@ test('orders multiple meaningful game interactions on home and Arcade',async({pa
  for(const path of ['/','/arcade/']){await page.goto(path);const section=page.locator('[data-recently-played]:visible');await expect(section).toBeVisible();const ids=await section.locator('[data-recent-game]:visible').evaluateAll(items=>items.map(item=>item.getAttribute('data-recent-game')));expect(ids.slice(0,2)).toEqual(['color-flip','memory-match']);}
 });
 
+test('each game appears once per Recently Played and catalog section',async({page})=>{
+ const gameIds=['memory-match','word-tile-rush','color-flip','beacon-lattice'];
+ await page.goto('/');
+ await page.evaluate((ids)=>localStorage.setItem('nocharge:pref:recently-played',JSON.stringify(ids.map((gameId,index)=>({gameId,playedAt:index+1})))),gameIds);
+ await page.reload();
+ for(const gameId of gameIds){
+  await expect(page.locator(`[data-recently-played="home"] [data-recent-game="${gameId}"]`)).toHaveCount(1);
+  await expect(page.locator(`#games .game-card[href="/games/${gameId}/"]`)).toHaveCount(1);
+ }
+ await page.goto('/arcade/');
+ for(const gameId of gameIds){
+  await expect(page.locator(`[data-recently-played="arcade"] [data-recent-game="${gameId}"]`)).toHaveCount(1);
+  await expect(page.locator(`.arcade-grid .game-card[href="/games/${gameId}/"]`)).toHaveCount(1);
+ }
+});
+
 test('Privacy clear removes recently played and preserves consent',async({page})=>{
  await page.goto('/privacy/');const before=await page.evaluate(key=>localStorage.getItem(key),CONSENT_KEY);await page.evaluate(()=>localStorage.setItem('nocharge:pref:recently-played','[{"gameId":"memory-match","playedAt":1}]'));await page.getByRole('button',{name:'Clear game data'}).click();expect(await page.evaluate(()=>localStorage.getItem('nocharge:pref:recently-played'))).toBeNull();expect(await page.evaluate(key=>localStorage.getItem(key),CONSENT_KEY)).toBe(before);await expect(page.locator('[data-game-status]')).toContainText('Recently Played');
 });
@@ -88,7 +104,10 @@ test('new discovery surfaces reflow at mobile and practical 200% zoom and pass a
  await page.addInitScript(()=>localStorage.setItem('nocharge:pref:recently-played','[{"gameId":"memory-match","playedAt":2},{"gameId":"color-flip","playedAt":1}]'));
  await page.setViewportSize({width:390,height:844});
  for(const path of ['/','/arcade/','/articles/','/articles/how-nocharge-tests-browser-games/','/collections/','/collections/keyboard-friendly-browser-games/']){await page.goto(path);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth)).toBe(true);const results=await new AxeBuilder({page}).analyze();expect(results.violations,`${path}: ${JSON.stringify(results.violations)}`).toEqual([]);}
- await page.setViewportSize({width:640,height:800});await page.goto('/collections/');await page.evaluate(()=>{document.documentElement.style.zoom='2'});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth)).toBe(true);
+ await page.setViewportSize({width:320,height:760});
+ for(const path of ['/','/collections/keyboard-friendly-browser-games/']){await page.goto(path);await expect(page.getByRole('heading',{level:1})).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth)).toBe(true);}
+ await page.setViewportSize({width:640,height:800});
+ for(const path of ['/','/collections/keyboard-friendly-browser-games/']){await page.goto(path);await page.evaluate(()=>{document.documentElement.style.zoom='2'});await expect(page.getByRole('heading',{level:1})).toBeVisible();await expect(page.getByRole('link',{name:/Enter the arcade|Browse all collections/})).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth)).toBe(true);}
 });
 
 test('eligible new content keeps the AdSense banner separated without ad interaction',async({page})=>{for(const path of ['/articles/how-nocharge-tests-browser-games/','/collections/','/collections/keyboard-friendly-browser-games/']){await page.goto(path);const banner=page.locator('[data-ad-banner]');await expect(banner).toHaveCount(1);const separated=await page.evaluate(()=>{const main=document.querySelector('main')!.getBoundingClientRect();const ad=document.querySelector('[data-ad-banner]')!.getBoundingClientRect();return ad.top>=main.bottom;});expect(separated).toBe(true);}});

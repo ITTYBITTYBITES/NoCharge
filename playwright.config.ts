@@ -23,7 +23,13 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      // GitHub-hosted Ubuntu runners already provide stable Google Chrome.
+      // Local development keeps Playwright's bundled Chromium after
+      // `npx playwright install chromium`.
+      use: {
+        ...devices['Desktop Chrome'],
+        ...(process.env.CI ? { channel: 'chrome' as const } : {}),
+      },
     },
     ...(fullBrowserMatrix
       ? [

@@ -2,19 +2,26 @@
 
 ## Required gate
 
-Chromium is the required PR and deployment gate. The committed workflow installs
-Chromium only and runs the Chromium Playwright project:
+Chromium is the required PR and deployment gate. On GitHub-hosted Ubuntu runners,
+the `chromium` Playwright project uses the runner's preinstalled stable Google
+Chrome channel. CI prints the resolved Chrome and Playwright versions, does not
+download a Playwright browser, and runs against the production build already
+created by the preceding build step:
 
 ```yaml
-- name: Install browser test dependencies
-  run: npx playwright install --with-deps chromium
+- name: Browser diagnostics
+  run: |
+    which google-chrome google-chrome-stable chromium chromium-browser || true
+    google-chrome --version 2>/dev/null || google-chrome-stable --version 2>/dev/null || true
+    npx playwright --version
 
 - name: Run browser and accessibility tests
-  run: npm run test:e2e
+  run: npx playwright test --project=chromium
 ```
 
-`npm run test:e2e` runs the Chromium project. This is the fast check that must
-pass before a PR merges or a production deployment publishes.
+Local development continues to use Playwright's bundled Chromium after
+`npx playwright install chromium`; `channel: 'chrome'` is CI-only. The complete
+Chromium project is the required check before merge or production deployment.
 
 ## Extended compatibility checks
 

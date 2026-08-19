@@ -4,9 +4,9 @@ These are review captures from the production build with optional services denie
 
 ## Editorial governance and local discovery (2026-08-19)
 
-The opt-in `CAPTURE_PR=1` Playwright capture test produces desktop (1440×1000) and mobile (390×844) full-page captures for the homepage with Recently Played empty and populated, Arcade with Recently Played populated, the platform article index and testing article, the Collections index, all four collection routes, and Privacy after Clear Game Data reports its result.
+For pull requests, CI runs the `CAPTURE_PR=1` Playwright capture test with stable hosted Chrome and uploads `pr-17-visual-captures` for seven days. It produces desktop (1440×1000), mobile (390×844), narrow mobile (320×760), and 200% zoom captures. The set covers the homepage with Recently Played empty and populated, Arcade with Recently Played populated, the platform article index and testing article, the Collections index, all four collection routes, Privacy after Clear Game Data, plus focused homepage and keyboard-collection views at 320px and 200% zoom.
 
-The run seeds only local game IDs/timestamps, stubs Google endpoints, never clicks an advertisement, and reuses current real artwork. Review for horizontal overflow, clear headings/focus, artwork crops, consent layering, mobile readability, and bottom-banner separation. The sandbox could not download Chromium, so fresh captures remain an owner/CI artifact action rather than a claimed completed review. This documentation does not turn an automated image into a completed manual-device check.
+The run seeds only local game IDs/timestamps, stubs Google endpoints, never clicks an advertisement, and reuses current real artwork. Review for horizontal overflow, clear headings/focus, artwork crops, consent layering, mobile readability, and bottom-banner separation. Automated captures supplement rather than replace manual device and assistive-technology review.
 
 ## Game controls and immersive viewport
 

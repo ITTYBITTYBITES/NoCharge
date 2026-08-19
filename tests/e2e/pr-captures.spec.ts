@@ -102,4 +102,28 @@ test('captures desktop and mobile platform-maturity review screens', async ({ pa
     await page.waitForLoadState('networkidle');
     await shot(`mobile-${name}`, true);
   }
+
+  await page.setViewportSize({ width: 320, height: 760 });
+  await page.goto('/');
+  await page.evaluate(() => localStorage.setItem('nocharge:pref:recently-played', JSON.stringify([
+    { gameId: 'beacon-lattice', playedAt: 4 }, { gameId: 'color-flip', playedAt: 3 },
+    { gameId: 'word-tile-rush', playedAt: 2 }, { gameId: 'memory-match', playedAt: 1 },
+  ])));
+  await page.reload();
+  await shot('mobile-320-home-recent-populated', true);
+  await page.goto('/collections/keyboard-friendly-browser-games/');
+  await shot('mobile-320-collection-keyboard', true);
+
+  await page.setViewportSize({ width: 640, height: 900 });
+  await page.goto('/');
+  await page.evaluate(() => localStorage.setItem('nocharge:pref:recently-played', JSON.stringify([
+    { gameId: 'beacon-lattice', playedAt: 4 }, { gameId: 'color-flip', playedAt: 3 },
+    { gameId: 'word-tile-rush', playedAt: 2 }, { gameId: 'memory-match', playedAt: 1 },
+  ])));
+  await page.reload();
+  await page.evaluate(() => { document.documentElement.style.zoom = '2'; });
+  await shot('zoom-200-home-recent-populated', true);
+  await page.goto('/collections/keyboard-friendly-browser-games/');
+  await page.evaluate(() => { document.documentElement.style.zoom = '2'; });
+  await shot('zoom-200-collection-keyboard', true);
 });
