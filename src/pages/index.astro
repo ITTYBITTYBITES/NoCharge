@@ -4,6 +4,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import GameCard from '../components/GameCard.astro';
 import GuideCard from '../components/GuideCard.astro';
 import ArticleCard from '../components/ArticleCard.astro';
+import RecentlyPlayed from '../components/RecentlyPlayed.astro';
 
 const allGames = (await getCollection('games'))
   .filter((game) => !game.data.draft)
@@ -15,7 +16,7 @@ const featuredGuides = (await getCollection('guides'))
   .sort((a, b) => a.data.order - b.data.order)
   .slice(0, 3);
 const featuredArticles = (await getCollection('articles'))
-  .filter((article) => !article.data.draft && article.data.featured)
+  .filter((article) => !article.data.draft && article.data.featured && article.data.kind === 'game')
   .sort((a, b) => a.data.title.localeCompare(b.data.title))
   .slice(0, 3);
 ---
@@ -49,6 +50,8 @@ const featuredArticles = (await getCollection('articles'))
         </ul>
       </aside>
     </section>
+
+    <RecentlyPlayed games={allGames} location="home" />
 
     <section class="home-section" id="games" aria-labelledby="featured-games-heading">
       <div class="section-heading">
@@ -148,6 +151,7 @@ const featuredArticles = (await getCollection('articles'))
       <div class="card-grid card-grid--articles">
         {
           featuredArticles.map((article) => {
+            if (article.data.kind !== 'game') return null;
             const game = gameById.get(article.data.game);
             if (!game) return null;
             return (
@@ -155,7 +159,7 @@ const featuredArticles = (await getCollection('articles'))
                 slug={article.id}
                 title={article.data.title}
                 description={article.data.description}
-                gameTitle={game.data.title}
+                label={game.data.title}
                 readTime={article.data.readTime}
                 published={article.data.published}
                 topics={article.data.topics}

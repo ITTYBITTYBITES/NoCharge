@@ -1,6 +1,7 @@
 import { play, unlockAudio } from '../shared/audio';
 import { loadScore, saveScore } from '../shared/storage';
 import type { GameController, PauseReason } from '../shared/types';
+import { signalMeaningfulGameInteraction } from '../shared/recently-played';
 import { shuffle } from '../shared/utils';
 import './styles.css';
 
@@ -145,6 +146,7 @@ export function mountMemoryMatch(root: HTMLElement): GameController {
   function onFlip(card: Card) {
     if (paused || lock || card.flipped || card.matched) return;
 
+    signalMeaningfulGameInteraction(root);
     card.flipped = true;
     card.el.classList.add('is-flipped');
     card.el.setAttribute('aria-label', `${card.symbol}, card ${card.id + 1} of ${cards.length}`);

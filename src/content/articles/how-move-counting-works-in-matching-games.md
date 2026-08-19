@@ -1,5 +1,6 @@
 ---
 title: "How move counting works in matching games"
+kind: game
 description: "See exactly when NoCharge Memory Match adds a move and how to use that number as a clear measure of a board run."
 game: memory-match
 published: "2026-08-15"

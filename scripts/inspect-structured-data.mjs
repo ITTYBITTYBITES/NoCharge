@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 const dist = join(process.cwd(), 'dist');
@@ -14,8 +14,16 @@ const pages = [
   'changelog/index.html',
   'games/memory-match/index.html',
   'articles/memory-match-systematic-board-scan/index.html',
+  'articles/how-nocharge-tests-browser-games/index.html',
+  'collections/index.html',
+  'collections/keyboard-friendly-browser-games/index.html',
 ];
 const types = new Set();
+const collectTypes = (value) => {
+  if (!value || typeof value !== 'object') return;
+  if (typeof value['@type'] === 'string') types.add(value['@type']);
+  for (const child of Object.values(value)) collectTypes(child);
+};
 for (const page of pages) {
   const path = join(dist, page);
   if (!existsSync(path)) throw new Error(`Expected structured-data page is missing: ${page}`);
@@ -29,13 +37,30 @@ for (const page of pages) {
     } catch (error) {
       throw new Error(`Invalid JSON-LD in ${page}: ${error instanceof Error ? error.message : String(error)}`);
     }
-    for (const value of Array.isArray(data) ? data : [data]) {
-      if (value?.['@type']) types.add(value['@type']);
-    }
+    collectTypes(data);
   }
 }
 
-for (const type of ['WebSite', 'CollectionPage', 'VideoGame', 'Article', 'BreadcrumbList']) {
+for (const type of ['WebSite', 'CollectionPage', 'ItemList', 'VideoGame', 'Article', 'BreadcrumbList']) {
   if (!types.has(type)) throw new Error(`Expected structured-data type was not found: ${type}`);
 }
-console.log(`Structured-data inspection passed (${[...types].sort().join(', ')}).`);
+
+const htmlFiles = [];
+const walk = (directory) => {
+  for (const name of readdirSync(directory, { withFileTypes: true })) {
+    const path = join(directory, name.name);
+    if (name.isDirectory()) walk(path);
+    else if (path.endsWith('.html')) htmlFiles.push(path);
+  }
+};
+walk(dist);
+for (const [label, pattern] of [['title', /<title>([^<]+)<\/title>/i], ['description', /<meta name="description" content="([^"]+)"/i]]) {
+  const seen = new Map();
+  for (const path of htmlFiles) {
+    const match = readFileSync(path, 'utf8').match(pattern);
+    if (!match) continue;
+    if (seen.has(match[1])) throw new Error(`Duplicate ${label}: ${match[1]} (${seen.get(match[1])}, ${path})`);
+    seen.set(match[1], path);
+  }
+}
+console.log(`Structured-data and unique-metadata inspection passed (${[...types].sort().join(', ')}).`);

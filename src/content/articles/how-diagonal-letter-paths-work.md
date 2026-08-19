@@ -1,5 +1,6 @@
 ---
 title: "How diagonal letter paths work in Word Tile Rush"
+kind: game
 description: "Use all eight neighboring directions in Word Tile Rush while keeping each letter path connected, ordered, and free of repeats."
 game: word-tile-rush
 published: "2026-08-15"

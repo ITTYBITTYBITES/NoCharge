@@ -8,7 +8,7 @@ export async function getStaticPaths() {
   const games = (await getCollection('games')).filter((game) => !game.data.draft);
   const guides = (await getCollection('guides')).filter((guide) => !guide.data.draft);
   const articles = (await getCollection('articles')).filter((article) => !article.data.draft);
-  const guideIds = new Set(guides.map((guide) => guide.data.game));
+  const guideIds = new Set<string>(guides.map((guide) => guide.data.game));
   return games.map((game) => ({
     params: { slug: game.id },
     props: {
@@ -16,7 +16,7 @@ export async function getStaticPaths() {
       hasGuide: guideIds.has(game.id),
       relatedGames: games.filter((candidate) => candidate.id !== game.id).sort((a, b) => a.data.order - b.data.order),
       relatedArticles: articles
-        .filter((article) => article.data.game === game.id)
+        .filter((article) => article.data.kind === 'game' && article.data.game === game.id)
         .sort((a, b) => Number(b.data.featured) - Number(a.data.featured) || a.data.title.localeCompare(b.data.title)),
     },
   }));
@@ -99,7 +99,7 @@ const stageStyle = presentation?.stageAspectDesktop
                 slug={article.id}
                 title={article.data.title}
                 description={article.data.description}
-                gameTitle={game.data.title}
+                label={game.data.title}
                 readTime={article.data.readTime}
                 published={article.data.published}
                 topics={article.data.topics}

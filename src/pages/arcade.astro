@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import GameCard from '../components/GameCard.astro';
+import RecentlyPlayed from '../components/RecentlyPlayed.astro';
 
 const games = (await getCollection('games'))
   .filter((game) => !game.data.draft)
@@ -49,6 +50,8 @@ const schema = {
         <div><dt>3</dt><dd>input styles supported</dd></div>
       </dl>
     </header>
+
+    <RecentlyPlayed games={games} location="arcade" />
 
     <section class="arcade-list" aria-labelledby="all-games-heading">
       <div class="arcade-list__heading">

@@ -20,7 +20,7 @@ export async function getStaticPaths() {
         .filter((candidate) => candidate.id !== guide.id)
         .sort((a, b) => a.data.order - b.data.order),
       relatedArticles: articles
-        .filter((article) => article.data.game === guide.data.game)
+        .filter((article) => article.data.kind === 'game' && article.data.game === guide.data.game)
         .sort((a, b) => Number(b.data.featured) - Number(a.data.featured) || a.data.title.localeCompare(b.data.title)),
     },
   }));
@@ -211,7 +211,7 @@ const schema = {
                 slug={article.id}
                 title={article.data.title}
                 description={article.data.description}
-                gameTitle={game.data.title}
+                label={game.data.title}
                 readTime={article.data.readTime}
                 published={article.data.published}
                 topics={article.data.topics}

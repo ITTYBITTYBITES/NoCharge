@@ -1,5 +1,6 @@
 ---
 title: "Keyboard and accessible play in Beacon Lattice"
+kind: game
 description: "Navigate the Beacon Lattice grid from the keyboard, hear coverage changes, and play without relying on color, sound, or drag."
 game: beacon-lattice
 published: "2026-08-19"

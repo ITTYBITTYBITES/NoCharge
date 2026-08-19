@@ -1,5 +1,6 @@
 import { play, unlockAudio } from '../shared/audio';
 import type { GameController, PauseReason } from '../shared/types';
+import { signalMeaningfulGameInteraction } from '../shared/recently-played';
 import { coverageBand } from './coverage';
 import {
   boardStatus,
@@ -205,6 +206,7 @@ function mountBeaconLatticeInner(root: HTMLElement): GameController {
     const existing = state.placements.find((placement) => placement.x === x && placement.y === y);
     const result = existing ? removeBeacon(state, puzzle, { x, y }) : placeBeacon(state, puzzle, { x, y });
     if (result.ok) {
+      signalMeaningfulGameInteraction(root);
       void play(state.complete ? 'win' : existing ? 'pop' : 'blip');
       if (state.complete) progress = recordSolve(progress, puzzle.id, state.beaconCount);
     }

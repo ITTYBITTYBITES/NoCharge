@@ -13,8 +13,8 @@ permissions:
   id-token: write
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || 'pages' }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -39,11 +39,39 @@ jobs:
       - name: Build site
         run: npm run build
 
-      - name: Install browser test dependencies
-        run: npx playwright install --with-deps chromium
+      - name: Browser diagnostics
+        run: |
+          which google-chrome google-chrome-stable chromium chromium-browser || true
+          google-chrome --version 2>/dev/null || google-chrome-stable --version 2>/dev/null || true
+          npx playwright --version
+
+      - name: Cache Playwright FFmpeg
+        id: playwright-ffmpeg-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright/ffmpeg-*
+          key: playwright-ffmpeg-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Playwright FFmpeg
+        if: steps.playwright-ffmpeg-cache.outputs.cache-hit != 'true'
+        run: npx playwright install ffmpeg
 
       - name: Run browser and accessibility tests
-        run: npm run test:e2e
+        run: npx playwright test --project=chromium
+
+      - name: Capture PR review screens
+        if: github.event_name == 'pull_request'
+        env:
+          CAPTURE_PR: '1'
+        run: npx playwright test tests/e2e/pr-captures.spec.ts --project=chromium
+
+      - name: Upload PR visual captures
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-17-visual-captures
+          path: artifacts/pr-captures/
+          retention-days: 7
 
       - name: Setup Pages
         if: github.event_name != 'pull_request'

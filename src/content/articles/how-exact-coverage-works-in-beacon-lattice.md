@@ -1,5 +1,6 @@
 ---
 title: "How exact coverage works in Beacon Lattice"
+kind: game
 description: "See how Beacon Lattice treats coverage 0, 1, and 2+, and why a gap or overlap keeps a puzzle unsolved."
 game: beacon-lattice
 published: "2026-08-19"

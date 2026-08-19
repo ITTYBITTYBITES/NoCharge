@@ -1,5 +1,6 @@
 ---
 title: "How to find forced beacon placements"
+kind: game
 description: "Use edges, single-source cells, inventory limits, and restricted slots to place Beacon Lattice beacons without guessing."
 game: beacon-lattice
 published: "2026-08-19"

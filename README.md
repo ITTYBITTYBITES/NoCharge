@@ -27,9 +27,9 @@ A growing collection of browser games and practical player guides built with **A
 
 ## Guides and articles
 
-Each game has a long-form guide under `/guides/` covering rules, controls, scoring, strategy, accessibility, and local score storage. Focused supporting articles live under `/articles/` and link back to both the relevant game and its definitive guide.
+Each game has a long-form guide under `/guides/` covering rules, controls, scoring, strategy, accessibility, and local score storage. `/articles/` contains both game-specific notes and platform explainers without fake game associations. Reviewed, metadata-driven game groupings live under `/collections/`.
 
-Public trust pages are available at `/about/`, `/terms/`, `/advertising/`, and `/changelog/`.
+Editorial rules and source-of-truth review ownership are documented in `docs/EDITORIAL_STANDARDS.md` and `docs/CONTENT_ACCURACY_MATRIX.md`. Public trust pages are available at `/about/`, `/privacy/`, `/terms/`, `/advertising/`, `/accessibility/`, and `/changelog/`.
 
 ## Develop
 
@@ -56,7 +56,8 @@ src/
   pages/             # home, arcade, guides, articles, games, trust pages
   content/games/     # game metadata and descriptions
   content/guides/    # long-form player guides
-  content/articles/  # focused supporting articles
+  content/articles/  # game-specific and platform articles
+  content/collections/ # reviewed curated collections
   content/changelog/ # public verified updates
   games/             # per-game TS + CSS + shared helpers
   styles/         # global.css
