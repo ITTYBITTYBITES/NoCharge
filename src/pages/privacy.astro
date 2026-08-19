@@ -110,8 +110,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       // intentionally omitted so clearing game data never touches the consent
       // choice, its categories, timestamp, or schema version. Unrelated origin
       // storage is left untouched.
-      const gameScoreIds = ['memory-match', 'word-tile-rush', 'color-flip', 'color-flip-turn-based'];
-      const gamePreferenceKeys = ['game-muted'];
+      const gameScoreIds = ['memory-match', 'word-tile-rush', 'color-flip', 'color-flip-turn-based', 'beacon-lattice'];
+      const gamePreferenceKeys = ['game-muted', 'beacon-lattice-progress'];
       const gameKeys = [
         ...gameScoreIds.map((id) => `nocharge:${id}:high`),
         'nocharge:memory-match:best-moves',

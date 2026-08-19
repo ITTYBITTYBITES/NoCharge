@@ -54,7 +54,7 @@ const schema = {
       <div class="arcade-list__heading">
         <p class="section-kicker">Choose a game</p>
         <h2 id="all-games-heading">All arcade games</h2>
-        <p>Memory, word, and reflex play—each with a full guide when you want the details.</p>
+        <p>Memory, word, reflex, and logic play—each with a full guide when you want the details.</p>
       </div>
       <div class="arcade-grid">
         {
@@ -229,7 +229,10 @@ const schema = {
   }
 
   @media (min-width: 60rem) {
-    .arcade-grid,
+    .arcade-grid {
+      grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    }
+
     .arcade-notes__grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }

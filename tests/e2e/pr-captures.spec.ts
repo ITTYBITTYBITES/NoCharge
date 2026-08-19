@@ -6,7 +6,7 @@ import { test } from '@playwright/test';
 import { denyOptionalServices } from './helpers/consent';
 
 const captures = join(process.cwd(), 'artifacts', 'pr-captures');
-const games = ['memory-match', 'word-tile-rush', 'color-flip'] as const;
+const games = ['memory-match', 'word-tile-rush', 'color-flip', 'beacon-lattice'] as const;
 const pages = [
   ['about', '/about/'],
   ['terms', '/terms/'],

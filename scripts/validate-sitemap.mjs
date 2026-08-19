@@ -25,6 +25,8 @@ const required = [
   '/games/memory-match/',
   '/games/word-tile-rush/',
   '/games/color-flip/',
+  '/games/beacon-lattice/',
+  '/guides/beacon-lattice/',
 ];
 for (const path of required) {
   if (!locations.some((location) => new URL(location).pathname === path)) throw new Error(`Sitemap is missing ${path}`);

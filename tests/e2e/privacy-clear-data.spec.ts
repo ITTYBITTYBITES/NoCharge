@@ -14,6 +14,8 @@ const seedGameData = async (page: import('@playwright/test').Page) => {
     localStorage.setItem('nocharge:color-flip-turn-based:high', '7');
     localStorage.setItem('nocharge:memory-match:best-moves', '14');
     localStorage.setItem('nocharge:pref:game-muted', 'true');
+    localStorage.setItem('nocharge:beacon-lattice:high', '3');
+    localStorage.setItem('nocharge:pref:beacon-lattice-progress', '{"currentId":"bl-01-first-plus"}');
     localStorage.setItem('unrelated-origin-key', 'keep-me');
   });
 };
@@ -40,6 +42,8 @@ test('clear game data removes scores and game preferences but preserves consent'
       turnBasedHigh: read('nocharge:color-flip-turn-based:high'),
       bestMoves: read('nocharge:memory-match:best-moves'),
       muted: read('nocharge:pref:game-muted'),
+      beaconHigh: read('nocharge:beacon-lattice:high'),
+      beaconProgress: read('nocharge:pref:beacon-lattice-progress'),
       consent: read('nocharge:consent'),
       unrelated: read('unrelated-origin-key'),
     };
@@ -55,6 +59,8 @@ test('clear game data removes scores and game preferences but preserves consent'
   expect(after.turnBasedHigh).toBeNull();
   expect(after.wordHigh).toBeNull();
   expect(after.colorHigh).toBeNull();
+  expect(after.beaconHigh).toBeNull();
+  expect(after.beaconProgress).toBeNull();
   // 5. nocharge:consent remains exactly unchanged.
   expect(after.consent).toBe(consentBefore);
   // 7. Unrelated localStorage is not broadly cleared.

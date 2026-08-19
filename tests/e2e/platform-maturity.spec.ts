@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 import { denyOptionalServices } from './helpers/consent';
 
-const gamePaths = ['/games/memory-match/', '/games/word-tile-rush/', '/games/color-flip/'] as const;
+const gamePaths = ['/games/memory-match/', '/games/word-tile-rush/', '/games/color-flip/', '/games/beacon-lattice/'] as const;
 const articleSlugs = [
   'memory-match-systematic-board-scan',
   'how-move-counting-works-in-matching-games',
@@ -13,6 +13,9 @@ const articleSlugs = [
   'understanding-the-four-color-cycle',
   'timing-a-color-change-near-tile-boundaries',
   'visual-mode-versus-turn-based-color-flip',
+  'how-exact-coverage-works-in-beacon-lattice',
+  'how-to-find-forced-beacon-placements',
+  'keyboard-and-accessible-play-in-beacon-lattice',
 ] as const;
 
 const setVisibility = async (page: import('@playwright/test').Page, state: 'hidden' | 'visible') => {
@@ -427,7 +430,7 @@ test('publishes the article index, nine routes, links, breadcrumbs, and Article 
     expect(response.status()).toBe(200);
     await page.goto(path);
     await expect(page.locator('.breadcrumbs')).toBeVisible();
-    await expect(page.locator('.article-play').getByRole('link', { name: /Play (Memory Match|Word Tile Rush|Color Flip)/ })).toBeVisible();
+    await expect(page.locator('.article-play').getByRole('link', { name: /Play (Memory Match|Word Tile Rush|Color Flip|Beacon Lattice)/ })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Read the guide' })).toBeVisible();
     const structuredData = await page.locator('script[type="application/ld+json"]').allTextContents();
     expect(structuredData.join('\n')).toContain('"@type":"Article"');
