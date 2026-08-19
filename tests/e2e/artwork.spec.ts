@@ -6,7 +6,9 @@ test('Memory Match cards use meaningful, lazy-loaded square artwork', async ({ p
   await denyOptionalServices(page);
   await page.goto('/');
 
-  const card = page.locator('.game-card', { hasText: 'Memory Match' });
+  const canonicalGameGrid = page.locator('#games');
+  const card = canonicalGameGrid.locator('.game-card', { hasText: 'Memory Match' });
+  await expect(card).toHaveCount(1);
   const artwork = card.locator('[data-game-artwork="square"]');
   const image = artwork.locator('img');
 

@@ -397,13 +397,15 @@ export function mountColorFlip(root: HTMLElement): GameController {
 
   function selectVisualColor(requestedColor: ColorId) {
     if (turnBased || paused || !alive) return;
-    signalMeaningfulGameInteraction(root);
     unlockAudio();
     const nextColor = selectColorDirectly(playerColor, requestedColor, true);
     const changed = nextColor !== playerColor;
     setPlayerColor(nextColor);
     draw();
-    if (changed) void play('blip');
+    if (changed) {
+      signalMeaningfulGameInteraction(root);
+      void play('blip');
+    }
   }
 
   function loop(ts: number) {

@@ -12,11 +12,63 @@ test('publishes platform articles without fake game controls and with accurate m
 });
 
 test('recently played is hidden for page views and appears only after meaningful play',async({page})=>{
- await page.goto('/');await expect(page.locator('[data-recently-played]')).toBeHidden();await page.goto('/games/memory-match/');expect(await page.evaluate(()=>localStorage.getItem('nocharge:pref:recently-played'))).toBeNull();await page.locator('.mm__card').first().click();await expect.poll(()=>page.evaluate(()=>localStorage.getItem('nocharge:pref:recently-played'))).not.toBeNull();await page.goto('/');const recent=page.locator('[data-recently-played="home"]');await expect(recent).toBeVisible();await expect(recent.locator('[data-recent-game="memory-match"]')).toBeVisible();await expect(recent.getByText('Memory')).toBeVisible();await expect(recent.getByText('2–5 min')).toBeVisible();
+ await page.goto('/');const emptyRecent=page.locator('[data-recently-played="home"]');await expect(emptyRecent).toBeHidden();await expect(emptyRecent.getByRole('heading',{name:'Recently Played'})).toBeHidden();await page.goto('/games/memory-match/');expect(await page.evaluate(()=>localStorage.getItem('nocharge:pref:recently-played'))).toBeNull();await page.locator('[data-game-root="memory-match"] .mm__card').first().click();await expect.poll(()=>page.evaluate(()=>localStorage.getItem('nocharge:pref:recently-played'))).not.toBeNull();await page.goto('/');const recent=page.locator('[data-recently-played="home"]');await expect(recent).toBeVisible();const memoryCard=recent.locator('[data-recent-game="memory-match"]');await expect(memoryCard).toHaveCount(1);await expect(memoryCard).toBeVisible();await expect(page.locator('#games .game-card',{hasText:'Memory Match'})).toHaveCount(1);await expect(memoryCard.getByRole('heading',{name:'Memory Match',exact:true})).toBeVisible();await expect(memoryCard.locator('.game-card__meta span').filter({hasText:/^Memory$/})).toHaveText('Memory');await expect(memoryCard.locator('.game-card__meta span').filter({hasText:/^2–5 min$/})).toHaveText('2–5 min');
+});
+
+test('Recently Played reuses the canonical game artwork metadata',async({page})=>{
+ await page.goto('/');
+ await page.evaluate(()=>localStorage.setItem('nocharge:pref:recently-played','[{"gameId":"memory-match","playedAt":1}]'));
+ await page.reload();
+ const recentCard=page.locator('[data-recently-played="home"] [data-recent-game="memory-match"]');
+ await expect(recentCard).toHaveCount(1);
+ await expect(recentCard.locator('source[type="image/webp"]')).toHaveAttribute('srcset','/game-art/memory-match/cover-square.webp');
+ const image=recentCard.locator('img');
+ await expect(image).toHaveAttribute('src','/game-art/memory-match/cover-square.jpg');
+ await expect(image).toHaveAttribute('alt',/overlapping dark cards.*matching emerald diamonds/i);
+});
+
+test('page, mode, start, and shared controls do not count as gameplay',async({page})=>{
+ await page.addInitScript(()=>Object.defineProperty(document,'fullscreenEnabled',{configurable:true,get:()=>false}));
+ await page.goto('/games/color-flip/');
+ const recent=()=>page.evaluate(()=>localStorage.getItem('nocharge:pref:recently-played'));
+ const root=page.locator('[data-game-root="color-flip"]');
+ await expect(root).toHaveClass(/is-game-mounted/);
+ expect(await recent()).toBeNull();
+ await root.getByRole('button',{name:'Turn-based mode',exact:true}).click();
+ expect(await recent()).toBeNull();
+ await root.getByRole('button',{name:'Visual mode',exact:true}).click();
+ await root.getByRole('button',{name:'Start',exact:true}).click();
+ expect(await recent()).toBeNull();
+ await page.getByRole('button',{name:'Mute game sound'}).click();
+ await page.getByRole('button',{name:'Pause game'}).click();
+ await page.getByRole('button',{name:'Resume game'}).click();
+ await page.getByRole('button',{name:'New game'}).click();
+ expect(await recent()).toBeNull();
+ await page.getByRole('button',{name:'Enter immersive mode'}).click();
+ await page.getByRole('button',{name:'Exit immersive mode'}).click();
+ expect(await recent()).toBeNull();
+ await page.getByRole('button',{name:'Analytics choices'}).click();
+ await expect(page.locator('[data-consent-modal]')).toBeVisible();
+ expect(await recent()).toBeNull();
+ await page.getByRole('button',{name:'Close privacy choices'}).click();
+ expect(await recent()).toBeNull();
+ // Advertising is outside the game root and is never clicked by the test suite.
 });
 
 test('orders multiple meaningful game interactions on home and Arcade',async({page})=>{
- await page.goto('/games/memory-match/');await page.locator('.mm__card').first().click();await page.waitForTimeout(5);await page.goto('/games/color-flip/');await page.locator('[data-cf-color]').first().click();
+ await page.goto('/games/memory-match/');
+ await page.locator('[data-game-root="memory-match"] .mm__card').first().click();
+ await page.waitForTimeout(5);
+ await page.goto('/games/color-flip/');
+ const colorFlip=page.locator('[data-game-root="color-flip"]');
+ await expect(colorFlip).toHaveClass(/is-game-mounted/);
+ expect(await page.evaluate(()=>localStorage.getItem('nocharge:pref:recently-played'))).not.toContain('color-flip');
+ await colorFlip.getByRole('button',{name:'Start',exact:true}).click();
+ expect(await page.evaluate(()=>localStorage.getItem('nocharge:pref:recently-played'))).not.toContain('color-flip');
+ const blue=colorFlip.getByRole('button',{name:'Set player color to Blue',exact:true});
+ await expect(blue).toBeEnabled();
+ await blue.click();
+ await expect.poll(()=>page.evaluate(()=>localStorage.getItem('nocharge:pref:recently-played'))).toContain('color-flip');
  for(const path of ['/','/arcade/']){await page.goto(path);const section=page.locator('[data-recently-played]:visible');await expect(section).toBeVisible();const ids=await section.locator('[data-recent-game]:visible').evaluateAll(items=>items.map(item=>item.getAttribute('data-recent-game')));expect(ids.slice(0,2)).toEqual(['color-flip','memory-match']);}
 });
 
