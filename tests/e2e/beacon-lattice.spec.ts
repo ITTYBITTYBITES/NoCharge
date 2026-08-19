@@ -18,12 +18,19 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('Beacon Lattice mounts with selector, types, and coverage labels', async ({ page }) => {
+  const clientErrors: string[] = [];
+  page.on('pageerror', (error) => clientErrors.push(error.message));
   await page.goto('/games/beacon-lattice/');
-  await expect(page.locator('[data-game-root="beacon-lattice"]')).toBeVisible();
-  await expect(page.locator('.bl')).toBeVisible();
+  const root = page.locator('[data-game-root="beacon-lattice"]');
+  await expect(root).toBeVisible();
+  await expect(root, `mount errors: ${clientErrors.join(' | ') || 'none'}`).toHaveClass(/is-game-mounted/, {
+    timeout: 10_000,
+  });
+  await expect(root.locator('.bl'), `root html: ${await root.innerHTML()}`).toBeVisible();
   await expect(page.getByLabel('Puzzle selector')).toBeVisible();
   await expect(page.locator('[data-type="cross"]')).toBeVisible();
   await expect(page.locator('.bl__cell').first()).toContainText(/Gap|Exact|Overlap|Void|Block/);
+  expect(clientErrors, clientErrors.join('\n')).toEqual([]);
 });
 
 test('pointer placement solves the first puzzle and stores a best', async ({ page }) => {
