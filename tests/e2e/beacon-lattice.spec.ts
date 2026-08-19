@@ -36,7 +36,7 @@ test('Beacon Lattice mounts with selector, types, and coverage labels', async ({
 test('pointer placement solves the first puzzle and stores a best', async ({ page }) => {
   await page.goto('/games/beacon-lattice/');
   await page.locator('[data-type="cross"]').click();
-  await page.getByRole('gridcell', { name: /Row 3, column 3/ }).click();
+  await page.getByRole('button', { name: /Row 3, column 3/ }).click();
   await expect(page.getByRole('heading', { name: 'Lattice complete' })).toBeVisible();
   await expect(page.locator('[data-bl="best"]')).toHaveText('1');
   await expect(page.locator('[data-bl="live"]')).toContainText(/solved/i);
@@ -44,13 +44,12 @@ test('pointer placement solves the first puzzle and stores a best', async ({ pag
 
 test('keyboard navigation places and removes a beacon', async ({ page }) => {
   await page.goto('/games/beacon-lattice/');
-  await page.locator('[data-game-viewport]').click();
-  await page.keyboard.press('1');
+  await page.locator('[data-type="cross"]').click();
   await expect(page.locator('[data-type="cross"]')).toHaveAttribute('aria-pressed', 'true');
-  for (let step = 0; step < 12; step += 1) {
-    await page.keyboard.press('ArrowRight');
-    await page.keyboard.press('ArrowDown');
-  }
+  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('ArrowDown');
   await page.keyboard.press('Enter');
   await expect(page.locator('[data-bl="count"]')).not.toHaveText('0');
   await page.keyboard.press('Backspace');

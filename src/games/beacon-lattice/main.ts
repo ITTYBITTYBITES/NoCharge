@@ -89,7 +89,7 @@ function mountBeaconLatticeInner(root: HTMLElement): GameController {
         <span>1 · Exact</span>
         <span>2+ · Overlap</span>
       </div>
-      <div class="bl__board" data-bl="board" role="grid" aria-label="Beacon Lattice board"></div>
+      <div class="bl__board" data-bl="board" role="group" aria-label="Beacon Lattice board"></div>
       <div class="bl__toolbar">
         <button type="button" class="btn btn--ghost btn--sm" data-bl="undo">Undo</button>
       </div>
@@ -154,7 +154,7 @@ function mountBeaconLatticeInner(root: HTMLElement): GameController {
       else if (view.band) el.classList.add(`is-${view.band}`);
       if (state.cursor.x === view.x && state.cursor.y === view.y) el.classList.add('is-cursor');
       el.disabled = paused || view.kind !== 'required' || state.complete;
-      el.setAttribute('role', 'gridcell');
+      el.setAttribute('role', 'button');
       el.setAttribute('aria-label', cellName(puzzle, state, view.x, view.y));
       const glyph = view.beacon ? `<span class="bl__glyph" aria-hidden="true">${BEACON_META[view.beacon.type].short}</span>` : '';
       const count = view.kind === 'blocked' ? '■ Block' : view.kind === 'void' ? '· Void' : bandPhrase(view.coverage);
