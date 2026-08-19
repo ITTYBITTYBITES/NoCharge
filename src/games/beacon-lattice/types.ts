@@ -20,6 +20,9 @@ export type PuzzleDefinition = {
   width: number;
   height: number;
   difficulty: PuzzleDifficulty;
+  /** Required lattice cells that must reach coverage 1. Omit for a full board minus obstacles. */
+  required?: readonly Cell[];
+  /** Intentional obstacle cells. They cannot hold beacons and do not receive coverage. */
   blocked: readonly Cell[];
   available: readonly BeaconType[];
   inventory: Partial<Record<BeaconType, number>>;
@@ -30,10 +33,14 @@ export type PuzzleDefinition = {
   par: number;
   note?: string;
   unique?: boolean;
+  /** Why disconnected required regions still interact, if they do. */
+  componentNote?: string;
+  lesson: string;
 };
 
 export type InvalidReason =
   | 'cell-blocked'
+  | 'cell-void'
   | 'placement-not-allowed'
   | 'type-not-allowed'
   | 'inventory-exhausted'
@@ -44,7 +51,8 @@ export type InvalidReason =
   | 'out-of-bounds'
   | 'already-complete'
   | 'nothing-to-undo'
-  | 'type-unavailable';
+  | 'type-unavailable'
+  | 'paused';
 
 export type ActionResult =
   | { ok: true; announcement: string }
@@ -52,10 +60,14 @@ export type ActionResult =
 
 export type CoverageBand = 'gap' | 'exact' | 'overlap';
 
+export type CellKind = 'required' | 'void' | 'blocked';
+
 export type CellView = {
   x: number;
   y: number;
+  kind: CellKind;
   blocked: boolean;
+  voidCell: boolean;
   coverage: number;
   band: CoverageBand | null;
   beacon: Placement | null;

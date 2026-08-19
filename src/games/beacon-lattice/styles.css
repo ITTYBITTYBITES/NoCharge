@@ -52,10 +52,18 @@
   line-height: 1.15;
 }
 
+.bl__cell.is-void {
+  background: #141614;
+  color: #6a6a6a;
+  border-style: dotted;
+  cursor: default;
+}
+
 .bl__cell.is-blocked {
   background:
     repeating-linear-gradient(135deg, #171917 0 6px, #1d211f 6px 12px);
   color: var(--muted);
+  border-style: dashed;
   cursor: default;
 }
 

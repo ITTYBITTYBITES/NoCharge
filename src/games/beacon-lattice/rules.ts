@@ -1,4 +1,4 @@
-import { isBlocked, inBounds } from './coverage';
+import { isBlocked, inBounds, isRequired } from './coverage';
 import type { BeaconType, Placement, PuzzleDefinition } from './types';
 import { cellKey } from './types';
 
@@ -14,7 +14,7 @@ export function allowedTypesForCell(puzzle: PuzzleDefinition, x: number, y: numb
 }
 
 export function isCellEligible(puzzle: PuzzleDefinition, x: number, y: number): boolean {
-  if (!inBounds(puzzle, x, y) || isBlocked(puzzle, x, y)) return false;
+  if (!inBounds(puzzle, x, y) || isBlocked(puzzle, x, y) || !isRequired(puzzle, x, y)) return false;
   const allowed = allowedCellSet(puzzle);
   if (allowed && !allowed.has(cellKey(x, y))) return false;
   return allowedTypesForCell(puzzle, x, y).length > 0;

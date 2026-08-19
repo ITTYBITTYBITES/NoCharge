@@ -20,7 +20,7 @@ Place the available beacons so the lattice is an exact cover.
 - **1 · Exact** — the cell is covered by exactly one beacon.
 - **2+ · Overlap** — two or more beacons cover the same cell.
 
-The puzzle is solved only when every non-blocked required cell is Exact.
+The puzzle is solved only when every **required** lattice cell is Exact.
 
 ## The four patterns
 
@@ -42,9 +42,13 @@ Covers its own cell and the adjacent cells above and below.
 
 Offsets that leave the board are ignored. A beacon always covers its own eligible cell.
 
-## Blocked cells and edges
+## Lattice shape, void cells, and blocked obstacles
 
-Blocked cells cannot hold a beacon and are excluded from the solved-state check. A pattern that would land on a blocked cell simply skips that offset and still evaluates the others. Edge beacons therefore cover fewer cells than interior ones.
+Early puzzles use a **shaped lattice**. Cells outside that shape are **void**: they are not required, they cannot hold a beacon, and they are labeled “outside the lattice,” not “blocked.”
+
+**Blocked** cells appear later as obstacles on an otherwise required field. A blocked cell cannot hold a beacon and does not receive coverage. A pattern that would land on void or blocked cells skips that offset and still evaluates the rest.
+
+Edge beacons therefore cover fewer required cells than interior ones.
 
 ## Inventory, restricted cells, and locks
 
@@ -68,7 +72,7 @@ Undoing or removing a beacon does not permanently worsen a stored best. Only a c
 
 On **First plus**, the required cells form one Cross at row 3, column 3. Place a Cross there. Every required cell becomes `1 · Exact`. Par is 1.
 
-On **Twin pluses**, two Cross beacons sit at (2,2) and (4,4) in 1-based coordinates. If you slide one beacon a cell closer, their arms share a cell and you will see `2 · Overlap` on that shared cell and a gap elsewhere.
+On **Long plus**, the required cells form a full-width plus. A single center Cross leaves the four tips as gaps. Covering a tip with a second Cross that also reaches an already exact cell creates `2 · Overlap`.
 
 ## Beginner strategy
 

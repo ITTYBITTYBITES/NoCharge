@@ -36,7 +36,7 @@ presentation:
   controlsDiagramAlt: Three steps show choosing a beacon type, placing it on the grid, and reading the coverage count on each cell.
   controlsDiagramCaption: Select a type, place or remove it on a cell, then read the numeric coverage state.
   secondaryDiagramAlt: A Cross, Diagonal, Horizontal, and Vertical beacon are shown with the cells each pattern covers.
-  secondaryDiagramCaption: Off-board cells are ignored. Blocked cells skip coverage but do not stop the rest of a pattern.
+  secondaryDiagramCaption: Off-board and void cells are skipped. Blocked obstacles, introduced later, also skip coverage without stopping the rest of a pattern.
   gameplayPreviewAlt: Beacon Lattice on desktop with a five-by-five grid, coverage counts, and four beacon type controls.
   gameplayPreviewCaption: Coverage numbers stay visible on every required cell during play.
   relatedHeading: Study the coverage rules—or try another game.
@@ -48,6 +48,6 @@ featured: true
 order: 4
 ---
 
-Beacon Lattice is an untimed exact-coverage puzzle. Place Cross, Diagonal, Horizontal, and Vertical beacons so every required cell has coverage **exactly 1**. A 0 is a gap. A 2 or higher is an overlap. Blocked cells do not count.
+Beacon Lattice is an untimed exact-coverage puzzle. Place Cross, Diagonal, Horizontal, and Vertical beacons so every required lattice cell has coverage **exactly 1**. A 0 is a gap. A 2 or higher is an overlap. Cells outside the lattice are void. Blocked obstacles appear later and are not the same as void cells.
 
-Twenty-four curated puzzles teach the four patterns, then add inventory limits, restricted cells, locked beacons, and 7×7 boards. Your solved puzzles and best beacon counts stay in local storage on this device.
+Twenty-four curated puzzles teach the four patterns, then add inventory limits, restricted cells, locked beacons, blocked obstacles, and 7×7 boards. Your solved puzzles and best beacon counts stay in local storage on this device.

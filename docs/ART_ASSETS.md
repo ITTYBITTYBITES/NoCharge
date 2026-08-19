@@ -1,6 +1,6 @@
 # Game artwork inventory
 
-All packages are original Quiet Arcade work. Raster covers are reproducible with `npm run art:memory`, `npm run art:word`, `npm run art:color`, and `npm run art:beacon`; gameplay screenshots are captures of the actual game DOM. JPEG social cards are used for Open Graph, Twitter, and structured data.
+All packages are original Quiet Arcade work. Raster covers are reproducible with `npm run art:memory`, `npm run art:word`, `npm run art:color`, and `npm run art:beacon`. Gameplay screenshots are captures of the mounted game DOM (`npm run capture:beacon` or the Capture Beacon Lattice screenshots workflow). `npm run art:beacon` does not overwrite those screenshots. JPEG social cards are used for Open Graph, Twitter, and structured data.
 
 | Game / asset | Dimensions | Size |
 | --- | ---: | ---: |

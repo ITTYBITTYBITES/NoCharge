@@ -26,6 +26,7 @@ const mini = (overrides: Partial<PuzzleDefinition> = {}): PuzzleDefinition => ({
   locked: [],
   solution: [],
   par: 0,
+  lesson: 'test',
   ...overrides,
 });
 

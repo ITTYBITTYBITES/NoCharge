@@ -50,7 +50,7 @@ test('keyboard navigation places and removes a beacon', async ({ page }) => {
 
 test('invalid locked or blocked actions are announced', async ({ page }) => {
   await page.goto('/games/beacon-lattice/');
-  await page.getByLabel('Puzzle selector').selectOption('bl-17-locked-plus');
+  await page.getByLabel('Puzzle selector').selectOption('bl-17-locked-tip');
   await page.locator('.bl__cell', { hasText: '+' }).first().click();
   await expect(page.locator('[data-bl="live"]')).toContainText(/locked/i);
 });
@@ -146,6 +146,36 @@ test('ad banner stays below Beacon Lattice gameplay', async ({ page }) => {
     return banner.getBoundingClientRect().top + window.scrollY - (viewport.getBoundingClientRect().bottom + window.scrollY);
   });
   expect(metrics).toBeGreaterThanOrEqual(150);
+});
+
+test('best count does not worsen after a longer solve', async ({ page }) => {
+  await page.goto('/games/beacon-lattice/');
+  await page.evaluate(() => {
+    const api = (window as Window & { __NOCHARGE_BEACON_LATTICE_TEST__?: { applySolution(): void } })
+      .__NOCHARGE_BEACON_LATTICE_TEST__;
+    api?.applySolution();
+  });
+  await expect(page.locator('[data-bl="best"]')).toHaveText('1');
+  await page.getByRole('button', { name: 'New game' }).click();
+  await page.evaluate(() => {
+    localStorage.setItem(
+      'nocharge:pref:beacon-lattice-progress',
+      JSON.stringify({
+        currentId: 'bl-01-first-plus',
+        completed: ['bl-01-first-plus'],
+        bests: { 'bl-01-first-plus': 1 },
+        lastSolved: { 'bl-01-first-plus': 4 },
+      }),
+    );
+  });
+  await page.reload();
+  await expect(page.locator('[data-bl="best"]')).toHaveText('1');
+});
+
+test('paused selector cannot change the puzzle', async ({ page }) => {
+  await page.goto('/games/beacon-lattice/');
+  await page.getByRole('button', { name: 'Pause game' }).click();
+  await expect(page.getByLabel('Puzzle selector')).toBeDisabled();
 });
 
 test('Beacon Lattice has no axe violations', async ({ page }) => {

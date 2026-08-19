@@ -37,7 +37,8 @@ function bandPhrase(count: number): string {
 function cellName(puzzle: PuzzleDefinition, state: GameState, x: number, y: number): string {
   const view = cellViews(state, puzzle).find((cell) => cell.x === x && cell.y === y)!;
   const row = `Row ${y + 1}, column ${x + 1}`;
-  if (view.blocked) return `${row}. Blocked cell. Does not take coverage.`;
+  if (view.kind === 'blocked') return `${row}. Blocked obstacle. Does not take coverage.`;
+  if (view.kind === 'void') return `${row}. Outside the lattice.`;
   const cover = view.band === 'gap' ? 'Gap' : view.band === 'exact' ? 'Exact' : 'Overlap';
   const placed = view.beacon
     ? `${BEACON_META[view.beacon.type].name} beacon placed${view.beacon.locked ? ', locked' : ''}.`
@@ -131,14 +132,15 @@ export function mountBeaconLattice(root: HTMLElement): GameController {
       el.className = 'bl__cell';
       el.dataset.x = String(view.x);
       el.dataset.y = String(view.y);
-      if (view.blocked) el.classList.add('is-blocked');
+      if (view.kind === 'blocked') el.classList.add('is-blocked');
+      else if (view.kind === 'void') el.classList.add('is-void');
       else if (view.band) el.classList.add(`is-${view.band}`);
       if (state.cursor.x === view.x && state.cursor.y === view.y) el.classList.add('is-cursor');
-      el.disabled = paused || view.blocked || state.complete;
+      el.disabled = paused || view.kind !== 'required' || state.complete;
       el.setAttribute('role', 'gridcell');
       el.setAttribute('aria-label', cellName(puzzle, state, view.x, view.y));
       const glyph = view.beacon ? `<span class="bl__glyph" aria-hidden="true">${BEACON_META[view.beacon.type].short}</span>` : '';
-      const count = view.blocked ? '—' : bandPhrase(view.coverage);
+      const count = view.kind === 'blocked' ? '■ Block' : view.kind === 'void' ? '· Void' : bandPhrase(view.coverage);
       el.innerHTML = `${glyph}<span class="bl__count">${count}</span>`;
       el.addEventListener('click', () => onCell(view.x, view.y));
       board.appendChild(el);
@@ -151,6 +153,7 @@ export function mountBeaconLattice(root: HTMLElement): GameController {
     const best = progress.bests[puzzle.id];
     root.querySelector('[data-bl="best"]')!.textContent = best == null ? '—' : String(best);
     root.querySelector('[data-bl="solved"]')!.textContent = String(progress.completed.length);
+    picker.disabled = paused;
     noteEl.textContent = puzzle.note ?? '';
     overlay.classList.toggle('is-open', state.complete);
     if (state.complete) {
@@ -243,7 +246,14 @@ export function mountBeaconLattice(root: HTMLElement): GameController {
     }
   };
 
-  picker.addEventListener('change', () => loadPuzzle(picker.value, `${getPuzzle(picker.value)?.title} selected.`));
+  picker.addEventListener('change', () => {
+    if (paused) {
+      picker.value = puzzle.id;
+      announce('The game is paused.');
+      return;
+    }
+    loadPuzzle(picker.value, `${getPuzzle(picker.value)?.title} selected.`);
+  });
   root.querySelector('[data-bl="prev"]')!.addEventListener('click', () => {
     if (paused) return;
     const index = Math.max(0, puzzleIndex(puzzle.id) - 1);
@@ -291,6 +301,13 @@ export function mountBeaconLattice(root: HTMLElement): GameController {
         placeBeacon(state, puzzle, placement, placement.type);
       }
       if (state.complete) progress = recordSolve(progress, puzzle.id, state.beaconCount);
+      render();
+    },
+    applyPlacements: (placements: { x: number; y: number; type: BeaconType }[]) => {
+      state = createState(puzzle);
+      for (const placement of placements) {
+        placeBeacon(state, puzzle, placement, placement.type);
+      }
       render();
     },
   };

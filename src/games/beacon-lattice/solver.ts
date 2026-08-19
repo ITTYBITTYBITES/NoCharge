@@ -1,4 +1,4 @@
-import { computeCoverage, coverageCells, isExactCover } from './coverage';
+import { computeCoverage, coverageCells, isExactCover, isRequired } from './coverage';
 import { allowedTypesForCell, isCellEligible } from './rules';
 import type { BeaconType, Placement, PuzzleDefinition } from './types';
 import { cellKey } from './types';
@@ -34,7 +34,7 @@ function remainingGaps(
   const gaps: { x: number; y: number }[] = [];
   for (let y = 0; y < puzzle.height; y += 1) {
     for (let x = 0; x < puzzle.width; x += 1) {
-      if (puzzle.blocked.some((cell) => cell.x === x && cell.y === y)) continue;
+      if (!isRequired(puzzle, x, y)) continue;
       if ((coverage[y]![x] ?? 0) === 0) gaps.push({ x, y });
     }
   }

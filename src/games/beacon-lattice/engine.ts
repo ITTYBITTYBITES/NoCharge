@@ -1,4 +1,13 @@
-import { computeCoverage, coverageBand, coverageSummary, inBounds, isBlocked, isExactCover } from './coverage';
+import {
+  cellKind,
+  computeCoverage,
+  coverageBand,
+  coverageSummary,
+  inBounds,
+  isBlocked,
+  isExactCover,
+  isVoid,
+} from './coverage';
 import { BEACON_META } from './patterns';
 import {
   allowedTypesForCell,
@@ -22,7 +31,11 @@ import { sameCell } from './types';
 function reasonMessage(reason: InvalidReason): string {
   switch (reason) {
     case 'cell-blocked':
-      return 'That cell is blocked and cannot hold a beacon.';
+      return 'That cell is a blocked obstacle and cannot hold a beacon.';
+    case 'cell-void':
+      return 'That cell is outside the lattice.';
+    case 'paused':
+      return 'The game is paused.';
     case 'placement-not-allowed':
       return 'This cell is not an allowed placement.';
     case 'type-not-allowed':
@@ -103,6 +116,7 @@ export function placeBeacon(
   if (!puzzle.available.includes(type)) return fail('type-unavailable');
   if (!inBounds(puzzle, cell.x, cell.y)) return fail('out-of-bounds');
   if (isBlocked(puzzle, cell.x, cell.y)) return fail('cell-blocked');
+  if (isVoid(puzzle, cell.x, cell.y)) return fail('cell-void');
   if (!isCellEligible(puzzle, cell.x, cell.y)) return fail('placement-not-allowed');
   if (!allowedTypesForCell(puzzle, cell.x, cell.y).includes(type)) return fail('type-not-allowed');
 
@@ -195,17 +209,19 @@ export function cellViews(state: GameState, puzzle: PuzzleDefinition): CellView[
   const views: CellView[] = [];
   for (let y = 0; y < puzzle.height; y += 1) {
     for (let x = 0; x < puzzle.width; x += 1) {
-      const blocked = isBlocked(puzzle, x, y);
+      const kind = cellKind(puzzle, x, y);
       const coverage = state.coverage[y]![x]!;
       views.push({
         x,
         y,
-        blocked,
+        kind,
+        blocked: kind === 'blocked',
+        voidCell: kind === 'void',
         coverage,
-        band: blocked ? null : coverageBand(coverage),
+        band: kind === 'required' ? coverageBand(coverage) : null,
         beacon: findPlacement(state.placements, x, y) ?? null,
         eligible: isCellEligible(puzzle, x, y),
-        allowedTypes: blocked ? [] : allowedTypesForCell(puzzle, x, y),
+        allowedTypes: kind === 'required' ? allowedTypesForCell(puzzle, x, y) : [],
       });
     }
   }

@@ -26,17 +26,17 @@ Every required cell shows a count and a word:
 
 Color may tint a gap, an exact cell, or an overlap, but the number and the word stay on the cell. Study mode is not required to see them.
 
-Blocked cells are different. They show as blocked, they refuse beacons, and they are left out of the solved-state check.
+Void cells sit outside the current lattice. They refuse beacons and never need coverage. Blocked obstacles, which appear later, also refuse beacons, but they sit on an otherwise required field and are labeled as obstacles.
 
 ## A worked plus
 
 On **First plus**, five cells form a Cross around the center. Before you place anything, those five cells read `0 · Gap`. Place a Cross on the center. Each of the five cells becomes `1 · Exact`, and the puzzle completes with one beacon, which matches par.
 
-If instead you place that Cross one cell to the left, the center arm still covers some of the plus, but the rightmost required cell stays `0 · Gap` and at least one newly covered neighbor may sit on a blocked cell (which does not count). The board is not solved.
+If instead you place that Cross one cell to the left, some of the plus becomes exact, the far arm stays `0 · Gap`, and any neighbor outside the lattice is void—it does not count. The board is not solved.
 
 ## A worked overlap
 
-On **Twin pluses**, the authored solution uses two Cross beacons whose arms do not touch. Move the second beacon one cell toward the first and their shared neighbor becomes `2 · Overlap`. The opposite arm you abandoned becomes `0 · Gap`. One overlap and one gap appear together more often than not; fixing only the gap by adding a third beacon usually creates another overlap.
+On **Long plus**, a center Cross leaves the four tips as gaps. Add a second Cross that also covers an already exact arm and that shared cell becomes `2 · Overlap` while another tip may still be a gap. Fixing only the gap by adding a third beacon often creates another overlap.
 
 ## Why unused beacons are allowed
 
