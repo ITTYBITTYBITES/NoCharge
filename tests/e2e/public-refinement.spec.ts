@@ -45,7 +45,7 @@ test('help is linked, crawlable, and distinguishes local data from analytics', a
 test('editorial images use responsive width descriptors and decorative alt text', async ({ page }) => {
   for (const path of ['/articles/', '/articles/how-nocharge-tests-browser-games/', '/collections/', '/help/']) {
     await page.goto(path);
-    const pictures = page.locator('picture:has(source[src*="editorial-art"])');
+    const pictures = page.locator('picture:has(source[srcset*="editorial-art"])');
     const count = await pictures.count();
     expect(count, path).toBeGreaterThan(0);
     for (let index = 0; index < count; index += 1) {
