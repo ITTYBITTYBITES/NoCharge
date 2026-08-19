@@ -16,17 +16,10 @@ const stageLongPlusMixedCoverage = async (page: import('@playwright/test').Page)
   await page.evaluate(() => document.fonts.ready);
 };
 
-const emitWorkflowNotices = (label: string, filePath: string) => {
-  const encoded = readFileSync(filePath).toString('base64');
-  const chunkSize = 3500;
-  const total = Math.ceil(encoded.length / chunkSize);
-  console.log(`::notice title=${label}_META::bytes=${readFileSync(filePath).byteLength} chunks=${total} chars=${encoded.length}`);
-  for (let index = 0; index < total; index += 1) {
-    const chunk = encoded.slice(index * chunkSize, (index + 1) * chunkSize);
-    const padded = String(index).padStart(2, '0');
-    const count = String(total).padStart(2, '0');
-    console.log(`::notice title=${label}_${padded}_${count}::${chunk}`);
-  }
+const emitOneNotice = (label: string, filePath: string) => {
+  const bytes = readFileSync(filePath);
+  const encoded = bytes.toString('base64');
+  console.log(`::notice title=${label} bytes=${bytes.byteLength} chars=${encoded.length}::${encoded}`);
 };
 
 test('captures actual Beacon Lattice gameplay screenshots', async ({ page }, testInfo) => {
@@ -36,24 +29,26 @@ test('captures actual Beacon Lattice gameplay screenshots', async ({ page }, tes
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/games/beacon-lattice/');
   await stageLongPlusMixedCoverage(page);
-  const desktopPath = testInfo.outputPath('beacon-desktop.png');
+  const desktopPath = testInfo.outputPath('beacon-desktop.jpg');
   await page.locator('[data-game-viewport]').screenshot({
     path: desktopPath,
-    type: 'png',
+    type: 'jpeg',
+    quality: 55,
     animations: 'disabled',
     caret: 'hide',
   });
-  emitWorkflowNotices('BEACON_DESKTOP', desktopPath);
+  emitOneNotice('BEACON_DESKTOP_JPEG', desktopPath);
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/games/beacon-lattice/');
   await stageLongPlusMixedCoverage(page);
-  const mobilePath = testInfo.outputPath('beacon-mobile.png');
+  const mobilePath = testInfo.outputPath('beacon-mobile.jpg');
   await page.locator('[data-game-viewport]').screenshot({
     path: mobilePath,
-    type: 'png',
+    type: 'jpeg',
+    quality: 55,
     animations: 'disabled',
     caret: 'hide',
   });
-  emitWorkflowNotices('BEACON_MOBILE', mobilePath);
+  emitOneNotice('BEACON_MOBILE_JPEG', mobilePath);
 });
