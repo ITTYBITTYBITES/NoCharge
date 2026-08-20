@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 import { existsSync, readdirSync, statSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { join, relative, sep as pathSep } from 'node:path';
+import sharp from 'sharp';
 
 const dist = join(process.cwd(), 'dist');
 if (!existsSync(dist)) throw new Error('dist/ is missing. Run npm run build before checking assets.');
@@ -26,6 +27,33 @@ if (scriptBytes > limits.scripts) {
 if (largestImage && largestImage.size > limits.largestImage) {
   throw new Error(`Largest image budget exceeded: ${relative(dist, largestImage.path)} is ${largestImage.size} bytes.`);
 }
+const editorialNames = ['quiet-arcade', 'local-scores', 'more-ways', 'testing', 'collections', 'help'];
+const editorialWidths = [800, 1200, 1600];
+const editorialDirectory = join(dist, 'editorial-art');
+const editorialFiles = [];
+for (const name of editorialNames) {
+  for (const width of editorialWidths) {
+    for (const extension of ['webp', 'jpg']) {
+      const path = join(editorialDirectory, `${name}-${width}.${extension}`);
+      if (!existsSync(path)) throw new Error(`Missing responsive editorial asset: ${relative(dist, path)}.`);
+      const metadata = await sharp(path).metadata();
+      if (metadata.width !== width || metadata.height !== Math.round(width * 9 / 16)) {
+        throw new Error(`Invalid editorial dimensions: ${relative(dist, path)} is ${metadata.width}x${metadata.height}; expected ${width}x${Math.round(width * 9 / 16)}.`);
+      }
+      const size = statSync(path).size;
+      const limit = extension === 'webp' ? 150 * 1024 : 300 * 1024;
+      if (size > limit) throw new Error(`Editorial asset budget exceeded: ${relative(dist, path)} is ${size} bytes; limit is ${limit}.`);
+      editorialFiles.push(relative(dist, path));
+    }
+  }
+}
+const referencedEditorial = files
+  .filter((file) => file.path.includes(`${join('dist', 'editorial-art')}${pathSep}`))
+  .map((file) => relative(dist, file.path));
+const expectedEditorial = new Set(editorialFiles);
+for (const file of referencedEditorial) {
+  if (!expectedEditorial.has(file)) throw new Error(`Unexpected editorial asset published: ${file}.`);
+}
 console.log(
-  `Asset budget passed: ${scripts.length} scripts total ${scriptBytes} bytes; largest image ${largestImage ? `${relative(dist, largestImage.path)} (${largestImage.size} bytes)` : 'none'}.`,
+  `Asset budget passed: ${scripts.length} scripts total ${scriptBytes} bytes; largest image ${largestImage ? `${relative(dist, largestImage.path)} (${largestImage.size} bytes)` : 'none'}; ${editorialFiles.length} responsive editorial assets validated.`,
 );

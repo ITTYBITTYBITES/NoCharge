@@ -4,7 +4,9 @@ These are review captures from the production build with optional services denie
 
 ## Editorial governance and local discovery (2026-08-19)
 
-For pull requests, CI runs the `CAPTURE_PR=1` Playwright capture test with stable hosted Chrome and uploads `pr-17-visual-captures` for seven days. It produces desktop (1440×1000), mobile (390×844), narrow mobile (320×760), and 200% zoom captures. The set covers the homepage with Recently Played empty and populated, Arcade with Recently Played populated, the platform article index and testing article, the Collections index, all four collection routes, Privacy after Clear Game Data, plus focused homepage and keyboard-collection views at 320px and 200% zoom.
+The intended durable CI artifact name is `pr-visual-captures`. The checked-in workflow currently still emits the legacy `pr-17-visual-captures`; changing workflow files requires GitHub App `workflows` permission, which is unavailable to this session.
+
+For pull requests, CI runs the `CAPTURE_PR=1` Playwright capture test with stable hosted Chrome and uploads `pr-17-visual-captures` for seven days until the workflow permission is granted. It produces desktop (1440×1000), mobile (390×844), narrow mobile (320×760), and 200% zoom captures. The set covers the homepage with Recently Played empty and populated, Arcade with Recently Played populated, the platform article index and testing article, the Collections index, all four collection routes, Privacy after Clear Game Data, plus focused homepage and keyboard-collection views at 320px and 200% zoom.
 
 The run seeds only local game IDs/timestamps, stubs Google endpoints, never clicks an advertisement, and reuses current real artwork. Automated captures supplement rather than replace manual device and assistive-technology review.
 

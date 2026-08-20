@@ -1,9 +1,9 @@
 ---
-title: "Accessibility and testing improvements"
+title: "Controls, pause, and Resume became clearer"
 date: "2026-08-15"
-summary: "Expanded keyboard support, consent checks, security checks, and browser accessibility coverage."
+summary: "Keyboard paths, an untimed Color Flip mode, and clearer pause and Resume behavior improved the arcade experience."
 type: quality
 draft: false
 ---
 
-The platform added keyboard-oriented game paths, an untimed Color Flip mode, structured guide metadata, accessibility checks, consent tests, and sandboxing checks. These changes document and verify the behavior of the current games and public pages.
+The games now make more of their controls available to keyboard players, while Color Flip offers an untimed turn-based mode. Shared pause, Resume, mute, restart, and return-after-switching-tabs behavior is documented in the guides.

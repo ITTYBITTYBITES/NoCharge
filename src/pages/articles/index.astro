@@ -10,6 +10,12 @@ const articles = (await getCollection('articles')).filter((article) => !article.
   .sort((a, b) => b.data.published.localeCompare(a.data.published) || a.data.title.localeCompare(b.data.title));
 const platformArticles = articles.filter((article) => article.data.kind === 'platform');
 const gameArticles = articles.filter((article) => article.data.kind === 'game');
+const platformArt: Record<string, { webp: string; fallback: string; alt: string; sizes: string; fallbackSrcset: string }> = {
+  'what-quiet-arcade-means-at-nocharge': { webp: '/editorial-art/quiet-arcade-800.webp 800w, /editorial-art/quiet-arcade-1200.webp 1200w, /editorial-art/quiet-arcade-1600.webp 1600w', fallback: '/editorial-art/quiet-arcade-1600.jpg', alt: '', sizes: '(max-width: 48rem) 100vw, (max-width: 72rem) 50vw, 36rem', fallbackSrcset: '/editorial-art/quiet-arcade-800.jpg 800w, /editorial-art/quiet-arcade-1200.jpg 1200w, /editorial-art/quiet-arcade-1600.jpg 1600w' },
+  'how-nocharge-saves-scores-without-an-account': { webp: '/editorial-art/local-scores-800.webp 800w, /editorial-art/local-scores-1200.webp 1200w, /editorial-art/local-scores-1600.webp 1600w', fallback: '/editorial-art/local-scores-1600.jpg', alt: '', sizes: '(max-width: 48rem) 100vw, (max-width: 72rem) 50vw, 36rem', fallbackSrcset: '/editorial-art/local-scores-800.jpg 800w, /editorial-art/local-scores-1200.jpg 1200w, /editorial-art/local-scores-1600.jpg 1600w' },
+  'designing-browser-games-for-more-ways-to-play': { webp: '/editorial-art/more-ways-800.webp 800w, /editorial-art/more-ways-1200.webp 1200w, /editorial-art/more-ways-1600.webp 1600w', fallback: '/editorial-art/more-ways-1600.jpg', alt: '', sizes: '(max-width: 48rem) 100vw, (max-width: 72rem) 50vw, 36rem', fallbackSrcset: '/editorial-art/more-ways-800.jpg 800w, /editorial-art/more-ways-1200.jpg 1200w, /editorial-art/more-ways-1600.jpg 1600w' },
+  'how-nocharge-tests-browser-games': { webp: '/editorial-art/testing-800.webp 800w, /editorial-art/testing-1200.webp 1200w, /editorial-art/testing-1600.webp 1600w', fallback: '/editorial-art/testing-1600.jpg', alt: '', sizes: '(max-width: 48rem) 100vw, (max-width: 72rem) 50vw, 36rem', fallbackSrcset: '/editorial-art/testing-800.jpg 800w, /editorial-art/testing-1200.jpg 1200w, /editorial-art/testing-1600.jpg 1600w' },
+};
 const schema = {
   '@context': 'https://schema.org', '@type': 'CollectionPage', name: 'NoCharge Articles',
   description: 'Platform explainers and original notes about the real rules, controls, and systems in NoCharge games.',
@@ -30,7 +36,7 @@ const schema = {
     </header>
     <section aria-labelledby="platform-articles-heading">
       <div class="articles-heading"><div><p class="section-kicker">Across NoCharge</p><h2 id="platform-articles-heading">Platform articles</h2><p>Evergreen explanations with no fake game association.</p></div></div>
-      <div class="articles-grid">{platformArticles.map((article) => <ArticleCard slug={article.id} title={article.data.title} description={article.data.description} label={`Platform · ${article.data.kind === 'platform' ? article.data.category : ''}`} readTime={article.data.readTime} published={article.data.published} topics={article.data.topics} accent="#2dd4bf" />)}</div>
+      <div class="articles-grid">{platformArticles.map((article) => <ArticleCard slug={article.id} title={article.data.title} description={article.data.description} label={`Platform · ${article.data.kind === 'platform' ? article.data.category : ''}`} readTime={article.data.readTime} published={article.data.published} topics={article.data.topics} accent="#2dd4bf" image={platformArt[article.id]} />)}</div>
     </section>
     <section aria-labelledby="game-articles-heading">
       <div class="articles-heading"><div><p class="section-kicker">Inside the games</p><h2 id="game-articles-heading">Game articles</h2><p>Focused notes checked against current game behavior.</p></div><a class="section-link" href="/guides/">Read the definitive guides →</a></div>

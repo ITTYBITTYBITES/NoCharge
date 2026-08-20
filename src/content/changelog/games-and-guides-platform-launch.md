@@ -1,9 +1,9 @@
 ---
-title: "Games and guides platform launch"
+title: "NoCharge opened with four games and four guides"
 date: "2026-08-15"
-summary: "Launched the NoCharge arcade with Memory Match, Word Tile Rush, Color Flip, and a guide for each game."
+summary: "Memory Match, Word Tile Rush, Color Flip, and Beacon Lattice are paired with complete player guides."
 type: launch
 draft: false
 ---
 
-NoCharge launched its games-and-guides platform with three browser games: Memory Match, Word Tile Rush, and Color Flip. Each game has a matching guide covering actual rules, controls, score behavior, and practical play notes. The platform has no account flow, and local best scores remain in the player’s browser.
+The arcade pairs each game with a guide covering its actual rules, controls, scoring, and practical play notes. Games open without an account, and local best results stay in the player's browser.

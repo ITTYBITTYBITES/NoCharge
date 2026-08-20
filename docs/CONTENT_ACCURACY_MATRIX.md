@@ -36,3 +36,5 @@ This matrix connects public claims to runtime or platform sources of truth. “L
 ## Review procedure
 
 When a source-of-truth file changes, locate its rows, review every named public page, update inaccurate copy in the same change, and record a new verified date or linked follow-up issue. Build/schema success alone does not verify gameplay wording.
+| Help | Starting, controls, pause/Resume, storage, troubleshooting, consent distinction | `src/games/shared/`, game runtimes, Privacy, ConsentManager | Runtime/control/storage/consent change | Support + accessibility review | 2026-08-19 | Practical support; no response-time promise |
+| Editorial illustrations | Platform article concepts and collection discovery | `public/editorial-art/`, `docs/ART_ASSETS.md` | Art or placement change | Visual + editorial review | 2026-08-19 | Illustrations are not gameplay screenshots |

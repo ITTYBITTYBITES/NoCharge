@@ -3,38 +3,30 @@ const year = new Date().getFullYear();
 ---
 
 <footer class="site-footer">
-  <span>&copy; {year} NoCharge · General-audience site, not directed to children.</span>
-  <div class="footer-links">
-    <a href="/arcade/">Arcade</a>
-    <a href="/guides/">Guides</a>
-    <a href="/articles/">Articles</a>
-    <a href="/collections/">Collections</a>
-    <a href="/about/">About</a>
-    <a href="/changelog/">Changelog</a>
-    <a href="/privacy/">Privacy</a>
-    <a href="/terms/">Terms</a>
-    <a href="/advertising/">Advertising</a>
-    <a href="/accessibility/">Accessibility</a>
-    <button type="button" data-consent-open>Analytics choices</button>
-    <button type="button" data-google-ad-choices>Privacy and cookie settings</button>
+  <div class="site-footer__identity">
+    <span>&copy; {year} NoCharge · General-audience site, not directed to children.</span>
     <a href="mailto:hello@nocharge.net">hello@nocharge.net</a>
   </div>
+  <div class="footer-groups">
+    <nav aria-labelledby="footer-explore"><h2 id="footer-explore">Explore</h2><ul>
+      <li><a href="/arcade/">Arcade</a></li><li><a href="/guides/">Guides</a></li><li><a href="/articles/">Articles</a></li><li><a href="/collections/">Collections</a></li>
+    </ul></nav>
+    <nav aria-labelledby="footer-nocharge"><h2 id="footer-nocharge">NoCharge</h2><ul>
+      <li><a href="/about/">About</a></li><li><a href="/help/">Help</a></li><li><a href="/accessibility/">Accessibility</a></li><li><a href="/changelog/">Changelog</a></li>
+    </ul></nav>
+    <nav aria-labelledby="footer-policies"><h2 id="footer-policies">Policies</h2><ul>
+      <li><a href="/privacy/">Privacy</a></li><li><a href="/terms/">Terms</a></li><li><a href="/advertising/">Advertising</a></li>
+    </ul></nav>
+  </div>
+  <div class="footer-controls"><button type="button" data-consent-open>Analytics choices</button><button type="button" data-google-ad-choices>Privacy and cookie settings</button></div>
 </footer>
 
 <script is:inline>
-  // Advertising consent is managed by Google's Privacy & messaging consent
-  // platform. Reopen Google's own message so visitors can review or revoke
-  // their Google advertising choices. When the Google tag is unavailable
-  // (offline, blocked, or a non-production build), point at Google's privacy
-  // policy instead of showing a second, site-built advertising dialog.
   (() => {
     document.querySelectorAll('[data-google-ad-choices]').forEach((control) => {
       control.addEventListener('click', () => {
         const googlefc = window.googlefc;
-        if (googlefc && typeof googlefc.showRevocationMessage === 'function') {
-          googlefc.showRevocationMessage();
-          return;
-        }
+        if (googlefc && typeof googlefc.showRevocationMessage === 'function') { googlefc.showRevocationMessage(); return; }
         window.open('https://policies.google.com/privacy', '_blank', 'noopener');
       });
     });
