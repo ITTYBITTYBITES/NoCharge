@@ -134,6 +134,15 @@ p {
   margin-inline: auto;
 }
 
+/* Grid items must not force the shell past its explicit width. The implicit
+   auto column otherwise grows to the widest child's min-content — e.g. a
+   stale 728px ad creative (the tag pins pixel dimensions at fill time and
+   never re-measures a shrinking viewport) would widen .site-main and clip
+   both edges of the centered layout on small screens. */
+.site-shell > * {
+  min-width: 0;
+}
+
 .site-header {
   display: flex;
   align-items: center;
