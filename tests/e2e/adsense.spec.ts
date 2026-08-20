@@ -162,6 +162,27 @@ test('the banner reserves responsive space to reduce layout shift', async ({ pag
   expect(parseFloat(mobile)).toBeGreaterThanOrEqual(100);
 });
 
+test('a stale wide filled creative cannot force horizontal page overflow', async ({ page }) => {
+  for (const width of [320, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto('/');
+
+    // Reproduce what the tag leaves behind when it fills the slot while the
+    // container is wider (device rotation, pinch zoom) and the viewport
+    // shrinks afterwards: explicit pixel dimensions set inline, never
+    // re-measured. Without the slot/unit width guard this stretches the
+    // page past the viewport and clips both edges on small screens.
+    await page.locator('ins.adsbygoogle').evaluate((el) => {
+      el.style.width = '728px';
+      el.style.height = '90px';
+    });
+
+    await expect
+      .poll(async () => page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth))
+      .toBeLessThanOrEqual(0);
+  }
+});
+
 test('the game-page banner sits below all game content and at least 150px from gameplay', async ({ page }) => {
   await page.goto('/games/memory-match/');
 
