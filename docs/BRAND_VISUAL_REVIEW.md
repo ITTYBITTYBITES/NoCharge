@@ -21,6 +21,18 @@ DOM measurements with exact numbers) rather than by physical-device testing;
 no physical-device testing was performed and none is claimed. The full
 capture set is not committed to the repository.
 
+The browser-capture rows below are verified two ways in CI: the capture suite
+asserts the invariants (header height 40–100 px, brand box ≤ 48 px, no
+horizontal overflow) at the moment each screenshot is taken, so a green run
+on hosted stable Chrome is itself the per-row PASS; and every state's exact
+DOM numbers are written to `brand/review-metrics.json` inside the artifact.
+Asset-level rows (favicon sizes, maskable masks, monochrome, logo variants)
+carry exact pixel measurements produced by `scripts/inspect-favicons.mjs`.
+Per-pixel eyeballing of the browser screenshots is additionally available to
+the owner in the `pr-visual-captures` artifact (7-day retention); this
+session could not visually view or fetch the artifact blob, so no
+hand-verified pixel claim is made beyond the measured rows.
+
 ## 1. Small-size favicon inspection
 
 Rendered from the canonical geometry with `scripts/inspect-favicons.mjs`
