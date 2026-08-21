@@ -9,6 +9,7 @@ interface Props {
   modifiedTime?: string;
   socialImage?: string;
   socialImageAlt?: string;
+  feedHref?: string;
 }
 
 const {
@@ -21,11 +22,13 @@ const {
   modifiedTime,
   socialImage: socialImagePath = '/social-card.png',
   socialImageAlt = 'NoCharge — browser games and player guides',
+  feedHref,
 } = Astro.props;
 const site = Astro.site ?? new URL('https://nocharge.net');
 const canonical = new URL(path, site).toString();
 const socialImage = new URL(socialImagePath, site).toString();
-const fullTitle = title === 'NoCharge' ? 'NoCharge — Browser games and player guides' : `${title} · NoCharge`;
+const titled = `${title} · NoCharge`;
+const fullTitle = title === 'NoCharge' ? 'NoCharge — Browser games and player guides' : titled.length > 70 ? title : titled;
 const isGame = path.startsWith('/games/');
 const defaultStructuredData = isGame
   ? {
@@ -63,6 +66,7 @@ const structuredData = schema ?? defaultStructuredData;
 <title>{fullTitle}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
+{feedHref && <link rel="alternate" type="application/rss+xml" title="Quiet Setup feed" href={new URL(feedHref, site).toString()} />}
 {noIndex && <meta name="robots" content="noindex,nofollow" />}
 <meta property="og:type" content={ogType} />
 <meta property="og:locale" content="en_US" />

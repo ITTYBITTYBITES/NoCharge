@@ -61,6 +61,34 @@ const collectionsContent = defineCollection({
   }),
 });
 
+
+const setupTopics = z.enum(['keyboards', 'pointing-devices', 'screens-and-stands', 'desk-and-comfort', 'offline-puzzles']);
+const evidenceLevels = z.enum(['editorial-research', 'personally-used', 'hands-on-tested']);
+const affiliateLink = z.object({
+  label: z.string().min(1), url: z.string().url().startsWith('https://'), purpose: z.string().min(1),
+  suitableFor: z.string().min(1), limitations: z.string().min(1),
+});
+const setup = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/setup' }),
+  schema: z.object({
+    title: z.string(), description: z.string(), publishedDate: z.string(), reviewedDate: z.string(),
+    topic: setupTopics, topics: z.array(setupTopics).min(1), evidenceLevel: evidenceLevels,
+    hasAffiliateLinks: z.boolean(), affiliateDisclosure: z.boolean().default(false),
+    affiliateLinks: z.array(affiliateLink).default([]), artwork: z.enum(['hero', 'keyboards', 'pointing', 'screens-stands', 'puzzles-desk']),
+    draft: z.boolean().default(false), featured: z.boolean().default(false),
+  }).superRefine((data, ctx) => {
+    if (data.hasAffiliateLinks && (!data.affiliateDisclosure || data.affiliateLinks.length === 0))
+      ctx.addIssue({ code: 'custom', message: 'Affiliate articles require disclosure metadata and at least one link.' });
+    if (!data.hasAffiliateLinks && data.affiliateLinks.length)
+      ctx.addIssue({ code: 'custom', message: 'Nonaffiliate articles cannot contain affiliate links.' });
+    for (const link of data.affiliateLinks) {
+      const url = new URL(link.url);
+      if (!['amazon.com', 'www.amazon.com'].includes(url.hostname) || url.searchParams.get('tag') !== 'nocharge-20')
+        ctx.addIssue({ code: 'custom', message: 'Amazon links must use an allowed Amazon.com host and tag=nocharge-20.' });
+    }
+  }),
+});
+
 const changelog = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/changelog' }),
   schema: z.object({
@@ -69,4 +97,4 @@ const changelog = defineCollection({
   }),
 });
 
-export const collections = { games, guides, articles, collections: collectionsContent, changelog };
+export const collections = { games, guides, articles, setup, collections: collectionsContent, changelog };

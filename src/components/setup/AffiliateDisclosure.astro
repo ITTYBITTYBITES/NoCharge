@@ -1,0 +1,10 @@
+---
+import { AFFILIATE_DISCLOSURE, AMAZON_REQUIRED_STATEMENT } from '../../config/affiliate';
+---
+<aside class="affiliate-disclosure" aria-label="Affiliate disclosure" data-affiliate-disclosure>
+  <p><strong>Affiliate disclosure:</strong> {AFFILIATE_DISCLOSURE}</p>
+  <p><strong>{AMAZON_REQUIRED_STATEMENT}</strong></p>
+</aside>
+<style>
+.affiliate-disclosure{display:grid;gap:.45rem;padding:1rem 1.1rem;border:2px solid #b7791f;border-radius:var(--radius);background:#2a2419;color:#fff4d6}.affiliate-disclosure p{margin:0;line-height:1.55}@media(forced-colors:active){.affiliate-disclosure{border:2px solid CanvasText}}
+</style>

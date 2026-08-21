@@ -18,6 +18,7 @@ interface Props {
   modifiedTime?: string;
   socialImage?: string;
   socialImageAlt?: string;
+  feedHref?: string;
 }
 
 const {
@@ -31,6 +32,7 @@ const {
   modifiedTime,
   socialImage,
   socialImageAlt,
+  feedHref,
 } = Astro.props;
 
 const isProd = import.meta.env.PROD;
@@ -55,6 +57,7 @@ const release = import.meta.env.PUBLIC_RELEASE ?? '1.0.0';
       modifiedTime={modifiedTime}
       socialImage={socialImage}
       socialImageAlt={socialImageAlt}
+      feedHref={feedHref}
     />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />

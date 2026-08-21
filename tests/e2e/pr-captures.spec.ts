@@ -129,3 +129,23 @@ test('captures desktop and mobile platform-maturity review screens', async ({ pa
   await page.evaluate(() => { document.documentElement.style.zoom = '2'; });
   await shot('zoom-200-collection-keyboard', true);
 });
+
+test('captures Quiet Setup review screens', async ({ page }) => {
+  test.setTimeout(3 * 60_000);
+  await mkdir(captures, { recursive: true });
+  await denyOptionalServices(page);
+  const shot = async (name: string, fullPage = true) => page.screenshot({ path: join(captures, `${name}.jpg`), type: 'jpeg', quality: 78, fullPage });
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto('/setup/'); await shot('quiet-setup-index-desktop');
+  await page.goto('/setup/mouse-trackpad-trackball-or-touch/'); await shot('quiet-setup-affiliate-article-desktop');
+  await page.locator('[data-affiliate-disclosure]').scrollIntoViewIfNeeded(); await shot('quiet-setup-disclosure-first-paid-link', false);
+  await page.goto('/setup/what-quiet-setup-means/'); await shot('quiet-setup-no-affiliate-article');
+  await page.goto('/setup/'); await page.locator('.topic-grid').scrollIntoViewIfNeeded(); await shot('quiet-setup-topic-artwork-cards', false);
+  await page.locator('#latest').scrollIntoViewIfNeeded(); await shot('quiet-setup-article-feed', false);
+  await page.goto('/advertising/'); await shot('quiet-setup-advertising-disclosure');
+  await page.goto('/setup/'); await shot('quiet-setup-no-display-ad-region');
+  await page.setViewportSize({ width: 390, height: 844 }); await page.goto('/setup/'); await shot('quiet-setup-index-390');
+  await page.goto('/setup/mouse-trackpad-trackball-or-touch/'); await shot('quiet-setup-affiliate-article-mobile');
+  await page.setViewportSize({ width: 320, height: 760 }); await page.goto('/setup/'); await shot('quiet-setup-index-320');
+  await page.setViewportSize({ width: 640, height: 900 }); await page.goto('/setup/'); await page.evaluate(() => { document.documentElement.style.zoom = '2'; }); await shot('quiet-setup-index-zoom-200');
+});

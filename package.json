@@ -24,7 +24,9 @@
     "check:links": "node scripts/check-internal-links.mjs",
     "validate:sitemap": "node scripts/validate-sitemap.mjs",
     "inspect:structured-data": "node scripts/inspect-structured-data.mjs",
-    "check:assets": "node scripts/check-asset-budget.mjs"
+    "check:assets": "node scripts/check-asset-budget.mjs",
+    "validate:setup": "node scripts/validate-quiet-setup.mjs",
+    "validate:feed": "node scripts/validate-setup-feed.mjs"
   },
   "engines": {
     "node": ">=22.12.0"
