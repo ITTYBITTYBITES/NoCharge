@@ -436,6 +436,7 @@ test('captures brand review screens and asset comparisons', async ({ page, baseU
     const state = await page.evaluate(() => {
       const header = document.querySelector('.site-header')?.getBoundingClientRect();
       const brand = document.querySelector('.brand')?.getBoundingClientRect();
+      const mark = document.querySelector('.brand__mark')?.getBoundingClientRect();
       const footer = document.querySelector('.site-footer')?.getBoundingClientRect();
       return {
         viewport: { width: window.innerWidth, height: window.innerHeight },
@@ -443,6 +444,7 @@ test('captures brand review screens and asset comparisons', async ({ page, baseU
         overflow: document.documentElement.scrollWidth - window.innerWidth,
         headerHeight: header ? Math.round(header.height * 10) / 10 : null,
         brandBox: brand ? { x: Math.round(brand.x), y: Math.round(brand.y), w: Math.round(brand.width), h: Math.round(brand.height) } : null,
+        markSize: mark ? Math.round(Math.max(mark.width, mark.height) * 10) / 10 : null,
         footerHeight: footer ? Math.round(footer.height * 10) / 10 : null,
         title: document.title,
       };
@@ -456,8 +458,13 @@ test('captures brand review screens and asset comparisons', async ({ page, baseU
       expect(state.headerHeight, `${label} header height`).toBeLessThanOrEqual(100);
     }
     if (state.brandBox) {
-      expect(state.brandBox.w, `${label} brand width`).toBeLessThanOrEqual(48);
       expect(state.brandBox.h, `${label} brand height`).toBeLessThanOrEqual(48);
+    }
+    if (state.markSize !== null) {
+      // The symbol itself stays compact (the link is wider because it also
+      // carries the real NoCharge text).
+      expect(state.markSize, `${label} symbol size`).toBeGreaterThanOrEqual(28);
+      expect(state.markSize, `${label} symbol size`).toBeLessThanOrEqual(36);
     }
   };
 
