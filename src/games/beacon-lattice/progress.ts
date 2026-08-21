@@ -20,15 +20,24 @@ export function defaultProgress(): LatticeProgress {
   };
 }
 
-export function loadProgress(): LatticeProgress {
-  const stored = loadPref<Partial<LatticeProgress>>(PROGRESS_KEY, {});
+/**
+ * The single normalizer for a stored Beacon Lattice progress value. It is
+ * exported so read-only consumers (such as the My Arcade summary layer) apply
+ * exactly the same rules as the game instead of reimplementing them.
+ */
+export function normalizeProgress(stored: unknown): LatticeProgress {
+  const value = (stored && typeof stored === 'object' ? stored : {}) as Partial<LatticeProgress>;
   const base = defaultProgress();
   return {
-    currentId: typeof stored.currentId === 'string' ? stored.currentId : base.currentId,
-    completed: Array.isArray(stored.completed) ? stored.completed.filter((id) => typeof id === 'string') : [],
-    bests: stored.bests && typeof stored.bests === 'object' ? stored.bests : {},
-    lastSolved: stored.lastSolved && typeof stored.lastSolved === 'object' ? stored.lastSolved : {},
+    currentId: typeof value.currentId === 'string' ? value.currentId : base.currentId,
+    completed: Array.isArray(value.completed) ? value.completed.filter((id) => typeof id === 'string') : [],
+    bests: value.bests && typeof value.bests === 'object' ? value.bests : {},
+    lastSolved: value.lastSolved && typeof value.lastSolved === 'object' ? value.lastSolved : {},
   };
+}
+
+export function loadProgress(): LatticeProgress {
+  return normalizeProgress(loadPref<Partial<LatticeProgress>>(PROGRESS_KEY, {}));
 }
 
 export function saveProgress(progress: LatticeProgress): void {

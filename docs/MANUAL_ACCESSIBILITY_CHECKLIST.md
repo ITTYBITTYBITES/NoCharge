@@ -4,7 +4,7 @@ This handoff records checks automation cannot complete. It does not claim certif
 
 ## 1. Automated checks completed by the repository suite
 
-- [x] Chromium Playwright interaction checks for four games, shared lifecycle, Recently Played, collections, and platform articles
+- [x] Chromium Playwright interaction checks for four games, shared lifecycle, Recently Played, My Arcade, collections, and platform articles
 - [x] Axe scans against the maintained public route matrix
 - [x] Keyboard interaction checks for representative game and platform paths
 - [x] HTML, headings, internal links, sitemap, structured data, and asset-budget validation
@@ -26,6 +26,7 @@ Use the same core route set for each applicable sequence:
 4. Articles index and one platform article
 5. Collections index and every published collection
 6. Privacy Clear Game Data, confirming Recently Played disappears while analytics consent remains unchanged
+7. My Arcade in four states: nothing saved, one game played, all four games with saved results, and local storage blocked
 
 For every sequence, confirm one H1, logical headings, visible focus, readable status feedback, no horizontal overflow, and no advertisement/consent layer covering controls.
 
@@ -35,12 +36,22 @@ For every sequence, confirm one H1, logical headings, visible focus, readable st
   - Complete navigation and one meaningful action in each game without a pointer.
   - Pause/resume, restart, mute, and full-screen/immersive controls; return focus after exit.
   - Reach Recently Played and collection cards in a sensible order.
+  - On My Arcade, reach every Continue, Play, and Guide link, open and cancel the clear confirmation, and confirm focus returns to the trigger.
+  - Result/findings/issues: ______
+
+### My Arcade local states
+
+- [ ] Date: ______ Tester: ______ Browser/device: ______
+  - Load `/my-arcade/` with nothing saved and confirm the loading line is replaced once, that no Recently Played heading appears, and that no completion percentage or zero-filled table is shown.
+  - Play one game, return, and confirm the Continue playing entry, its date wording, and that reloading the dashboard does not reorder or re-stamp anything.
+  - With all four games populated, confirm each card states its own metric with a text label rather than an icon or colour alone.
+  - Block site data in browser settings and confirm the storage-unavailable explanation appears with every game link still usable.
   - Result/findings/issues: ______
 
 ### 200% browser zoom
 
 - [ ] Date: ______ Tester: ______ Browser/device: ______
-  - Run the core routes at 200% zoom; confirm reflow, no clipped controls or horizontal page scrolling, readable articles, cards, consent UI, and Privacy status.
+  - Run the core routes at 200% zoom; confirm reflow, no clipped controls or horizontal page scrolling, readable articles, cards, consent UI, Privacy status, and My Arcade metric groups.
   - Result/findings/issues: ______
 
 ### Reduced motion
@@ -60,14 +71,14 @@ For every sequence, confirm one H1, logical headings, visible focus, readable st
 ### Windows High Contrast
 
 - [ ] Date: ______ Tester: ______ Browser/device: ______
-  - Check visible focus, selected/disabled states, Memory cards, Word tiles/path, labeled Color Flip state, Beacon gap/exact/overlap labels, links, buttons, and consent layers.
+  - Check visible focus, selected/disabled states, Memory cards, Word tiles/path, labeled Color Flip state, Beacon gap/exact/overlap labels, My Arcade metric labels and clear confirmation, links, buttons, and consent layers.
   - Result/findings/issues: ______
 
 ### NVDA + Chrome and Firefox
 
 - [ ] Chrome date/tester/version: ______ Result/issues: ______
 - [ ] Firefox date/tester/version: ______ Result/issues: ______
-  - In each browser, navigate landmarks/headings; operate one full or representative game loop per game; verify selected state, scores/status, pause announcements, Recently Played order, collection reasons, article metadata, and Privacy clear status.
+  - In each browser, navigate landmarks/headings; operate one full or representative game loop per game; verify selected state, scores/status, pause announcements, Recently Played order, My Arcade metric labels and its clear-result live region, collection reasons, article metadata, and Privacy clear status.
 
 ### VoiceOver + Safari and iOS
 

@@ -9,6 +9,7 @@ if (!existsSync(dist)) throw new Error('dist/ is missing. Run npm run build firs
 const pages = [
   'index.html',
   'arcade/index.html',
+  'my-arcade/index.html',
   'guides/index.html',
   'articles/index.html',
   'setup/index.html',
@@ -43,7 +44,7 @@ for (const page of pages) {
   }
 }
 
-for (const type of ['WebSite', 'CollectionPage', 'ItemList', 'VideoGame', 'Article', 'BreadcrumbList']) {
+for (const type of ['WebSite', 'WebPage', 'CollectionPage', 'ItemList', 'VideoGame', 'Article', 'BreadcrumbList']) {
   if (!types.has(type)) throw new Error(`Expected structured-data type was not found: ${type}`);
 }
 

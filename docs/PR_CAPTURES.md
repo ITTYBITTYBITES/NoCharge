@@ -2,6 +2,19 @@
 
 These are review captures from the production build with optional services denied. They show the actual shared toolbar, pause overlay, fullscreen viewport, public trust pages, and article pages at desktop and mobile widths.
 
+## My Arcade (2026-08-21)
+
+The capture block for `/my-arcade/` runs in the same opt-in `CAPTURE_PR=1` suite and uploads into the same
+`pr-visual-captures` artifact with seven-day retention. It covers the empty dashboard at 1440×900, 390×844 and
+320×700; the empty dashboard at the 200%-equivalent viewport; one recently played game; multiple recently played
+games; all four summary cards with representative valid local data at desktop and 390 px; the 400%-equivalent reflow;
+Privacy clearing before and after; the Arcade entry point; the populated homepage Recently Played entry point; and
+the storage-unavailable state.
+
+Local values used in the captures are invented fixtures written by the test, never a real visitor's storage. The
+block clicks no advertisement and no Amazon link. Findings from opening each image are recorded in
+[`MY_ARCADE_VISUAL_REVIEW.md`](./MY_ARCADE_VISUAL_REVIEW.md). Screenshots are not committed to Git.
+
 ### Quiet Setup visual repair (2026-08-21)
 
 The Quiet Setup capture block now runs the full reviewed matrix and uploads it as `pr-visual-captures` with short retention: the index at 1440×900, 1024×768, 768×1024, 390×844, 360×800 and 320×700, plus 200%- and 400%-equivalent viewports, reduced motion and forced colors; every one of the eight articles at 1440×900, 390×844, 320×700 and the 200% equivalent; close-ups of the affiliate disclosure, the paid recommendation block, the topic cards, a setup card and the footer/consent boundary at desktop and 320 px; the `/articles/`, `/help/`, `/advertising/` and `/privacy/` entry points; and the platform article whose hero picture was mis-styled, at 360 px, mobile and desktop.

@@ -45,6 +45,22 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         <p class="privacy__status" data-game-status aria-live="polite"></p>
       </section>
 
+      <section aria-labelledby="my-arcade">
+        <h2 id="my-arcade">My Arcade</h2>
+        <p>
+          <a href="/my-arcade/">My Arcade</a> is a page that displays game information already stored in the browser
+          you are using. It does not create an account, does not upload or build a player profile, and does not
+          synchronize anything between browsers or devices. Its summaries are derived on demand from the same game
+          scores, game progress, and Recently Played values described above; it does not create a separate store of
+          its own and does not read your consent choices.
+        </p>
+        <p>
+          Clearing game data — from this page or from the matching control on My Arcade — removes the underlying
+          values, so the dashboard becomes empty. Your analytics consent choice remains separate and unchanged, and
+          Google Privacy &amp; messaging choices are still handled by Google.
+        </p>
+      </section>
+
       <section aria-labelledby="analytics">
         <h2 id="analytics">Analytics</h2>
         <p>
@@ -108,28 +124,29 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 </BaseLayout>
 
 <script>
+  import {
+    CLEAR_GAME_DATA_FAILURE,
+    CLEAR_GAME_DATA_SUCCESS,
+    clearLocalGameData,
+  } from '../lib/local-game-data';
+
   const clearGames = document.querySelector<HTMLButtonElement>('[data-clear-games]');
   const gameStatus = document.querySelector<HTMLElement>('[data-game-status]');
 
   clearGames?.addEventListener('click', () => {
+    // The allowlist lives in one shared module so Privacy and My Arcade can
+    // never diverge. The privacy/consent key is intentionally omitted, so
+    // clearing game data never touches the consent choice, its categories,
+    // timestamp, or schema version. Google's own Privacy & messaging storage
+    // and unrelated origin storage are left untouched.
+    let storage: Storage | undefined;
     try {
-      // Explicit allowlist of current game-only keys. The privacy/consent key is
-      // intentionally omitted so clearing game data never touches the consent
-      // choice, its categories, timestamp, or schema version. Unrelated origin
-      // storage is left untouched.
-      const gameScoreIds = ['memory-match', 'word-tile-rush', 'color-flip', 'color-flip-turn-based', 'beacon-lattice'];
-      const gamePreferenceKeys = ['game-muted', 'beacon-lattice-progress'];
-      const gameKeys = [
-        ...gameScoreIds.map((id) => `nocharge:${id}:high`),
-        'nocharge:memory-match:best-moves',
-        ...gamePreferenceKeys.map((pref) => `nocharge:pref:${pref}`),
-        'nocharge:pref:recently-played',
-      ];
-      gameKeys.forEach((key) => localStorage.removeItem(key));
-      if (gameStatus) gameStatus.textContent = 'Game scores, preferences, and Recently Played were cleared from this browser.';
+      storage = window.localStorage;
     } catch {
-      if (gameStatus) gameStatus.textContent = 'This browser did not allow game data to be cleared.';
+      storage = undefined;
     }
+    const cleared = clearLocalGameData(storage);
+    if (gameStatus) gameStatus.textContent = cleared ? CLEAR_GAME_DATA_SUCCESS : CLEAR_GAME_DATA_FAILURE;
   });
 </script>
 

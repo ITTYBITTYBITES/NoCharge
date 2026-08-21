@@ -18,6 +18,7 @@ const required = [
   '/setup/',
   '/setup/what-quiet-setup-means/',
   '/arcade/',
+  '/my-arcade/',
   '/guides/',
   '/articles/',
   '/articles/what-quiet-arcade-means-at-nocharge/',
