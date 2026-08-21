@@ -47,6 +47,21 @@ for (const name of editorialNames) {
     }
   }
 }
+// Square (1:1) mobile variants for the four platform-article heroes.
+const editorialSquareNames = ['quiet-arcade', 'local-scores', 'more-ways', 'testing'];
+for (const name of editorialSquareNames) {
+  for (const extension of ['webp', 'jpg']) {
+    const path = join(editorialDirectory, `${name}-square.${extension}`);
+    if (!existsSync(path)) throw new Error(`Missing square editorial asset: ${relative(dist, path)}.`);
+    const metadata = await sharp(path).metadata();
+    if (metadata.width !== 900 || metadata.height !== 900) {
+      throw new Error(`Invalid square editorial dimensions: ${relative(dist, path)} is ${metadata.width}x${metadata.height}; expected 900x900.`);
+    }
+    const limit = extension === 'webp' ? 150 * 1024 : 300 * 1024;
+    if (statSync(path).size > limit) throw new Error(`Square editorial asset budget exceeded: ${relative(dist, path)}.`);
+    editorialFiles.push(relative(dist, path));
+  }
+}
 const referencedEditorial = files
   .filter((file) => file.path.includes(`${join('dist', 'editorial-art')}${pathSep}`))
   .map((file) => relative(dist, file.path));

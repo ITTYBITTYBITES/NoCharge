@@ -50,7 +50,9 @@ test('editorial images use responsive width descriptors and decorative alt text'
     expect(count, path).toBeGreaterThan(0);
     for (let index = 0; index < count; index += 1) {
       const picture = pictures.nth(index);
-      const source = picture.locator('source[type="image/webp"]');
+      // The article hero adds a mobile square source ahead of the responsive
+      // ladder, so target the non-art-directed desktop source explicitly.
+      const source = picture.locator('source[type="image/webp"]:not([media])');
       await expect(source).toHaveAttribute('srcset', /800w/);
       await expect(source).toHaveAttribute('srcset', /1200w/);
       await expect(source).toHaveAttribute('srcset', /1600w/);
@@ -58,6 +60,24 @@ test('editorial images use responsive width descriptors and decorative alt text'
       await expect(picture.locator('img')).toHaveAttribute('alt', '');
     }
   }
+});
+
+test('platform article heroes art-direct a square crop on mobile and a landscape ladder on desktop', async ({ page }) => {
+  await page.goto('/articles/how-nocharge-tests-browser-games/');
+  const picture = page.locator('.article-editorial-art');
+  await expect(picture.locator('source[media="(max-width: 36rem)"][type="image/webp"]')).toHaveAttribute(
+    'srcset',
+    '/editorial-art/testing-square.webp',
+  );
+  await expect(picture.locator('source[media="(max-width: 36rem)"][type="image/jpeg"]')).toHaveAttribute(
+    'srcset',
+    '/editorial-art/testing-square.jpg',
+  );
+  await expect(picture.locator('source[type="image/webp"]:not([media])')).toHaveAttribute(
+    'srcset',
+    /testing-800\.webp 800w/,
+  );
+  await expect(picture.locator('img')).toHaveAttribute('alt', '');
 });
 
 test('browser selects smaller editorial sources on narrow screens and header sources at desktop width', async ({ page }) => {

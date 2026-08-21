@@ -77,6 +77,24 @@ These original AI-assisted editorial illustrations are concept art, not gameplay
 
 All published files are under `public/editorial-art/` with names `{asset}-{800|1200|1600}.{webp|jpg}`. The asset validator checks dimensions, ratio, existence, file budgets, and rejects unexpected published editorial files. No rejected variants or temporary PNG review files are committed. Generated with the Arena image-generation tool and resized/encoded with Sharp. Existing mounted-DOM gameplay screenshots were not changed.
 
+### Platform-article hero art direction (2026-08-21)
+
+The four platform-article heroes (`quiet-arcade`, `local-scores`, `more-ways`,
+`testing`) now mirror the game/guide hero treatment: a 16:9 responsive ladder
+on larger screens and a dedicated **square (1:1) crop on phones** served
+through `media="(max-width: 36rem)"`, matching `GameArtwork`'s
+`mobileVariant="square"`. The square is cut from the full 900-pixel height of
+the committed 1600×900 source, with the 900-pixel window centred on the column
+of peak visual detail (all four subjects are near the horizontal centre).
+Reproduce with `node scripts/build-editorial-art.mjs`.
+
+| Asset | Square WebP / JPEG |
+| --- | ---: |
+| `quiet-arcade-square` | 15,854 / 42,012 B |
+| `local-scores-square` | 11,766 / 45,875 B |
+| `more-ways-square` | 24,594 / 75,893 B |
+| `testing-square` | 18,938 / 60,196 B |
+
 ## Quiet Setup illustration family (regenerated 2026-08-21)
 
 Every one of the five concepts published by PR #20 was inspected at full
