@@ -168,19 +168,32 @@ test('captures My Arcade review screens', async ({ page }) => {
     await page.waitForTimeout(120);
   };
 
-  const seed = async (values: Record<string, string>) => {
+  // Remove only the documented game keys. The stored analytics choice is left
+  // in place so no consent banner appears in a review capture.
+  const GAME_KEYS = [
+    RECENT_KEY,
+    'nocharge:memory-match:best-moves',
+    'nocharge:memory-match:high',
+    'nocharge:word-tile-rush:high',
+    'nocharge:color-flip:high',
+    'nocharge:color-flip-turn-based:high',
+    'nocharge:beacon-lattice:high',
+    'nocharge:pref:beacon-lattice-progress',
+    'nocharge:pref:game-muted',
+  ];
+
+  const clearLocal = async () => {
     await page.goto('/my-arcade/');
-    await page.evaluate(() => localStorage.clear());
+    await page.evaluate((keys) => keys.forEach((key) => localStorage.removeItem(key)), GAME_KEYS);
+  };
+
+  const seed = async (values: Record<string, string>) => {
+    await clearLocal();
     await page.evaluate((entries) => {
       for (const [key, value] of Object.entries(entries)) localStorage.setItem(key, value);
     }, values);
     await page.reload();
     await ready();
-  };
-
-  const clearLocal = async () => {
-    await page.goto('/my-arcade/');
-    await page.evaluate(() => localStorage.clear());
   };
 
   // 1-3. Empty dashboard at desktop, 390px and 320px.

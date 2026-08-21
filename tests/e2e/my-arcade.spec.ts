@@ -73,13 +73,19 @@ const playWordTileRush = async (page: Page) => {
   await expect.poll(() => readStorage(page, RECENT_KEY)).toContain('word-tile-rush');
 };
 
-/** One meaningful Color Flip action: cycle a color in the untimed mode. */
+/**
+ * Meaningful Color Flip actions in the untimed turn-based mode. Cycling a
+ * colour records play; stepping forward completes a scored turn, which is what
+ * the game itself saves as a turn-based best.
+ */
 const playColorFlip = async (page: Page) => {
   await page.goto('/games/color-flip/');
   const root = page.locator('[data-game-root="color-flip"]');
   await root.getByRole('button', { name: 'Turn-based mode', exact: true }).click();
   await root.getByRole('button', { name: 'Cycle color' }).click();
   await expect.poll(() => readStorage(page, RECENT_KEY)).toContain('color-flip');
+  await root.getByRole('button', { name: 'Step forward' }).click();
+  await expect.poll(() => readStorage(page, COLOR_TURN_HIGH)).not.toBeNull();
 };
 
 /** Play Memory Match to completion so the game itself saves a fewest-moves result. */
