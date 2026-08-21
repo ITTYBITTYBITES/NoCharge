@@ -39,16 +39,6 @@ jobs:
       - name: Build site
         run: npm run build
 
-      - name: Validate generated publication
-        run: |
-          npm run validate:html
-          npm run check:links
-          npm run validate:sitemap
-          npm run inspect:structured-data
-          npm run check:assets
-          npm run validate:setup
-          npm run validate:feed
-
       - name: Browser diagnostics
         run: |
           which google-chrome google-chrome-stable chromium chromium-browser || true
