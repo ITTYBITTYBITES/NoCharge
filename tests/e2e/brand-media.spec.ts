@@ -89,20 +89,20 @@ test.describe('brand header and footer', () => {
   });
 
   test('header survives 200% zoom, 400% reflow, forced colors, and reduced motion', async ({ page }) => {
+    // Zoom is exercised as the equivalent CSS-pixel viewport (a 1280x1024
+    // screen divided by the zoom factor), matching the capture suites: media
+    // queries ignore the CSS `zoom` property, so body zoom would scale a
+    // desktop layout instead of reflowing it.
+    await page.setViewportSize({ width: 640, height: 512 });
     await page.goto('/');
-    await page.setViewportSize({ width: 640, height: 800 });
-    await page.evaluate(() => {
-      document.body.style.zoom = '2';
-    });
     expect((await headerGeometry(page)).overflow).toBeLessThanOrEqual(0);
 
-    await page.setViewportSize({ width: 1280, height: 800 });
-    await page.evaluate(() => {
-      document.body.style.zoom = '4';
-    });
+    await page.setViewportSize({ width: 320, height: 256 });
+    await page.goto('/');
     expect((await headerGeometry(page)).overflow).toBeLessThanOrEqual(0);
 
     await page.emulateMedia({ forcedColors: 'active', colorScheme: 'dark' });
+    await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
     await expect(page.getByRole('link', { name: 'NoCharge home' })).toBeVisible();
     expect((await headerGeometry(page)).overflow).toBeLessThanOrEqual(0);
@@ -146,7 +146,8 @@ test.describe('media page', () => {
     await page.goto('/media/');
     await expect(page.getByText(/original browser games/).first()).toBeVisible();
     await expect(page.getByText('Memory Match, Word Tile Rush, Color Flip, Beacon Lattice').first()).toBeVisible();
-    await expect(page.getByText('hello@nocharge.net')).toBeVisible();
+    // The footer carries the same address on every page, so scope to the page.
+    await expect(page.locator('.media-page').getByText('hello@nocharge.net')).toBeVisible();
     await expect(page.getByText(/Last reviewed: 2026-08-21/)).toBeVisible();
     // No press-only address, no social destinations, no Amazon content.
     await expect(page.getByText('press@nocharge.net')).toHaveCount(0);
