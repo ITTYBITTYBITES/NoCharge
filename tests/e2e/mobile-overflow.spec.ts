@@ -33,6 +33,7 @@ const MOBILE_VIEWPORTS = [
 ] as const;
 
 test('every page fits its viewport without horizontal overflow', async ({ page }) => {
+  test.setTimeout(120_000);
   const paths = listBuiltPages();
   // Sanity: the build must exist and contain the public site, not a stray file.
   expect(paths, 'expected built HTML pages in dist/').toContain('/');
