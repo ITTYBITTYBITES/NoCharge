@@ -163,9 +163,15 @@ test('captures My Arcade review screens', async ({ page }) => {
     await page.locator('[data-my-arcade][aria-busy="false"]').waitFor();
     await page.evaluate(async () => {
       for (const img of document.querySelectorAll('img')) img.loading = 'eager';
-      await Promise.all([...document.images].map((i) => (i.complete ? null : i.decode().catch(() => null))));
+      const step = Math.max(200, innerHeight - 100);
+      for (let y = 0; y < document.documentElement.scrollHeight; y += step) {
+        scrollTo(0, y);
+        await new Promise((resolve) => setTimeout(resolve, 40));
+      }
+      scrollTo(0, 0);
+      await Promise.all([...document.images].map((i) => i.decode().catch(() => null)));
     });
-    await page.waitForTimeout(120);
+    await page.waitForTimeout(400);
   };
 
   // Remove only the documented game keys. The stored analytics choice is left
@@ -269,6 +275,12 @@ test('captures My Arcade review screens', async ({ page }) => {
   });
   await page.goto('/my-arcade/');
   await ready();
+  // With storage blocked, the stored analytics choice cannot be read, so the
+  // consent banner reappears and would cover a card in the review capture.
+  // Dismissing it the way a visitor would keeps the dashboard state readable.
+  const keepAnalyticsOff = page.getByRole('button', { name: 'Keep analytics off' });
+  if (await keepAnalyticsOff.isVisible().catch(() => false)) await keepAnalyticsOff.click();
+  await page.waitForTimeout(150);
   await shot('my-arcade-storage-unavailable');
 });
 
@@ -290,9 +302,9 @@ test('captures Quiet Setup review screens', async ({ page }) => {
         await new Promise((r) => setTimeout(r, 50));
       }
       scrollTo(0, 0);
-      await Promise.all([...document.images].map((i) => (i.complete ? null : i.decode().catch(() => null))));
+      await Promise.all([...document.images].map((i) => i.decode().catch(() => null)));
     });
-    await page.waitForTimeout(200);
+    await page.waitForTimeout(400);
   };
 
   const capture = async (name: string, path: string) => {

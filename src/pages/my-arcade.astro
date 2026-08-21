@@ -403,18 +403,27 @@ const schema = [
     font-size: 0.88rem;
   }
 
-  .ma-metrics {
+  /* The metric subtree is created by the page script after local data is read,
+     so those elements never carry Astro's scoping attribute. Anchoring each
+     rule to the server-rendered container and marking the descendant global
+     keeps the styles applied without leaking a bare class name. */
+  .ma-card__metrics :global(.ma-card__none) {
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+
+  .ma-card__metrics :global(.ma-metrics) {
     display: grid;
     gap: 0.6rem;
     margin: 0;
   }
 
-  .ma-metric {
+  .ma-card__metrics :global(.ma-metric) {
     display: grid;
     gap: 0.1rem;
   }
 
-  .ma-metric dt {
+  .ma-card__metrics :global(dt) {
     color: var(--muted);
     font-size: 0.74rem;
     font-weight: 700;
@@ -422,20 +431,20 @@ const schema = [
     text-transform: uppercase;
   }
 
-  .ma-metric dd {
+  .ma-card__metrics :global(dd) {
     display: grid;
     gap: 0.1rem;
     margin: 0;
   }
 
-  .ma-metric dd strong {
+  .ma-card__metrics :global(dd strong) {
     color: var(--text);
     font-size: 1.05rem;
     font-weight: 700;
     overflow-wrap: anywhere;
   }
 
-  .ma-metric__detail {
+  .ma-card__metrics :global(.ma-metric__detail) {
     color: var(--muted);
     font-size: 0.82rem;
     font-weight: 400;
