@@ -8,7 +8,7 @@ topics: [keyboards, desk-and-comfort]
 evidenceLevel: editorial-research
 hasAffiliateLinks: true
 affiliateDisclosure: true
-artwork: keyboards
+artwork: switches
 featured: false
 draft: false
 affiliateLinks:

@@ -131,21 +131,138 @@ test('captures desktop and mobile platform-maturity review screens', async ({ pa
 });
 
 test('captures Quiet Setup review screens', async ({ page }) => {
-  test.setTimeout(3 * 60_000);
+  test.setTimeout(8 * 60_000);
   await mkdir(captures, { recursive: true });
   await denyOptionalServices(page);
-  const shot = async (name: string, fullPage = true) => page.screenshot({ path: join(captures, `${name}.jpg`), type: 'jpeg', quality: 78, fullPage });
-  await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.goto('/setup/'); await shot('quiet-setup-index-desktop');
-  await page.goto('/setup/mouse-trackpad-trackball-or-touch/'); await shot('quiet-setup-affiliate-article-desktop');
-  await page.locator('[data-affiliate-disclosure]').scrollIntoViewIfNeeded(); await shot('quiet-setup-disclosure-first-paid-link', false);
-  await page.goto('/setup/what-quiet-setup-means/'); await shot('quiet-setup-no-affiliate-article');
-  await page.goto('/setup/'); await page.locator('.topic-grid').scrollIntoViewIfNeeded(); await shot('quiet-setup-topic-artwork-cards', false);
-  await page.locator('#latest').scrollIntoViewIfNeeded(); await shot('quiet-setup-article-feed', false);
-  await page.goto('/advertising/'); await shot('quiet-setup-advertising-disclosure');
-  await page.goto('/setup/'); await shot('quiet-setup-no-display-ad-region');
-  await page.setViewportSize({ width: 390, height: 844 }); await page.goto('/setup/'); await shot('quiet-setup-index-390');
-  await page.goto('/setup/mouse-trackpad-trackball-or-touch/'); await shot('quiet-setup-affiliate-article-mobile');
-  await page.setViewportSize({ width: 320, height: 760 }); await page.goto('/setup/'); await shot('quiet-setup-index-320');
-  await page.setViewportSize({ width: 640, height: 900 }); await page.goto('/setup/'); await page.evaluate(() => { document.documentElement.style.zoom = '2'; }); await shot('quiet-setup-index-zoom-200');
+
+  const shot = async (name: string, fullPage = true) =>
+    page.screenshot({ path: join(captures, `${name}.jpg`), type: 'jpeg', quality: 78, fullPage });
+
+  /** Load and decode every lazy image so full-page captures show real artwork. */
+  const settle = async () => {
+    await page.evaluate(async () => {
+      for (const img of document.querySelectorAll('img')) img.loading = 'eager';
+      const step = Math.max(200, innerHeight - 100);
+      for (let y = 0; y < document.documentElement.scrollHeight; y += step) {
+        scrollTo(0, y);
+        await new Promise((r) => setTimeout(r, 50));
+      }
+      scrollTo(0, 0);
+      await Promise.all([...document.images].map((i) => (i.complete ? null : i.decode().catch(() => null))));
+    });
+    await page.waitForTimeout(200);
+  };
+
+  const capture = async (name: string, path: string) => {
+    await page.goto(path);
+    await settle();
+    await shot(name);
+  };
+
+  const element = async (name: string, path: string, selector: string) => {
+    await page.goto(path);
+    await settle();
+    const target = page.locator(selector).first();
+    if (!(await target.count())) return;
+    await target.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(120);
+    await target.screenshot({ path: join(captures, `${name}.jpg`), type: 'jpeg', quality: 82 });
+  };
+
+  const setupSlugs = [
+    ['what-quiet-setup-means', 'what-quiet-setup-means'],
+    ['mouse-trackpad', 'mouse-trackpad-trackball-or-touch'],
+    ['compact-keyboard', 'choosing-a-compact-keyboard-layout'],
+    ['quiet-switches', 'quiet-keyboard-switches-explained'],
+    ['tablet-stand', 'choosing-a-tablet-or-phone-stand'],
+    ['browser-zoom', 'browser-zoom-versus-a-larger-display'],
+    ['puzzle-book', 'choosing-an-offline-logic-puzzle-book'],
+    ['low-noise-desk', 'a-low-noise-desk-setup'],
+  ] as const;
+
+  // Quiet Setup index at every reviewed viewport.
+  for (const [label, width, height] of [
+    ['1440x900', 1440, 900],
+    ['1024x768', 1024, 768],
+    ['768x1024', 768, 1024],
+    ['390x844', 390, 844],
+    ['360x800', 360, 800],
+    ['320x700', 320, 700],
+  ] as const) {
+    await page.setViewportSize({ width, height });
+    await capture(`quiet-setup-index-${label}`, '/setup/');
+  }
+
+  // Browser zoom is emulated as an equivalent CSS-pixel viewport (a 1280x1024
+  // screen divided by the zoom factor). The CSS `zoom` property leaves media
+  // queries at the unzoomed width, so it would capture a scaled desktop
+  // layout rather than the reflow being reviewed.
+  await page.setViewportSize({ width: 640, height: 512 });
+  await capture('quiet-setup-index-zoom-200', '/setup/');
+  await page.setViewportSize({ width: 320, height: 256 });
+  await capture('quiet-setup-index-zoom-400', '/setup/');
+
+  // Reduced motion and forced colors.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await capture('quiet-setup-index-reduced-motion', '/setup/');
+  await page.emulateMedia({ reducedMotion: null, forcedColors: 'active' });
+  await capture('quiet-setup-index-forced-colors', '/setup/');
+  await page.emulateMedia({ forcedColors: null });
+
+  // Every article at desktop, mobile, 320px and 200%-equivalent widths.
+  for (const [name, slug] of setupSlugs) {
+    for (const [label, width, height] of [
+      ['1440x900', 1440, 900],
+      ['390x844', 390, 844],
+      ['320x700', 320, 700],
+      ['zoom-200', 640, 512],
+    ] as const) {
+      await page.setViewportSize({ width, height });
+      await capture(`quiet-setup-article-${name}-${label}`, `/setup/${slug}/`);
+    }
+  }
+
+  // Focused close-ups reviewers asked for by name.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await element(
+    'quiet-setup-disclosure-closeup-desktop',
+    '/setup/mouse-trackpad-trackball-or-touch/',
+    '[data-affiliate-disclosure]',
+  );
+  await element(
+    'quiet-setup-paid-recommendation-closeup-desktop',
+    '/setup/mouse-trackpad-trackball-or-touch/',
+    '[data-paid-recommendation]',
+  );
+  await element('quiet-setup-topic-cards', '/setup/', '.topic-grid');
+  await element('quiet-setup-card-closeup-desktop', '/setup/', '[data-setup-card]');
+  await element('quiet-setup-footer-consent-boundary', '/setup/', '.site-footer');
+  await page.setViewportSize({ width: 320, height: 700 });
+  await element(
+    'quiet-setup-disclosure-closeup-320',
+    '/setup/mouse-trackpad-trackball-or-touch/',
+    '[data-affiliate-disclosure]',
+  );
+  await element(
+    'quiet-setup-paid-recommendation-closeup-320',
+    '/setup/mouse-trackpad-trackball-or-touch/',
+    '[data-paid-recommendation]',
+  );
+  await element('quiet-setup-card-closeup-320', '/setup/', '[data-setup-card]');
+
+  // Entry points and the platform article whose hero picture was mis-styled.
+  for (const [label, width, height] of [
+    ['desktop', 1440, 900],
+    ['mobile', 390, 844],
+  ] as const) {
+    await page.setViewportSize({ width, height });
+    await capture(`quiet-setup-entry-articles-${label}`, '/articles/');
+    await capture(`quiet-setup-entry-help-${label}`, '/help/');
+    await capture(`quiet-setup-entry-advertising-${label}`, '/advertising/');
+    await capture(`quiet-setup-entry-privacy-${label}`, '/privacy/');
+    await capture(`platform-article-hero-${label}`, '/articles/designing-browser-games-for-more-ways-to-play/');
+  }
+  await page.setViewportSize({ width: 360, height: 800 });
+  await capture('platform-article-hero-360', '/articles/designing-browser-games-for-more-ways-to-play/');
 });

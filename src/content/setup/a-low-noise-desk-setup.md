@@ -8,7 +8,7 @@ topics: [desk-and-comfort, keyboards, pointing-devices]
 evidenceLevel: editorial-research
 hasAffiliateLinks: false
 affiliateDisclosure: false
-artwork: puzzles-desk
+artwork: desk-noise
 featured: false
 draft: false
 ---

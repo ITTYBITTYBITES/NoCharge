@@ -1,7 +1,39 @@
 ---
-interface Props { level:'editorial-research'|'personally-used'|'hands-on-tested' }
-const {level}=Astro.props;
-const labels={ 'editorial-research':'Editorial research', 'personally-used':'Personally used', 'hands-on-tested':'Hands-on tested' };
+interface Props {
+  level: 'editorial-research' | 'personally-used' | 'hands-on-tested';
+}
+
+const { level } = Astro.props;
+const labels = {
+  'editorial-research': 'Editorial research',
+  'personally-used': 'Personally used',
+  'hands-on-tested': 'Hands-on tested',
+};
 ---
-<span class="evidence-label" data-evidence-level={level}>Evidence: {labels[level]}</span>
-<style>.evidence-label{display:inline-flex;width:fit-content;padding:.22rem .55rem;border:1px solid #518c87;border-radius:999px;color:#b9eee7;font-size:.73rem;font-weight:700}</style>
+
+<span class="evidence-label" data-evidence-level={level} data-evidence-label>Evidence: {labels[level]}</span>
+
+<style>
+  /* A chip rather than a full pill: the label is long enough to wrap at 320px
+     and inside a 200%-zoom column, and a 999px radius makes a wrapped second
+     line look broken. A modest radius wraps cleanly and keeps the label
+     visually secondary to the card title. */
+  .evidence-label {
+    display: inline-block;
+    max-width: 100%;
+    padding: 0.25rem 0.6rem;
+    border: 1px solid #518c87;
+    border-radius: 0.55rem;
+    color: #b9eee7;
+    font-size: 0.76rem;
+    font-weight: 700;
+    line-height: 1.35;
+    overflow-wrap: break-word;
+  }
+
+  @media (forced-colors: active) {
+    .evidence-label {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>

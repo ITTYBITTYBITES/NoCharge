@@ -1,9 +1,116 @@
 ---
-interface Props { name:'hero'|'keyboards'|'pointing'|'screens-stands'|'puzzles-desk'; sizes?:string; eager?:boolean; alt?:string }
-const {name,sizes='(max-width: 48rem) calc(100vw - 2rem), 48rem',eager=false,alt=''}=Astro.props;
+import type { SetupTopicId } from '../../lib/setup-topics';
+
+export type SetupArtworkName =
+  | 'hero'
+  | 'keyboards'
+  | 'pointing'
+  | 'screens-stands'
+  | 'puzzles-desk'
+  | 'switches'
+  | 'zoom-display'
+  | 'desk-noise';
+
+interface Props {
+  name: SetupArtworkName;
+  /**
+   * Must describe the width the image actually renders at for each grid
+   * breakpoint. Defaults to the article reading column.
+   */
+  sizes?: string;
+  eager?: boolean;
+  alt?: string;
+  /**
+   * `panel` is a standalone framed illustration (index hero, article hero).
+   * `card` sits flush at the top of a Setup card, so it drops its own border
+   * and rounds only its top corners. That lets the card remove
+   * `overflow: hidden`, which was clipping focus outlines.
+   */
+  variant?: 'panel' | 'card';
+  topic?: SetupTopicId;
+}
+
+const {
+  name,
+  sizes = '(max-width: 54rem) calc(100vw - 2rem), 52rem',
+  eager = false,
+  alt = '',
+  variant = 'panel',
+  topic,
+} = Astro.props;
+
+const webpSrcset = [800, 1200, 1600].map((w) => `/setup-art/${name}-${w}.webp ${w}w`).join(', ');
+const jpegSrcset = [800, 1200, 1600].map((w) => `/setup-art/${name}-${w}.jpg ${w}w`).join(', ');
 ---
-<picture class="setup-artwork" data-setup-artwork={name}>
- <source srcset={`/setup-art/${name}-800.webp 800w, /setup-art/${name}-1200.webp 1200w, /setup-art/${name}-1600.webp 1600w`} sizes={sizes} type="image/webp" />
- <img src={`/setup-art/${name}-1600.jpg`} srcset={`/setup-art/${name}-800.jpg 800w, /setup-art/${name}-1200.jpg 1200w, /setup-art/${name}-1600.jpg 1600w`} sizes={sizes} alt={alt} width="1600" height="900" loading={eager?'eager':'lazy'} fetchpriority={eager?'high':'auto'} decoding="async" />
+
+<picture class:list={['setup-artwork', `setup-artwork--${variant}`]} data-setup-artwork={name} data-setup-topic={topic}>
+  <source srcset={webpSrcset} sizes={sizes} type="image/webp" />
+  <img
+    src={`/setup-art/${name}-1200.jpg`}
+    srcset={jpegSrcset}
+    sizes={sizes}
+    alt={alt}
+    width="1600"
+    height="900"
+    loading={eager ? 'eager' : 'lazy'}
+    fetchpriority={eager ? 'high' : 'auto'}
+    decoding="async"
+  />
 </picture>
-<style>.setup-artwork{display:block;overflow:hidden;aspect-ratio:16/9;border:1px solid var(--line);border-radius:var(--radius);background:#202527}.setup-artwork img{width:100%;height:100%;object-fit:cover}</style>
+
+<style>
+  /* `display:block` is mandatory on a styled <picture>: an inline box ignores
+     aspect-ratio and overflow, and a descendant `height:100%` then resolves
+     against an ancestor instead of this frame. */
+  .setup-artwork {
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    background: #202527;
+  }
+
+  .setup-artwork img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    /* Sources and frames are both 16:9, so `cover` never crops. The rule is
+       kept as a guard against sub-pixel rounding, not as a crop strategy. */
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .setup-artwork--panel {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+
+  .setup-artwork--card {
+    border-bottom: 1px solid var(--line);
+    border-radius: calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0 0;
+  }
+
+  /* A quiet, topic-specific hairline keeps repeated concepts distinguishable
+     without adding decoration or a second nested panel. */
+  .setup-artwork--card[data-setup-topic='keyboards'] {
+    box-shadow: inset 0 -2px 0 rgba(136, 212, 203, 0.45);
+  }
+  .setup-artwork--card[data-setup-topic='pointing-devices'] {
+    box-shadow: inset 0 -2px 0 rgba(122, 165, 209, 0.45);
+  }
+  .setup-artwork--card[data-setup-topic='screens-and-stands'] {
+    box-shadow: inset 0 -2px 0 rgba(214, 164, 90, 0.45);
+  }
+  .setup-artwork--card[data-setup-topic='desk-and-comfort'] {
+    box-shadow: inset 0 -2px 0 rgba(160, 176, 168, 0.45);
+  }
+  .setup-artwork--card[data-setup-topic='offline-puzzles'] {
+    box-shadow: inset 0 -2px 0 rgba(211, 124, 106, 0.45);
+  }
+
+  @media (forced-colors: active) {
+    .setup-artwork--panel,
+    .setup-artwork--card {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>
