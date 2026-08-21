@@ -190,7 +190,7 @@ async function generateSocialCard() {
     <rect width="1200" height="630" fill="url(#glow)"/>
     ${symbolBody}
     <text x="468" y="352" font-family="${FONT_STACK}" font-size="118" font-weight="700" fill="${TEXT_LIGHT}">NoCharge</text>
-    <text x="470" y="420" font-family="${FONT_STACK}" font-size="42" fill="${TEXT_MUTED}">Quiet browser games and clear guides</text>`;
+    <text x="470" y="420" font-family="${FONT_STACK}" font-size="34" fill="${TEXT_MUTED}">Quiet browser games and clear guides</text>`;
   const source = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">${body}</svg>`;
 
   await mkdir(`${publicDir}social`, { recursive: true });

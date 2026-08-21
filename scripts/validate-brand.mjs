@@ -102,6 +102,39 @@ async function listErrors(root) {
   const cardWebp = await readImageSize(p('social', 'nocharge-default.webp'));
   if (cardJpg.width !== 1200 || cardJpg.height !== 630) errors.push(`nocharge-default.jpg must be 1200x630 (is ${cardJpg.width}x${cardJpg.height})`);
   if (cardWebp.width !== 1200 || cardWebp.height !== 630) errors.push(`nocharge-default.webp must be 1200x630`);
+
+  // 6b. Social card text safe zone: every text pixel (luminance > 140, i.e.
+  // brighter than the green mark's ~122) must keep a >=56px margin on every
+  // side so rounded-corner and edge-crop treatments never clip the copy.
+  // Skipped when the card is absent; the dimension checks above already flag
+  // a missing file, and fixture trees in unit tests omit it deliberately.
+  if (existsSync(p('social', 'nocharge-default.jpg'))) {
+    try {
+      const { data, info } = await sharp(p('social', 'nocharge-default.jpg'))
+        .removeAlpha().raw().toBuffer({ resolveWithObject: true });
+      const lum = (i) => 0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
+      let minX = info.width, minY = info.height, maxX = -1, maxY = -1;
+      for (let y = 0; y < info.height; y += 1) {
+        for (let x = 0; x < info.width; x += 1) {
+          if (lum((y * info.width + x) * 3) > 140) {
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+          }
+        }
+      }
+      if (maxX >= 0) {
+        const margins = { left: minX, top: minY, right: info.width - 1 - maxX, bottom: info.height - 1 - maxY };
+        for (const [side, margin] of Object.entries(margins)) {
+          if (margin < 56) errors.push(`social card text ${side} margin is ${margin}px; must be >=56px (text bbox ${JSON.stringify({ minX, minY, maxX, maxY })})`);
+        }
+      }
+    } catch (error) {
+      errors.push(`social card could not be inspected for safe zones: ${error.message}`);
+    }
+  }
+
   const avatar = await readImageSize(p('social', 'nocharge-avatar-512.png'));
   if (avatar.width !== 512 || avatar.height !== 512) errors.push(`nocharge-avatar-512.png must be 512x512`);
 

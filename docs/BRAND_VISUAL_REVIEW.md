@@ -33,6 +33,36 @@ the owner in the `pr-visual-captures` artifact (7-day retention); this
 session could not visually view or fetch the artifact blob, so no
 hand-verified pixel claim is made beyond the measured rows.
 
+## 0. Pre-merge re-review (2026-08-21, merge session)
+
+Before merging, every review question was re-asked against the committed
+files with a pixel-margin audit (`artifacts/ci-artifact/deep-inspect.mjs`,
+scratch, not committed):
+
+- **16 px favicon**: gutter between the tile columns reads as a 2 px seam at
+  luminance 70 between tile 122 and background 18 (ΔL 52 on both sides —
+  maximum separability for a 4-unit gutter at this scale); the doorway is a
+  3–4 px pure-background opening with a clearly separated 2 px frame stroke
+  (94–122 vs 18). Verdict: legible, no simplified variant required.
+- **32 px favicon**: 2 px gutters, 7 px of door ink across the doorway row,
+  stroke-vs-background ΔL 81. PASS.
+- **Default social card**: found the descriptor defect recorded in row 11
+  (fixed before merge; now validator-enforced).
+- **Maskable icons (192/512)**: green ink bounding box fully inside the 80 %
+  safe zone with 24–82 px of slack under circle/rounded/squircle masks;
+  zero green pixels clipped. Bbox center offset (−8, +8) px at 512 comes
+  from the mark's own open-corner geometry (ink bbox 5–59 of 64 units), not
+  misplacement; the tile grid itself is centered. PASS.
+- **Avatar 512**: ink bbox inside the r=180 circle-safe zone, offset
+  (−7, +6) px, same geometric cause. PASS.
+- **Lockups**: dark and light 1200×320 rasters have identical ink extents
+  (43,70)–(1188,266) and 83,139 ink pixels each — same geometry, inverted
+  grounds; deterministic regeneration byte-matches. The raster exports are
+  documented as DejaVu Sans Bold renders of editable SVG text carrying the
+  same font stack as the site header, so on any given OS the SVG lockup and
+  the site header resolve to the same system font; no pixel-match claim is
+  made for the PNGs. PASS.
+
 ## 1. Small-size favicon inspection
 
 Rendered from the canonical geometry with `scripts/inspect-favicons.mjs`
@@ -101,7 +131,7 @@ it.
 | 8 | `08-media-page-320.jpg` | /media/ | 320×700 | PASS | none | — |
 | 9 | `09-media-page-200-percent-zoom.jpg` | /media/, 200 % equivalent viewport | 640×512 | PASS | none | — |
 | 10 | `10-media-download-section.jpg` | /media/ downloads | 1440×900 | PASS — labels name file types | none | — |
-| 11 | `11-default-social-card.jpg` | Rendered file | 1200×630 | PASS — text inside safe zones (deterministic composition) | none | — |
+| 11 | `11-default-social-card.jpg` | Rendered file | 1200×630 | DEFECT FOUND IN RE-REVIEW, then FIXED — the first pass only asserted image dimensions; a pixel-margin audit found the 42 px descriptor line ending 10 px from the right edge (outside crop-safe space). Descriptor reset to 34 px: title/descriptor ink now ends at x 1114/1124 (right margins 85/75 px), text-block center within 4 px of card center. `npm run validate:brand` now enforces a ≥56 px text margin on every side. | Descriptor margin failure | `scripts/generate-brand-assets.mjs` (font-size 42→34) + new safe-zone check in `scripts/validate-brand.mjs`; card and media kit regenerated |
 | 12 | `12-avatar.jpg` | Rendered file | 512×512 | PASS — mark inside circle-safe zone | none | — |
 | 13 | `13-favicon-size-comparison.jpg` | Committed files, 8× nearest | 16…512 | PASS — every size legible | none | — |
 | 14 | `14-maskable-icon-comparison.jpg` | Maskable + mask sims | 512 | PASS — no mark clipping | none | — |
