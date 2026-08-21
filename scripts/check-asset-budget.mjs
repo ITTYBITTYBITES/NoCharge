@@ -54,7 +54,8 @@ const expectedEditorial = new Set(editorialFiles);
 for (const file of referencedEditorial) {
   if (!expectedEditorial.has(file)) throw new Error(`Unexpected editorial asset published: ${file}.`);
 }
-const setupNames = ['hero', 'keyboards', 'pointing', 'screens-stands', 'puzzles-desk'];
+const setupNames = ['hero', 'keyboards', 'pointing', 'screens-stands', 'puzzles-desk', 'switches', 'zoom-display', 'desk-noise'];
+const setupFiles = [];
 for (const name of setupNames) {
   for (const width of editorialWidths) {
     for (const extension of ['webp', 'jpg']) {
@@ -63,8 +64,17 @@ for (const name of setupNames) {
       const metadata = await sharp(path).metadata();
       if (metadata.width !== width || metadata.height !== Math.round(width * 9 / 16)) throw new Error(`Invalid Quiet Setup dimensions: ${relative(dist, path)}.`);
       if (statSync(path).size > (extension === 'webp' ? 150 * 1024 : 300 * 1024)) throw new Error(`Quiet Setup asset budget exceeded: ${relative(dist, path)}.`);
+      setupFiles.push(relative(dist, path));
     }
   }
+}
+// Reject rejected variants, temporary review PNGs, or stale concepts left behind.
+const publishedSetup = files
+  .filter((file) => file.path.includes(`${join('dist', 'setup-art')}${pathSep}`))
+  .map((file) => relative(dist, file.path));
+const expectedSetup = new Set(setupFiles);
+for (const file of publishedSetup) {
+  if (!expectedSetup.has(file)) throw new Error(`Unexpected Quiet Setup asset published: ${file}.`);
 }
 console.log(
   `Asset budget passed: ${scripts.length} scripts total ${scriptBytes} bytes; largest image ${largestImage ? `${relative(dist, largestImage.path)} (${largestImage.size} bytes)` : 'none'}; ${editorialFiles.length} responsive editorial assets validated.`,

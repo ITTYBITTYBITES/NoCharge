@@ -8,7 +8,7 @@ topics: [screens-and-stands]
 evidenceLevel: editorial-research
 hasAffiliateLinks: false
 affiliateDisclosure: false
-artwork: screens-stands
+artwork: zoom-display
 featured: true
 draft: false
 ---

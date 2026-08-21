@@ -1,20 +1,244 @@
 ---
-import { getCollection, render } from 'astro:content';import BaseLayout from '../../layouts/BaseLayout.astro';import Breadcrumbs from '../../components/Breadcrumbs.astro';import SetupArtwork from '../../components/setup/SetupArtwork.astro';import EvidenceLabel from '../../components/setup/EvidenceLabel.astro';import AffiliateDisclosure from '../../components/setup/AffiliateDisclosure.astro';import PaidAmazonLink from '../../components/setup/PaidAmazonLink.astro';
-export async function getStaticPaths(){const entries=(await getCollection('setup')).filter(a=>!a.data.draft);return entries.map(article=>({params:{slug:article.id},props:{article}}));}
-const {article}=Astro.props;const {Content}=await render(article);const path=`/setup/${article.id}/`;const canonical=`https://nocharge.net${path}`;const fmt=(d:string)=>new Date(`${d}T12:00:00Z`).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric',timeZone:'UTC'});const topicLabels:Record<string,string>={keyboards:'Keyboards','pointing-devices':'Pointing devices','screens-and-stands':'Screens and stands','desk-and-comfort':'Desk and comfort','offline-puzzles':'Offline puzzles'};
-const schema=[{'@context':'https://schema.org','@type':'Article',headline:article.data.title,description:article.data.description,datePublished:article.data.publishedDate,dateModified:article.data.reviewedDate,mainEntityOfPage:canonical,url:canonical,image:`https://nocharge.net/setup-art/${article.data.artwork}-1600.jpg`,author:{'@type':'Organization',name:'NoCharge Editorial'},publisher:{'@type':'Organization',name:'NoCharge',url:'https://nocharge.net/'},articleSection:topicLabels[article.data.topic],keywords:article.data.topics.map(t=>topicLabels[t]).join(', '),inLanguage:'en'},{'@context':'https://schema.org','@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:'Home',item:'https://nocharge.net/'},{'@type':'ListItem',position:2,name:'Quiet Setup',item:'https://nocharge.net/setup/'},{'@type':'ListItem',position:3,name:article.data.title,item:canonical}]}];
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import SetupArtwork from '../../components/setup/SetupArtwork.astro';
+import EvidenceLabel from '../../components/setup/EvidenceLabel.astro';
+import AffiliateDisclosure from '../../components/setup/AffiliateDisclosure.astro';
+import PaidAmazonLink from '../../components/setup/PaidAmazonLink.astro';
+import { SETUP_TOPIC_LABELS } from '../../lib/setup-topics';
+
+export async function getStaticPaths() {
+  const entries = (await getCollection('setup')).filter((a) => !a.data.draft);
+  return entries.map((article) => ({ params: { slug: article.id }, props: { article } }));
+}
+
+const { article } = Astro.props;
+const { Content } = await render(article);
+const path = `/setup/${article.id}/`;
+const canonical = `https://nocharge.net${path}`;
+const fmt = (date: string) =>
+  new Date(`${date}T12:00:00Z`).toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: article.data.title,
+    description: article.data.description,
+    datePublished: article.data.publishedDate,
+    dateModified: article.data.reviewedDate,
+    mainEntityOfPage: canonical,
+    url: canonical,
+    image: `https://nocharge.net/setup-art/${article.data.artwork}-1600.jpg`,
+    author: { '@type': 'Organization', name: 'NoCharge Editorial' },
+    publisher: { '@type': 'Organization', name: 'NoCharge', url: 'https://nocharge.net/' },
+    articleSection: SETUP_TOPIC_LABELS[article.data.topic],
+    keywords: article.data.topics.map((t) => SETUP_TOPIC_LABELS[t]).join(', '),
+    inLanguage: 'en',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nocharge.net/' },
+      { '@type': 'ListItem', position: 2, name: 'Quiet Setup', item: 'https://nocharge.net/setup/' },
+      { '@type': 'ListItem', position: 3, name: article.data.title, item: canonical },
+    ],
+  },
+];
 ---
-<BaseLayout title={article.data.title} description={article.data.description} path={path} schema={schema} ogType="article" modifiedTime={article.data.reviewedDate} showAds={false} socialImage={`/setup-art/${article.data.artwork}-1200.jpg`} socialImageAlt="Abstract Quiet Setup editorial illustration">
-<article class="setup-article" data-setup-article data-has-affiliate-links={String(article.data.hasAffiliateLinks)}>
- <Breadcrumbs items={[{label:'Home',href:'/'},{label:'Quiet Setup',href:'/setup/'},{label:article.data.title}]}/>
- <header><p class="eyebrow">Quiet Setup · {topicLabels[article.data.topic]}</p><h1 class="page-title">{article.data.title}</h1><p class="lede">{article.data.description}</p><div class="article-meta"><span>Published <time datetime={article.data.publishedDate}>{fmt(article.data.publishedDate)}</time></span><span>Reviewed <time datetime={article.data.reviewedDate}>{fmt(article.data.reviewedDate)}</time></span><EvidenceLabel level={article.data.evidenceLevel}/>{article.data.hasAffiliateLinks&&<span class="paid-indicator">Contains paid links</span>}</div></header>
- <SetupArtwork name={article.data.artwork} eager />
- {article.data.hasAffiliateLinks&&<AffiliateDisclosure/>}
- <div class="setup-prose prose"><Content/></div>
- {article.data.hasAffiliateLinks&&<section class="paid-links" aria-labelledby="paid-links-heading"><h2 id="paid-links-heading">Optional comparison links</h2><p>These direct Amazon links are optional starting points after you have applied the criteria above.</p>{article.data.affiliateLinks.map(link=><PaidAmazonLink {...link}/>)}</section>}
- <nav class="article-next" aria-label="Quiet Setup next steps"><a href="/setup/">← All Quiet Setup guides</a><a href="/advertising/">How paid links work</a></nav>
-</article>
+
+<BaseLayout
+  title={article.data.title}
+  description={article.data.description}
+  path={path}
+  schema={schema}
+  ogType="article"
+  modifiedTime={article.data.reviewedDate}
+  showAds={false}
+  socialImage={`/setup-art/${article.data.artwork}-1200.jpg`}
+  socialImageAlt="Abstract Quiet Setup editorial illustration"
+>
+  <article class="setup-article" data-setup-article data-has-affiliate-links={String(article.data.hasAffiliateLinks)}>
+    <Breadcrumbs
+      items={[{ label: 'Home', href: '/' }, { label: 'Quiet Setup', href: '/setup/' }, { label: article.data.title }]}
+    />
+
+    <header>
+      <p class="eyebrow">Quiet Setup · {SETUP_TOPIC_LABELS[article.data.topic]}</p>
+      <h1 class="page-title">{article.data.title}</h1>
+      <p class="lede">{article.data.description}</p>
+      <div class="article-meta">
+        <p class="article-meta__dates">
+          <span>Published <time datetime={article.data.publishedDate}>{fmt(article.data.publishedDate)}</time></span>
+          <span>Reviewed <time datetime={article.data.reviewedDate}>{fmt(article.data.reviewedDate)}</time></span>
+        </p>
+        <p class="article-meta__labels">
+          <EvidenceLabel level={article.data.evidenceLevel} />
+          {article.data.hasAffiliateLinks && <span class="paid-indicator" data-paid-indicator>Contains paid links</span>}
+        </p>
+      </div>
+    </header>
+
+    <SetupArtwork
+      name={article.data.artwork}
+      topic={article.data.topic}
+      eager
+      sizes="(max-width: 54rem) calc(100vw - 2rem), 52rem"
+    />
+
+    {article.data.hasAffiliateLinks && <AffiliateDisclosure />}
+
+    <div class="setup-prose prose"><Content /></div>
+
+    {
+      article.data.hasAffiliateLinks && (
+        <section class="paid-links" aria-labelledby="paid-links-heading">
+          <h2 id="paid-links-heading">Optional comparison links</h2>
+          <p>These direct Amazon links are optional starting points after you have applied the criteria above.</p>
+          {article.data.affiliateLinks.map((link) => (
+            <PaidAmazonLink {...link} />
+          ))}
+        </section>
+      )
+    }
+
+    <nav class="article-next" aria-label="Quiet Setup next steps">
+      <a href="/setup/">← All Quiet Setup guides</a>
+      <a href="/advertising/">How paid links work</a>
+    </nav>
+  </article>
 </BaseLayout>
+
 <style>
-.setup-article{display:grid;gap:1.5rem;max-width:52rem;margin-inline:auto}.setup-article>header{display:grid;gap:.85rem;padding:.5rem 0 .75rem}.article-meta{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1rem;color:var(--muted);font-size:.82rem}.paid-indicator{padding:.22rem .55rem;border:1px solid #b7791f;border-radius:999px;color:#ffd58a;font-size:.73rem;font-weight:700}.setup-prose{display:grid;gap:1rem}.setup-prose :global(h2){margin-top:1.3rem;font-size:1.45rem}.setup-prose :global(p),.setup-prose :global(li){color:var(--muted);line-height:1.72}.setup-prose :global(a){color:var(--accent-strong);text-decoration:underline;text-underline-offset:3px}.paid-links{display:grid;gap:1rem;padding-top:1rem;border-top:1px solid var(--line)}.paid-links>p{color:var(--muted)}.article-next{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.7rem;padding-top:1.2rem;border-top:1px solid var(--line)}.article-next a{min-height:44px;color:var(--accent-strong);font-weight:700}
+  .setup-article {
+    display: grid;
+    gap: 1.5rem;
+    max-width: 52rem;
+    margin-inline: auto;
+  }
+
+  .setup-article > header {
+    display: grid;
+    gap: 0.85rem;
+    min-width: 0;
+    padding: 0.5rem 0 0.75rem;
+  }
+
+  /* Two deliberate metadata rows. Dates and chips never share a flex line, so
+     a wrapped date can never end up beside a chip border, and the chips keep a
+     visible band between them when they wrap. */
+  .article-meta {
+    display: grid;
+    gap: 0.6rem;
+    min-width: 0;
+  }
+
+  .article-meta__dates,
+  .article-meta__labels {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 1.5rem;
+    margin: 0;
+    min-width: 0;
+    color: var(--muted);
+    font-size: 0.84rem;
+  }
+
+  .article-meta__labels {
+    gap: 0.5rem 0.6rem;
+  }
+
+  .paid-indicator {
+    display: inline-block;
+    max-width: 100%;
+    padding: 0.25rem 0.6rem;
+    border: 1px solid #b7791f;
+    border-radius: 0.55rem;
+    color: #ffd58a;
+    font-size: 0.76rem;
+    font-weight: 700;
+    line-height: 1.35;
+    overflow-wrap: break-word;
+  }
+
+  .setup-prose {
+    display: grid;
+    gap: 1rem;
+    /* A comfortable reading measure; the 52rem article column is wider than
+       is comfortable for body copy on a large display. */
+    max-width: 42rem;
+  }
+
+  .setup-prose :global(h2) {
+    margin-top: 1.3rem;
+    font-size: 1.45rem;
+  }
+
+  .setup-prose :global(p),
+  .setup-prose :global(li) {
+    color: var(--muted);
+    line-height: 1.72;
+  }
+
+  .setup-prose :global(a) {
+    color: var(--accent-strong);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .paid-links {
+    display: grid;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .paid-links > p {
+    color: var(--muted);
+  }
+
+  /* `space-between` put the two links flush against opposite edges and, once
+     they wrapped, left them vertically adjacent with no separation. A wrapping
+     row with an explicit gap keeps them apart in both states. */
+  .article-next {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 2rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .article-next a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--accent-strong);
+    font-weight: 700;
+  }
+
+  .article-next a:focus-visible {
+    outline: 2px solid var(--accent-strong);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  @media (min-width: 40rem) {
+    .article-next {
+      justify-content: space-between;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .paid-indicator {
+      border: 1px solid CanvasText;
+    }
+  }
 </style>

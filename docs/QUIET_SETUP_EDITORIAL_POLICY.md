@@ -33,3 +33,18 @@ Record material reviews in `CONTENT_ACCURACY_MATRIX.md`. Recheck the current Ama
 ## Artwork and separation
 
 Quiet Setup uses original editorial illustrations, never Amazon imagery or fake gameplay screenshots. Paid links never enter game boards, controls, results, cards, instructions, Recently Played, pause UI, or ad containers. Setup routes set `showAds={false}`; this means no display-ad unit, not that compensated links are absent.
+
+Each published article carries its own illustration concept. Reusing one concept across two articles is permitted, but two cards showing the same illustration must never appear adjacent in the feed grid — the feed is date-ordered, so this has to be resolved by the concept assignment itself rather than by re-sorting. A defective source concept is regenerated at the source; recolouring, repainting a background, or compositing during derivative production does not count as a repair, and `scripts/build-setup-art.mjs` deliberately performs none of those. Generation runs in batches of at most five images, every result is inspected before another batch is requested, and rejected variants and temporary sources are never committed. See `docs/ART_ASSETS.md`.
+
+## Presentation rules
+
+These are product rules, not cosmetic preferences, and each is covered by an assertion in `tests/e2e/quiet-setup-geometry.spec.ts`.
+
+- **Counting.** Topic counts on the index count each published article exactly once, under its single primary `topic`, and are labelled plainly ("2 guides", "1 guide"). Secondary `topics` tags are metadata for structured data and keywords; they are never summed into a reader-facing count, because doing so implied nineteen guides for a section of eight.
+- **Honest click targets.** A card exposes exactly one link, on its title. No full-card overlay may cover the evidence label, the paid-link label, or the published/reviewed dates: disclosure metadata must never look or behave clickable.
+- **Badges.** The evidence label and `Contains paid links` always keep visible separation and may wrap only in a controlled, readable way. Metadata moves onto additional rows before it can collide.
+- **Disclosure.** The affiliate disclosure renders before the first paid link, stays fully readable at 320 px and at 200% zoom, is visually separate from the article prose, does not rely on amber colour alone, and must not resemble an error alert or the consent panel.
+- **Paid recommendations.** `Why this link`, `May suit` and `Limitations` keep a clear gap from their descriptions on wide layouts and stack above them on narrow ones. The paid link is an underlined text link, never a filled retail-style button.
+- **Reflow.** No horizontal overflow at 320 px, 390 px, 200% or 400%. The card grid becomes a single column before content is cramped, and cards never fall below a usable content width. Body text is never shrunk to resolve a layout problem, no fixed heights are used, and no meaningful title or disclosure text is truncated.
+- **Focus.** Focus outlines stay visible outside links and buttons; cards must not use `overflow: hidden`, which clips them.
+- **Zoom verification.** Browser zoom is verified at the equivalent CSS-pixel viewport (1280×1024 divided by the zoom factor). The CSS `zoom` property leaves media queries at the unzoomed width and therefore proves only that a desktop layout scales, not that the page reflows.

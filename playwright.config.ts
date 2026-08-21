@@ -25,10 +25,15 @@ export default defineConfig({
       name: 'chromium',
       // GitHub-hosted Ubuntu runners already provide stable Google Chrome.
       // Local development keeps Playwright's bundled Chromium after
-      // `npx playwright install chromium`.
+      // `npx playwright install chromium`. Sandboxes that can reach neither
+      // may point CHROME_EXECUTABLE_PATH at a locally provided Chrome/Chromium
+      // build; CI behaviour is unchanged because the variable is unset there.
       use: {
         ...devices['Desktop Chrome'],
         ...(process.env.CI ? { channel: 'chrome' as const } : {}),
+        ...(process.env.CHROME_EXECUTABLE_PATH
+          ? { launchOptions: { executablePath: process.env.CHROME_EXECUTABLE_PATH } }
+          : {}),
       },
     },
     ...(fullBrowserMatrix

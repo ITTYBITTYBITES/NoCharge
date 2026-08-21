@@ -77,16 +77,116 @@ These original AI-assisted editorial illustrations are concept art, not gameplay
 
 All published files are under `public/editorial-art/` with names `{asset}-{800|1200|1600}.{webp|jpg}`. The asset validator checks dimensions, ratio, existence, file budgets, and rejects unexpected published editorial files. No rejected variants or temporary PNG review files are committed. Generated with the Arena image-generation tool and resized/encoded with Sharp. Existing mounted-DOM gameplay screenshots were not changed.
 
-## Quiet Setup illustration family (2026-08-21)
+## Quiet Setup illustration family (regenerated 2026-08-21)
 
-Five AI-assisted concepts were generated in batches of no more than five images and inspected for malformed hardware, pseudo-text, logos, misleading UI, and commercial product resemblance. They are original editorial illustrations—not product photos, Amazon Program Content, logos, or gameplay screenshots. Source prompts specified the Quiet Arcade family, charcoal foundations, muted teal/amber/blue/coral accents, geometric forms, coherent abstract hardware, negative space, and prohibited words, branding, shopping motifs, fake UI, and product packaging. Responsive derivatives were produced with ImageMagick. The initially generated screens-and-stands concept had an overly light foundation; its neutral background was corrected to charcoal during local derivative production, then the temporary source was removed.
+Every one of the five concepts published by PR #20 was inspected at full
+1600×900, at card crop, at article-hero size, at 390 px, at 320 px, and
+lightened for shadow detail. **All five had concrete drawing defects and were
+regenerated at the source.** Three further concepts were added so that no two
+adjacent cards in the feed grid show the same illustration.
 
-| Asset | Routes | 800 WebP / JPEG | 1200 WebP / JPEG | 1600 WebP / JPEG | Alt decision |
-|---|---|---:|---:|---:|---|
-| `hero` | Setup index and “What Quiet Setup means” | 7,708 / 18,509 B | 12,632 / 41,077 B | 16,922 / 67,970 B | `alt=""`; adjacent headings and prose convey the concept |
-| `keyboards` | Compact layout and quiet switches articles/cards | 33,392 / 61,266 B | 59,356 / 115,812 B | 69,838 / 163,297 B | `alt=""`; adjacent headings and prose convey the concept |
-| `pointing` | Input-method article/card | 12,052 / 24,301 B | 20,864 / 47,199 B | 25,952 / 69,905 B | `alt=""`; adjacent headings and prose convey the concept |
-| `screens-stands` | Stand and browser-zoom articles/cards | 4,470 / 13,410 B | 7,760 / 25,155 B | 12,038 / 37,826 B | `alt=""`; adjacent headings and prose convey the concept |
-| `puzzles-desk` | Offline puzzle and low-noise desk articles/cards | 23,844 / 41,289 B | 39,336 / 76,973 B | 48,400 / 109,936 B | `alt=""`; adjacent headings and prose convey the concept |
+The earlier note in this file claimed the screens-and-stands concept was fixed
+by "correcting its neutral background to charcoal during local derivative
+production". Repainting a background does not repair a malformed drawing, and
+that claim is withdrawn. Derivative production now performs no compositing at
+all: `scripts/build-setup-art.mjs` only normalises each reviewed source to a
+true 16:9 frame and encodes the ladder.
 
-All files are under `public/setup-art/` at 800×450, 1200×675, and 1600×900 in WebP primary and JPEG fallback formats. Temporary generation sources and rejected variants are not committed. The setup index social preview uses descriptive metadata because it stands outside an adjacent visible heading; in-page images remain decorative. Existing mounted-DOM gameplay screenshots are unchanged.
+### Why each concept was replaced
+
+| Concept | Verdict | Defects found in the published version |
+| --- | --- | --- |
+| `hero` | Regenerated | The monitor was cut off by the top and right edges of the canvas; the composition was bottom-right weighted with a dead left third. |
+| `keyboards` | Regenerated | Severe. Six keyboards, four of them clipped by the frame edges; the bottom compact board was malformed as two overlapping ghosted bodies with keys outside the case outline; an unexplained dark smudge on the amber board; no focal point, and an unreadable stripe pattern at card size. |
+| `pointing` | Regenerated | The mouse was two conflicting overlapping shapes with a broken silhouette; background was near-black rather than charcoal, inconsistent with the family; subjects small and detail lost at card size. |
+| `screens-stands` | Regenerated | Impossible stand geometry — base plates floated detached below the necks; the desk line was broken into disjoint segments; cables emerged from mid-air and ran off both frame edges; the top half was empty; no stand subject at all despite the topic. |
+| `puzzles-desk` | Regenerated | Large bright cream page areas dominated the frame and clashed with the charcoal foundation; several puzzle grids read as unintended pseudo-text letterforms; drop-shadow style inconsistent with the rest of the family. |
+
+### Concepts added to remove adjacent duplicates
+
+Eight articles previously shared five concepts, and because the feed is ordered
+by publication date the repeats landed **side by side in every grid row after
+the first**: keyboards/keyboards, screens-stands/screens-stands and
+puzzles-desk/puzzles-desk. Restrained alternatives were considered first —
+reordering is not available because the feed is date-ordered, and a CSS framing
+tint alone does not stop two identical images from reading as a duplicate. A
+per-topic hairline tint *was* added as well, but three new concepts were the
+honest fix.
+
+| New concept | Article | Subject |
+| --- | --- | --- |
+| `switches` | Quiet keyboard switches explained | Three cutaway key switches with differing sound arcs |
+| `zoom-display` | Browser zoom versus a larger display | Two screens: few large bars versus many small bars |
+| `desk-noise` | A low-noise desk setup | Overhead desk mat, keyboard, pointer, coiled cable, one sound source |
+
+`puzzles-desk` is now used only for the offline puzzle-book article, which its
+subject actually depicts.
+
+### Generation and inspection process
+
+- Three generation batches of **5, 4 and 1** images. No batch exceeded five.
+- Every result was opened and inspected before the next batch was requested.
+- Rejected versions: `hero` v2 (subject too small in frame, screen rendered
+  near-black) and `zoom-display` v1 (colour-saturated panels read as a fake
+  wireframe UI). Neither was committed; both were regenerated and the rejects
+  deleted.
+- Reviewed sources live in the git-ignored `artifacts/art-src/` directory and
+  are intentionally not committed. Only the 48 published derivatives ship.
+- Reproduce the published files with
+  `SETUP_ART_SOURCE=artifacts/art-src node scripts/build-setup-art.mjs`.
+
+### Published files
+
+All under `public/setup-art/`, named `{concept}-{800|1200|1600}.{webp|jpg}`, at
+800×450, 1200×675 and 1600×900. WebP is primary, JPEG is the fallback.
+`alt=""` on every in-page instance: each illustration is decorative
+reinforcement, and the adjacent topic label, heading and description carry the
+meaning. The Setup index social preview keeps descriptive metadata because it
+appears without an adjacent visible heading.
+
+| Asset | 800 WebP / JPEG | 1200 WebP / JPEG | 1600 WebP / JPEG |
+| --- | ---: | ---: | ---: |
+| `hero` | 5,396 / 12,844 B | 9,430 / 22,850 B | 13,376 / 33,340 B |
+| `keyboards` | 12,376 / 32,596 B | 20,658 / 57,360 B | 27,596 / 82,347 B |
+| `pointing` | 3,724 / 11,458 B | 6,244 / 19,921 B | 8,726 / 29,698 B |
+| `screens-stands` | 7,318 / 16,897 B | 11,248 / 28,638 B | 15,290 / 41,050 B |
+| `puzzles-desk` | 12,340 / 25,654 B | 21,176 / 45,562 B | 28,820 / 64,457 B |
+| `switches` | 9,668 / 23,834 B | 15,518 / 39,774 B | 20,600 / 55,606 B |
+| `zoom-display` | 4,248 / 22,626 B | 7,310 / 39,530 B | 10,648 / 52,250 B |
+| `desk-noise` | 6,266 / 16,685 B | 10,686 / 29,496 B | 15,232 / 42,594 B |
+
+48 files, 1,155,057 bytes total. Eight concepts now weigh less than the five
+they replace: the previous `keyboards-1600.jpg` alone was 163,297 B against
+82,347 B today. The asset validator checks every concept's existence,
+dimensions, 16:9 ratio and byte budget, and now also **rejects any unexpected
+file** published under `setup-art/`, so a rejected variant or a stale concept
+cannot ship unnoticed.
+
+### Responsive `sizes` decisions
+
+Sources and frames are both 16:9, so `object-fit: cover` never actually crops
+and no per-concept `object-position` is required; every concept is composed
+with a margin on all four sides. The rule is retained only as a guard against
+sub-pixel rounding.
+
+| Usage | `sizes` | Reasoning |
+| --- | --- | --- |
+| Index hero | `(max-width: 52rem) min(calc(100vw - 2rem), 24rem), 42vw` | Mirrors the 24 rem mobile cap and the 42 vw desktop column, so a phone never requests the 1600 px asset. |
+| Setup card | `(max-width: 47.99rem) calc(100vw - 2rem), (max-width: 70rem) calc(50vw - 2.4rem), 33rem` | Matches the `auto-fit`/`minmax(19rem)` grid: full width in one column, roughly half the viewport in two, and ~33 rem at the 72 rem shell maximum. |
+| Article hero | `(max-width: 54rem) calc(100vw - 2rem), 52rem` | The article column is 52 rem. The previous default claimed 48 rem, so at 1440 px the browser was allowed to pick the 800 px file for an 832 px slot — a visibly soft hero. |
+
+Browser-selected `currentSrc` is asserted for the mobile card, the desktop
+card, the mobile article hero and the desktop article hero in
+`tests/e2e/quiet-setup-geometry.spec.ts`. The assertions use bounded ranges
+rather than one exact filename so a different device pixel ratio does not make
+them brittle.
+
+### Art direction preserved
+
+Deep charcoal foundation; muted teal, amber, slate blue and coral; calm
+geometric editorial illustration; clear silhouettes; comfortable negative
+space. No embedded words, no Amazon branding, no recognisable branded products,
+no photorealistic shopping imagery, no fake screenshots, no sale symbols,
+prices, stars, carts, coins or rewards, and no medical or accessibility
+symbolism used decoratively. Existing mounted-DOM gameplay screenshots and all
+game artwork are unchanged.
