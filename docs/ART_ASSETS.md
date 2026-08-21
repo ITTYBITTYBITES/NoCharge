@@ -208,3 +208,48 @@ no photorealistic shopping imagery, no fake screenshots, no sale symbols,
 prices, stars, carts, coins or rewards, and no medical or accessibility
 symbolism used decoratively. Existing mounted-DOM gameplay screenshots and all
 game artwork are unchanged.
+
+## Brand identity package (2026-08-21)
+
+The brand mark is a deliberately constructed SVG (see `docs/BRAND_GUIDE.md`):
+four rounded tiles with the bottom-left tile open as a doorway. The canonical
+source is `public/brand/nocharge-symbol.svg`; every favicon, PWA icon, social
+asset, and press export is derived from it by `npm run art:brand`
+(`scripts/generate-brand-assets.mjs`). The generator never touches game,
+editorial, or Quiet Setup artwork and never creates gameplay screenshots.
+
+| File | Dimensions / type | Size | Notes |
+| --- | ---: | ---: | --- |
+| `brand/nocharge-symbol.svg` | vector (64×64) | 1.5 KB | Canonical; `currentColor` mark |
+| `brand/nocharge-symbol-black.svg` | vector | 0.5 KB | Monochrome, light backgrounds |
+| `brand/nocharge-symbol-white.svg` | vector | 0.5 KB | Monochrome, dark backgrounds |
+| `brand/nocharge-lockup-dark.svg` | vector (480×128) | 1.0 KB | Green symbol + light wordmark |
+| `brand/nocharge-lockup-light.svg` | vector (480×128) | 1.0 KB | Deep-green symbol + dark wordmark |
+| `brand/nocharge-symbol-512.png` | 512×512 PNG | 5.3 KB | Transparent press export |
+| `brand/nocharge-lockup-dark-1200.png` | 1200×320 PNG | 18.7 KB | Transparent press export |
+| `brand/nocharge-lockup-light-1200.png` | 1200×320 PNG | 18.6 KB | Transparent press export |
+| `favicon.svg` | vector (64×64) | 0.7 KB | Charcoal tile + green mark |
+| `favicon.ico` | ICO (16/32/48) | 2.1 KB | PNG-compressed entries |
+| `favicon-16x16.png` / `-32x32.png` / `-48x48.png` | exact PNGs | 0.4 / 0.6 / 1.0 KB | — |
+| `apple-touch-icon.png` | 180×180 PNG | 2.1 KB | Full-bleed square (iOS masks) |
+| `icons/icon-192.png` / `icon-512.png` | 192 / 512 PNG | 2.5 / 6.7 KB | Rounded tile, `purpose: any` |
+| `icons/icon-maskable-192.png` / `-512.png` | 192 / 512 PNG | 1.6 / 4.0 KB | Full-bleed; mark inside 80 % safe zone |
+| `social/nocharge-default.jpg` / `.webp` | 1200×630 | 27.7 / 14.1 KB | Deterministic SVG composition |
+| `social/nocharge-avatar-512.png` | 512×512 PNG | 5.4 KB | Rounded tile; mark inside circle-safe zone |
+| `media/nocharge-media-kit.zip` | ZIP (15 files) | 194 KB | Built by `npm run kit:media` |
+
+Text inside lockups and the social card is composed deterministically with the
+documented system font stack (Inter → system UI → DejaVu Sans); raster
+exports render with DejaVu Sans Bold. `scripts/validate-brand.mjs` enforces
+dimensions, ICO entries, the maskable safe zone, manifest accuracy, and the
+absence of invented social handles; `scripts/validate-media-kit.mjs` verifies
+the archive contents byte-for-byte against the committed sources.
+
+### Genuine gameplay screenshots (media kit)
+
+Only `public/game-art/beacon-lattice/screenshot-desktop.webp` is a genuine
+mounted-DOM capture (see `docs/BEACON_LATTICE_CAPTURE.md`), so it is the only
+screenshot shipped in the media kit and shown on `/media/`. Memory Match,
+Word Tile Rush, and Color Flip `screenshot-*.webp` files are generated
+previews and are deliberately **not** published as gameplay anywhere in the
+brand package.

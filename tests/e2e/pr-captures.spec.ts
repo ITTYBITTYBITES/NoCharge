@@ -1,7 +1,9 @@
-import { mkdir } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-import { test } from '@playwright/test';
+import { expect, test } from '@playwright/test';
+import sharp from 'sharp';
 
 import { denyOptionalServices } from './helpers/consent';
 
@@ -419,4 +421,179 @@ test('captures Quiet Setup review screens', async ({ page }) => {
   }
   await page.setViewportSize({ width: 360, height: 800 });
   await capture('platform-article-hero-360', '/articles/designing-browser-games-for-more-ways-to-play/');
+});
+
+test('captures brand review screens and asset comparisons', async ({ page, baseURL }) => {
+  test.setTimeout(6 * 60_000);
+  const brandCaptures = join(captures, 'brand');
+  await mkdir(brandCaptures, { recursive: true });
+  await denyOptionalServices(page);
+
+  const metrics: Array<Record<string, unknown>> = [];
+  const origin = baseURL ?? 'http://localhost:4321';
+
+  const measure = async (label: string) => {
+    const state = await page.evaluate(() => {
+      const header = document.querySelector('.site-header')?.getBoundingClientRect();
+      const brand = document.querySelector('.brand')?.getBoundingClientRect();
+      const mark = document.querySelector('.brand__mark')?.getBoundingClientRect();
+      const footer = document.querySelector('.site-footer')?.getBoundingClientRect();
+      return {
+        viewport: { width: window.innerWidth, height: window.innerHeight },
+        scrollWidth: document.documentElement.scrollWidth,
+        overflow: document.documentElement.scrollWidth - window.innerWidth,
+        headerHeight: header ? Math.round(header.height * 10) / 10 : null,
+        brandBox: brand ? { x: Math.round(brand.x), y: Math.round(brand.y), w: Math.round(brand.width), h: Math.round(brand.height) } : null,
+        markSize: mark ? Math.round(Math.max(mark.width, mark.height) * 10) / 10 : null,
+        footerHeight: footer ? Math.round(footer.height * 10) / 10 : null,
+        title: document.title,
+      };
+    });
+    metrics.push({ label, ...state });
+    // The review invariants are asserted at capture time so a green CI run is
+    // itself the verification for every state below.
+    expect(state.overflow, `${label} must not overflow its viewport`).toBeLessThanOrEqual(0);
+    if (state.headerHeight !== null) {
+      expect(state.headerHeight, `${label} header height`).toBeGreaterThan(40);
+      expect(state.headerHeight, `${label} header height`).toBeLessThanOrEqual(100);
+    }
+    if (state.brandBox) {
+      expect(state.brandBox.h, `${label} brand height`).toBeLessThanOrEqual(48);
+    }
+    if (state.markSize !== null) {
+      // The symbol itself stays compact (the link is wider because it also
+      // carries the real NoCharge text).
+      expect(state.markSize, `${label} symbol size`).toBeGreaterThanOrEqual(28);
+      expect(state.markSize, `${label} symbol size`).toBeLessThanOrEqual(36);
+    }
+  };
+
+  const shot = async (name: string, fullPage = true) =>
+    page.screenshot({ path: join(brandCaptures, `${name}.jpg`), type: 'jpeg', quality: 80, fullPage });
+  const shotElement = async (name: string, selector: string) =>
+    page.locator(selector).screenshot({ path: join(brandCaptures, `${name}.jpg`), type: 'jpeg', quality: 80 });
+
+  const composeSheet = async (name: string, sources: Array<{ file: string; width: number; height: number; scale?: number }>) => {
+    const gap = 24;
+    const inputs: import('sharp').OverlayOptions[] = [];
+    let width = 0;
+    const rowHeight = Math.max(...sources.map((source) => source.height * (source.scale ?? 1)));
+    for (const source of sources) {
+      const buffer = await sharp(source.file)
+        .resize(Math.round(source.width * (source.scale ?? 1)), Math.round(source.height * (source.scale ?? 1)), { kernel: 'nearest' })
+        .toBuffer();
+      inputs.push({ input: buffer, left: width, top: Math.round((rowHeight - source.height * (source.scale ?? 1)) / 2) });
+      width += Math.round(source.width * (source.scale ?? 1)) + gap;
+    }
+    await sharp({ create: { width, height: rowHeight + gap * 2, channels: 4, background: '#101010' } })
+      .composite(inputs.map((input) => ({ ...input, left: (input.left ?? 0) + gap / 2, top: (input.top ?? 0) + gap / 2 })))
+      .jpeg({ quality: 85 })
+      .toFile(join(brandCaptures, `${name}.jpg`));
+  };
+
+  // Header on the homepage at desktop, 390, and 320.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await measure('homepage-desktop');
+  await shotElement('01-homepage-header-desktop', '.site-header');
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  await measure('homepage-390');
+  await shotElement('02-homepage-header-390', '.site-header');
+
+  await page.setViewportSize({ width: 320, height: 700 });
+  await page.goto('/');
+  await measure('homepage-320');
+  await shotElement('03-homepage-header-320', '.site-header');
+
+  // Zoom uses the equivalent CSS-pixel viewport (1280x1024 divided by the
+  // factor), matching the project's other capture suites.
+  await page.setViewportSize({ width: 640, height: 512 });
+  await page.goto('/');
+  await measure('header-200-percent-zoom');
+  await shotElement('04-header-200-percent-zoom', '.site-header');
+  await page.setViewportSize({ width: 320, height: 256 });
+  await page.goto('/');
+  await measure('header-400-percent-reflow');
+  await shotElement('05-header-400-percent-reflow', '.site-header');
+
+  // Media page at desktop, 390, 320, and 200% equivalent.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/media/');
+  await measure('media-desktop');
+  await shot('06-media-page-desktop', true);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/media/');
+  await measure('media-390');
+  await shot('07-media-page-390', true);
+  await page.setViewportSize({ width: 320, height: 700 });
+  await page.goto('/media/');
+  await measure('media-320');
+  await shot('08-media-page-320', true);
+  await page.setViewportSize({ width: 640, height: 512 });
+  await page.goto('/media/');
+  await measure('media-200-percent-zoom');
+  await shot('09-media-page-200-percent-zoom', true);
+
+  // Media download section.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/media/');
+  await page.locator('#media-brand-assets').scrollIntoViewIfNeeded();
+  await measure('media-download-section');
+  await shotElement('10-media-download-section', '#media-brand-assets');
+
+  // Default social card and avatar as rendered files.
+  await page.goto(`${origin}/social/nocharge-default.jpg`);
+  await measure('default-social-card-file');
+  await shot('11-default-social-card');
+  await page.goto(`${origin}/social/nocharge-avatar-512.png`);
+  await measure('avatar-file');
+  await shot('12-avatar');
+
+  // Deterministic asset comparisons from the committed files.
+  await composeSheet('13-favicon-size-comparison', [
+    { file: join(process.cwd(), 'public', 'favicon-16x16.png'), width: 16, height: 16, scale: 8 },
+    { file: join(process.cwd(), 'public', 'favicon-32x32.png'), width: 32, height: 32, scale: 8 },
+    { file: join(process.cwd(), 'public', 'favicon-48x48.png'), width: 48, height: 48, scale: 8 },
+    { file: join(process.cwd(), 'public', 'apple-touch-icon.png'), width: 180, height: 180, scale: 3 },
+    { file: join(process.cwd(), 'public', 'icons', 'icon-192.png'), width: 192, height: 192, scale: 3 },
+    { file: join(process.cwd(), 'public', 'icons', 'icon-512.png'), width: 512, height: 512, scale: 1.5 },
+  ]);
+  const maskables = [
+    { file: join(process.cwd(), 'public', 'icons', 'icon-maskable-192.png'), width: 192, height: 192, scale: 3 },
+    { file: join(process.cwd(), 'public', 'icons', 'icon-maskable-512.png'), width: 512, height: 512, scale: 1.5 },
+  ];
+  const previewDir = join(process.cwd(), 'artifacts', 'brand-previews');
+  if (existsSync(join(previewDir, 'mask-circle.png'))) {
+    maskables.push({ file: join(previewDir, 'mask-circle.png'), width: 512, height: 512, scale: 1.5 });
+    maskables.push({ file: join(previewDir, 'mask-rounded.png'), width: 512, height: 512, scale: 1.5 });
+    maskables.push({ file: join(previewDir, 'mask-squircle.png'), width: 512, height: 512, scale: 1.5 });
+  }
+  await composeSheet('14-maskable-icon-comparison', maskables);
+  await composeSheet('15-logo-variants', [
+    { file: join(process.cwd(), 'public', 'brand', 'nocharge-lockup-dark-1200.png'), width: 1200, height: 320, scale: 0.8 },
+    { file: join(process.cwd(), 'public', 'brand', 'nocharge-lockup-light-1200.png'), width: 1200, height: 320, scale: 0.8 },
+  ]);
+
+  // Footer after branding, then headers on a game page, My Arcade, and Setup.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await page.locator('.site-footer').scrollIntoViewIfNeeded();
+  await measure('footer-after-branding');
+  await shotElement('16-footer-after-branding', '.site-footer');
+
+  await page.goto('/games/color-flip/');
+  await measure('game-page-header');
+  await shotElement('17-game-page-header', '.site-header');
+  await page.goto('/my-arcade/');
+  await measure('my-arcade-header');
+  await shotElement('18-my-arcade-header', '.site-header');
+  await page.goto('/setup/');
+  await measure('quiet-setup-header');
+  await shotElement('19-quiet-setup-header', '.site-header');
+
+  await writeFile(join(brandCaptures, 'review-metrics.json'), JSON.stringify(metrics, null, 2));
+  console.log(`Brand captures written to ${brandCaptures} (${metrics.length} measurements).`);
+  expect(metrics.length).toBe(16);
 });

@@ -1,0 +1,399 @@
+---
+import { getCollection } from 'astro:content';
+import { statSync } from 'node:fs';
+import { join } from 'node:path';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import GameArtwork from '../components/GameArtwork.astro';
+
+const games = (await getCollection('games'))
+  .filter((game) => !game.data.draft)
+  .sort((a, b) => a.data.order - b.data.order);
+const guides = (await getCollection('guides')).filter((guide) => !guide.data.draft);
+const articles = (await getCollection('articles')).filter((article) => !article.data.draft);
+const setup = (await getCollection('setup')).filter((entry) => !entry.data.draft);
+const collections = (await getCollection('collections')).filter((entry) => !entry.data.draft);
+
+const publicRoot = join(process.cwd(), 'public');
+const humanSize = (path: string) => {
+  const bytes = statSync(join(publicRoot, path)).size;
+  return bytes >= 1024 ? `${(bytes / 1024).toFixed(1)} KB` : `${bytes} B`;
+};
+
+// Downloads on this page. Labels stay self-explanatory and name the file
+// type and format so assistive technology and search engines understand them.
+const brandDownloads = [
+  { href: '/brand/nocharge-symbol.svg', label: 'Symbol — SVG vector', note: 'Canonical brand symbol, single colour (currentColor)' },
+  { href: '/brand/nocharge-symbol-black.svg', label: 'Symbol — black SVG', note: 'Monochrome for light backgrounds' },
+  { href: '/brand/nocharge-symbol-white.svg', label: 'Symbol — white SVG', note: 'Monochrome for dark backgrounds' },
+  { href: '/brand/nocharge-lockup-dark.svg', label: 'Lockup — dark SVG', note: 'Symbol plus wordmark for dark backgrounds' },
+  { href: '/brand/nocharge-lockup-light.svg', label: 'Lockup — light SVG', note: 'Symbol plus wordmark for light backgrounds' },
+  { href: '/brand/nocharge-symbol-512.png', label: 'Symbol — PNG, 512×512', note: 'Transparent press version' },
+  { href: '/brand/nocharge-lockup-dark-1200.png', label: 'Lockup — dark PNG, 1200×320', note: 'Transparent press version' },
+  { href: '/brand/nocharge-lockup-light-1200.png', label: 'Lockup — light PNG, 1200×320', note: 'Transparent press version' },
+  { href: '/social/nocharge-default.jpg', label: 'Default social card — JPG, 1200×630', note: 'General NoCharge sharing image' },
+  { href: '/social/nocharge-avatar-512.png', label: 'Avatar — PNG, 512×512', note: 'Square profile image' },
+] as const;
+
+const description =
+  'Press and directory resources for NoCharge: accurate facts about the quiet browser arcade, brand and game assets, and a reproducible media kit.';
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: 'Media and brand resources',
+    description,
+    url: 'https://nocharge.net/media/',
+    inLanguage: 'en',
+    isAccessibleForFree: true,
+    isPartOf: { '@type': 'WebSite', name: 'NoCharge', url: 'https://nocharge.net/' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nocharge.net/' },
+      { '@type': 'ListItem', position: 2, name: 'Media and brand resources', item: 'https://nocharge.net/media/' },
+    ],
+  },
+];
+---
+
+<BaseLayout title="Media and brand resources" description={description} path="/media/" schema={schema} showAds={false}>
+  <article class="media-page">
+    <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Media and brand resources' }]} />
+
+    <header class="media-header">
+      <p class="eyebrow">Media and brand resources</p>
+      <h1 class="page-title">Media and brand resources</h1>
+      <p class="lede">
+        NoCharge is a small browser arcade with original games, practical guides, and no account requirement.
+      </p>
+    </header>
+
+    <section class="media-section prose" aria-labelledby="media-about">
+      <h2 id="media-about">About NoCharge</h2>
+      <p>
+        NoCharge is a <strong>Quiet Arcade</strong>: four original browser games with clear rules, complete guides,
+        and supporting articles, plus a small shelf of practical setup reading. Every game opens and plays directly in
+        the browser — no account, download, or installation. Best results and Recently Played are kept in the local
+        storage of the device you use, and <a href="/my-arcade/">My Arcade</a> shows a quiet summary of what this
+        browser has already saved.
+      </p>
+    </section>
+
+    <section class="media-section prose" aria-labelledby="media-boilerplate">
+      <h2 id="media-boilerplate">Boilerplate description</h2>
+      <p>
+        NoCharge is a small browser arcade that publishes original games, clear player guides, and practical articles
+        about playing well in the browser. The current library has four original games — Memory Match, Word Tile Rush,
+        Color Flip, and Beacon Lattice — each playable immediately without an account, download, or installation.
+      </p>
+      <p>
+        The site pairs the arcade with a reference shelf: a definitive guide for every game, focused articles on
+        specific mechanics and platform topics, and Quiet Setup, a collection of practical desk-and-device guides.
+        Scores and progress are saved in the local browser storage of the device you play on; there is no account
+        system, no cloud save, and no synchronization between browsers or devices.
+      </p>
+      <p>
+        NoCharge is a general-audience site and is not directed to children. Editorial content is reviewed against the
+        current games, and verified public changes are recorded in the <a href="/changelog/">changelog</a>.
+      </p>
+    </section>
+
+    <section class="media-section" aria-labelledby="media-facts">
+      <h2 id="media-facts">Facts at a glance</h2>
+      <dl class="media-facts">
+        <div><dt>Games</dt><dd>{games.length} original browser games: {games.map((game) => game.data.title).join(', ')}.</dd></div>
+        <div><dt>Guides</dt><dd>{guides.length} definitive game guides covering rules, controls, scoring, and accessible play.</dd></div>
+        <div><dt>Articles</dt><dd>{articles.length} original articles on game mechanics and platform topics.</dd></div>
+        <div><dt>Quiet Setup</dt><dd>{setup.length} practical desk-and-device guides written without assuming a purchase is necessary.</dd></div>
+        <div><dt>Collections</dt><dd>{collections.length} curated collections that state how games qualify.</dd></div>
+        <div><dt>My Arcade</dt><dd>A browser-local dashboard. It is not an account; it reads results already saved in this browser.</dd></div>
+        <div><dt>Account</dt><dd>None required. There is no account system, no cloud save, and no synchronization.</dd></div>
+        <div><dt>Storage</dt><dd>Scores, progress, and preferences stay in the local browser storage of the device you use.</dd></div>
+        <div><dt>Input</dt><dd>Each game supports phone and desktop input. Memory Match, Word Tile Rush, and Beacon Lattice have native keyboard controls, and Color Flip includes keyboard play and an untimed turn-based mode.</dd></div>
+        <div><dt>Audience</dt><dd>General-audience site; not directed to children.</dd></div>
+      </dl>
+    </section>
+
+    <section class="media-section" aria-labelledby="media-brand-assets">
+      <div class="media-section-heading">
+        <h2 id="media-brand-assets">Brand assets</h2>
+        <p class="media-note">
+          The symbol is four rounded tiles with an open doorway: a quiet arcade you can walk into. Use the files as
+          provided — see <a href="#media-usage">usage guidance</a>. A complete package is also available as a
+          media kit archive.
+        </p>
+      </div>
+      <ul class="media-downloads">
+        {
+          brandDownloads.map((item) => (
+            <li class="media-download panel">
+              <a href={item.href} download>
+                <span class="media-download__name">{item.label}</span>
+                <span class="media-download__meta">{item.note} · {humanSize(item.href)}</span>
+              </a>
+            </li>
+          ))
+        }
+        <li class="media-download media-download--kit panel">
+          <a href="/media/nocharge-media-kit.zip" download>
+            <span class="media-download__name">Media kit — ZIP archive</span>
+            <span class="media-download__meta">Brand files, social card, avatar, selected game assets, and facts · {humanSize('/media/nocharge-media-kit.zip')}</span>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <section class="media-section" aria-labelledby="media-game-assets">
+      <div class="media-section-heading">
+        <h2 id="media-game-assets">Selected game assets</h2>
+        <p class="media-note">
+          Covers are original editorial artwork. Only genuine mounted-DOM gameplay captures are labeled as screenshots;
+          generated previews are never presented as gameplay. A smaller set ships inside the media kit.
+        </p>
+      </div>
+      <h3 class="media-subheading">Cover artwork</h3>
+      <div class="media-covers">
+        {
+          games.map((game) => (
+            <figure class="media-cover">
+              {game.data.artwork && (
+                <GameArtwork
+                  src={game.data.artwork.coverSquareFallback}
+                  webpSrc={game.data.artwork.coverSquare}
+                  width={800}
+                  height={800}
+                  variant="square"
+                  accent={game.data.accent}
+                  alt={`${game.data.title} cover artwork: ${game.data.artwork.alt}`}
+                />
+              )}
+              <figcaption>
+                <span>{game.data.title}</span>
+                <a href={game.data.artwork?.coverSquare} download>Download cover (WebP, 800×800)</a>
+              </figcaption>
+            </figure>
+          ))
+        }
+      </div>
+      <h3 class="media-subheading">Gameplay screenshot</h3>
+      <div class="media-screenshots">
+        <figure class="media-screenshot">
+          <img
+            src="/game-art/beacon-lattice/screenshot-desktop.webp"
+            width="1440"
+            height="900"
+            alt="Beacon Lattice gameplay: a puzzle grid with placed beacons and coverage marks"
+            loading="lazy"
+            decoding="async"
+          />
+          <figcaption>
+            <span>Beacon Lattice — genuine mounted-DOM gameplay capture</span>
+            <a href="/game-art/beacon-lattice/screenshot-desktop.webp" download>Download screenshot (WebP, 1440×900)</a>
+          </figcaption>
+        </figure>
+      </div>
+      <p class="media-note">
+        Memory Match, Word Tile Rush, and Color Flip do not yet have a genuine mounted-DOM gameplay capture on file, so
+        no screenshot is offered for them. This gap is documented in the repository review notes.
+      </p>
+    </section>
+
+    <section class="media-section prose" aria-labelledby="media-contact">
+      <h2 id="media-contact">Contact</h2>
+      <p>
+        For questions about this page, the brand, or the site itself, email
+        <a href="mailto:hello@nocharge.net">hello@nocharge.net</a>.
+      </p>
+    </section>
+
+    <section class="media-section prose" aria-labelledby="media-usage">
+      <h2 id="media-usage">Usage guidance</h2>
+      <ul>
+        <li>Use the brand files as provided. Do not distort, rotate, redraw, or recombine the symbol.</li>
+        <li>Preserve clear space around the symbol and lockups, and do not crop the open doorway.</li>
+        <li>Do not recolor the mark outside the approved variants: black, white, brand green, and deep green on light backgrounds.</li>
+        <li>Do not imply endorsement or sponsorship by NoCharge.</li>
+        <li>Do not present generated concept art or previews as gameplay. The only genuine gameplay capture currently published is Beacon Lattice's.</li>
+        <li>Write “NoCharge” and the game names accurately: Memory Match, Word Tile Rush, Color Flip, Beacon Lattice.</li>
+      </ul>
+    </section>
+
+    <p class="media-updated">Last reviewed: 2026-08-21. Facts on this page are generated from the live site's content at build time; the HTML page remains the canonical source.</p>
+  </article>
+</BaseLayout>
+
+<style>
+  .media-page {
+    display: grid;
+    gap: clamp(2.25rem, 5vw, 3.5rem);
+    max-width: 62rem;
+    margin-inline: auto;
+  }
+
+  .media-header {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .media-section {
+    display: grid;
+    gap: 1rem;
+    min-width: 0;
+  }
+
+  .media-section > h2,
+  .media-section-heading h2,
+  .media-subheading {
+    color: var(--text);
+    letter-spacing: -0.025em;
+  }
+
+  .media-section > h2,
+  .media-section-heading h2 {
+    margin: 0;
+    font-size: clamp(1.4rem, 3vw, 1.7rem);
+  }
+
+  .media-section-heading {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .media-note {
+    max-width: 46rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .media-note a,
+  .prose a {
+    color: var(--accent-strong);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .media-facts {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .media-facts > div {
+    display: grid;
+    grid-template-columns: minmax(8rem, 11rem) 1fr;
+    gap: 0.5rem 1.25rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .media-facts dt {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .media-facts dd {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .media-downloads {
+    display: grid;
+    gap: 0.7rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .media-download {
+    min-width: 0;
+    padding: 0;
+  }
+
+  .media-download a {
+    display: grid;
+    gap: 0.2rem;
+    padding: 0.95rem 1.1rem;
+    border-radius: var(--radius);
+  }
+
+  .media-download a:hover {
+    background: var(--panel-2);
+  }
+
+  .media-download__name {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .media-download__meta {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  .media-download--kit a {
+    background: linear-gradient(145deg, rgba(15, 157, 88, 0.12), transparent 60%), var(--panel);
+  }
+
+  .media-subheading {
+    margin: 0.5rem 0 0;
+    font-size: 1.05rem;
+  }
+
+  .media-covers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: 1rem;
+  }
+
+  .media-cover,
+  .media-screenshot {
+    margin: 0;
+  }
+
+  .media-cover figcaption,
+  .media-screenshot figcaption {
+    display: grid;
+    gap: 0.15rem;
+    margin-top: 0.55rem;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  .media-cover figcaption span,
+  .media-screenshot figcaption span {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .media-cover figcaption a,
+  .media-screenshot figcaption a {
+    color: var(--accent-strong);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .media-screenshot img {
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--line);
+    border-radius: 1rem;
+  }
+
+  .media-updated {
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 40rem) {
+    .media-facts > div {
+      grid-template-columns: 1fr;
+      gap: 0.15rem;
+    }
+  }
+</style>

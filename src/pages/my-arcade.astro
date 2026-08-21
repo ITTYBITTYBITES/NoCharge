@@ -38,7 +38,15 @@ const schema = [
 ];
 ---
 
-<BaseLayout title={title} description={description} path="/my-arcade/" schema={schema} showAds={false}>
+<BaseLayout
+  title={title}
+  description={description}
+  path="/my-arcade/"
+  schema={schema}
+  showAds={false}
+  socialImage="/social/nocharge-default.jpg"
+  socialImageAlt="NoCharge — quiet browser games and clear guides"
+>
   <div class="ma-page">
     <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Arcade', href: '/arcade/' }, { label: 'My Arcade' }]} />
 

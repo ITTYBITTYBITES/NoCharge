@@ -88,7 +88,7 @@ const schema = [
               <span>{typeLabel[entry.data.type]}</span>
             </div>
             <div>
-              <h2>{entry.data.title}</h2>
+              <h2 id={entry.id}>{entry.data.title}</h2>
               <p class="changelog-entry__summary">{entry.data.summary}</p>
               <div class="changelog-entry__body prose"><Content /></div>
             </div>

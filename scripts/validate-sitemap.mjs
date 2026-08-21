@@ -31,6 +31,7 @@ const required = [
   '/collections/browser-games-without-accounts/',
   '/collections/games-for-a-short-break/',
   '/about/',
+  '/media/',
   '/terms/',
   '/advertising/',
   '/changelog/',

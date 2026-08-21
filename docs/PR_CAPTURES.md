@@ -108,3 +108,21 @@ Gameplay screenshots in `public/game-art/beacon-lattice/screenshot-*.webp` are c
 | Changelog | ![Changelog desktop](./pr-captures/desktop-changelog.jpg) | ![Changelog mobile](./pr-captures/mobile-changelog.jpg) |
 | Article index | ![Article index desktop](./pr-captures/desktop-articles.jpg) | ![Article index mobile](./pr-captures/mobile-articles.jpg) |
 | Representative article | ![Article desktop](./pr-captures/desktop-article-memory-scan.jpg) | ![Article mobile](./pr-captures/mobile-article-memory-scan.jpg) |
+
+### Brand identity and media presence (2026-08-21)
+
+The same `CAPTURE_PR=1` suite now also captures the brand review set into
+`pr-visual-captures/brand/` (7-day retention): homepage headers at 1440×900,
+390×844 and 320×700; the 200%- and 400%-equivalent header reflows; the
+`/media/` page at 1440×900, 390×844, 320×700 and the 200%-equivalent
+viewport; the media download section; the rendered default social card and
+avatar; deterministic favicon-size, maskable and logo-variant comparison
+sheets; the footer after branding; and headers on a game page, My Arcade and
+Quiet Setup. DOM measurements (viewport, header height, overflow) accompany
+each capture in `brand/review-metrics.json`.
+
+The brand captures never click an advertisement or an Amazon link, never
+contact a social platform, and use only committed assets. Findings from
+opening each image are recorded in
+[`BRAND_VISUAL_REVIEW.md`](./BRAND_VISUAL_REVIEW.md). Screenshots are not
+committed to Git.

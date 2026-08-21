@@ -18,6 +18,7 @@
     "art:word": "node scripts/generate-word-tile-rush-art.mjs",
     "art:color": "node scripts/generate-color-flip-art.mjs",
     "art:beacon": "node scripts/generate-beacon-lattice-art.mjs",
+    "art:brand": "node scripts/generate-brand-assets.mjs",
     "capture:beacon": "node scripts/capture-beacon-screenshots.mjs",
     "lighthouse": "lhci autorun",
     "validate:html": "html-validate \"dist/**/*.html\"",
@@ -26,7 +27,12 @@
     "inspect:structured-data": "node scripts/inspect-structured-data.mjs",
     "check:assets": "node scripts/check-asset-budget.mjs",
     "validate:setup": "node scripts/validate-quiet-setup.mjs",
-    "validate:feed": "node scripts/validate-setup-feed.mjs"
+    "validate:feed": "node scripts/validate-setup-feed.mjs && node scripts/validate-general-feed.mjs",
+    "validate:brand": "node scripts/validate-brand.mjs",
+    "validate:media-kit": "node scripts/validate-media-kit.mjs",
+    "validate:brand-media": "node scripts/validate-brand-media.mjs",
+    "kit:media": "node scripts/generate-media-kit.mjs",
+    "inspect:favicons": "node scripts/inspect-favicons.mjs"
   },
   "engines": {
     "node": ">=22.12.0"

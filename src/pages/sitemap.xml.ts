@@ -30,6 +30,7 @@ export const GET: APIRoute = async ({ site }) => {
     '/collections/',
     ...curatedCollections.map((collection) => `/collections/${collection.id}/`),
     '/about/',
+    '/media/',
     '/help/',
     '/terms/',
     '/advertising/',
