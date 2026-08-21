@@ -1,4 +1,6 @@
 ---
+import BrandMark from './BrandMark.astro';
+
 const pathname = Astro.url.pathname;
 const arcadeCurrent = pathname.startsWith('/arcade/') || pathname.startsWith('/games/');
 const guidesCurrent = pathname.startsWith('/guides/');
@@ -8,7 +10,7 @@ const guidesAria = pathname === '/guides/' ? 'page' : guidesCurrent ? 'location'
 
 <header class="site-header">
   <a class="brand" href="/" aria-label="NoCharge home">
-    <span class="brand__mark" aria-hidden="true">N</span>
+    <BrandMark class="brand__mark" size="2rem" />
     <span>NoCharge</span>
   </a>
   <nav class="primary-nav" aria-label="Primary">

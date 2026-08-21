@@ -14,6 +14,7 @@ for (const path of [
   '/guides/beacon-lattice/',
   '/privacy/',
   '/about/',
+  '/media/',
   '/terms/',
   '/advertising/',
   '/accessibility/',

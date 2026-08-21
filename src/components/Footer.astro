@@ -1,10 +1,14 @@
 ---
+import BrandMark from './BrandMark.astro';
 const year = new Date().getFullYear();
 ---
 
 <footer class="site-footer">
   <div class="site-footer__identity">
-    <span>&copy; {year} NoCharge · General-audience site, not directed to children.</span>
+    <span class="site-footer__identity-line">
+      <BrandMark class="brand-mark--footer" size="1.1rem" />
+      <span>&copy; {year} NoCharge · General-audience site, not directed to children.</span>
+    </span>
     <a href="mailto:hello@nocharge.net">hello@nocharge.net</a>
   </div>
   <div class="footer-groups">

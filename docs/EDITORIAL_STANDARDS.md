@@ -79,3 +79,25 @@ Platform article illustrations are editorial aids. Titles and surrounding copy c
 ## Quiet Setup and compensated links
 
 Quiet Setup is governed by [`QUIET_SETUP_EDITORIAL_POLICY.md`](./QUIET_SETUP_EDITORIAL_POLICY.md). It uses a dedicated content model, honest evidence labels, no-purchase alternatives, visible disclosures, and direct manually authored paid links. Editorial usefulness comes before monetization. Paid relationships never affect game rules, scores, access, collections, or instructions, and affiliate links never appear in gameplay UI.
+
+## Brand, media, and feeds
+
+The brand identity, media page, media kit, and feeds are governed by
+[`BRAND_GUIDE.md`](./BRAND_GUIDE.md) and the repository validators:
+
+- Public descriptions use the approved one-line, short bio, medium
+  description, or press boilerplate from the brand guide. Never claim
+  ad-free, tracking-free, certified accessibility, rankings, player counts,
+  revenue, or guarantees.
+- My Arcade is a browser-local dashboard, never a "secure private account".
+- The media page is the canonical facts source; counts are generated from the
+  content collections, not hard-coded. It contains no affiliate links and no
+  unverified contact addresses or social profiles.
+- Gameplay screenshots in the media kit and on `/media/` must be genuine
+  mounted-DOM captures. Generated previews are cover or illustration artwork,
+  never screenshots.
+- The general feed (`/feed.xml`) is derived from the changelog collection; it
+  must never carry affiliate links, tracking pixels, or social URLs, and its
+  GUIDs stay stable changelog anchors.
+- No invented social handles may appear anywhere; account registration and
+  verification are owner actions.

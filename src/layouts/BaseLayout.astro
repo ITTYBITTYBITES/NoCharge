@@ -18,6 +18,8 @@ interface Props {
   modifiedTime?: string;
   socialImage?: string;
   socialImageAlt?: string;
+  socialImageWidth?: number;
+  socialImageHeight?: number;
   feedHref?: string;
 }
 
@@ -32,6 +34,8 @@ const {
   modifiedTime,
   socialImage,
   socialImageAlt,
+  socialImageWidth,
+  socialImageHeight,
   feedHref,
 } = Astro.props;
 
@@ -57,10 +61,15 @@ const release = import.meta.env.PUBLIC_RELEASE ?? '1.0.0';
       modifiedTime={modifiedTime}
       socialImage={socialImage}
       socialImageAlt={socialImageAlt}
+      socialImageWidth={socialImageWidth}
+      socialImageHeight={socialImageHeight}
       feedHref={feedHref}
     />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="theme-color" content="#121212" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
