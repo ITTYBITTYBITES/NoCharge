@@ -17,6 +17,7 @@ Reviewed 2026-08-19 against the current registry, content collections, runtime, 
 | `/about/` | Trust, ownership, contact, and product context | Read Privacy or play | Product implementation and policy pages | Some ad detail belongs on Advertising | Existing route kept; no promotional claims |
 | `/privacy/`, `/terms/`, `/accessibility/`, `/advertising/` | Policy, consent, limitations, and reporting destinations | Make a choice or contact NoCharge | Runtime, consent, ad config, legal review | Purposefully separate | No illustrations added |
 | `/help/` | Practical support for controls, local data, consent distinction, and troubleshooting | Return to game or email hello@nocharge.net | Game shell, storage, consent, reviewed docs | New route; no equivalent substantial support page existed | Added one support destination; no FAQ schema, chat, or response-time promise |
+| `/my-arcade/` | Answers "what did I play here, what did this browser save, and how do I continue or clear it" in one calm place | Continue a game, open a guide, or clear local data | Game storage modules, Recently Played, `src/lib/my-arcade/` | Not a duplicate of Arcade: Arcade is the catalogue, My Arcade reads this browser | Added one local dashboard; no account, ranking, streak, or completion mechanic, and no advertisement or affiliate link |
 | `/changelog/` | Concise visitor-facing history | Return to the relevant library area | Merged public releases and content history | Technical release logs removed from visible copy | Consolidated history into plain-language entries |
 
 ## Findings
@@ -35,3 +36,16 @@ Reviewed 2026-08-19 against the current registry, content collections, runtime, 
 | Eight setup articles | Independently useful comparisons covering method, input, keyboards, switches, stands, zoom, offline puzzles, and low-noise desks | Apply a no-purchase test, then optionally compare | All evidence is editorial research; paid links are optional and outside gameplay |
 
 Each launch article identifies criteria, tradeoffs, limitations, alternatives, evaluation scope, review date, and a concrete action. Three of eight contain no paid links. The section is intentionally separate from game guides and does not repeat complete game instructions.
+
+## My Arcade review (2026-08-21)
+
+| Route | Visitor purpose and unique value | Next action | Deliberate boundary |
+|---|---|---|---|
+| `/my-arcade/` | A private, browser-local reference to recent play and each game's own saved result | Continue a game, read its guide, or clear local data | No account, sign-in, profile, avatar, sync, leaderboard, level, XP, achievement, badge, streak, daily reward, favourite, search, filter, notification, or social share |
+
+The page reuses the existing Recently Played record and each game's existing keys rather than adding storage. Every
+metric is labelled with the term the game itself uses, so Memory Match reports fewest moves while Word Tile Rush and
+Color Flip report scores; no single number is calculated across unrelated games and no completion percentage exists.
+A game with nothing stored says `No saved result in this browser yet.` rather than showing a zero. The route carries
+no display advertisement and no affiliate link, which keeps local results visually separate from advertising; the
+rest of the site's advertising is unchanged.

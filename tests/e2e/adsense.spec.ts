@@ -21,6 +21,7 @@ const ELIGIBLE_PATHS = [
 ] as const;
 
 const AD_FREE_PATHS = [
+  '/my-arcade/',
   '/privacy/',
   '/terms/',
   '/accessibility/',

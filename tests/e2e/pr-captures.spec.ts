@@ -130,6 +130,135 @@ test('captures desktop and mobile platform-maturity review screens', async ({ pa
   await shot('zoom-200-collection-keyboard', true);
 });
 
+test('captures My Arcade review screens', async ({ page }) => {
+  test.setTimeout(6 * 60_000);
+  await mkdir(captures, { recursive: true });
+  await denyOptionalServices(page);
+
+  const shot = async (name: string, fullPage = true) =>
+    page.screenshot({ path: join(captures, `${name}.jpg`), type: 'jpeg', quality: 80, fullPage });
+
+  const RECENT_KEY = 'nocharge:pref:recently-played';
+  const POPULATED = {
+    [RECENT_KEY]: JSON.stringify([
+      { gameId: 'beacon-lattice', playedAt: Date.now() - 60_000 },
+      { gameId: 'color-flip', playedAt: Date.now() - 86_400_000 },
+      { gameId: 'word-tile-rush', playedAt: Date.now() - 3 * 86_400_000 },
+      { gameId: 'memory-match', playedAt: Date.now() - 21 * 86_400_000 },
+    ]),
+    'nocharge:memory-match:best-moves': '14',
+    'nocharge:memory-match:high': '860',
+    'nocharge:word-tile-rush:high': '4200',
+    'nocharge:color-flip:high': '12',
+    'nocharge:color-flip-turn-based:high': '7',
+    'nocharge:beacon-lattice:high': '2',
+    'nocharge:pref:beacon-lattice-progress': JSON.stringify({
+      currentId: 'bl-02-long-plus',
+      completed: ['bl-01-first-plus', 'bl-02-long-plus'],
+      bests: { 'bl-01-first-plus': 1, 'bl-02-long-plus': 3 },
+    }),
+  } as const;
+
+  const ready = async () => {
+    await page.locator('[data-my-arcade][aria-busy="false"]').waitFor();
+    await page.evaluate(async () => {
+      for (const img of document.querySelectorAll('img')) img.loading = 'eager';
+      await Promise.all([...document.images].map((i) => (i.complete ? null : i.decode().catch(() => null))));
+    });
+    await page.waitForTimeout(120);
+  };
+
+  const seed = async (values: Record<string, string>) => {
+    await page.goto('/my-arcade/');
+    await page.evaluate(() => localStorage.clear());
+    await page.evaluate((entries) => {
+      for (const [key, value] of Object.entries(entries)) localStorage.setItem(key, value);
+    }, values);
+    await page.reload();
+    await ready();
+  };
+
+  const clearLocal = async () => {
+    await page.goto('/my-arcade/');
+    await page.evaluate(() => localStorage.clear());
+  };
+
+  // 1-3. Empty dashboard at desktop, 390px and 320px.
+  for (const [label, width, height] of [
+    ['desktop', 1440, 900],
+    ['390', 390, 844],
+    ['320', 320, 700],
+  ] as const) {
+    await page.setViewportSize({ width, height });
+    await clearLocal();
+    await page.reload();
+    await ready();
+    await shot(`my-arcade-empty-${label}`);
+  }
+
+  // 4 and 12. Zoom is captured as the equivalent CSS-pixel viewport (a
+  // 1280x1024 screen divided by the zoom factor) because media queries ignore
+  // the CSS `zoom` property and would show a scaled desktop layout instead.
+  await page.setViewportSize({ width: 640, height: 512 });
+  await clearLocal();
+  await page.reload();
+  await ready();
+  await shot('my-arcade-empty-zoom-200');
+
+  await page.setViewportSize({ width: 320, height: 256 });
+  await seed({ ...POPULATED });
+  await shot('my-arcade-populated-zoom-400');
+
+  // 5. One recently played game.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await seed({
+    [RECENT_KEY]: JSON.stringify([{ gameId: 'memory-match', playedAt: Date.now() - 60_000 }]),
+    'nocharge:memory-match:best-moves': '18',
+  });
+  await shot('my-arcade-one-recent-desktop');
+
+  // 6 and 7. Multiple recent games and all four summary cards with data.
+  await seed({ ...POPULATED });
+  await shot('my-arcade-populated-desktop');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.reload();
+  await ready();
+  await shot('my-arcade-populated-390');
+
+  // 9. Privacy clearing, before and after.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await seed({ ...POPULATED });
+  await shot('my-arcade-before-clear');
+  await page.goto('/privacy/');
+  await page.getByRole('button', { name: 'Clear game data' }).click();
+  await page.goto('/my-arcade/');
+  await ready();
+  await shot('my-arcade-after-clear');
+
+  // 10 and 11. Entry points.
+  await seed({ ...POPULATED });
+  await page.goto('/arcade/');
+  await page.waitForLoadState('networkidle');
+  await shot('my-arcade-entry-arcade');
+  await page.goto('/');
+  await page.waitForLoadState('networkidle');
+  await shot('my-arcade-entry-home-recent');
+
+  // 8. Storage unavailable. This init script cannot be removed afterwards, so
+  // it runs last in this capture block.
+  await page.addInitScript(() => {
+    Object.defineProperty(window, 'localStorage', {
+      configurable: true,
+      get() {
+        throw new DOMException('The operation is insecure.', 'SecurityError');
+      },
+    });
+  });
+  await page.goto('/my-arcade/');
+  await ready();
+  await shot('my-arcade-storage-unavailable');
+});
+
 test('captures Quiet Setup review screens', async ({ page }) => {
   test.setTimeout(8 * 60_000);
   await mkdir(captures, { recursive: true });

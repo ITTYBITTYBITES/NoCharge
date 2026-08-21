@@ -1,0 +1,539 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import GameArtwork from '../components/GameArtwork.astro';
+
+// Registry order is the shared game order used everywhere else on the site.
+const games = (await getCollection('games'))
+  .filter((game) => !game.data.draft)
+  .sort((a, b) => a.data.order - b.data.order);
+
+const title = 'My Arcade';
+const description =
+  'A private dashboard for the NoCharge results already saved in this browser. No account, no sync, and no upload — just a way back into a game.';
+
+// Structured data describes the static purpose of the page only. It never
+// contains, implies, or exposes any browser-local value.
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: 'My Arcade',
+    description,
+    url: 'https://nocharge.net/my-arcade/',
+    inLanguage: 'en',
+    isAccessibleForFree: true,
+    isPartOf: { '@type': 'WebSite', name: 'NoCharge', url: 'https://nocharge.net/' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nocharge.net/' },
+      { '@type': 'ListItem', position: 2, name: 'Arcade', item: 'https://nocharge.net/arcade/' },
+      { '@type': 'ListItem', position: 3, name: 'My Arcade', item: 'https://nocharge.net/my-arcade/' },
+    ],
+  },
+];
+---
+
+<BaseLayout title={title} description={description} path="/my-arcade/" schema={schema} showAds={false}>
+  <div class="ma-page">
+    <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Arcade', href: '/arcade/' }, { label: 'My Arcade' }]} />
+
+    <header class="ma-header">
+      <p class="eyebrow">Local play</p>
+      <h1 class="page-title">My Arcade</h1>
+      <p class="lede">
+        A quiet reference for the game results this browser already has. Continue when you want.
+      </p>
+      <ul class="ma-header__facts">
+        <li>Everything here is read from this browser only.</li>
+        <li>Nothing on this page is an account.</li>
+        <li>Results do not synchronize between browsers or devices.</li>
+        <li>Analytics consent is a separate choice and is not read here.</li>
+      </ul>
+    </header>
+
+    <noscript>
+      <div class="ma-noscript panel">
+        <h2>Local summaries need JavaScript</h2>
+        <p>
+          My Arcade reads saved results directly from this browser, which needs JavaScript on this page. Nothing has
+          been lost: any saved results stay in this browser exactly as they were.
+        </p>
+        <p>
+          You can still open the <a href="/arcade/">Arcade</a> and every game page, and <a href="/privacy/">Privacy</a>{' '}
+          explains what is stored locally and how to clear it.
+        </p>
+      </div>
+    </noscript>
+
+    <div class="ma-dashboard" data-my-arcade aria-busy="true">
+      <p class="ma-state panel" data-ma-loading>Reading the results saved in this browser…</p>
+
+      <div class="ma-state panel" data-ma-blocked hidden>
+        <h2 class="ma-state__title">Local game data is unavailable</h2>
+        <p>This browser is not allowing local game data right now. You can still open and play every game.</p>
+      </div>
+
+      <div class="ma-state panel" data-ma-empty hidden>
+        <h2 class="ma-state__title">Nothing is saved in this browser yet</h2>
+        <p>
+          My Arcade only shows results this browser already has. Choose a game whenever you are ready — a missing
+          result is not a task.
+        </p>
+      </div>
+
+      <section class="ma-continue" data-ma-continue hidden aria-labelledby="ma-continue-heading">
+        <div class="ma-section-heading">
+          <h2 id="ma-continue-heading">Continue playing</h2>
+          <p>Games with a saved play record in this browser, newest first.</p>
+        </div>
+        <ul class="ma-continue__list" data-ma-continue-list>
+          {
+            games.map((game) => (
+              <li class="ma-continue__item panel" data-ma-recent={game.id} hidden>
+                {game.data.artwork && (
+                  <GameArtwork
+                    class="ma-continue__art"
+                    src={game.data.artwork.coverSquareFallback}
+                    webpSrc={game.data.artwork.coverSquare}
+                    width={800}
+                    height={800}
+                    variant="square"
+                    accent={game.data.accent}
+                    decorative
+                  />
+                )}
+                <div class="ma-continue__body">
+                  <h3 class="ma-continue__title">{game.data.title}</h3>
+                  <p class="ma-continue__meta">
+                    {game.data.genre} · {game.data.session}
+                  </p>
+                  <p class="ma-continue__when" data-ma-recent-when hidden>
+                    Last played <time data-ma-recent-time />
+                  </p>
+                </div>
+                <a class="btn btn--ghost btn--sm ma-continue__cta" href={`/games/${game.id}/`}>
+                  Continue<span class="sr-only"> {game.data.title}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section class="ma-games" aria-labelledby="ma-games-heading">
+        <div class="ma-section-heading">
+          <h2 id="ma-games-heading">Saved game details</h2>
+          <p>
+            Each game keeps its own kind of result, so these cards do not share one score. There are no streaks,
+            ranks, or completion rewards here.
+          </p>
+        </div>
+        <div class="ma-games__grid">
+          {
+            games.map((game) => (
+              <article class="ma-card panel" data-ma-card={game.id}>
+                {game.data.artwork && (
+                  <GameArtwork
+                    class="ma-card__art"
+                    src={game.data.artwork.coverSquareFallback}
+                    webpSrc={game.data.artwork.coverSquare}
+                    width={800}
+                    height={800}
+                    variant="square"
+                    accent={game.data.accent}
+                    decorative
+                  />
+                )}
+                <div class="ma-card__body">
+                  <h3 class="ma-card__title">{game.data.title}</h3>
+                  <p class="ma-card__meta">
+                    {game.data.genre} · {game.data.session}
+                  </p>
+                  <p class="ma-card__played" data-ma-card-played hidden>
+                    Last played <time data-ma-card-time />
+                  </p>
+                  <div class="ma-card__metrics" data-ma-metrics>
+                    <p class="ma-card__none">Reading this browser…</p>
+                  </div>
+                  <p class="ma-card__links">
+                    <a href={`/games/${game.id}/`}>
+                      Play<span class="sr-only"> {game.data.title}</span>
+                    </a>
+                    <a href={`/guides/${game.id}/`}>
+                      Guide<span class="sr-only"> for {game.data.title}</span>
+                    </a>
+                  </p>
+                </div>
+              </article>
+            ))
+          }
+        </div>
+      </section>
+
+      <section class="ma-explain panel" aria-labelledby="ma-explain-heading">
+        <h2 id="ma-explain-heading">Where this information is stored</h2>
+        <ul>
+          <li>Scores and progress stay in the local storage of the browser you are using now.</li>
+          <li>Clearing your browser storage, site data, or history may remove them.</li>
+          <li>Private or incognito windows often discard them when the window closes.</li>
+          <li>A different browser, profile, or device will not share them.</li>
+          <li>NoCharge has no account system and cannot recover local results for you.</li>
+          <li>Your analytics consent choice is separate and is not part of local game storage.</li>
+        </ul>
+      </section>
+
+      <section class="ma-controls panel" aria-labelledby="ma-controls-heading">
+        <h2 id="ma-controls-heading">Data controls</h2>
+        <p>
+          <a href="/privacy/">Privacy</a> explains every key NoCharge stores locally, and its{' '}
+          <a href="/privacy/#local-data">Clear game data</a> control is the established way to remove them. The button
+          below runs that same clearing step from here.
+        </p>
+        <button class="btn btn--ghost btn--sm" type="button" data-ma-clear-start aria-expanded="false">
+          Clear game data
+        </button>
+        <div class="ma-confirm" data-ma-clear-confirm hidden>
+          <p class="ma-confirm__title">Remove saved game data from this browser?</p>
+          <p>
+            This removes best scores for all four games, Memory Match fewest moves, Beacon Lattice puzzle progress,
+            the shared sound preference, and Recently Played. It does not change your analytics consent choice,
+            Google&rsquo;s Privacy &amp; messaging choices, or any other storage on this device.
+          </p>
+          <div class="ma-confirm__actions">
+            <button class="btn btn--ghost btn--sm" type="button" data-ma-clear-confirm-button>
+              Remove saved game data
+            </button>
+            <button class="btn btn--ghost btn--sm" type="button" data-ma-clear-cancel>Keep it</button>
+          </div>
+        </div>
+        <p class="ma-controls__status" data-ma-clear-status role="status"></p>
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  import { mountMyArcade } from '../lib/my-arcade/mount';
+
+  const root = document.querySelector<HTMLElement>('[data-my-arcade]');
+  // Reading local values is the only thing this page does. It never records a
+  // play event, so opening My Arcade cannot change Recently Played.
+  if (root) mountMyArcade(root);
+</script>
+
+<style>
+  .ma-page {
+    display: grid;
+    gap: clamp(1.75rem, 5vw, 2.75rem);
+    max-width: 58rem;
+  }
+
+  .ma-header__facts {
+    display: grid;
+    gap: 0.35rem;
+    max-width: 42rem;
+    margin: 1.1rem 0 0;
+    padding-left: 1.15rem;
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+
+  .ma-noscript {
+    display: grid;
+    gap: 0.6rem;
+    padding: 1.1rem 1.2rem;
+    color: var(--muted);
+  }
+
+  .ma-noscript h2 {
+    color: var(--text);
+    font-size: 1.05rem;
+    letter-spacing: -0.02em;
+  }
+
+  .ma-noscript a,
+  .ma-controls a,
+  .ma-card__links a {
+    color: var(--accent-strong);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .ma-dashboard {
+    display: grid;
+    gap: clamp(1.75rem, 5vw, 2.75rem);
+  }
+
+  /* One reserved slot for the loading, empty, and blocked messages keeps the
+     first paint stable instead of collapsing when local data is read. */
+  .ma-state {
+    display: grid;
+    align-content: center;
+    gap: 0.5rem;
+    min-height: 6.5rem;
+    padding: 1.1rem 1.2rem;
+    color: var(--muted);
+  }
+
+  .ma-state[hidden] {
+    display: none;
+  }
+
+  .ma-state__title {
+    color: var(--text);
+    font-size: 1.05rem;
+    letter-spacing: -0.02em;
+  }
+
+  .ma-section-heading {
+    display: grid;
+    gap: 0.35rem;
+    max-width: 44rem;
+    margin-bottom: 1rem;
+  }
+
+  .ma-section-heading h2 {
+    font-size: clamp(1.4rem, 3.4vw, 1.9rem);
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+  }
+
+  .ma-section-heading p {
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+
+  .ma-continue[hidden] {
+    display: none;
+  }
+
+  .ma-continue__list {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .ma-continue__item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.9rem 1rem;
+  }
+
+  .ma-continue__item[hidden] {
+    display: none;
+  }
+
+  .ma-continue :global(.ma-continue__art),
+  .ma-card :global(.ma-card__art) {
+    width: 3.75rem;
+    border-radius: 0.75rem;
+  }
+
+  .ma-continue__title {
+    font-size: 1.02rem;
+    letter-spacing: -0.015em;
+  }
+
+  .ma-continue__meta,
+  .ma-card__meta {
+    margin-top: 0.15rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .ma-continue__when,
+  .ma-card__played {
+    margin-top: 0.2rem;
+    color: var(--muted);
+    font-size: 0.82rem;
+  }
+
+  .ma-continue__when[hidden],
+  .ma-card__played[hidden] {
+    display: none;
+  }
+
+  .ma-continue__cta {
+    white-space: nowrap;
+  }
+
+  .ma-games__grid {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .ma-card {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.95rem;
+    padding: 1.05rem 1.1rem;
+  }
+
+  .ma-card__body {
+    display: grid;
+    align-content: start;
+    gap: 0;
+    min-width: 0;
+  }
+
+  .ma-card__title {
+    font-size: 1.05rem;
+    letter-spacing: -0.015em;
+  }
+
+  /* Reserve the metric area so replacing the loading line with real values
+     does not move the links below it. */
+  .ma-card__metrics {
+    min-height: 4.25rem;
+    margin-top: 0.65rem;
+  }
+
+  .ma-card__none {
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+
+  .ma-metrics {
+    display: grid;
+    gap: 0.6rem;
+    margin: 0;
+  }
+
+  .ma-metric {
+    display: grid;
+    gap: 0.1rem;
+  }
+
+  .ma-metric dt {
+    color: var(--muted);
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .ma-metric dd {
+    display: grid;
+    gap: 0.1rem;
+    margin: 0;
+  }
+
+  .ma-metric dd strong {
+    color: var(--text);
+    font-size: 1.05rem;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+
+  .ma-metric__detail {
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 400;
+  }
+
+  .ma-card__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.1rem;
+    margin-top: 0.85rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .ma-card__links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .ma-explain,
+  .ma-controls {
+    display: grid;
+    justify-items: start;
+    gap: 0.7rem;
+    padding: 1.2rem 1.25rem;
+    color: var(--muted);
+  }
+
+  .ma-explain h2,
+  .ma-controls h2 {
+    color: var(--text);
+    font-size: 1.15rem;
+    letter-spacing: -0.02em;
+  }
+
+  .ma-explain ul {
+    display: grid;
+    gap: 0.4rem;
+    margin: 0;
+    padding-left: 1.15rem;
+    font-size: 0.92rem;
+  }
+
+  .ma-controls p {
+    max-width: 46rem;
+    font-size: 0.92rem;
+  }
+
+  .ma-confirm {
+    display: grid;
+    gap: 0.6rem;
+    width: 100%;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--panel-2);
+  }
+
+  .ma-confirm[hidden] {
+    display: none;
+  }
+
+  .ma-confirm__title {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .ma-confirm__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .ma-controls__status {
+    min-height: 1.35rem;
+    font-size: 0.88rem;
+  }
+
+  @media (min-width: 52rem) {
+    .ma-games__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 30rem) {
+    .ma-continue__item {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .ma-continue__cta {
+      grid-column: 1 / -1;
+      justify-self: start;
+    }
+
+    .ma-continue :global(.ma-continue__art),
+    .ma-card :global(.ma-card__art) {
+      width: 3rem;
+    }
+  }
+</style>

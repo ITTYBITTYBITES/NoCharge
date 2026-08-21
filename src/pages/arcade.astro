@@ -94,6 +94,7 @@ const schema = {
         <article>
           <h3>Keep your progress private</h3>
           <p>Best results use local browser storage. NoCharge does not receive or publish your game scores.</p>
+          <p class="arcade-notes__link"><a href="/my-arcade/">View My Arcade</a></p>
         </article>
       </div>
     </section>
@@ -214,6 +215,14 @@ const schema = {
     margin-top: 0.35rem;
     color: var(--muted);
     font-size: 0.88rem;
+  }
+
+  .arcade-notes__link a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--accent-strong);
+    font-weight: 700;
   }
 
   .arcade-guide-cta {

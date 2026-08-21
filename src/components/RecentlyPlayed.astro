@@ -5,7 +5,7 @@ interface Props { games: CollectionEntry<'games'>[]; location: 'home'|'arcade' }
 const {games,location}=Astro.props;
 ---
 <section class="recently-played" data-recently-played={location} aria-labelledby={`recently-played-${location}`} hidden>
-  <div class="recently-played__heading"><p class="section-kicker">Only in this browser</p><h2 id={`recently-played-${location}`}>Recently Played</h2><p>Games you have interacted with on this browser, newest first.</p></div>
+  <div class="recently-played__heading"><p class="section-kicker">Only in this browser</p><h2 id={`recently-played-${location}`}>Recently Played</h2><p>Games you have interacted with on this browser, newest first.</p><p class="recently-played__more"><a href="/my-arcade/">View My Arcade</a></p></div>
   <div class="recently-played__grid">{games.map(game=><div data-recent-game={game.id}><GameCard slug={game.id} title={game.data.title} tagline={game.data.tagline} emoji={game.data.emoji} accent={game.data.accent} artwork={game.data.artwork} genre={game.data.genre} session={game.data.session}/></div>)}</div>
 </section>
 <script>
@@ -18,4 +18,4 @@ const {games,location}=Astro.props;
    if(section.querySelector('[data-recent-game]:not([hidden])'))section.hidden=false;
  });
 </script>
-<style>.recently-played{display:grid;gap:1.2rem}.recently-played[hidden]{display:none}.recently-played__heading{display:grid;gap:.35rem;max-width:44rem}.recently-played__heading h2{font-size:clamp(1.65rem,4vw,2.4rem);letter-spacing:-.035em}.recently-played__heading>p:last-child{color:var(--muted)}.section-kicker{color:var(--accent-strong);font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}.recently-played__grid{display:grid;gap:.85rem}@media(min-width:60rem){.recently-played__grid{grid-template-columns:repeat(2,minmax(0,1fr))}}</style>
+<style>.recently-played{display:grid;gap:1.2rem}.recently-played[hidden]{display:none}.recently-played__heading{display:grid;gap:.35rem;max-width:44rem}.recently-played__heading h2{font-size:clamp(1.65rem,4vw,2.4rem);letter-spacing:-.035em}.recently-played__heading>p:not(.section-kicker){color:var(--muted)}.recently-played__more a{display:inline-flex;align-items:center;min-height:44px;color:var(--accent-strong);font-size:.9rem;font-weight:700}.section-kicker{color:var(--accent-strong);font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}.recently-played__grid{display:grid;gap:.85rem}@media(min-width:60rem){.recently-played__grid{grid-template-columns:repeat(2,minmax(0,1fr))}}</style>
