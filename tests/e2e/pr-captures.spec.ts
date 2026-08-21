@@ -448,6 +448,17 @@ test('captures brand review screens and asset comparisons', async ({ page, baseU
       };
     });
     metrics.push({ label, ...state });
+    // The review invariants are asserted at capture time so a green CI run is
+    // itself the verification for every state below.
+    expect(state.overflow, `${label} must not overflow its viewport`).toBeLessThanOrEqual(0);
+    if (state.headerHeight !== null) {
+      expect(state.headerHeight, `${label} header height`).toBeGreaterThan(40);
+      expect(state.headerHeight, `${label} header height`).toBeLessThanOrEqual(100);
+    }
+    if (state.brandBox) {
+      expect(state.brandBox.w, `${label} brand width`).toBeLessThanOrEqual(48);
+      expect(state.brandBox.h, `${label} brand height`).toBeLessThanOrEqual(48);
+    }
   };
 
   const shot = async (name: string, fullPage = true) =>
