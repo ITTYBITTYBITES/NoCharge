@@ -1,0 +1,15 @@
+---
+import { AMAZON_ALLOWED_HOSTS, AMAZON_ASSOCIATE_TAG } from '../../config/affiliate';
+interface Props { label:string; url:string; purpose:string; suitableFor:string; limitations:string }
+const {label,url,purpose,suitableFor,limitations}=Astro.props;
+const parsed=new URL(url);
+if(parsed.protocol!=='https:'||!AMAZON_ALLOWED_HOSTS.includes(parsed.hostname as typeof AMAZON_ALLOWED_HOSTS[number])||parsed.searchParams.get('tag')!==AMAZON_ASSOCIATE_TAG) throw new Error(`Invalid Amazon affiliate URL: ${url}`);
+if(!/Amazon/i.test(label)||!/(paid link)/i.test(label)) throw new Error('Paid-link text must identify Amazon and paid status.');
+---
+<div class="paid-recommendation" data-paid-recommendation>
+  <a class="paid-link" href={url} rel="sponsored nofollow" data-amazon-paid-link>{label}</a>
+  <dl><div><dt>Why this link</dt><dd>{purpose}</dd></div><div><dt>May suit</dt><dd>{suitableFor}</dd></div><div><dt>Limitations</dt><dd>{limitations}</dd></div></dl>
+</div>
+<style>
+.paid-recommendation{display:grid;gap:.7rem;padding:1rem;border:1px solid #b7791f;border-radius:var(--radius);background:color-mix(in srgb,#b7791f 10%,var(--panel))}.paid-link{display:inline-flex;align-items:center;min-height:44px;width:fit-content;color:#ffd58a;font-weight:800;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}.paid-link:focus-visible{outline:3px solid #fff;outline-offset:4px}.paid-recommendation dl{display:grid;gap:.5rem;margin:0}.paid-recommendation dl div{display:grid;grid-template-columns:6rem 1fr;gap:.5rem}.paid-recommendation dt{font-weight:700}.paid-recommendation dd{margin:0;color:var(--muted)}@media(max-width:24rem){.paid-recommendation dl div{grid-template-columns:1fr;gap:.1rem}}@media(forced-colors:active){.paid-recommendation{border:1px solid CanvasText}.paid-link{color:LinkText}}
+</style>

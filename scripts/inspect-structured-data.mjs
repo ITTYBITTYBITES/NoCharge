@@ -11,6 +11,8 @@ const pages = [
   'arcade/index.html',
   'guides/index.html',
   'articles/index.html',
+  'setup/index.html',
+  'setup/mouse-trackpad-trackball-or-touch/index.html',
   'changelog/index.html',
   'games/memory-match/index.html',
   'articles/memory-match-systematic-board-scan/index.html',

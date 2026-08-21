@@ -1,0 +1,7 @@
+---
+interface Props { level:'editorial-research'|'personally-used'|'hands-on-tested' }
+const {level}=Astro.props;
+const labels={ 'editorial-research':'Editorial research', 'personally-used':'Personally used', 'hands-on-tested':'Hands-on tested' };
+---
+<span class="evidence-label" data-evidence-level={level}>Evidence: {labels[level]}</span>
+<style>.evidence-label{display:inline-flex;width:fit-content;padding:.22rem .55rem;border:1px solid #518c87;border-radius:999px;color:#b9eee7;font-size:.73rem;font-weight:700}</style>

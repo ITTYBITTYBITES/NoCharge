@@ -76,3 +76,17 @@ These original AI-assisted editorial illustrations are concept art, not gameplay
 | `help` | Help page | 20,368 / 34,715 B | 32,680 / 63,801 B | 47,322 / 97,276 B | `alt=""`; support headings and instructions carry the information |
 
 All published files are under `public/editorial-art/` with names `{asset}-{800|1200|1600}.{webp|jpg}`. The asset validator checks dimensions, ratio, existence, file budgets, and rejects unexpected published editorial files. No rejected variants or temporary PNG review files are committed. Generated with the Arena image-generation tool and resized/encoded with Sharp. Existing mounted-DOM gameplay screenshots were not changed.
+
+## Quiet Setup illustration family (2026-08-21)
+
+Five AI-assisted concepts were generated in batches of no more than five images and inspected for malformed hardware, pseudo-text, logos, misleading UI, and commercial product resemblance. They are original editorial illustrations—not product photos, Amazon Program Content, logos, or gameplay screenshots. Source prompts specified the Quiet Arcade family, charcoal foundations, muted teal/amber/blue/coral accents, geometric forms, coherent abstract hardware, negative space, and prohibited words, branding, shopping motifs, fake UI, and product packaging. Responsive derivatives were produced with ImageMagick. The initially generated screens-and-stands concept had an overly light foundation; its neutral background was corrected to charcoal during local derivative production, then the temporary source was removed.
+
+| Asset | Routes | 800 WebP / JPEG | 1200 WebP / JPEG | 1600 WebP / JPEG | Alt decision |
+|---|---|---:|---:|---:|---|
+| `hero` | Setup index and “What Quiet Setup means” | 7,708 / 18,509 B | 12,632 / 41,077 B | 16,922 / 67,970 B | `alt=""`; adjacent headings and prose convey the concept |
+| `keyboards` | Compact layout and quiet switches articles/cards | 33,392 / 61,266 B | 59,356 / 115,812 B | 69,838 / 163,297 B | `alt=""`; adjacent headings and prose convey the concept |
+| `pointing` | Input-method article/card | 12,052 / 24,301 B | 20,864 / 47,199 B | 25,952 / 69,905 B | `alt=""`; adjacent headings and prose convey the concept |
+| `screens-stands` | Stand and browser-zoom articles/cards | 4,470 / 13,410 B | 7,760 / 25,155 B | 12,038 / 37,826 B | `alt=""`; adjacent headings and prose convey the concept |
+| `puzzles-desk` | Offline puzzle and low-noise desk articles/cards | 23,844 / 41,289 B | 39,336 / 76,973 B | 48,400 / 109,936 B | `alt=""`; adjacent headings and prose convey the concept |
+
+All files are under `public/setup-art/` at 800×450, 1200×675, and 1600×900 in WebP primary and JPEG fallback formats. Temporary generation sources and rejected variants are not committed. The setup index social preview uses descriptive metadata because it stands outside an adjacent visible heading; in-page images remain decorative. Existing mounted-DOM gameplay screenshots are unchanged.

@@ -26,3 +26,12 @@ Reviewed 2026-08-19 against the current registry, content collections, runtime, 
 - Changelog entries previously mixed visitor changes with implementation details. Those details remain in Git history and engineering documents, while meaningful history remains visible in summarized form.
 - Collections reuse canonical game cards and reasons rather than repeating generic paragraphs. No separate identity graphics were added because the cards already distinguish the four routes.
 - Platform explainers now have clear visual and structural separation from game articles.
+
+## Quiet Setup launch review (2026-08-21)
+
+| Route or group | Visitor purpose and unique value | Next action | Deliberate boundary |
+|---|---|---|---|
+| `/setup/` | Chronological, evidence-labeled practical setup publication with visible topic groupings | Read a guide or subscribe to RSS | No empty topic, search, store, deal, or product routes |
+| Eight setup articles | Independently useful comparisons covering method, input, keyboards, switches, stands, zoom, offline puzzles, and low-noise desks | Apply a no-purchase test, then optionally compare | All evidence is editorial research; paid links are optional and outside gameplay |
+
+Each launch article identifies criteria, tradeoffs, limitations, alternatives, evaluation scope, review date, and a concrete action. Three of eight contain no paid links. The section is intentionally separate from game guides and does not repeat complete game instructions.

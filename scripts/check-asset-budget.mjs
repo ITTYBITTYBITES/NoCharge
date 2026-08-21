@@ -54,6 +54,18 @@ const expectedEditorial = new Set(editorialFiles);
 for (const file of referencedEditorial) {
   if (!expectedEditorial.has(file)) throw new Error(`Unexpected editorial asset published: ${file}.`);
 }
+const setupNames = ['hero', 'keyboards', 'pointing', 'screens-stands', 'puzzles-desk'];
+for (const name of setupNames) {
+  for (const width of editorialWidths) {
+    for (const extension of ['webp', 'jpg']) {
+      const path = join(dist, 'setup-art', `${name}-${width}.${extension}`);
+      if (!existsSync(path)) throw new Error(`Missing Quiet Setup asset: ${relative(dist, path)}.`);
+      const metadata = await sharp(path).metadata();
+      if (metadata.width !== width || metadata.height !== Math.round(width * 9 / 16)) throw new Error(`Invalid Quiet Setup dimensions: ${relative(dist, path)}.`);
+      if (statSync(path).size > (extension === 'webp' ? 150 * 1024 : 300 * 1024)) throw new Error(`Quiet Setup asset budget exceeded: ${relative(dist, path)}.`);
+    }
+  }
+}
 console.log(
   `Asset budget passed: ${scripts.length} scripts total ${scriptBytes} bytes; largest image ${largestImage ? `${relative(dist, largestImage.path)} (${largestImage.size} bytes)` : 'none'}; ${editorialFiles.length} responsive editorial assets validated.`,
 );

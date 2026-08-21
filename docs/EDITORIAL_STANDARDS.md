@@ -75,3 +75,7 @@ Record each completed review in the content accuracy matrix, a changelog entry, 
 The public changelog is written for visitors: it names meaningful games, guides, controls, navigation, privacy, and presentation changes without commit mechanics, test counts, package versions, or deployment details. The Help page is practical support, not a keyword-targeted article; it must distinguish local game data from optional analytics consent and avoid response-time promises.
 
 Platform article illustrations are editorial aids. Titles and surrounding copy carry the essential meaning, and illustrations must not be presented as gameplay screenshots or imply accounts, cloud sync, universal compatibility, certification, rewards, or ad-free operation.
+
+## Quiet Setup and compensated links
+
+Quiet Setup is governed by [`QUIET_SETUP_EDITORIAL_POLICY.md`](./QUIET_SETUP_EDITORIAL_POLICY.md). It uses a dedicated content model, honest evidence labels, no-purchase alternatives, visible disclosures, and direct manually authored paid links. Editorial usefulness comes before monetization. Paid relationships never affect game rules, scores, access, collections, or instructions, and affiliate links never appear in gameplay UI.
