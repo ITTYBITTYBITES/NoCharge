@@ -369,6 +369,12 @@ describe('Clear Game Data source of truth', () => {
       'nocharge:pref:game-muted',
       BEACON_PROGRESS_KEY,
       RECENTLY_PLAYED_KEY,
+      'nocharge:passplay:match:tic-tac-toe',
+      'nocharge:passplay:match:dots-and-boxes',
+      'nocharge:passplay:match:four-in-a-row',
+      'nocharge:passplay:match:reversi',
+      'nocharge:passplay:match:last-token',
+      'nocharge:passplay:match:pass-the-picture',
     ]);
   });
 

@@ -3,11 +3,18 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import GameArtwork from '../components/GameArtwork.astro';
+import { isPassPlayGameId } from '../games/shared/pass-play';
 
 // Registry order is the shared game order used everywhere else on the site.
 const games = (await getCollection('games'))
   .filter((game) => !game.data.draft)
   .sort((a, b) => a.data.order - b.data.order);
+
+// Section 2 lists the six Pass & Play games in registry order. Each row shows
+// only the most recent match record, read from nocharge:passplay:match:* keys.
+const passPlayGames = games.filter((game) => isPassPlayGameId(game.id));
+// The solo dashboard keeps exactly the four games it has always shown.
+const soloGames = games.filter((game) => !isPassPlayGameId(game.id));
 
 const title = 'My Arcade';
 const description =
@@ -64,6 +71,12 @@ const schema = [
       </ul>
     </header>
 
+    <nav class="ma-sections-nav" aria-label="My Arcade sections">
+      <a href="#ma-solo">Solo games</a>
+      <span aria-hidden="true">·</span>
+      <a href="#ma-pass-and-play">Pass &amp; Play</a>
+    </nav>
+
     <noscript>
       <div class="ma-noscript panel">
         <h2>Local summaries need JavaScript</h2>
@@ -79,6 +92,7 @@ const schema = [
     </noscript>
 
     <div class="ma-dashboard" data-my-arcade aria-busy="true">
+      <span id="ma-solo" class="ma-anchor" aria-hidden="true"></span>
       <p class="ma-state panel" data-ma-loading>Reading the results saved in this browser…</p>
 
       <div class="ma-state panel" data-ma-blocked hidden>
@@ -143,7 +157,9 @@ const schema = [
         </div>
         <div class="ma-games__grid">
           {
-            games.map((game) => (
+            /* Section 1 stays the solo dashboard: four games, unchanged. The
+               Pass & Play games are covered by their own section below. */
+            soloGames.map((game) => (
               <article class="ma-card panel" data-ma-card={game.id}>
                 {game.data.artwork && (
                   <GameArtwork
@@ -208,9 +224,10 @@ const schema = [
         <div class="ma-confirm" data-ma-clear-confirm hidden>
           <p class="ma-confirm__title">Remove saved game data from this browser?</p>
           <p>
-            This removes best scores for all four games, Memory Match fewest moves, Beacon Lattice puzzle progress,
-            the shared sound preference, and Recently Played. It does not change your analytics consent choice,
-            Google&rsquo;s Privacy &amp; messaging choices, or any other storage on this device.
+            This removes best scores for all four solo games, Memory Match fewest moves, Beacon Lattice puzzle
+            progress, the shared sound preference, Recently Played, and the six Pass &amp; Play match records. It
+            does not change your analytics consent choice, Google&rsquo;s Privacy &amp; messaging choices, or any
+            other storage on this device.
           </p>
           <div class="ma-confirm__actions">
             <button class="btn btn--ghost btn--sm" type="button" data-ma-clear-confirm-button>
@@ -220,6 +237,55 @@ const schema = [
           </div>
         </div>
         <p class="ma-controls__status" data-ma-clear-status role="status"></p>
+      </section>
+
+      <span id="ma-pass-and-play" class="ma-anchor" aria-hidden="true"></span>
+      <section class="ma-passplay" data-ma-passplay aria-labelledby="ma-passplay-heading">
+        <div class="ma-section-heading">
+          <p class="section-kicker">Pass &amp; Play</p>
+          <h2 id="ma-passplay-heading">Shared on this device</h2>
+          <p>
+            Match results are shared by everyone who plays. There are no per-player scores or accounts.
+          </p>
+        </div>
+        <p class="ma-passplay__empty panel" data-ma-passplay-empty hidden>
+          No pass-and-play matches in this browser yet.
+        </p>
+        <ul class="ma-passplay__list" data-ma-passplay-list>
+          {
+            passPlayGames.map((game) => (
+              <li class="ma-passplay__row panel" data-ma-passplay-row={game.id} hidden>
+                <h3 class="ma-passplay__game">{game.data.title}</h3>
+                <dl class="ma-passplay__facts">
+                  <div>
+                    <dt>Mode</dt>
+                    <dd data-ma-passplay-mode>—</dd>
+                  </div>
+                  <div>
+                    <dt>Result</dt>
+                    <dd data-ma-passplay-result>—</dd>
+                  </div>
+                  <div>
+                    <dt>Match score</dt>
+                    <dd data-ma-passplay-score>—</dd>
+                  </div>
+                  <div>
+                    <dt>Date played</dt>
+                    <dd data-ma-passplay-when hidden>
+                      <time data-ma-passplay-time />
+                    </dd>
+                  </div>
+                </dl>
+                <a class="ma-passplay__play" href={`/games/${game.id}/`}>
+                  Play again<span class="sr-only"> {game.data.title}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="ma-passplay__note">
+          One record per game — the most recent match only. Player names are never stored.
+        </p>
       </section>
     </div>
   </div>
@@ -249,6 +315,31 @@ const schema = [
     padding-left: 1.15rem;
     color: var(--muted);
     font-size: 0.92rem;
+  }
+
+  .ma-sections-nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--muted);
+    font-size: 0.88rem;
+    font-weight: 700;
+  }
+
+  .ma-sections-nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--accent-strong);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .ma-anchor {
+    display: block;
+    height: 0;
+    scroll-margin-top: 1rem;
   }
 
   .ma-noscript {
@@ -530,6 +621,107 @@ const schema = [
   .ma-controls__status {
     min-height: 1.35rem;
     font-size: 0.88rem;
+  }
+
+  .ma-passplay {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .ma-passplay[hidden] {
+    display: none;
+  }
+
+  .ma-passplay .section-kicker {
+    color: var(--accent-strong);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .ma-passplay__empty {
+    display: grid;
+    align-content: center;
+    min-height: 4.5rem;
+    padding: 1rem 1.2rem;
+    color: var(--muted);
+  }
+
+  .ma-passplay__empty[hidden] {
+    display: none;
+  }
+
+  .ma-passplay__list {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .ma-passplay__row {
+    display: grid;
+    gap: 0.7rem;
+    padding: 1rem 1.1rem;
+  }
+
+  .ma-passplay__row[hidden] {
+    display: none;
+  }
+
+  .ma-passplay__game {
+    font-size: 1.05rem;
+    letter-spacing: -0.015em;
+  }
+
+  .ma-passplay__facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+    gap: 0.6rem 1rem;
+    margin: 0;
+  }
+
+  .ma-passplay__facts div {
+    display: grid;
+    gap: 0.1rem;
+  }
+
+  .ma-passplay__facts dt {
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .ma-passplay__facts dd {
+    margin: 0;
+    font-size: 0.92rem;
+    font-weight: 700;
+  }
+
+  .ma-passplay__when[hidden],
+  .ma-passplay__facts dd[hidden] {
+    display: none;
+  }
+
+  .ma-passplay__play {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--accent-strong);
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .ma-passplay__note {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.82rem;
   }
 
   @media (min-width: 52rem) {

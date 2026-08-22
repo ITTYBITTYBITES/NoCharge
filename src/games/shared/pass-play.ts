@@ -241,11 +241,11 @@ export const HANDOFF_SCREEN_TEMPLATE = `
   <div class="pp-handoff__names">
     <div class="pp-handoff__field">
       <label class="pp-handoff__label" for="pp-handoff-name-1">Player 1 name</label>
-      <input class="pp-handoff__input" id="pp-handoff-name-1" data-pp-name="1" type="text" maxlength="${PLAYER_NAME_MAX_LENGTH}" autocomplete="off" enterkeyhint="done" />
+      <input class="pp-handoff__input" id="pp-handoff-name-1" data-pp-name="1" type="text" maxlength="${PLAYER_NAME_MAX_LENGTH}" autocomplete="off" enterkeyhint="done">
     </div>
     <div class="pp-handoff__field">
       <label class="pp-handoff__label" for="pp-handoff-name-2">Player 2 name</label>
-      <input class="pp-handoff__input" id="pp-handoff-name-2" data-pp-name="2" type="text" maxlength="${PLAYER_NAME_MAX_LENGTH}" autocomplete="off" enterkeyhint="done" />
+      <input class="pp-handoff__input" id="pp-handoff-name-2" data-pp-name="2" type="text" maxlength="${PLAYER_NAME_MAX_LENGTH}" autocomplete="off" enterkeyhint="done">
     </div>
   </div>
   <button type="button" class="btn pp-handoff__continue" data-pp="continue">Continue</button>

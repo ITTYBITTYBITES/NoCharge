@@ -104,7 +104,7 @@ export function mountPassThePicture(root: HTMLElement): GameController {
   let strokes: PictureStroke[] = [];
   let finished = false;
   let handoff: HandoffScreenController | null = null;
-  let color = PICTURE_PALETTE[0];
+  let color: string = PICTURE_PALETTE[0];
   let drawing = false;
   let currentPoints: { x: number; y: number }[] = [];
 

@@ -11,6 +11,7 @@ import {
   legalMoves,
   otherDisc,
   squareName,
+  type ReversiCell,
 } from './engine';
 
 describe('initial board', () => {
@@ -51,20 +52,20 @@ describe('flip logic', () => {
   });
 
   it('flips several discs in one line but not unclosed lines', () => {
-    const board = Array.from({ length: 64 }, () => null);
+    const board: ReversiCell[] = Array.from({ length: 64 }, () => null);
     // Row 1: white plays b1 and outflanks black c1..e1, closing at f1.
     board[2] = 'black';
     board[3] = 'black';
     board[4] = 'black';
     board[5] = 'white';
     expect(applyMove(board, 1, 'white')!.flips).toEqual([2, 3, 4]);
-    const open = [...board];
+    const open: ReversiCell[] = [...board];
     open[5] = null; // remove the closing white disc
     expect(applyMove(open, 1, 'white')).toBeNull();
   });
 
   it('flips in several directions from one placement', () => {
-    const board = Array.from({ length: 64 }, () => null);
+    const board: ReversiCell[] = Array.from({ length: 64 }, () => null);
     // White plays d3 (43). Down flips d4,d5 (closed by white d6); right
     // flips e3 (closed by white f3); up-left flips c4,d5-adjacent? — c4 and
     // d5 diagonal squares (closed by white at b5's line end).
@@ -94,9 +95,8 @@ describe('game end', () => {
     // Only a1 is empty. Black surrounds it, so black cannot outflank there,
     // and white's single disc at e8 is on no line through a1, so white cannot
     // outflank anywhere either.
-    const board = Array.from({ length: 64 }, (_, i) => (i === 63 ? null : 'black')) as ReturnType<
-      typeof initialBoard
-    >;
+    const board: ReversiCell[] = Array.from({ length: 64 }, () => 'black' as ReversiCell);
+    board[63] = null;
     board[4] = 'white';
     expect(isGameOver(board)).toBe(true);
     expect(legalMoves(board, 'black')).toEqual([]);

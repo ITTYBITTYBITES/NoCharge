@@ -1,5 +1,6 @@
 import { prefKey, scoreKey } from '../games/shared/storage';
 import { RECENTLY_PLAYED_KEY } from '../games/shared/recently-played';
+import { PASS_PLAY_GAME_IDS, passPlayMatchKey } from '../games/shared/pass-play';
 
 /**
  * The single source of truth for "Clear game data".
@@ -25,15 +26,23 @@ export const GAME_PREFERENCE_KEYS = ['game-muted', 'beacon-lattice-progress'] as
 
 export const MEMORY_MATCH_BEST_MOVES_KEY = 'nocharge:memory-match:best-moves';
 
+/**
+ * Pass & Play match records: exactly one bounded key per game, holding the
+ * most recent match only. Clearing them clears the My Arcade Pass & Play
+ * section in the same confirmed flow as the solo keys.
+ */
+export const PASS_PLAY_MATCH_KEYS: readonly string[] = PASS_PLAY_GAME_IDS.map((id) => passPlayMatchKey(id));
+
 export const CLEARABLE_GAME_DATA_KEYS: readonly string[] = [
   ...GAME_SCORE_IDS.map((id) => scoreKey(id)),
   MEMORY_MATCH_BEST_MOVES_KEY,
   ...GAME_PREFERENCE_KEYS.map((preference) => prefKey(preference)),
   RECENTLY_PLAYED_KEY,
+  ...PASS_PLAY_MATCH_KEYS,
 ];
 
 export const CLEAR_GAME_DATA_SUCCESS =
-  'Game scores, preferences, and Recently Played were cleared from this browser.';
+  'Game scores, preferences, Recently Played, and Pass & Play match records were cleared from this browser.';
 
 export const CLEAR_GAME_DATA_FAILURE = 'This browser did not allow game data to be cleared.';
 

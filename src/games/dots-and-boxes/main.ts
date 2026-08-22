@@ -66,7 +66,6 @@ export function mountDotsAndBoxes(root: HTMLElement): GameController {
     </div>
   `;
 
-  const scroll = root.querySelector<HTMLElement>('[data-dab-scroll]')!;
   const boardEl = root.querySelector<HTMLElement>('[data-dab-board]')!;
   const statusEl = root.querySelector<HTMLElement>('[data-dab-status]')!;
   const scoreEl = root.querySelector<HTMLElement>('[data-dab-score]')!;

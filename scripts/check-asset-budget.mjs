@@ -27,7 +27,7 @@ if (scriptBytes > limits.scripts) {
 if (largestImage && largestImage.size > limits.largestImage) {
   throw new Error(`Largest image budget exceeded: ${relative(dist, largestImage.path)} is ${largestImage.size} bytes.`);
 }
-const editorialNames = ['quiet-arcade', 'local-scores', 'more-ways', 'testing', 'collections', 'help'];
+const editorialNames = ['quiet-arcade', 'local-scores', 'more-ways', 'testing', 'collections', 'help', 'pass-play'];
 const editorialWidths = [800, 1200, 1600];
 const editorialDirectory = join(dist, 'editorial-art');
 const editorialFiles = [];
