@@ -236,18 +236,29 @@ export function mountReversi(root: HTMLElement): GameController {
     showHandoff('black');
   };
 
+  /**
+   * Arrow navigation moves to the nearest square that is legal for the
+   * current turn, searching the half-plane in the pressed direction. Legal
+   * squares can be sparse (early turns have only four), so a plain row/column
+   * walk could strand focus; the nearest-legal search never does.
+   */
   const moveFocus = (from: number, dx: number, dy: number) => {
-    const row = Math.floor(from / 8) + dy;
-    const column = (from % 8) + dx;
-    if (row < 0 || row >= 8 || column < 0 || column >= 8) return;
-    const target = cells()[row * 8 + column];
-    // Arrow navigation moves between the squares that can actually be played,
-    // so keyboard turns never land on squares that would be refused.
-    if (target && !target.disabled) target.focus({ preventScroll: true });
-    else {
-      // Keep scanning in the same direction for the next playable square.
-      moveFocus(row * 8 + column, dx, dy);
+    const fromRow = Math.floor(from / 8);
+    const fromColumn = from % 8;
+    let best: { index: number; distance: number } | null = null;
+    for (const cell of cells()) {
+      if (cell.disabled) continue;
+      const index = Number(cell.dataset.revCell);
+      const deltaX = (index % 8) - fromColumn;
+      const deltaY = Math.floor(index / 8) - fromRow;
+      if (dx > 0 && deltaX <= 0) continue;
+      if (dx < 0 && deltaX >= 0) continue;
+      if (dy > 0 && deltaY <= 0) continue;
+      if (dy < 0 && deltaY >= 0) continue;
+      const distance = Math.hypot(deltaX, deltaY * 1.2);
+      if (!best || distance < best.distance) best = { index, distance };
     }
+    if (best) cells()[best.index]?.focus({ preventScroll: true });
   };
 
   boardEl.addEventListener('keydown', (event: KeyboardEvent) => {

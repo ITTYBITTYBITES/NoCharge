@@ -294,12 +294,17 @@ export function mountPassThePicture(root: HTMLElement): GameController {
 
   const onDownload = () => {
     // Local only: the canvas is serialized in this tab and handed to the
-    // browser's own download. Nothing is uploaded or fetched.
+    // browser's own download. Nothing is uploaded or fetched. The link is
+    // attached to the document first — detached-anchor clicks are unreliable
+    // for downloads in some engines.
     try {
       const link = document.createElement('a');
       link.download = 'nocharge-pass-the-picture.png';
       link.href = canvas.toDataURL('image/png');
+      link.className = 'ptp__download-link';
+      root.appendChild(link);
       link.click();
+      window.setTimeout(() => link.remove(), 0);
     } catch {
       status('The picture could not be saved in this browser.');
     }

@@ -6,7 +6,7 @@ Audit of every value NoCharge already stores in the visitor's browser, and the r
 This document contains **no real visitor data and no screenshots of local storage**. Every value shown below is an
 invented representative example written for this audit.
 
-Reviewed 2026-08-21 against `src/games/`, `src/components/ConsentManager.astro`, and `src/pages/privacy.astro`.
+Reviewed 2026-08-21 against `src/games/`, `src/components/ConsentManager.astro`, and `src/pages/privacy.astro`; extended 2026-08-22 for the six `nocharge:passplay:match:*` keys read by the Pass &amp; Play section.
 
 ## 1. Scope of the audit
 
@@ -31,6 +31,12 @@ Reviewed 2026-08-21 against `src/games/`, `src/components/ConsentManager.astro`,
 | `nocharge:pref:game-muted` | `src/games/shared/audio.ts` | JSON boolean, e.g. `true` | The shared persistent mute preference. | **No** — it is a preference, not a result, and showing it would add noise without helping anyone return to a game | Yes | Yes — `parseStoredPref` falls back | No |
 | `nocharge:pref:recently-played` | `src/games/shared/recently-played.ts` | JSON array of at most 4 objects `{ gameId: string, playedAt: number }`, newest first | The last meaningful play per game. Written only by `signalMeaningfulGameInteraction`, which each game dispatches after a real in-game action. | **Yes** — the game identity and a restrained date | Yes | Yes — `parseRecentlyPlayed` drops non-objects, non-string ids, and non-finite or negative timestamps, then dedupes and re-sorts | No |
 | `nocharge:consent` | `src/components/ConsentManager.astro` | JSON `{ version: number, analytics: boolean, updatedAt: string }` | The separate NoCharge analytics consent choice. | **Never displayed and never read** by My Arcade | **No — deliberately excluded** | Yes (own `try`/`catch`) | Not applicable |
+| `nocharge:passplay:match:tic-tac-toe` | `src/games/tic-tac-toe/main.ts` via `savePassPlayMatchRecord` | JSON object, e.g. `{"gameId":"tic-tac-toe","mode":"3×3 · 3 in a row","result":"p1","score":[1,0],"finishedAt":1787390175327}` | The most recent Tic-Tac-Toe match. Overwritten in place — there is no history and no second key. | **Yes**, as the Pass &amp; Play section row: mode, result, match score, date | Yes | Yes — `parsePassPlayMatchRecord` rejects malformed, oversized (> 2 KB), or out-of-range values, and a record naming another game under the key is ignored | No |
+| `nocharge:passplay:match:dots-and-boxes` | `src/games/dots-and-boxes/main.ts` | Same shape; `mode` is `"4×4 boxes"` or `"6×6 boxes"`; `score` is the final box count | The most recent Dots &amp; Boxes game. | **Yes** | Yes | Yes | No |
+| `nocharge:passplay:match:four-in-a-row` | `src/games/four-in-a-row/main.ts` | Same shape; `mode` is `"7×6 · standard"` or `"6×5 · small"`; `score` is `[1,0]`/`[0,1]`/`[0,0]` | The most recent Four in a Row game. | **Yes** | Yes | Yes | No |
+| `nocharge:passplay:match:reversi` | `src/games/reversi/main.ts` | Same shape; `mode` is `"8×8 board"`; `score` is the final black–white disc count | The most recent Reversi game. | **Yes** | Yes | Yes | No |
+| `nocharge:passplay:match:last-token` | `src/games/last-token/main.ts` | Same shape; `mode` is the preset label; `score` is `[1,0]` or `[0,1]` | The most recent Last Token round. | **Yes** | Yes | Yes | No |
+| `nocharge:passplay:match:pass-the-picture` | `src/games/pass-the-picture/main.ts` | Same shape with `result:"shared"`; `score` is strokes drawn per player | The most recent Pass the Picture drawing. Cooperative — there is no winner to display. | **Yes** (shown as "Shared picture") | Yes | Yes | No |
 | Google Privacy & messaging / AdSense / Analytics storage | Google | Owned by Google | Advertising and analytics consent and measurement | **Never read** | **No — never touched** | Not applicable | Not applicable |
 
 ### Per-game summary of what My Arcade shows
@@ -42,6 +48,7 @@ Reviewed 2026-08-21 against `src/games/`, `src/components/ConsentManager.astro`,
 | Color Flip | `nocharge:color-flip:high`, `nocharge:color-flip-turn-based:high` | **Best score, Visual mode** and **Best score, Turn-based mode** | The two modes are genuinely separate keys, so they are shown separately and each only when it exists. There is no combined Color Flip score. |
 | Beacon Lattice | `nocharge:pref:beacon-lattice-progress` | **Puzzles solved** (`n of 24`), **Puzzle open**, **Fewest beacons recorded** | Authored `par` is an editorial target, not a proven optimum, so it is never shown or implied. Solved ids that no longer exist in the puzzle catalogue are dropped rather than counted. |
 | Recently Played | `nocharge:pref:recently-played` | Game identity and a `Today` / `Yesterday` / `Aug 21` date | Exact times, seconds, session counts, and "time played" are not stored and are not implied. |
+| Pass &amp; Play games (six rows) | the six `nocharge:passplay:match:*` keys | **Mode**, **Result** (Player 1 / Player 2 / Draw / Shared picture), **Match score**, **Date played** | Only the single most recent record per game is stored and shown — never a history. Player names are session-only and never stored, so a row can never contain one. Pass the Picture has no winner; its cooperative result is labelled "Shared picture" rather than inventing a draw. |
 
 ## 3. Read-only aggregation layer
 
@@ -54,6 +61,7 @@ Reviewed 2026-08-21 against `src/games/`, `src/components/ConsentManager.astro`,
 | `summary.ts` | Turns readings into labelled display metrics and the whole-page model. |
 | `format.ts` | Pure date and number formatting. |
 | `mount.ts` | DOM controller for `/my-arcade/`. Reads once per render and keeps nothing. |
+| `passplay.ts` | Read-only reader for the Pass &amp; Play section: reads exactly the six `nocharge:passplay:match:*` keys (never enumerating storage), reuses the game's own parser, and returns one display row per game with a valid record. |
 
 Guarantees, each covered by a unit test in `src/lib/my-arcade/my-arcade.test.ts`:
 
@@ -72,9 +80,11 @@ Guarantees, each covered by a unit test in `src/lib/my-arcade/my-arcade.test.ts`
 `src/lib/local-game-data.ts` is the single allowlist. `/privacy/` and `/my-arcade/` both import it, so the two
 controls cannot diverge.
 
-It removes exactly the nine game keys in the table above. It deliberately does **not** remove `nocharge:consent`,
-Google's Privacy & messaging storage, or any other origin storage. A unit test asserts the exact list and the
-untouched keys, and `tests/e2e/my-arcade.spec.ts` asserts the same thing in a real browser.
+It removes exactly the fifteen game keys in the table above: the nine solo keys plus the six bounded
+`nocharge:passplay:match:*` records, so one confirmed flow clears both My Arcade sections together. It deliberately
+does **not** remove `nocharge:consent`, Google's Privacy & messaging storage, or any other origin storage. A unit
+test asserts the exact list and the untouched keys, and `tests/e2e/my-arcade.spec.ts` asserts the same thing in a
+real browser.
 
 ## 5. Recently Played rules preserved
 

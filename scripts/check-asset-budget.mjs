@@ -48,7 +48,7 @@ for (const name of editorialNames) {
   }
 }
 // Square (1:1) mobile variants for the four platform-article heroes.
-const editorialSquareNames = ['quiet-arcade', 'local-scores', 'more-ways', 'testing'];
+const editorialSquareNames = ['quiet-arcade', 'local-scores', 'more-ways', 'testing', 'pass-play'];
 for (const name of editorialSquareNames) {
   for (const extension of ['webp', 'jpg']) {
     const path = join(editorialDirectory, `${name}-square.${extension}`);
