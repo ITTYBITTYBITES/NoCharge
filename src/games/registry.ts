@@ -5,6 +5,7 @@ import { mountColorFlip } from './color-flip/main';
 import { mountTicTacToe } from './tic-tac-toe/main';
 import { mountDotsAndBoxes } from './dots-and-boxes/main';
 import { mountFourInARow } from './four-in-a-row/main';
+import { mountReversi } from './reversi/main';
 import type { GameController } from './shared/types';
 
 export interface GameModule {
@@ -19,6 +20,7 @@ const registry: Record<string, GameModule> = {
   'tic-tac-toe': { mount: mountTicTacToe },
   'dots-and-boxes': { mount: mountDotsAndBoxes },
   'four-in-a-row': { mount: mountFourInARow },
+  reversi: { mount: mountReversi },
 };
 
 export function mountGame(id: string, root: HTMLElement): GameController {
