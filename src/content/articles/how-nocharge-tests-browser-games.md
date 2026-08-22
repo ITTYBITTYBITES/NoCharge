@@ -19,7 +19,7 @@ A browser game can build successfully and still have a broken rule, inaccessible
 
 Pure unit tests cover logic that does not need a browser: Color Flip checkpoint and selection rules, Beacon Lattice patterns, puzzle quality and progress, shared pause recovery, local discovery ordering, collection qualification, and technical error-reporting boundaries. These tests make edge cases repeatable without depending on animation timing.
 
-They do not replace an actual mounted game. The required browser gate builds the static Astro site and runs Playwright in Chromium. It exercises all four games, keyboard actions, restart, shared mute, full-screen/immersive behavior, pause and resume, hidden-tab return, content routes, and privacy clearing.
+They do not replace an actual mounted game. The required browser gate builds the static Astro site and runs Playwright in Chromium. It exercises every current game, keyboard actions, restart, shared mute, full-screen/immersive behavior, pause and resume, hidden-tab return, content routes, and privacy clearing.
 
 ## Accessibility and responsive checks
 

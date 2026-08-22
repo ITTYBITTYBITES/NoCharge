@@ -2,7 +2,18 @@ import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
-const gameIds = z.enum(['memory-match', 'word-tile-rush', 'color-flip', 'beacon-lattice']);
+const gameIds = z.enum([
+  'memory-match',
+  'word-tile-rush',
+  'color-flip',
+  'beacon-lattice',
+  'tic-tac-toe',
+  'dots-and-boxes',
+  'four-in-a-row',
+  'reversi',
+  'last-token',
+  'pass-the-picture',
+]);
 
 const games = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/games' }),

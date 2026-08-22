@@ -26,7 +26,7 @@ The current implementation can use these NoCharge game keys:
 - `nocharge:color-flip:high` for Visual mode and `nocharge:color-flip-turn-based:high` for Turn-based mode.
 - `nocharge:beacon-lattice:high` for the highest completed-puzzle count written alongside Beacon Lattice progress.
 - `nocharge:pref:beacon-lattice-progress` for the current puzzle, completed puzzle IDs, and best solved beacon counts.
-- `nocharge:pref:game-muted` for the sound choice shared by all four games.
+- `nocharge:pref:game-muted` for the sound choice shared by every game.
 - `nocharge:pref:recently-played` for at most four stable game IDs and last-played timestamps.
 
 Recently Played does not retain moves, selected cards, typed words, tile paths, scores, or a device identifier. A game enters that list only after a meaningful action inside the mounted game, not after a card or page view.

@@ -1,8 +1,8 @@
 ---
 title: "Games for a short break"
-description: "Four NoCharge games whose documented typical runs fit roughly one to eight minutes, with distinct memory, word, reflex, and logic play."
+description: "NoCharge games whose documented typical runs fit roughly one to eight minutes, with distinct memory, word, reflex, logic, and shared-screen play."
 inclusionMethod: "Include a current game when its reviewed game metadata states a typical run of no more than eight minutes and the page explains any timing pressure honestly."
-reviewed: "2026-08-19"
+reviewed: "2026-08-22"
 order: 4
 draft: false
 games:
@@ -14,6 +14,14 @@ games:
     reason: "A typical run is documented at 1–4 minutes in either the moving Visual mode or the untimed Turn-based alternative."
   - game: beacon-lattice
     reason: "A typical exact-coverage puzzle is documented at 3–8 minutes, while local progress supports returning for another puzzle later."
+  - game: tic-tac-toe
+    reason: "A 3×3 or 4×4 round is documented at 1–3 minutes, and a first-to-3 match still fits a short break at five rounds maximum."
+  - game: four-in-a-row
+    reason: "A typical 7×6 game is documented at 2–6 minutes, with the quicker 6×5 board available for an even shorter break."
+  - game: last-token
+    reason: "Take-away rounds are documented at 1–2 minutes, so a full round — or a best-of rematch — fits the smallest break."
+  - game: pass-the-picture
+    reason: "A shared drawing with 2–5 passes each is documented at 2–5 minutes and finishes with a local download, not a scoreboard."
 ---
 
 Session ranges are descriptive, not limits or performance targets. A visitor can stop after one run, replay, or continue through another puzzle.

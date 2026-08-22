@@ -11,9 +11,11 @@ interface Props {
   artwork?: GameArtworkData;
   genre?: string;
   session?: string;
+  /** Renders the "2 players" pill for Pass & Play games where a section heading does not already say it. */
+  players?: number;
 }
 
-const { slug, title, tagline, emoji, accent = '#0f9d58', artwork, genre, session } = Astro.props;
+const { slug, title, tagline, emoji, accent = '#0f9d58', artwork, genre, session, players } = Astro.props;
 ---
 
 <a
@@ -41,11 +43,12 @@ const { slug, title, tagline, emoji, accent = '#0f9d58', artwork, genre, session
     <h3 class="game-card__title">{title}</h3>
     <p class="game-card__tagline">{tagline}</p>
     {
-      (genre || session) && (
+      (genre || session || players === 2) && (
         <p class="game-card__meta">
           {genre && <span>{genre}</span>}
           {genre && session && <span aria-hidden="true">·</span>}
           {session && <span>{session}</span>}
+          {players === 2 && <span class="game-card__pill">2 players</span>}
         </p>
       )
     }
@@ -112,11 +115,24 @@ const { slug, title, tagline, emoji, accent = '#0f9d58', artwork, genre, session
   .game-card__meta {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 0.3rem;
     margin-top: 0.45rem;
     color: color-mix(in srgb, var(--card-accent) 78%, var(--text));
     font-size: 0.76rem;
     font-weight: 600;
+  }
+
+  .game-card__pill {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.4rem;
+    padding: 0.12rem 0.5rem;
+    border: 1px solid color-mix(in srgb, var(--card-accent) 60%, transparent);
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
   }
 
   .game-card__cta {
@@ -132,6 +148,12 @@ const { slug, title, tagline, emoji, accent = '#0f9d58', artwork, genre, session
     font-size: 0.9rem;
     font-weight: 700;
     white-space: nowrap;
+  }
+
+  @media (forced-colors: active) {
+    .game-card__pill {
+      border: 1px solid CanvasText;
+    }
   }
 
   @media (max-width: 28rem) {

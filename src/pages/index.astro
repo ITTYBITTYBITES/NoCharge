@@ -5,12 +5,19 @@ import GameCard from '../components/GameCard.astro';
 import GuideCard from '../components/GuideCard.astro';
 import ArticleCard from '../components/ArticleCard.astro';
 import RecentlyPlayed from '../components/RecentlyPlayed.astro';
+import { isPassPlayGameId } from '../games/shared/pass-play';
 
 const allGames = (await getCollection('games'))
   .filter((game) => !game.data.draft)
   .sort((a, b) => a.data.order - b.data.order);
 const featuredGames = allGames.filter((game) => game.data.featured);
 const gameById = new Map(allGames.map((game) => [game.id, game]));
+// The Pass & Play section renders only when pass-and-play content exists and
+// highlights three of its games, plus a See all link to the collection.
+const passPlayGames = allGames.filter((game) => isPassPlayGameId(game.id));
+const passPlayHighlights = ['tic-tac-toe', 'dots-and-boxes', 'pass-the-picture']
+  .map((id) => passPlayGames.find((game) => game.id === id))
+  .filter((game) => game !== undefined);
 const featuredGuides = (await getCollection('guides'))
   .filter((guide) => !guide.data.draft && guide.data.featured)
   .sort((a, b) => a.data.order - b.data.order)
@@ -75,11 +82,48 @@ const featuredArticles = (await getCollection('articles'))
               artwork={game.data.artwork}
               genre={game.data.genre}
               session={game.data.session}
+              players={isPassPlayGameId(game.id) ? 2 : undefined}
             />
           ))
         }
       </div>
     </section>
+
+    {
+      passPlayHighlights.length > 0 && (
+        <section class="home-section" id="pass-and-play" aria-labelledby="pass-play-heading">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">Play together</p>
+              <h2 id="pass-play-heading">Pass &amp; Play</h2>
+              <p class="home-pass-play__tagline">Two players, one device.</p>
+              <p>
+                Take turns on a single screen. Hand the device to a friend, or set it on the table and play face to
+                face. No accounts, no setup — the device keeps the score, and you pass it back and forth.
+              </p>
+            </div>
+            <a class="section-link" href="/collections/pass-and-play/">
+              See all<span class="sr-only"> Pass &amp; Play games</span> →
+            </a>
+          </div>
+          <div class="card-grid card-grid--games">
+            {passPlayHighlights.map((game) => (
+              <GameCard
+                slug={game.id}
+                title={game.data.title}
+                tagline={game.data.tagline}
+                emoji={game.data.emoji}
+                accent={game.data.accent}
+                artwork={game.data.artwork}
+                genre={game.data.genre}
+                session={game.data.session}
+                players={2}
+              />
+            ))}
+          </div>
+        </section>
+      )
+    }
 
     <section class="home-library panel" aria-labelledby="library-heading">
       <div class="home-library__intro">
@@ -339,6 +383,13 @@ const featuredArticles = (await getCollection('articles'))
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
+  }
+
+  .home-pass-play__tagline {
+    color: var(--text);
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
   }
 
   .section-link {

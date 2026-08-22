@@ -2,6 +2,17 @@
 
 These are review captures from the production build with optional services denied. They show the actual shared toolbar, pause overlay, fullscreen viewport, public trust pages, and article pages at desktop and mobile widths.
 
+## Pass & Play (2026-08-22)
+
+The Pass &amp; Play capture block (`tests/e2e/pass-play-captures.spec.ts`, same opt-in `CAPTURE_PR=1` suite) uploads
+into `pr-visual-captures` with the existing short retention. It covers all six games as **actual mounted-DOM
+gameplay captures** — handoff state and a mid-play state reached through real moves — plus a named-handoff
+close-up; the arcade page's two sections and anchor nav at 1440, 390, and 320 px; the homepage Pass &amp; Play
+section; the Pass &amp; Play collection and platform article; My Arcade's both-sections empty and populated states;
+the 200%-equivalent reflow; and a reduced-motion Reversi board. Local values used are invented fixtures. Findings
+are recorded in [`PASS_AND_PLAY_VISUAL_REVIEW.md`](./PASS_AND_PLAY_VISUAL_REVIEW.md). Screenshots are not
+committed to Git.
+
 ## My Arcade (2026-08-21)
 
 The capture block for `/my-arcade/` runs in the same opt-in `CAPTURE_PR=1` suite and uploads into the same

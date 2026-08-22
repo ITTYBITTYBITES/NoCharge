@@ -27,7 +27,7 @@ if (scriptBytes > limits.scripts) {
 if (largestImage && largestImage.size > limits.largestImage) {
   throw new Error(`Largest image budget exceeded: ${relative(dist, largestImage.path)} is ${largestImage.size} bytes.`);
 }
-const editorialNames = ['quiet-arcade', 'local-scores', 'more-ways', 'testing', 'collections', 'help'];
+const editorialNames = ['quiet-arcade', 'local-scores', 'more-ways', 'testing', 'collections', 'help', 'pass-play'];
 const editorialWidths = [800, 1200, 1600];
 const editorialDirectory = join(dist, 'editorial-art');
 const editorialFiles = [];
@@ -48,7 +48,7 @@ for (const name of editorialNames) {
   }
 }
 // Square (1:1) mobile variants for the four platform-article heroes.
-const editorialSquareNames = ['quiet-arcade', 'local-scores', 'more-ways', 'testing'];
+const editorialSquareNames = ['quiet-arcade', 'local-scores', 'more-ways', 'testing', 'pass-play'];
 for (const name of editorialSquareNames) {
   for (const extension of ['webp', 'jpg']) {
     const path = join(editorialDirectory, `${name}-square.${extension}`);

@@ -76,6 +76,6 @@ test('clear game data reports an accurate status', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Clear game data' }).click();
   await expect(page.locator('[data-game-status]')).toHaveText(
-    'Game scores, preferences, and Recently Played were cleared from this browser.',
+    'Game scores, preferences, Recently Played, and Pass & Play match records were cleared from this browser.',
   );
 });

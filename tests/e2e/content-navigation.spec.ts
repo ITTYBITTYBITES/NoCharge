@@ -14,7 +14,10 @@ test('home features games while the arcade owns the full game collection', async
   await page.getByRole('link', { name: 'Enter the arcade' }).click();
   await expect(page).toHaveURL(/\/arcade\/$/);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Small games built for real breaks.');
-  await expect(page.locator('.arcade-grid .game-card')).toHaveCount(4);
+  // One arcade page, two sections: the four solo games, then the six Pass & Play games.
+  await expect(page.locator('.arcade-list .arcade-grid .game-card')).toHaveCount(4);
+  await expect(page.locator('.arcade-passplay .arcade-grid .game-card')).toHaveCount(6);
+  await expect(page.getByRole('heading', { name: 'Two players, one device.' })).toBeVisible();
   await expect(page.locator('.primary-nav').getByRole('link', { name: 'Arcade', exact: true })).toHaveAttribute('aria-current', 'page');
 });
 
@@ -44,5 +47,5 @@ test('guide library connects guide articles, games, and sitemap URLs', async ({ 
   expect(xml).toContain('<loc>https://nocharge.net/help/</loc>');
   expect(xml).toContain('<loc>https://nocharge.net/my-arcade/</loc>');
   expect(xml).toContain('<loc>https://nocharge.net/media/</loc>');
-  expect((xml.match(/<url>/g) ?? []).length).toBe(51);
+  expect((xml.match(/<url>/g) ?? []).length).toBe(59);
 });

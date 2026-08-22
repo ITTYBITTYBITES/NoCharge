@@ -13,7 +13,7 @@ featured: true
 draft: false
 ---
 
-NoCharge exists to make a small part of the web easier to enter and easier to leave. The [Arcade](/arcade/) offers four browser games now: Memory Match, Word Tile Rush, Color Flip, and Beacon Lattice. A visitor can open one, understand the controls, play a short session, and move on without creating an account.
+NoCharge exists to make a small part of the web easier to enter and easier to leave. The [Arcade](/arcade/) offers ten browser games now: four solo titles (Memory Match, Word Tile Rush, Color Flip, and Beacon Lattice) and six Pass &amp; Play games for two players on one device. A visitor can open one, understand the controls, play a short session, and move on without creating an account.
 
 “Quiet Arcade” is a product standard, not a new game mode and not a promise that every challenge is slow.
 

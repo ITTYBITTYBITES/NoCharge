@@ -4,10 +4,17 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import GameCard from '../components/GameCard.astro';
 import RecentlyPlayed from '../components/RecentlyPlayed.astro';
+import { isPassPlayGameId } from '../games/shared/pass-play';
 
 const games = (await getCollection('games'))
   .filter((game) => !game.data.draft)
   .sort((a, b) => a.data.order - b.data.order);
+
+// One arcade page, two sections: the solo games exactly as before, plus the
+// Pass & Play section for two players on one device. The solo section keeps
+// its established markup byte-for-byte; an anchor nav links the two.
+const soloGames = games.filter((game) => !isPassPlayGameId(game.id));
+const passPlayGames = games.filter((game) => isPassPlayGameId(game.id));
 
 const schema = {
   '@context': 'https://schema.org',
@@ -51,8 +58,15 @@ const schema = {
       </dl>
     </header>
 
+    <nav class="arcade-sections-nav" aria-label="Arcade sections">
+      <a href="#solo-games">Solo games</a>
+      <span aria-hidden="true">·</span>
+      <a href="#pass-and-play">Pass &amp; Play</a>
+    </nav>
+
     <RecentlyPlayed games={games} location="arcade" />
 
+    <span id="solo-games" class="arcade-anchor" aria-hidden="true"></span>
     <section class="arcade-list" aria-labelledby="all-games-heading">
       <div class="arcade-list__heading">
         <p class="section-kicker">Choose a game</p>
@@ -61,7 +75,7 @@ const schema = {
       </div>
       <div class="arcade-grid">
         {
-          games.map((game) => (
+          soloGames.map((game) => (
             <GameCard
               slug={game.id}
               title={game.data.title}
@@ -76,6 +90,38 @@ const schema = {
         }
       </div>
     </section>
+
+    {
+      passPlayGames.length > 0 && (
+        <>
+          <span id="pass-and-play" class="arcade-anchor" aria-hidden="true" />
+          <section class="arcade-passplay" aria-labelledby="pass-and-play-heading">
+            <div class="arcade-list__heading">
+              <p class="section-kicker">Pass &amp; Play</p>
+              <h2 id="pass-and-play-heading">Two players, one device.</h2>
+              <p>
+                Take turns on a single screen. Hand the device to a friend, or set it on the table and play face to
+                face.
+              </p>
+            </div>
+            <div class="arcade-grid">
+              {passPlayGames.map((game) => (
+                <GameCard
+                  slug={game.id}
+                  title={game.data.title}
+                  tagline={game.data.tagline}
+                  emoji={game.data.emoji}
+                  accent={game.data.accent}
+                  artwork={game.data.artwork}
+                  genre={game.data.genre}
+                  session={game.data.session}
+                />
+              ))}
+            </div>
+          </section>
+        </>
+      )
+    }
 
     <section class="arcade-notes panel" aria-labelledby="arcade-notes-heading">
       <div>
@@ -148,7 +194,35 @@ const schema = {
     font-size: 0.76rem;
   }
 
-  .arcade-list {
+  .arcade-sections-nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--muted);
+    font-size: 0.88rem;
+    font-weight: 700;
+  }
+
+  .arcade-sections-nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--accent-strong);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* Anchor targets sit just above each section so in-page jumps clear the
+     sticky-less page header without changing section markup. */
+  .arcade-anchor {
+    display: block;
+    scroll-margin-top: 1rem;
+    height: 0;
+  }
+
+  .arcade-list,
+  .arcade-passplay {
     display: grid;
     gap: 1.25rem;
   }
@@ -160,6 +234,7 @@ const schema = {
   }
 
   .arcade-list h2,
+  .arcade-passplay h2,
   .arcade-notes h2,
   .arcade-guide-cta h2 {
     font-size: clamp(1.65rem, 4vw, 2.4rem);

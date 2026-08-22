@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import GameShell from '../../components/GameShell.astro';
 import ArticleCard from '../../components/ArticleCard.astro';
+import { isPassPlayGameId } from '../../games/shared/pass-play';
 
 export async function getStaticPaths() {
   const games = (await getCollection('games')).filter((game) => !game.data.draft);
@@ -14,6 +15,7 @@ export async function getStaticPaths() {
     props: {
       game,
       hasGuide: guideIds.has(game.id),
+      passPlay: isPassPlayGameId(game.id),
       relatedGames: games.filter((candidate) => candidate.id !== game.id).sort((a, b) => a.data.order - b.data.order),
       relatedArticles: articles
         .filter((article) => article.data.kind === 'game' && article.data.game === game.id)
@@ -22,7 +24,7 @@ export async function getStaticPaths() {
   }));
 }
 
-const { game, hasGuide, relatedGames, relatedArticles } = Astro.props;
+const { game, hasGuide, passPlay, relatedGames, relatedArticles } = Astro.props;
 const { Content } = await render(game);
 const slug = game.id;
 const presentation = game.data.presentation;
@@ -44,6 +46,7 @@ const stageStyle = presentation?.stageAspectDesktop
     slug={game.id}
     accent={game.data.accent}
     artwork={game.data.artwork}
+    passPlay={passPlay}
   >
     <div
       slot="game"

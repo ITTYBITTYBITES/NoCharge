@@ -1,8 +1,8 @@
 ---
 title: "Browser games without accounts"
-description: "All four NoCharge games open directly in the browser without registration, profiles, passwords, or cloud score synchronization."
+description: "Every NoCharge game opens directly in the browser without registration, profiles, passwords, or cloud score synchronization."
 inclusionMethod: "Include a current game when its complete play loop requires no account and its score or progress, if retained, stays in local browser storage rather than an NoCharge player profile."
-reviewed: "2026-08-19"
+reviewed: "2026-08-22"
 order: 3
 draft: false
 games:
@@ -14,6 +14,18 @@ games:
     reason: "Both Visual and Turn-based modes need no sign-in, and each mode’s best result stays in local browser storage."
   - game: beacon-lattice
     reason: "All puzzles open without an account, while current puzzle, completions, and best beacon counts stay in this browser."
+  - game: tic-tac-toe
+    reason: "Both players use one shared screen with no sign-in, and only the most recent match result stays in this browser."
+  - game: dots-and-boxes
+    reason: "The shared board opens without a profile, and its last box-count result is retained only by the current browser."
+  - game: four-in-a-row
+    reason: "Two people drop discs without any registration, and the most recent game result never leaves the device."
+  - game: reversi
+    reason: "The 8×8 board needs no account, and the final disc count of the last game stays in local storage only."
+  - game: last-token
+    reason: "Quick take-away rounds open without sign-in, and only the most recent round result stays on this device."
+  - game: pass-the-picture
+    reason: "The shared canvas needs no profile, the finished picture downloads as a local file, and nothing is uploaded."
 ---
 
 Without an account also means without synchronization or server recovery. Read [how NoCharge saves scores](/articles/how-nocharge-saves-scores-without-an-account/) before treating a local result as permanent.

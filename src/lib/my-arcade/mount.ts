@@ -4,6 +4,7 @@ import {
   clearLocalGameData,
 } from '../local-game-data';
 import { formatPlayedAt } from './format';
+import { buildPassPlayDashboard, type PassPlayRow } from './passplay';
 import { getReadableBrowserStorage } from './readers';
 import {
   buildLocalDashboard,
@@ -60,6 +61,47 @@ function renderMetrics(container: HTMLElement, metrics: LocalGameMetric[], fallb
     list.append(group);
   }
   container.append(list);
+}
+
+function renderPassPlay(root: HTMLElement, rows: PassPlayRow[], storageAvailable: boolean, now: number): void {
+  const section = root.querySelector<HTMLElement>('[data-ma-passplay]');
+  if (!section) return;
+  const list = root.querySelector<HTMLElement>('[data-ma-passplay-list]');
+  const empty = root.querySelector<HTMLElement>('[data-ma-passplay-empty]');
+
+  // With storage blocked the whole section stays out of the way, exactly
+  // like Continue playing; the blocked banner already explains why.
+  if (!storageAvailable || !list) {
+    section.hidden = true;
+    return;
+  }
+  section.hidden = false;
+
+  for (const rowShell of list.querySelectorAll<HTMLElement>('[data-ma-passplay-row]')) {
+    const row = rows.find((candidate) => candidate.gameId === rowShell.dataset.maPassplayRow);
+    rowShell.hidden = !row;
+    if (!row) continue;
+    const mode = rowShell.querySelector<HTMLElement>('[data-ma-passplay-mode]');
+    if (mode) mode.textContent = row.mode;
+    const result = rowShell.querySelector<HTMLElement>('[data-ma-passplay-result]');
+    if (result) result.textContent = row.result;
+    const score = rowShell.querySelector<HTMLElement>('[data-ma-passplay-score]');
+    if (score) score.textContent = row.score;
+    const time = rowShell.querySelector<HTMLTimeElement>('[data-ma-passplay-time]');
+    const played = rowShell.querySelector<HTMLElement>('[data-ma-passplay-when]');
+    if (!time || !played) continue;
+    const label = formatPlayedAt(row.finishedAt, now);
+    if (label && row.finishedAtIso) {
+      time.dateTime = row.finishedAtIso;
+      time.textContent = label;
+      played.hidden = false;
+    } else {
+      time.removeAttribute('datetime');
+      time.textContent = '';
+      played.hidden = true;
+    }
+  }
+  if (empty) empty.hidden = rows.length > 0;
 }
 
 function render(root: HTMLElement, dashboard: LocalDashboard, now: number): void {
@@ -135,7 +177,9 @@ function render(root: HTMLElement, dashboard: LocalDashboard, now: number): void
 export function mountMyArcade(root: HTMLElement): void {
   const update = () => {
     // Storage is read fresh on every render; nothing is cached in storage.
-    render(root, buildLocalDashboard(getReadableBrowserStorage()), Date.now());
+    const storage = getReadableBrowserStorage();
+    render(root, buildLocalDashboard(storage), Date.now());
+    renderPassPlay(root, buildPassPlayDashboard(storage).rows, storage !== null, Date.now());
   };
 
   update();

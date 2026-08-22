@@ -7,7 +7,7 @@ const collectionSlugs=['keyboard-friendly-browser-games','untimed-or-reduced-pre
 test.beforeEach(async({page})=>denyOptionalServices(page));
 
 test('publishes platform articles without fake game controls and with accurate metadata',async({page,request})=>{
- await page.goto('/articles/');await expect(page.getByRole('heading',{name:'Platform articles'})).toBeVisible();await expect(page.locator('.articles-grid .article-card')).toHaveCount(16);
+ await page.goto('/articles/');await expect(page.getByRole('heading',{name:'Platform articles'})).toBeVisible();await expect(page.locator('.articles-grid .article-card')).toHaveCount(17);
  for(const slug of platformSlugs){const path=`/articles/${slug}/`;expect((await request.get(path)).status()).toBe(200);await page.goto(path);await expect(page.locator('.breadcrumbs')).toBeVisible();await expect(page.locator('.article-play').getByRole('link',{name:/Play /})).toHaveCount(0);await expect(page.getByText(/Reviewed by NoCharge/)).toBeVisible();await expect(page.locator('link[rel=canonical]')).toHaveAttribute('href',`https://nocharge.net${path}`);const json=(await page.locator('script[type="application/ld+json"]').allTextContents()).join('\n');expect(json).toContain('"@type":"Article"');expect(json).toContain('"@type":"BreadcrumbList"');expect(json).not.toContain('"@type":"VideoGame"');}
 });
 
@@ -95,7 +95,7 @@ test('Privacy clear removes recently played and preserves consent',async({page})
 });
 
 test('publishes reviewed non-thin collections, sitemap data, and footer navigation',async({page,request})=>{
- await page.goto('/collections/');await expect(page.locator('.collection-grid article')).toHaveCount(4);await expect(page.locator('.site-footer').getByRole('link',{name:'Collections'})).toHaveAttribute('href','/collections/');
+ await page.goto('/collections/');await expect(page.locator('.collection-grid article')).toHaveCount(5);await expect(page.locator('.site-footer').getByRole('link',{name:'Collections'})).toHaveAttribute('href','/collections/');
  for(const slug of collectionSlugs){const path=`/collections/${slug}/`;await page.goto(path);await expect(page.getByRole('heading',{name:'Inclusion method'})).toBeVisible();expect(await page.locator('.members article').count()).toBeGreaterThanOrEqual(3);const json=(await page.locator('script[type="application/ld+json"]').allTextContents()).join('\n');expect(json).toContain('"@type":"CollectionPage"');expect(json).toContain('"@type":"ItemList"');expect(json).toContain('"@type":"BreadcrumbList"');await expect(page.locator('link[rel=canonical]')).toHaveAttribute('href',`https://nocharge.net${path}`);}
  const xml=await (await request.get('/sitemap.xml')).text();for(const slug of [...platformSlugs,...collectionSlugs])expect(xml).toContain(`/${slug}/`);
 });

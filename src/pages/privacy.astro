@@ -32,14 +32,17 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         <h2 id="local-data">Data on your device</h2>
         <p>
           NoCharge uses your browser’s local storage for high scores, game preferences, your shared sound
-          preference, and Recently Played. Recently Played stores only up to four stable game IDs and last-played
-          timestamps after meaningful game interactions. This information stays only in this browser, is not
-          uploaded to NoCharge, and remains until you clear it in your browser or use the button below.
+          preference, Recently Played, and one most-recent match record per Pass &amp; Play game. Recently Played
+          stores only up to four stable game IDs and last-played timestamps after meaningful game interactions, and
+          Pass &amp; Play match records store a mode, result, match score, and date — never player names. This
+          information stays only in this browser, is not uploaded to NoCharge, and remains until you clear it in
+          your browser or use the button below.
         </p>
         <p>
-          Clear game data removes local scores, game preferences, the shared sound preference, and Recently Played.
-          It does not remove your NoCharge analytics consent choice, which stays saved so analytics remain exactly
-          as you left them. Google Privacy &amp; messaging choices are handled separately by Google.
+          Clear game data removes local scores, game preferences, the shared sound preference, Recently Played, and
+          the Pass &amp; Play match records. It does not remove your NoCharge analytics consent choice, which stays
+          saved so analytics remain exactly as you left them. Google Privacy &amp; messaging choices are handled
+          separately by Google.
         </p>
         <button class="btn btn--ghost btn--sm" type="button" data-clear-games>Clear game data</button>
         <p class="privacy__status" data-game-status aria-live="polite"></p>

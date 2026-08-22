@@ -135,8 +135,12 @@ test.describe('empty dashboard', () => {
     }
 
     const body = (await page.locator('main').innerText()).toLowerCase();
-    expect(body).not.toMatch(/\d\s*%|complete your|keep your streak|level up|your rank|player score/);
-    expect(body).toContain('choose a game whenever you are ready');
+    // The Pass & Play section's exact sentence "There are no per-player
+    // scores or accounts." is a required negation, not gamification copy, so
+    // it is removed before the dark-pattern scan.
+    const scanned = body.replace('there are no per-player scores or accounts.', '');
+    expect(scanned).not.toMatch(/\d\s*%|complete your|keep your streak|level up|your rank|player score/);
+    expect(scanned).toContain('choose a game whenever you are ready');
   });
 
   test('carries no advertisement region and no affiliate link', async ({ page }) => {
@@ -356,7 +360,7 @@ test.describe('clearing', () => {
     await page.goto('/privacy/');
     await page.getByRole('button', { name: 'Clear game data' }).click();
     await expect(page.locator('[data-game-status]')).toHaveText(
-      'Game scores, preferences, and Recently Played were cleared from this browser.',
+      'Game scores, preferences, Recently Played, and Pass & Play match records were cleared from this browser.',
     );
 
     await page.goto('/my-arcade/');
@@ -396,7 +400,7 @@ test.describe('clearing', () => {
     await page.getByRole('button', { name: 'Clear game data' }).click();
     await page.getByRole('button', { name: 'Remove saved game data' }).click();
 
-    await expect(status).toHaveText('Game scores, preferences, and Recently Played were cleared from this browser.');
+    await expect(status).toHaveText('Game scores, preferences, Recently Played, and Pass & Play match records were cleared from this browser.');
     await expect(page.locator('[data-ma-empty]')).toBeVisible();
     await expect(page.locator('[data-ma-continue]')).toBeHidden();
     await expect(page.locator('[data-ma-card="word-tile-rush"] [data-ma-metrics]')).toHaveText(

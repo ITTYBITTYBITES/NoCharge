@@ -29,7 +29,7 @@ Before designing, the repository and production identity were audited:
 | `og:image:width/height` | Hard-coded `1200×630` on every page | Setup artwork is `1200×675`; corrected via per-page dimensions |
 | `twitter:site` | None anywhere | Correct: no handle invented |
 | Brand name/description conflicts | "Quick browser games, clear player guides, and no account required" vs "a quieter place to play" and "Quick games. Clear guides. No clutter." | Consistent enough; the audit introduced one canonical one-line description (below) and aligned the media page and manifest with it |
-| Game screenshots | `screenshot-desktop.webp`/`screenshot-mobile.webp` for all four games | Only Beacon Lattice's are genuine mounted-DOM captures (see `docs/BEACON_LATTICE_CAPTURE.md`); Memory Match, Word Tile Rush, and Color Flip screenshots are generated previews and are **not** published as gameplay |
+| Game screenshots | `screenshot-desktop.webp`/`screenshot-mobile.webp` for all four solo games; none for the six Pass & Play games | Only Beacon Lattice's are genuine mounted-DOM captures (see `docs/BEACON_LATTICE_CAPTURE.md`); Memory Match, Word Tile Rush, and Color Flip screenshots are generated previews and are **not** published as gameplay. Pass & Play gameplay evidence lives in the short-lived `pr-visual-captures` artifact as mounted-DOM captures only (see `docs/PASS_AND_PLAY_VISUAL_REVIEW.md`) |
 | Feeds | `/setup/feed.xml` only | General feed missing; built `/feed.xml` from the changelog collection |
 | Sitemap | Covered all public routes except `/media/` | `/media/` added |
 

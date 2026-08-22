@@ -17,7 +17,7 @@ Accessibility is part of a game’s rules and controls, not a note added after t
 
 ## More than one input path
 
-The four current games accept touch and pointer input and provide keyboard operation. Memory Match uses native card buttons. Word Tile Rush exposes letter tiles and submission controls. Color Flip has labeled color controls and keyboard shortcuts. Beacon Lattice uses buttons, a puzzle selector, arrow-key grid movement, number shortcuts, placement, removal, and undo.
+Every current solo game accepts touch and pointer input and provides keyboard operation. Memory Match uses native card buttons. Word Tile Rush exposes letter tiles and submission controls. Color Flip has labeled color controls and keyboard shortcuts. Beacon Lattice uses buttons, a puzzle selector, arrow-key grid movement, number shortcuts, placement, removal, and undo. The Pass &amp; Play games follow the same pattern — five of the six are fully keyboard-operable, and Pass the Picture documents its pointer-only drawing plainly.
 
 Using native links, buttons, and form controls where they fit gives browsers and assistive technologies established semantics. Focus remains visible, and controls need meaningful names—not only an icon or position on a canvas.
 
