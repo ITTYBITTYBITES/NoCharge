@@ -1,6 +1,6 @@
 # Game artwork inventory
 
-All packages are original Quiet Arcade work. Raster covers are reproducible with `npm run art:memory`, `npm run art:word`, `npm run art:color`, and `npm run art:beacon`. `npm run art:beacon` writes covers and diagrams only and does not overwrite gameplay screenshots. Beacon Lattice `screenshot-desktop.webp` and `screenshot-mobile.webp` must be replaced with mounted-DOM captures via `npm run capture:beacon` before they are documented as gameplay rasters. JPEG social cards are used for Open Graph, Twitter, and structured data.
+All packages are original Quiet Arcade work. Raster covers are reproducible with `npm run art:memory`, `npm run art:word`, `npm run art:color`, `npm run art:beacon`, and `npm run art:passplay` (the six Pass &amp; Play games). `npm run art:beacon` writes covers and diagrams only and does not overwrite gameplay screenshots. Beacon Lattice `screenshot-desktop.webp` and `screenshot-mobile.webp` must be replaced with mounted-DOM captures via `npm run capture:beacon` before they are documented as gameplay rasters. JPEG social cards are used for Open Graph, Twitter, and structured data. The Pass &amp; Play packages contain covers, headers, social cards, and icons only — no gameplay screenshots are published for them; their gameplay evidence is mounted-DOM captures in the short-lived `pr-visual-captures` artifact (see `docs/PASS_AND_PLAY_VISUAL_REVIEW.md`).
 
 | Game / asset | Dimensions | Size |
 | --- | ---: | ---: |
@@ -59,12 +59,72 @@ All packages are original Quiet Arcade work. Raster covers are reproducible with
 | beacon-lattice / `social-card.jpg` | 1200×630 | 17.3 KB |
 | beacon-lattice / `social-card.webp` | 1200×630 | 27.7 KB |
 | beacon-lattice / `source.svg` | vector | 2.4 KB |
+| tic-tac-toe / `cover-landscape.jpg` | 1280×720 | 23.9 KB |
+| tic-tac-toe / `cover-landscape.webp` | 1280×720 | 93.7 KB |
+| tic-tac-toe / `cover-square.jpg` | 800×800 | 23.8 KB |
+| tic-tac-toe / `cover-square.webp` | 800×800 | 67.7 KB |
+| tic-tac-toe / `guide-header.jpg` | 1280×640 | 20.4 KB |
+| tic-tac-toe / `guide-header.webp` | 1280×640 | 84.1 KB |
+| tic-tac-toe / `icon.svg` | vector | 2.6 KB |
+| tic-tac-toe / `social-card.jpg` | 1200×630 | 21.4 KB |
+| tic-tac-toe / `social-card.webp` | 1200×630 | 77.8 KB |
+| dots-and-boxes / `cover-landscape.jpg` | 1280×720 | 14.3 KB |
+| dots-and-boxes / `cover-landscape.webp` | 1280×720 | 85.6 KB |
+| dots-and-boxes / `cover-square.jpg` | 800×800 | 12.2 KB |
+| dots-and-boxes / `cover-square.webp` | 800×800 | 60.2 KB |
+| dots-and-boxes / `guide-header.jpg` | 1280×640 | 12.9 KB |
+| dots-and-boxes / `guide-header.webp` | 1280×640 | 76.4 KB |
+| dots-and-boxes / `icon.svg` | vector | 3.5 KB |
+| dots-and-boxes / `social-card.jpg` | 1200×630 | 12.1 KB |
+| dots-and-boxes / `social-card.webp` | 1200×630 | 71.0 KB |
+| four-in-a-row / `cover-landscape.jpg` | 1280×720 | 15.7 KB |
+| four-in-a-row / `cover-landscape.webp` | 1280×720 | 38.0 KB |
+| four-in-a-row / `cover-square.jpg` | 800×800 | 14.3 KB |
+| four-in-a-row / `cover-square.webp` | 800×800 | 13.5 KB |
+| four-in-a-row / `guide-header.jpg` | 1280×640 | 14.3 KB |
+| four-in-a-row / `guide-header.webp` | 1280×640 | 38.0 KB |
+| four-in-a-row / `icon.svg` | vector | 2.0 KB |
+| four-in-a-row / `social-card.jpg` | 1200×630 | 14.3 KB |
+| four-in-a-row / `social-card.webp` | 1200×630 | 33.2 KB |
+| reversi / `cover-landscape.jpg` | 1280×720 | 16.8 KB |
+| reversi / `cover-landscape.webp` | 1280×720 | 44.8 KB |
+| reversi / `cover-square.jpg` | 800×800 | 14.8 KB |
+| reversi / `cover-square.webp` | 800×800 | 15.0 KB |
+| reversi / `guide-header.jpg` | 1280×640 | 14.7 KB |
+| reversi / `guide-header.webp` | 1280×640 | 43.0 KB |
+| reversi / `icon.svg` | vector | 3.7 KB |
+| reversi / `social-card.jpg` | 1200×630 | 14.9 KB |
+| reversi / `social-card.webp` | 1200×630 | 38.8 KB |
+| last-token / `cover-landscape.jpg` | 1280×720 | 17.5 KB |
+| last-token / `cover-landscape.webp` | 1280×720 | 83.6 KB |
+| last-token / `cover-square.jpg` | 800×800 | 12.7 KB |
+| last-token / `cover-square.webp` | 800×800 | 60.6 KB |
+| last-token / `guide-header.jpg` | 1280×640 | 15.8 KB |
+| last-token / `guide-header.webp` | 1280×640 | 75.9 KB |
+| last-token / `icon.svg` | vector | 1.8 KB |
+| last-token / `social-card.jpg` | 1200×630 | 15.6 KB |
+| last-token / `social-card.webp` | 1200×630 | 70.2 KB |
+| pass-the-picture / `cover-landscape.jpg` | 1280×720 | 17.9 KB |
+| pass-the-picture / `cover-landscape.webp` | 1280×720 | 56.6 KB |
+| pass-the-picture / `cover-square.jpg` | 800×800 | 13.4 KB |
+| pass-the-picture / `cover-square.webp` | 800×800 | 27.2 KB |
+| pass-the-picture / `guide-header.jpg` | 1280×640 | 16.1 KB |
+| pass-the-picture / `guide-header.webp` | 1280×640 | 53.3 KB |
+| pass-the-picture / `icon.svg` | vector | 1.7 KB |
+| pass-the-picture / `social-card.jpg` | 1200×630 | 15.6 KB |
+| pass-the-picture / `social-card.webp` | 1200×630 | 48.1 KB |
+| tic-tac-toe / `source.svg` | vector | 2.6 KB |
+| dots-and-boxes / `source.svg` | vector | 4.0 KB |
+| four-in-a-row / `source.svg` | vector | 2.5 KB |
+| reversi / `source.svg` | vector | 3.8 KB |
+| last-token / `source.svg` | vector | 3.1 KB |
+| pass-the-picture / `source.svg` | vector | 1.9 KB |
 
 The per-asset hard ceiling is 180 KB; all committed game assets remain below it. Homepage card artwork is lazy-loaded, while only the actual game or guide header LCP candidate is eager.
 
 ## Editorial illustration family (2026-08-19)
 
-These original AI-assisted editorial illustrations are concept art, not gameplay captures. Each illustration preserves a 16:9 ratio and has three responsive widths. WebP is primary and JPEG is the fallback. Alt text is empty on all six because the adjacent title and copy carry the meaning; none adds information that requires a screen-reader description of abstract shapes.
+These original editorial illustrations are concept art, not gameplay captures. Each illustration preserves a 16:9 ratio and has three responsive widths. WebP is primary and JPEG is the fallback. Alt text is empty on all seven because the adjacent title and copy carry the meaning; none adds information that requires a screen-reader description of abstract shapes.
 
 | Asset | Routes | 800 WebP / JPEG | 1200 WebP / JPEG | 1600 WebP / JPEG | Alt decision |
 | --- | --- | ---: | ---: | ---: | --- |
@@ -74,6 +134,7 @@ These original AI-assisted editorial illustrations are concept art, not gameplay
 | `testing` | Browser-game testing platform article card/header | 15,862 / 28,330 B | 25,850 / 54,884 B | 40,278 / 88,915 B | `alt=""`; adjacent copy explains the checks |
 | `collections` | Collections index | 43,050 / 56,025 B | 68,006 / 99,829 B | 97,612 / 145,650 B | `alt=""`; heading and inclusion-method copy explain discovery |
 | `help` | Help page | 20,368 / 34,715 B | 32,680 / 63,801 B | 47,322 / 97,276 B | `alt=""`; support headings and instructions carry the information |
+| `pass-play` | Pass &amp; Play platform article card/header (2026-08-22) | 36,094 / 10,782 B | 72,344 / 18,132 B | 118,038 / 24,310 B | `alt=""`; the article's handoff and local-storage copy carries the meaning |
 
 All published files are under `public/editorial-art/` with names `{asset}-{800|1200|1600}.{webp|jpg}`. The asset validator checks dimensions, ratio, existence, file budgets, and rejects unexpected published editorial files. No rejected variants or temporary PNG review files are committed. Generated with the Arena image-generation tool and resized/encoded with Sharp. Existing mounted-DOM gameplay screenshots were not changed.
 
@@ -86,7 +147,10 @@ through `media="(max-width: 36rem)"`, matching `GameArtwork`'s
 `mobileVariant="square"`. The square is cut from the full 900-pixel height of
 the committed 1600×900 source, with the 900-pixel window centred on the column
 of peak visual detail (all four subjects are near the horizontal centre).
-Reproduce with `node scripts/build-editorial-art.mjs`.
+Reproduce with `node scripts/build-editorial-art.mjs`. The Pass &amp; Play
+platform article (`pass-play`, 2026-08-22) ships its square crop directly — the
+family's covers are composed programmatically rather than cut from a painted
+source.
 
 | Asset | Square WebP / JPEG |
 | --- | ---: |
