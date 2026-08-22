@@ -6,7 +6,17 @@
  * page unloads.
  */
 
-export const MY_ARCADE_GAME_IDS = ['memory-match', 'word-tile-rush', 'color-flip', 'beacon-lattice'] as const;
+export const MY_ARCADE_GAME_IDS = [
+  'memory-match',
+  'word-tile-rush',
+  'color-flip',
+  'beacon-lattice',
+  'klondike',
+  'freecell',
+  'nonogram',
+  'twenty-forty-eight',
+  'tile-garden',
+] as const;
 
 export type GameId = (typeof MY_ARCADE_GAME_IDS)[number];
 

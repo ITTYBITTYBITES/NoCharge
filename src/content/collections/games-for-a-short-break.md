@@ -22,6 +22,14 @@ games:
     reason: "Take-away rounds are documented at 1–2 minutes, so a full round — or a best-of rematch — fits the smallest break."
   - game: pass-the-picture
     reason: "A shared drawing with 2–5 passes each is documented at 2–5 minutes and finishes with a local download, not a scoreboard."
+  - game: klondike
+    reason: "A single deal typically takes 5–15 minutes, with no timer or forced pace."
+  - game: freecell
+    reason: "A single deal typically takes 5–20 minutes, with all cards visible for planning."
+  - game: twenty-forty-eight
+    reason: "A typical game takes 3–10 minutes, ending when no moves remain."
+  - game: tile-garden
+    reason: "A garden session takes 3–15 minutes with no timer or forced pace."
 ---
 
 Session ranges are descriptive, not limits or performance targets. A visitor can stop after one run, replay, or continue through another puzzle.

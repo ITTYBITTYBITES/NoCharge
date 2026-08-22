@@ -5,6 +5,7 @@ import { AFFILIATE_DISCLOSURE, AMAZON_REQUIRED_STATEMENT } from '../../config/af
 <aside class="affiliate-disclosure" aria-label="Affiliate disclosure" data-affiliate-disclosure>
   <p><strong>Affiliate disclosure:</strong> {AFFILIATE_DISCLOSURE}</p>
   <p><strong>{AMAZON_REQUIRED_STATEMENT}</strong></p>
+  <p class="new-tab-note">Affiliate links open in a new tab so you don't lose your place on NoCharge.</p>
 </aside>
 
 <style>
@@ -34,6 +35,12 @@ import { AFFILIATE_DISCLOSURE, AMAZON_REQUIRED_STATEMENT } from '../../config/af
 
   .affiliate-disclosure strong {
     color: #ffdda6;
+  }
+
+  .new-tab-note {
+    color: #d4c4a0;
+    font-size: 0.88rem;
+    font-style: italic;
   }
 
   @media (forced-colors: active) {

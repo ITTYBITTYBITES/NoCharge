@@ -24,6 +24,16 @@ games:
     reason: "Rounds have no timer and no forced pace; the only pressure is leaving the last token for the other player."
   - game: pass-the-picture
     reason: "Strokes wait for their pass, the canvas has no clock, and the finished picture is the whole result — nothing is scored."
+  - game: klondike
+    reason: "No timer or countdown. Moves are counted as a personal record but there is no time pressure."
+  - game: freecell
+    reason: "All cards are visible and untimed. Play proceeds at the player's pace with no countdown."
+  - game: nonogram
+    reason: "No timer, no fail state, no streak. Mark cells freely until the puzzle is solved."
+  - game: twenty-forty-eight
+    reason: "No timer, no daily challenge, no streak. Tiles slide at the player's pace."
+  - game: tile-garden
+    reason: "No timer, no lives, no energy system, no streak. Seeds appear at a calm rate with no gatekeeping."
 ---
 
 This collection is about actual timing behavior, not a claim that every game is easy. Word Tile Rush is deliberately excluded because its rising-grid timer starts after the first selected letter and it has no untimed mode.

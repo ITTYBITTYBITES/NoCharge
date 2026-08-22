@@ -8,6 +8,11 @@ import { mountFourInARow } from './four-in-a-row/main';
 import { mountReversi } from './reversi/main';
 import { mountLastToken } from './last-token/main';
 import { mountPassThePicture } from './pass-the-picture/main';
+import { mountKlondike } from './klondike/main';
+import { mountFreeCell } from './freecell/main';
+import { mountNonogram } from './nonogram/main';
+import { mountTwentyFortyEight } from './twenty-forty-eight/main';
+import { mountTileGarden } from './tile-garden/main';
 import type { GameController } from './shared/types';
 
 export interface GameModule {
@@ -25,6 +30,11 @@ const registry: Record<string, GameModule> = {
   reversi: { mount: mountReversi },
   'last-token': { mount: mountLastToken },
   'pass-the-picture': { mount: mountPassThePicture },
+  klondike: { mount: mountKlondike },
+  freecell: { mount: mountFreeCell },
+  nonogram: { mount: mountNonogram },
+  'twenty-forty-eight': { mount: mountTwentyFortyEight },
+  'tile-garden': { mount: mountTileGarden },
 };
 
 export function mountGame(id: string, root: HTMLElement): GameController {
