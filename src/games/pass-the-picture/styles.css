@@ -1,0 +1,94 @@
+.ptp__board {
+  display: grid;
+  gap: 0.6rem;
+  width: min(100%, 34rem);
+}
+
+.ptp__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.ptp__palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.ptp__color {
+  width: 2.35rem;
+  height: 2.35rem;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0.28rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel-2);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ptp__color::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--ptp-swatch, #fff);
+}
+
+.ptp__color[aria-pressed='true'] {
+  border-color: var(--focus, #ffe9bd);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--pp-accent, #facc15) 55%, transparent);
+}
+
+.ptp__canvas-frame {
+  display: grid;
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  overflow: hidden;
+  background: #f7f3e9;
+}
+
+.ptp__canvas {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  display: block;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.ptp__canvas:focus-visible {
+  outline: 3px solid var(--pp-accent, #facc15);
+  outline-offset: -3px;
+}
+
+.ptp__progress {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.ptp__download-note {
+  margin: 0.2rem 0 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+@media (forced-colors: active) {
+  .ptp__color {
+    border: 1px solid CanvasText;
+  }
+
+  .ptp__color[aria-pressed='true'] {
+    border: 2px solid Highlight;
+  }
+
+  .ptp__canvas-frame {
+    border: 1px solid CanvasText;
+  }
+}

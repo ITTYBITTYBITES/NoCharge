@@ -178,11 +178,12 @@ describe('match records', () => {
     ).toBe(false);
   });
 
-  it('describes results as Player 1, Player 2, or Draw', () => {
+  it('describes results as Player 1, Player 2, Draw, or a shared picture', () => {
     const base = { gameId: 'x', mode: 'm', score: [1, 0] as const, finishedAt: 0 };
     expect(describeMatchResult({ ...base, result: 'p1' })).toBe('Player 1');
     expect(describeMatchResult({ ...base, result: 'p2' })).toBe('Player 2');
     expect(describeMatchResult({ ...base, result: 'draw' })).toBe('Draw');
+    expect(describeMatchResult({ ...base, result: 'shared' })).toBe('Shared picture');
   });
 });
 

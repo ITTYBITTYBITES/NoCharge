@@ -112,7 +112,7 @@ export function turnAnnouncement(
  * Bounded local match records (read by My Arcade, never uploaded).
  * ------------------------------------------------------------------ */
 
-export type PassPlayMatchResult = 'p1' | 'p2' | 'draw';
+export type PassPlayMatchResult = 'p1' | 'p2' | 'draw' | 'shared';
 
 export interface PassPlayMatchRecord {
   gameId: string;
@@ -137,7 +137,7 @@ const MAX_MODE_LENGTH = 64;
 const MAX_TIMESTAMP = 8.64e15;
 
 function isMatchResult(value: unknown): value is PassPlayMatchResult {
-  return value === 'p1' || value === 'p2' || value === 'draw';
+  return value === 'p1' || value === 'p2' || value === 'draw' || value === 'shared';
 }
 
 /** Parse one stored match record defensively; anything unexpected reads as absent. */
@@ -217,6 +217,7 @@ export function savePassPlayMatchRecord(
 /** Result column value used by My Arcade. */
 export function describeMatchResult(record: PassPlayMatchRecord): string {
   if (record.result === 'draw') return 'Draw';
+  if (record.result === 'shared') return 'Shared picture';
   return record.result === 'p1' ? 'Player 1' : 'Player 2';
 }
 

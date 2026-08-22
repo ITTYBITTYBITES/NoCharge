@@ -7,6 +7,7 @@ import { mountDotsAndBoxes } from './dots-and-boxes/main';
 import { mountFourInARow } from './four-in-a-row/main';
 import { mountReversi } from './reversi/main';
 import { mountLastToken } from './last-token/main';
+import { mountPassThePicture } from './pass-the-picture/main';
 import type { GameController } from './shared/types';
 
 export interface GameModule {
@@ -23,6 +24,7 @@ const registry: Record<string, GameModule> = {
   'four-in-a-row': { mount: mountFourInARow },
   reversi: { mount: mountReversi },
   'last-token': { mount: mountLastToken },
+  'pass-the-picture': { mount: mountPassThePicture },
 };
 
 export function mountGame(id: string, root: HTMLElement): GameController {
