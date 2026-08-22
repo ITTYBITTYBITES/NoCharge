@@ -1,0 +1,69 @@
+.ttt__board {
+  display: grid;
+  grid-template-columns: repeat(var(--ttt-size, 3), minmax(0, 1fr));
+  gap: 0.4rem;
+  width: min(100%, calc(var(--ttt-size, 3) * 5.5rem));
+}
+
+.ttt__cell {
+  display: grid;
+  place-items: center;
+  /* Tabletop-friendly targets: every cell stays at least 64 px square. */
+  min-width: 64px;
+  min-height: 64px;
+  border: 1px solid var(--line);
+  border-radius: 0.7rem;
+  background: var(--panel-2);
+  color: var(--text);
+  font-size: clamp(1.5rem, 7vw, 2.1rem);
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ttt__cell:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--pp-accent, #60a5fa) 55%, var(--line));
+}
+
+.ttt__cell:disabled {
+  cursor: default;
+}
+
+.ttt__cell--x {
+  color: var(--pp-accent, #60a5fa);
+}
+
+.ttt__cell--o {
+  color: #f87171;
+}
+
+.ttt__cell.is-winning {
+  border-color: color-mix(in srgb, var(--pp-accent, #60a5fa) 80%, transparent);
+  background: color-mix(in srgb, var(--pp-accent, #60a5fa) 18%, var(--panel-2));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ttt__cell {
+    transition: border-color 140ms ease, background 140ms ease;
+  }
+}
+
+@media (max-width: 24rem) {
+  /* At 320 px a 4×4 board still fits because gaps collapse first. */
+  .ttt__board {
+    gap: 0.3rem;
+  }
+}
+
+@media (forced-colors: active) {
+  .ttt__cell {
+    border: 1px solid CanvasText;
+  }
+
+  .ttt__cell.is-winning {
+    background: Highlight;
+    color: HighlightText;
+    forced-color-adjust: none;
+  }
+}
