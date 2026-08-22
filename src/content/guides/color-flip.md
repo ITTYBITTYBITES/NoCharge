@@ -1,69 +1,56 @@
 ---
-title: "Color Flip Guide: Visual and Turn-Based Modes"
-description: Learn the direct visual color controls, checkpoint scoring, timing tips, and how to use the accessible untimed turn-based mode.
+title: "Color Flip Guide: Tap-to-Step and Turn-Based Modes"
+description: Learn the tap-to-step visual mode, color rotation options, and how to use the accessible untimed turn-based mode.
 game: color-flip
 readTime: 4
-updated: "2026-08-17"
+updated: "2026-08-22"
 featured: true
 order: 3
 ---
 
-Color Flip asks you to match the player circle to each tile as it reaches the dashed checkpoint. The path moves automatically in visual mode, but the color choice is direct: choose Green, Blue, Amber, or Rose. A wrong color or a missed path at the checkpoint ends the run.
+Color Flip is a calm tile puzzle. Pick a color at the start of each round, then tap adjacent tiles to step through the grid. Matching your color scores a point. There is no timer, no reflex pressure, and no "one wrong step and it's over" — take your time.
 
-Every color also has a letter label: **G** for green, **B** for blue, **A** for amber, and **R** for rose. The labels make the match readable without relying on color alone.
+Every color has a letter label: **G** for green, **B** for blue, **A** for amber, and **R** for rose. Labels and symbols appear on tiles and the player circle, so color is never the sole indicator.
 
-## The four color choices
+## How to play
 
-Visual mode provides four native buttons:
+At the start of each round, a compact color picker appears above the playfield. Choose one of the four colors. The picker then disappears — your color is fixed for the round (unless color rotation is enabled).
 
-1. **G · Green**
-2. **B · Blue**
-3. **A · Amber**
-4. **R · Rose**
+The playfield is a 5×5 grid. You occupy the center cell. Tap any adjacent tile (up, down, left, or right) to step onto it. If the tile's color matches yours, you score a point and continue. If it doesn't match, the round ends.
 
-Choosing one sets the player circle to that color immediately, regardless of its previous color. Green to Amber takes one Amber selection; Rose to Blue takes one Blue selection. Choosing the color that is already active keeps it selected. The active button includes a check mark and “Selected” text as well as its color.
+After each step, the grid shifts to keep you centered, and new tiles appear at the edges. Plan your path through matching-color tiles to build a score.
 
-Turn-based mode still uses the fixed Green → Blue → Amber → Rose cycle. Its Cycle color control is separate from the direct controls described for visual mode.
+## Controls at a glance
 
-## Visual mode controls
+- **Touch or pointer:** tap an adjacent highlighted tile to step.
+- **Keyboard:** arrow keys step in the corresponding direction. G, B, A, R pick a color at round start.
+- **Undo:** reverses the last step (one step only).
+- **Rotation toggle:** cycle between Never, Every 10 steps, Every 5 steps.
+- **Mode switch:** switch to Turn-based mode at any time.
 
-Choose **Start** to begin the moving path. The color buttons become available while the run is active.
+## Color rotation
 
-- **Touch or mouse:** choose **G · Green**, **B · Blue**, **A · Amber**, or **R · Rose** directly. Clicking the moving canvas does not select a color.
-- **Keyboard shortcuts:** press G, B, A, or R to select the corresponding color while visual mode is running.
-- **Keyboard buttons:** use Tab to reach any color button, then Enter or Space to activate it.
-- **New:** resets the player circle to Green and returns to the ready state; choose Start for the next run.
+By default, your color never changes during a round (the calmest option). Toggle the rotation button to enable automatic color changes:
 
-The opening tiles are green to give you a brief setup period. You can leave Green selected or explicitly choose **G · Green**; either way, the circle remains Green. After that, colors vary and the path gradually becomes faster.
+- **Never (default):** your color stays fixed. Plan a path through same-color tiles.
+- **Every 10 steps:** your color rotates to the next in the cycle (Green → Blue → Amber → Rose → Green) after every 10 successful steps.
+- **Every 5 steps:** same rotation, but faster. Requires planning ahead for color transitions.
 
-## Timing tips
-
-### Use the checkpoint line
-
-A tile is checked exactly once, when its center reaches the dashed line through the player. A correct color and path adds one point. A wrong color or missed path ends the run. Moving an evaluated tile off screen does not add another point.
-
-Make the required direct choice before the tile reaches the line. If the player circle already shows the tile’s color, leave it unchanged or choose that same button again. Selecting the active color never advances to another color.
-
-### Read the next tile, then choose once
-
-Look at the closest approaching tile and use its letter to identify the required control. If you are Green and the next tile is Amber, choose **A · Amber** once. There is no need to count through Blue first. After the checkpoint, read the next tile and make the next direct choice.
-
-### Watch the letter as well as the color
-
-At higher speed, the single-letter labels can be quicker to distinguish than the tile fills. Match the tile’s G, B, A, or R with the same labeled control and confirm the current-color label above the playfield.
-
-## Pause, fullscreen, and sound
-
-Pause preserves the exact selected color, tiles, score, and speed. The four direct controls are disabled until the run resumes, and keyboard shortcuts do nothing while paused. Hidden-tab and consent-dialog pauses use the same checkpoint-safe lifecycle, so resuming cannot skip or duplicate an evaluation.
-
-The controls stay with the playfield in fullscreen and immersive mode. Sound remains optional: the visible circle, label, active-button check mark, and tile letters communicate the complete state.
+Rotation adds variety without adding time pressure. The color change happens after a successful step, so you always know your new color before the next move.
 
 ## Turn-based mode
 
-Choose **Turn-based mode** when you prefer an untimed or nonvisual version. The moving canvas and visual-only direct controls are replaced with text that identifies your current color and the next tile.
+Turn-based mode is unchanged: a separate untimed mode where you cycle through colors and step forward to match announced tiles. Use **Cycle color** and **Step forward** buttons. No timer, no grid, no spatial planning — just color matching.
 
-Use **Cycle color** until the two names match, then choose **Step forward**. A correct step adds one point and announces the next tile. A wrong step ends the run. This mode has its own best score, target generation, and announcements, so its untimed results do not replace visual-mode records.
+## Accessibility
 
-## Where scores are stored
+- **Color is never the sole indicator:** every tile shows its letter (G, B, A, R) and the player circle shows the current color's letter.
+- **Keyboard complete:** arrow keys step, G/B/A/R pick colors, U undoes, Tab cycles toolbar buttons.
+- **Large tap targets:** all adjacent tiles are ≥44px and clearly highlighted.
+- **prefers-reduced-motion:** step animations are suppressed when enabled.
+- **forced-colors:** adjacent tiles use Highlight token, player uses CanvasText.
+- **320px reflow:** picker fits above playfield without horizontal scroll.
 
-Visual and turn-based best scores are saved separately in local storage. Neither score is uploaded or attached to an account.
+## What we don't claim
+
+We don't claim that any color rotation level is easier or harder — preference depends on play style. We don't claim any score is good or optimal. The best score is a personal record, not a performance evaluation.

@@ -31,6 +31,7 @@ export const GAME_PREFERENCE_KEYS = [
   'game-muted',
   'beacon-lattice-progress',
   'klondike-draw-mode',
+  'color-flip-rotation',
 ] as const;
 
 export const MEMORY_MATCH_BEST_MOVES_KEY = 'nocharge:memory-match:best-moves';

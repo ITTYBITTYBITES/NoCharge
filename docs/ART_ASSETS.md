@@ -317,3 +317,38 @@ screenshot shipped in the media kit and shown on `/media/`. Memory Match,
 Word Tile Rush, and Color Flip `screenshot-*.webp` files are generated
 previews and are deliberately **not** published as gameplay anywhere in the
 brand package.
+
+### New solo game art packages (PR #26)
+
+Generated via `npm run art:solo-new` (runs art:klondike, art:freecell, art:nonogram, art:2048, art:tile-garden). Each package uses programmatic SVG composition with no rasterized external images and no copyrighted assets.
+
+| Game / asset | Dimensions | Format |
+| --- | ---: | --- |
+| klondike / `cover-square.webp` / `.jpg` | 800×800 | WebP + JPEG fallback |
+| klondike / `cover-landscape.webp` / `.jpg` | 1280×720 | WebP + JPEG fallback |
+| klondike / `hero-square.webp` / `.jpg` | 1200×1200 | WebP + JPEG fallback |
+| klondike / `social-card.webp` / `.jpg` | 1200×630 | WebP + JPEG fallback |
+| freecell / `cover-square.webp` / `.jpg` | 800×800 | WebP + JPEG fallback |
+| freecell / `cover-landscape.webp` / `.jpg` | 1280×720 | WebP + JPEG fallback |
+| freecell / `hero-square.webp` / `.jpg` | 1200×1200 | WebP + JPEG fallback |
+| freecell / `social-card.webp` / `.jpg` | 1200×630 | WebP + JPEG fallback |
+| nonogram / `cover-square.webp` / `.jpg` | 800×800 | WebP + JPEG fallback |
+| nonogram / `cover-landscape.webp` / `.jpg` | 1280×720 | WebP + JPEG fallback |
+| nonogram / `hero-square.webp` / `.jpg` | 1200×1200 | WebP + JPEG fallback |
+| nonogram / `social-card.webp` / `.jpg` | 1200×630 | WebP + JPEG fallback |
+| twenty-forty-eight / `cover-square.webp` / `.jpg` | 800×800 | WebP + JPEG fallback |
+| twenty-forty-eight / `cover-landscape.webp` / `.jpg` | 1280×720 | WebP + JPEG fallback |
+| twenty-forty-eight / `hero-square.webp` / `.jpg` | 1200×1200 | WebP + JPEG fallback |
+| twenty-forty-eight / `social-card.webp` / `.jpg` | 1200×630 | WebP + JPEG fallback |
+| tile-garden / `cover-square.webp` / `.jpg` | 800×800 | WebP + JPEG fallback |
+| tile-garden / `cover-landscape.webp` / `.jpg` | 1280×720 | WebP + JPEG fallback |
+| tile-garden / `hero-square.webp` / `.jpg` | 1200×1200 | WebP + JPEG fallback |
+| tile-garden / `social-card.webp` / `.jpg` | 1200×630 | WebP + JPEG fallback |
+
+**Card art** (Klondike, FreeCell): Standard suits (♠ ♥ ♦ ♣) with no copyrighted characters. Red/black color coding via CSS. Card dimensions responsive via `clamp()`.
+
+**Tile art** (Tile Garden): 6 species × 4 tiers using emoji (🌱🌿🌼🌸) paired with species indicators. Original design, no copyrighted sources.
+
+**Number tiles** (2048): CSS-only with tier-based background colors from `#1c2820` (tile-2) to `#12b66a` (tile-2048).
+
+**Nonogram grid**: CSS grid with filled/empty/unknown states. Accent green `#12b66a` for filled cells.

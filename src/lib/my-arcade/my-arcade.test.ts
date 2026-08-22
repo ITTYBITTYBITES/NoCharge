@@ -391,6 +391,7 @@ describe('Clear Game Data source of truth', () => {
       'nocharge:pref:game-muted',
       BEACON_PROGRESS_KEY,
       'nocharge:pref:klondike-draw-mode',
+      'nocharge:pref:color-flip-rotation',
       RECENTLY_PLAYED_KEY,
       'nocharge:passplay:match:tic-tac-toe',
       'nocharge:passplay:match:dots-and-boxes',

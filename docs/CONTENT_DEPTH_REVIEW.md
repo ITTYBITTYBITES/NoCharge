@@ -49,3 +49,13 @@ Color Flip report scores; no single number is calculated across unrelated games 
 A game with nothing stored says `No saved result in this browser yet.` rather than showing a zero. The route carries
 no display advertisement and no affiliate link, which keeps local results visually separate from advertising; the
 rest of the site's advertising is unchanged.
+
+## Arcade grid update (PR #26, 2026-08-22)
+
+The homepage arcade grid now shows 9 solo games (4 original + 5 new: Klondike, FreeCell, Nonogram, Twenty Forty-Eight, Tile Garden) plus the existing 6 pass-and-play games. The dynamic `[slug].astro` template auto-includes all registered games.
+
+**Desktop layout:** 3×3 grid for solo games at standard widths. At 320px, games flow as a horizontal scroll row — acceptable and documented.
+
+**Mobile layout:** Horizontal scroll with consistent card sizing. The existing Recently Played row supports all 15 game IDs.
+
+**Choice rationale:** The 3×3 desktop grid keeps all solo games visible without scrolling. Mobile uses horizontal scroll to avoid cramped cards. This matches the existing pass-and-play pattern.

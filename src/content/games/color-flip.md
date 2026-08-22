@@ -1,7 +1,7 @@
 ---
 title: Color Flip
-tagline: One wrong step and it’s over.
-description: Match your color to a moving tile path in this quick browser reflex game, or switch to an accessible untimed turn-based mode.
+tagline: Pick a color. Step carefully. Take your time.
+description: A calm tile puzzle where you pick a color and step through matching tiles. No timer, no reflex pressure. Turn-based mode also available.
 emoji: 🎨
 accent: "#f59e0b"
 tier: quick
@@ -23,29 +23,31 @@ artwork:
   modesDiagram: /game-art/color-flip/modes-diagram.svg
   alt: An amber-led path of green, blue, amber, and rose labeled tiles
 presentation:
-  controlsHeading: Choose the next labeled color before it reaches the checkpoint.
+  controlsHeading: Pick a color, then tap adjacent tiles to step.
   controls:
     - label: Visual mode
-      description: Choose G · Green, B · Blue, A · Amber, or R · Rose directly with its button or keyboard shortcut.
-    - label: Checkpoint
-      description: The chosen color appears in the player circle, and each approaching tile is judged once at the dashed line.
+      description: Pick one color at round start, then tap adjacent tiles to step. Matching color scores.
+    - label: Color rotation
+      description: Toggle between Never, Every 10 steps, or Every 5 steps for color changes during play.
     - label: Turn-based mode
-      description: Use Cycle color and Step forward with no timing requirement; direct selection applies to visual mode.
-  controlsDiagramAlt: A labeled tile approaches while four direct Green, Blue, Amber, and Rose controls set the player circle before the dashed checkpoint.
-  controlsDiagramCaption: Choose a color directly; selecting the active color keeps it selected, and the tile is evaluated once at the dashed checkpoint.
-  secondaryDiagramAlt: Visual moving-path mode and untimed turn-based mode are shown side by side.
-  secondaryDiagramCaption: Turn-based mode keeps the fixed Cycle color and Step forward controls.
-  gameplayPreviewAlt: Color Flip displays a labeled four-color tile road and mode controls.
-  gameplayPreviewCaption: Visual mode uses four direct color choices; turn-based mode keeps its untimed cycle control and labels.
+      description: Use Cycle color and Step forward with no timing requirement.
+  controlsDiagramAlt: A player circle on a 5×5 tile grid with adjacent tiles highlighted for stepping.
+  controlsDiagramCaption: Tap any adjacent tile to step. Matching your color scores a point.
+  secondaryDiagramAlt: Visual tap-to-step mode and untimed turn-based mode are shown side by side.
+  secondaryDiagramCaption: Turn-based mode keeps its fixed Cycle color and Step forward controls.
+  gameplayPreviewAlt: Color Flip displays a labeled four-color tile grid with stepping controls.
+  gameplayPreviewCaption: Visual mode uses tap-to-step with color rotation options; turn-based mode keeps its untimed cycle control.
   relatedHeading: Compare both modes—or try another game.
   relatedGuideLabel: Color Flip visual and turn-based guide
-genre: Reflex
-difficulty: Timing challenge
+genre: Tile puzzle
+difficulty: Easy to learn
 session: 1–4 min
 featured: true
 order: 3
 ---
 
-Color Flip is a timing game built around four clearly labeled colors. In visual mode, choose **G · Green**, **B · Blue**, **A · Amber**, or **R · Rose** directly. The choice appears in the player circle, and each approaching tile is judged exactly once when its center reaches the dashed checkpoint. If the circle already has the required color, leave it unchanged or select that same color again—it stays selected.
+Color Flip is a calm tile puzzle built around four clearly labeled colors. In visual mode, pick one color at the start of each round, then tap adjacent tiles to step through the grid. Matching your color to the tile scores a point. There is no timer and no reflex pressure — take your time to plan each step.
 
-The four native color buttons support touch, pointer, and keyboard use, and G, B, A, and R are direct shortcuts after the run starts. Clicking the moving canvas does not select a color. Turn-based mode keeps its untimed **Cycle color** and **Step forward** controls and announces each upcoming tile.
+Color rotation adds variety: toggle between Never (calmest), Every 10 steps, or Every 5 steps to change your color during a round. Every color has a letter label: **G** for green, **B** for blue, **A** for amber, and **R** for rose. Labels and symbols appear on tiles and the player circle so color is never the sole indicator.
+
+Arrow keys step the player; G, B, A, R pick a color at round start. Turn-based mode keeps its untimed **Cycle color** and **Step forward** controls and announces each upcoming tile.
