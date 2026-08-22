@@ -1,0 +1,79 @@
+.lt__piles {
+  display: grid;
+  gap: 0.9rem;
+  width: min(100%, 24rem);
+}
+
+.lt__pile {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  background: var(--panel-2);
+}
+
+.lt__tokens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  min-height: 1.6rem;
+}
+
+.lt__token {
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 50%;
+  background: var(--pp-accent, #fb923c);
+  box-shadow: inset 0 -0.2rem 0.3rem rgba(0, 0, 0, 0.3);
+}
+
+.lt__token.is-taken {
+  background: transparent;
+  border: 1px dashed color-mix(in srgb, var(--muted) 55%, transparent);
+  box-shadow: none;
+  opacity: 0.65;
+}
+
+.lt__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.lt__take {
+  min-height: 44px;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lt__take:hover:not(:disabled),
+.lt__take:focus-visible {
+  border-color: color-mix(in srgb, var(--pp-accent, #fb923c) 70%, transparent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .lt__take,
+  .lt__token {
+    transition: border-color 130ms ease, opacity 130ms ease;
+  }
+}
+
+@media (forced-colors: active) {
+  .lt__pile,
+  .lt__take {
+    border: 1px solid CanvasText;
+  }
+
+  .lt__token.is-taken {
+    border: 1px dashed CanvasText;
+  }
+}
