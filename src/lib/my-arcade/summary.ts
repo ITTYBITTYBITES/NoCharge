@@ -4,6 +4,12 @@ import {
   readGameScore,
   readMemoryMatchBestMoves,
   readRecentPlays,
+  readKlondikeGamesWon,
+  readKlondikeBestMoves,
+  readFreeCellGamesWon,
+  readNonogramPuzzlesRevealed,
+  readTwentyFortyEightBestTile,
+  readTileGardenBestTier,
 } from './readers';
 import {
   MY_ARCADE_GAME_IDS,
@@ -96,11 +102,62 @@ function beaconLatticeMetrics(storage: ReadableStorage): LocalGameMetric[] {
   return metrics;
 }
 
+function klondikeMetrics(storage: ReadableStorage): LocalGameMetric[] {
+  const metrics: LocalGameMetric[] = [];
+  const won = readKlondikeGamesWon(storage);
+  if (won != null && won > 0) {
+    metrics.push({ label: 'Games won', value: formatCount(won), detail: 'Completed Klondike deals in this browser.' });
+  }
+  const best = readKlondikeBestMoves(storage);
+  if (best != null) {
+    metrics.push({ label: 'Best moves', value: formatCount(best), detail: 'Fewest moves for a won deal. Not claimed as optimal.' });
+  }
+  return metrics;
+}
+
+function freecellMetrics(storage: ReadableStorage): LocalGameMetric[] {
+  const won = readFreeCellGamesWon(storage);
+  if (won != null && won > 0) {
+    return [{ label: 'Games won', value: formatCount(won), detail: 'Completed FreeCell deals in this browser.' }];
+  }
+  return [];
+}
+
+function nonogramMetrics(storage: ReadableStorage): LocalGameMetric[] {
+  const count = readNonogramPuzzlesRevealed(storage);
+  if (count != null && count > 0) {
+    return [{ label: 'Pictures revealed', value: formatCount(count), detail: 'Nonogram puzzles completed in this browser.' }];
+  }
+  return [];
+}
+
+function twentyFortyEightMetrics(storage: ReadableStorage): LocalGameMetric[] {
+  const best = readTwentyFortyEightBestTile(storage);
+  if (best != null && best > 0) {
+    return [{ label: 'Best tile', value: String(best), detail: 'Highest tile reached. This is a factual record, not a performance evaluation.' }];
+  }
+  return [];
+}
+
+function tileGardenMetrics(storage: ReadableStorage): LocalGameMetric[] {
+  const tier = readTileGardenBestTier(storage);
+  if (tier != null && tier > 0) {
+    const names = ['Seed', 'Sprout', 'Bloom', 'Flower'];
+    return [{ label: 'Best tier', value: names[tier] ?? String(tier), detail: 'Highest growth tier reached in this browser.' }];
+  }
+  return [];
+}
+
 const METRIC_READERS: Record<GameId, (storage: ReadableStorage) => LocalGameMetric[]> = {
   'memory-match': memoryMatchMetrics,
   'word-tile-rush': wordTileRushMetrics,
   'color-flip': colorFlipMetrics,
   'beacon-lattice': beaconLatticeMetrics,
+  'klondike': klondikeMetrics,
+  'freecell': freecellMetrics,
+  'nonogram': nonogramMetrics,
+  'twenty-forty-eight': twentyFortyEightMetrics,
+  'tile-garden': tileGardenMetrics,
 };
 
 function summarizeGame(

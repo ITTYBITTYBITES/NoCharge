@@ -13,6 +13,11 @@ const gameIds = z.enum([
   'reversi',
   'last-token',
   'pass-the-picture',
+  'klondike',
+  'freecell',
+  'nonogram',
+  'twenty-forty-eight',
+  'tile-garden',
 ]);
 
 const games = defineCollection({
@@ -59,7 +64,7 @@ const articles = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/articles' }),
   schema: z.discriminatedUnion('kind', [
     articleBase.extend({ kind: z.literal('game'), game: gameIds, gameplayVersion: z.string().optional() }),
-    articleBase.extend({ kind: z.literal('platform'), category: z.enum(['trust', 'privacy', 'accessibility', 'testing']) }),
+    articleBase.extend({ kind: z.literal('platform'), category: z.enum(['trust', 'privacy', 'accessibility', 'testing', 'announcement']) }),
   ]),
 });
 
@@ -73,7 +78,7 @@ const collectionsContent = defineCollection({
 });
 
 
-const setupTopics = z.enum(['keyboards', 'pointing-devices', 'screens-and-stands', 'desk-and-comfort', 'offline-puzzles']);
+const setupTopics = z.enum(['keyboards', 'pointing-devices', 'screens-and-stands', 'desk-and-comfort', 'offline-puzzles', 'audio', 'lighting']);
 const evidenceLevels = z.enum(['editorial-research', 'personally-used', 'hands-on-tested']);
 const affiliateLink = z.object({
   label: z.string().min(1), url: z.string().url().startsWith('https://'), purpose: z.string().min(1),
@@ -86,7 +91,7 @@ const setup = defineCollection({
     topic: setupTopics, topics: z.array(setupTopics).min(1), evidenceLevel: evidenceLevels,
     hasAffiliateLinks: z.boolean(), affiliateDisclosure: z.boolean().default(false),
     affiliateLinks: z.array(affiliateLink).default([]),
-    artwork: z.enum(['hero', 'keyboards', 'pointing', 'screens-stands', 'puzzles-desk', 'switches', 'zoom-display', 'desk-noise']),
+    artwork: z.enum(['hero', 'keyboards', 'pointing', 'screens-stands', 'puzzles-desk', 'switches', 'zoom-display', 'desk-noise', 'monitor', 'speakers', 'posture', 'footrest', 'lamp', 'bias-light', 'cables']),
     draft: z.boolean().default(false), featured: z.boolean().default(false),
   }).superRefine((data, ctx) => {
     if (data.hasAffiliateLinks && (!data.affiliateDisclosure || data.affiliateLinks.length === 0))

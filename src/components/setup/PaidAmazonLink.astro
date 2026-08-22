@@ -24,7 +24,10 @@ if (!/Amazon/i.test(label) || !/(paid link)/i.test(label)) {
 ---
 
 <div class="paid-recommendation" data-paid-recommendation>
-  <a class="paid-link" href={url} rel="sponsored nofollow" data-amazon-paid-link>{label}</a>
+  <div class="paid-link-row">
+    <a class="paid-link" href={url} target="_blank" rel="sponsored nofollow noopener noreferrer" data-amazon-paid-link>{label}</a>
+    <span class="new-tab-cue">(opens in a new tab)</span>
+  </div>
   <dl>
     <div><dt>Why this link</dt><dd>{purpose}</dd></div>
     <div><dt>May suit</dt><dd>{suitableFor}</dd></div>
@@ -40,6 +43,13 @@ if (!/Amazon/i.test(label) || !/(paid link)/i.test(label)) {
     border: 1px solid rgba(201, 139, 44, 0.55);
     border-radius: var(--radius);
     background: color-mix(in srgb, #b7791f 8%, var(--panel));
+  }
+
+  .paid-link-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.35rem 0.6rem;
   }
 
   /* A plain underlined text link, never a filled yellow retail button. */
@@ -60,6 +70,14 @@ if (!/Amazon/i.test(label) || !/(paid link)/i.test(label)) {
   .paid-link:focus-visible {
     outline: 3px solid #fff;
     outline-offset: 4px;
+  }
+
+  /* Visible "(opens in a new tab)" cue — not sr-only. */
+  .new-tab-cue {
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 400;
+    white-space: nowrap;
   }
 
   /* Terms stack above their descriptions by default. The previous 6rem
