@@ -1,0 +1,156 @@
+---
+/**
+ * Shared Pass &amp; Play handoff screen.
+ *
+ * The markup lives once in `src/games/shared/pass-play.ts` so the runtime
+ * factory and this server component can never drift apart. This component
+ * embeds it as an inert `<template>` and provides the shared styles; game
+ * code calls `createHandoffScreen()` from `pass-play.ts` to clone, mount,
+ * and wire a handoff.
+ *
+ * Only embed on game pages that use the handoff (`passPlay` slot flag).
+ */
+import { HANDOFF_SCREEN_TEMPLATE } from '../games/shared/pass-play';
+---
+
+<template data-handoff-screen><Fragment set:html={HANDOFF_SCREEN_TEMPLATE} /></template>
+
+<style is:global>
+  /* Handoff surface. Kept global because the dialog is cloned from a
+     template at runtime and never carries Astro scoping attributes. */
+  .pp-handoff {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    overflow: auto;
+  }
+
+  .pp-handoff__backdrop {
+    position: absolute;
+    inset: 0;
+    /* Opaque by default: the previous player's view of the board is covered. */
+    background: var(--bg, #101210);
+  }
+
+  .pp-handoff--shared .pp-handoff__backdrop {
+    /* Shared-surface games keep the board visible through the handoff. */
+    background: color-mix(in srgb, var(--bg, #101210) 72%, transparent);
+    backdrop-filter: none;
+  }
+
+  .pp-handoff__panel {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 0.6rem;
+    width: min(100%, 24rem);
+    max-width: 100%;
+    padding: clamp(1.1rem, 4vw, 1.6rem);
+    border: 1px solid var(--line, #2a2f2b);
+    border-radius: var(--radius, 0.9rem);
+    background: var(--panel, #161b17);
+    box-shadow: var(--shadow, 0 1rem 2.4rem rgba(0, 0, 0, 0.35));
+    text-align: center;
+  }
+
+  .pp-handoff__kicker {
+    color: var(--accent-strong, #34d399);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .pp-handoff__title {
+    font-size: clamp(1.4rem, 6vw, 1.8rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.12;
+    overflow-wrap: anywhere;
+  }
+
+  .pp-handoff__context,
+  .pp-handoff__tally {
+    margin: 0;
+    color: var(--muted, #a3ad9f);
+    font-size: 0.88rem;
+  }
+
+  .pp-handoff__tally {
+    font-weight: 700;
+  }
+
+  .pp-handoff__live {
+    margin: 0;
+    min-height: 1.1rem;
+    color: var(--muted, #a3ad9f);
+    font-size: 0.82rem;
+  }
+
+  .pp-handoff__names {
+    display: grid;
+    gap: 0.6rem;
+    width: 100%;
+    margin-top: 0.35rem;
+  }
+
+  .pp-handoff__field {
+    display: grid;
+    gap: 0.25rem;
+    text-align: left;
+  }
+
+  .pp-handoff__label {
+    color: var(--muted, #a3ad9f);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .pp-handoff__input {
+    width: 100%;
+    min-height: 44px;
+    padding: 0.5rem 0.7rem;
+    border: 1px solid var(--line, #2a2f2b);
+    border-radius: 0.6rem;
+    background: var(--bg, #101210);
+    color: var(--text, #ecf2ea);
+    font: inherit;
+    font-size: 0.95rem;
+  }
+
+  .pp-handoff__continue {
+    min-height: 48px;
+    margin-top: 0.45rem;
+    padding-inline: 2rem;
+    font-size: 1rem;
+    font-weight: 800;
+  }
+
+  .pp-handoff__hint {
+    margin: 0;
+    color: var(--muted, #a3ad9f);
+    font-size: 0.78rem;
+    overflow-wrap: anywhere;
+  }
+
+  @media (forced-colors: active) {
+    .pp-handoff__backdrop {
+      background: Canvas;
+    }
+
+    .pp-handoff--shared .pp-handoff__backdrop {
+      background: transparent;
+    }
+
+    .pp-handoff__panel,
+    .pp-handoff__input,
+    .pp-handoff__continue {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>

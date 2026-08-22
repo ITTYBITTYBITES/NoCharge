@@ -1,6 +1,7 @@
 ---
 import type { GameArtworkData } from '../types/content';
 import GameArtwork from './GameArtwork.astro';
+import HandoffScreen from './HandoffScreen.astro';
 
 interface Props {
   title: string;
@@ -8,12 +9,15 @@ interface Props {
   slug: string;
   accent?: string;
   artwork?: GameArtworkData;
+  /** Pass &amp; Play games embed the shared handoff template once. */
+  passPlay?: boolean;
 }
 
-const { title, tagline, slug, accent = '#12b66a', artwork } = Astro.props;
+const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = Astro.props;
 ---
 
 <section class="game-shell" data-game={slug}>
+  {passPlay && <HandoffScreen />}
   <div class:list={['game-shell__top', { 'game-shell__top--artwork': artwork }]}>
     <a class="back-link" href="/arcade/">← Arcade</a>
     <div class="game-shell__heading">
