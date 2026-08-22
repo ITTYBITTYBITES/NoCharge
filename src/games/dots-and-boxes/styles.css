@@ -1,0 +1,162 @@
+.dab__score {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  margin: 0;
+}
+
+.dab__score-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.dab__score-chip.is-current {
+  border-color: color-mix(in srgb, var(--pp-accent, #f472b6) 70%, transparent);
+  color: var(--text);
+}
+
+.dab__score-dot {
+  width: 0.62rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+
+.dab__scroll {
+  width: 100%;
+  overflow-x: auto;
+  /* Keep the score and controls reachable while a wide board scrolls. */
+  overscroll-behavior-x: contain;
+}
+
+.dab__board {
+  display: grid;
+  grid-template-columns: repeat(var(--dab-units, 9), var(--dab-unit, 2rem));
+  grid-auto-rows: var(--dab-unit, 2rem);
+  width: max-content;
+  margin-inline: auto;
+  padding: 0.25rem;
+}
+
+.dab__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  place-self: center;
+  border-radius: 50%;
+  background: #cfc9ba;
+}
+
+.dab__edge {
+  position: relative;
+  min-width: 1.75rem;
+  min-height: 1.75rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dab__edge::before {
+  content: '';
+  position: absolute;
+  border-radius: 999px;
+  background: transparent;
+  transition: background 120ms ease;
+}
+
+.dab__edge--h::before {
+  inset: calc(50% - 0.145rem) 0.09rem;
+}
+
+.dab__edge--v::before {
+  inset: 0.09rem calc(50% - 0.145rem);
+}
+
+.dab__edge:hover:not(:disabled)::before,
+.dab__edge:focus-visible::before {
+  background: color-mix(in srgb, var(--pp-accent, #f472b6) 55%, transparent);
+}
+
+.dab__edge:focus-visible {
+  outline: 2px solid var(--focus, #ffd18a);
+  outline-offset: -2px;
+  border-radius: 0.4rem;
+}
+
+.dab__edge:disabled {
+  cursor: default;
+}
+
+.dab__edge.is-drawn::before {
+  background: var(--edge-color, var(--text));
+}
+
+.dab__edge.is-drawn--p1 {
+  --edge-color: var(--pp-accent, #f472b6);
+}
+
+.dab__edge.is-drawn--p2 {
+  --edge-color: #7dd3fc;
+}
+
+.dab__box {
+  position: relative;
+  margin: 0.14rem;
+  border-radius: 0.3rem;
+  background: color-mix(in srgb, var(--panel-2) 55%, transparent);
+}
+
+.dab__box.is-claimed--p1 {
+  background: color-mix(in srgb, var(--pp-accent, #f472b6) 34%, var(--panel-2));
+}
+
+.dab__box.is-claimed--p2 {
+  background: color-mix(in srgb, #7dd3fc 34%, var(--panel-2));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dab__box.is-claimed {
+    animation: dab-box-flash 640ms ease-out;
+  }
+
+  @keyframes dab-box-flash {
+    0% {
+      transform: scale(0.86);
+      filter: brightness(1.9);
+    }
+
+    100% {
+      transform: scale(1);
+      filter: brightness(1);
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  .dab__dot {
+    background: CanvasText;
+  }
+
+  .dab__edge.is-drawn::before {
+    background: CanvasText;
+  }
+
+  .dab__edge.is-drawn--p1::before {
+    background: Highlight;
+  }
+
+  .dab__box.is-claimed--p1 {
+    background: Highlight;
+  }
+
+  .dab__box.is-claimed--p2 {
+    background: CanvasText;
+  }
+}

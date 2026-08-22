@@ -3,6 +3,7 @@ import { mountMemoryMatch } from './memory-match/main';
 import { mountWordTileRush } from './word-tile-rush/main';
 import { mountColorFlip } from './color-flip/main';
 import { mountTicTacToe } from './tic-tac-toe/main';
+import { mountDotsAndBoxes } from './dots-and-boxes/main';
 import type { GameController } from './shared/types';
 
 export interface GameModule {
@@ -15,6 +16,7 @@ const registry: Record<string, GameModule> = {
   'color-flip': { mount: mountColorFlip },
   'beacon-lattice': { mount: mountBeaconLattice },
   'tic-tac-toe': { mount: mountTicTacToe },
+  'dots-and-boxes': { mount: mountDotsAndBoxes },
 };
 
 export function mountGame(id: string, root: HTMLElement): GameController {
