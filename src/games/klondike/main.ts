@@ -124,7 +124,7 @@ export function mountKlondike(root: HTMLElement): GameController {
     drawToggle.textContent = `Draw ${state.drawMode}`;
 
     // Stock
-    const stockBack = stockEl.querySelector('.kl__card--back');
+    const stockBack = stockEl.querySelector<HTMLElement>('.kl__card--back');
     if (stockBack) {
       stockBack.style.display = state.stock.length > 0 ? '' : 'none';
     }
