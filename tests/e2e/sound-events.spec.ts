@@ -160,7 +160,7 @@ test('Last Token records place, then error and win on the last token', async ({ 
   await continueHandoff(page);
   await clearSoundCalls(page);
   await take(1, 1).click();
-  expect(await soundCalls(page)).toEqual(['place', 'error', 'win']);
+  await expect.poll(async () => soundCalls(page)).toEqual(['place', 'error', 'win']);
 });
 
 test('Pass the Picture records place on a stroke', async ({ page }) => {

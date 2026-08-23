@@ -161,7 +161,8 @@ export function mountLastToken(root: HTMLElement): GameController {
       score: winner === 1 ? [1, 0] : [0, 1],
       finishedAt: Date.now(),
     });
-    void play('error').then(() => play('win'));
+    void play('error');
+    void play('win');
     nextBtn.focus({ preventScroll: true });
   };
 
