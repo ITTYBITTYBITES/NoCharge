@@ -7,7 +7,7 @@ const collectionSlugs=['keyboard-friendly-browser-games','untimed-or-reduced-pre
 test.beforeEach(async({page})=>denyOptionalServices(page));
 
 test('publishes platform articles without fake game controls and with accurate metadata',async({page,request})=>{
- await page.goto('/articles/');await expect(page.getByRole('heading',{name:'Platform articles'})).toBeVisible();await expect(page.locator('.articles-grid .article-card')).toHaveCount(23);
+ await page.goto('/articles/');await expect(page.getByRole('heading',{name:'Platform articles'})).toBeVisible();await expect(page.locator('.articles-grid .article-card')).toHaveCount(25);
  for(const slug of platformSlugs){const path=`/articles/${slug}/`;expect((await request.get(path)).status()).toBe(200);await page.goto(path);await expect(page.locator('.breadcrumbs')).toBeVisible();await expect(page.locator('.article-play').getByRole('link',{name:/Play /})).toHaveCount(0);await expect(page.getByText(/Reviewed by NoCharge/)).toBeVisible();await expect(page.locator('link[rel=canonical]')).toHaveAttribute('href',`https://nocharge.net${path}`);const json=(await page.locator('script[type="application/ld+json"]').allTextContents()).join('\n');expect(json).toContain('"@type":"Article"');expect(json).toContain('"@type":"BreadcrumbList"');expect(json).not.toContain('"@type":"VideoGame"');}
 });
 
