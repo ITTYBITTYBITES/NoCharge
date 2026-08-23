@@ -1,5 +1,5 @@
 import { mountGame } from '../registry';
-import { isMuted, toggleMuted, unlockAudio } from './audio';
+import { isMuted, toggleMuted, unlockAudio, isSoundEnabled, setSoundEnabled, getSoundVolume, setSoundVolume, getAmbient, startAmbient, stopAmbient } from './audio';
 import {
   addVisibleRecoveryListeners,
   pauseReasonsAfterResumeRequest,
@@ -26,6 +26,9 @@ export function mountGameShell(viewport: HTMLElement): () => void {
   root.classList.add('is-game-mounted');
   const pauseButton = viewport.querySelector<HTMLButtonElement>('[data-game-toolbar="pause"]');
   const muteButton = viewport.querySelector<HTMLButtonElement>('[data-game-toolbar="mute"]');
+  const soundButton = viewport.querySelector<HTMLButtonElement>('[data-game-toolbar="sound"]');
+  const volumeInput = viewport.querySelector<HTMLInputElement>('[data-game-toolbar="volume"]');
+  const ambientInput = viewport.querySelector<HTMLSelectElement>('[data-game-toolbar="ambient"]');
   const fullscreenButton = viewport.querySelector<HTMLButtonElement>('[data-game-toolbar="fullscreen"]');
   const restartButton = viewport.querySelector<HTMLButtonElement>('[data-game-toolbar="restart"]');
   const pauseOverlay = viewport.querySelector<HTMLElement>('[data-game-pause-overlay]');
@@ -49,10 +52,14 @@ export function mountGameShell(viewport: HTMLElement): () => void {
 
   const updateMute = () => {
     const muted = isMuted();
-    if (!muteButton) return;
-    muteButton.textContent = muted ? 'Unmute sound' : 'Mute sound';
-    muteButton.setAttribute('aria-label', muted ? 'Unmute game sound' : 'Mute game sound');
-    muteButton.setAttribute('aria-pressed', String(muted));
+    if (muteButton) {
+      muteButton.textContent = muted ? 'Unmute sound' : 'Mute sound';
+      muteButton.setAttribute('aria-label', muted ? 'Unmute game sound' : 'Mute game sound');
+      muteButton.setAttribute('aria-pressed', String(muted));
+    }
+    if (soundButton) { const enabled=isSoundEnabled(); soundButton.textContent=enabled?'Sound on':'Sound off'; soundButton.setAttribute('aria-pressed',String(enabled)); }
+    if (volumeInput) volumeInput.value=String(getSoundVolume());
+    if (ambientInput) ambientInput.value=getAmbient();
   };
 
   const updatePaused = (announcement?: string) => {
@@ -235,10 +242,13 @@ export function mountGameShell(viewport: HTMLElement): () => void {
   });
   overlayResume?.addEventListener('click', resumeFromSharedControl);
   muteButton?.addEventListener('click', () => {
-    const muted = toggleMuted();
-    updateMute();
-    announce(muted ? 'Game sound muted.' : 'Game sound unmuted.');
+    unlockAudio(); const muted = toggleMuted();
+    if (muted) stopAmbient(); else if (getAmbient() !== 'none') startAmbient();
+    updateMute(); announce(muted ? 'Game sound muted.' : 'Game sound unmuted.');
   });
+  soundButton?.addEventListener('click', () => { unlockAudio(); setSoundEnabled(!isSoundEnabled()); updateMute(); announce(isSoundEnabled()?'Sound enabled.':'Sound disabled.'); if(!isSoundEnabled()) stopAmbient(); else if(getAmbient()!=='none') startAmbient(); });
+  volumeInput?.addEventListener('input', () => setSoundVolume(Number(volumeInput.value)));
+  ambientInput?.addEventListener('change', () => { unlockAudio(); const value=ambientInput.value as any; if(value==='none') stopAmbient(); else startAmbient(value); updateMute(); });
   fullscreenButton?.addEventListener('click', () => void requestFullscreen());
   restartButton?.addEventListener('click', () => {
     if (!controller.restart) return;

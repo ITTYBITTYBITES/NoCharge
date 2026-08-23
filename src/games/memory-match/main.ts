@@ -150,7 +150,7 @@ export function mountMemoryMatch(root: HTMLElement): GameController {
     card.flipped = true;
     card.el.classList.add('is-flipped');
     card.el.setAttribute('aria-label', `${card.symbol}, card ${card.id + 1} of ${cards.length}`);
-    void play('blip');
+    void play('flip');
 
     if (!first) {
       first = card;
@@ -173,7 +173,7 @@ export function mountMemoryMatch(root: HTMLElement): GameController {
       firstCard.el.disabled = true;
       card.el.disabled = true;
       matched += 1;
-      void play('pop');
+      void play('match');
       first = null;
       lock = false;
 

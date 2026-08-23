@@ -161,7 +161,7 @@ export function mountPassThePicture(root: HTMLElement): GameController {
         for (const other of paletteEl.querySelectorAll('[data-ptp-color]')) {
           other.setAttribute('aria-pressed', String(other === button));
         }
-        void play('blip');
+        void play('move');
       });
       paletteEl.appendChild(button);
     });
@@ -268,7 +268,7 @@ export function mountPassThePicture(root: HTMLElement): GameController {
     const stroke: PictureStroke = { pass, player: playerForPass(pass), color, points };
     strokes = [...strokes, stroke];
     signalMeaningfulGameInteraction(root);
-    void play('pop');
+    void play('place');
     redraw();
     renderProgress();
 
@@ -287,7 +287,7 @@ export function mountPassThePicture(root: HTMLElement): GameController {
     unlockAudio();
     strokes = [...undone.strokes];
     redraw();
-    void play('blip');
+    void play('move');
     // The pass the undone stroke belonged to is replayed by its author.
     beginPass(undone.resumePass);
   };

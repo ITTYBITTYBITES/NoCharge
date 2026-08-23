@@ -115,7 +115,7 @@ export function mountTwentyFortyEight(root: HTMLElement): GameController {
       resultEl.textContent = `Final score: ${state.score}. Best tile: ${state.bestTile}.`;
       continueBtn.hidden = true;
       overlay.hidden = false;
-      void play('blip');
+      void play('move');
     }
   }
 
@@ -126,7 +126,7 @@ export function mountTwentyFortyEight(root: HTMLElement): GameController {
     const next = move(state, direction);
     if (next) {
       state = next;
-      void play('pop');
+      void play('merge');
       render();
     }
   }

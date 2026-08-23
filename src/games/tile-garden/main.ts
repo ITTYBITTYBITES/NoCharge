@@ -157,7 +157,7 @@ export function mountTileGarden(root: HTMLElement): GameController {
     const result = placeTile(state, row, col);
     if (result) {
       state = result;
-      void play('pop');
+      void play('merge');
       render();
       focusCursor();
     }

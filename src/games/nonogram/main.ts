@@ -205,7 +205,7 @@ export function mountNonogram(root: HTMLElement): GameController {
     const result = toggleCell(state, row, col);
     if (result) {
       state = result;
-      void play('pop');
+      void play('place');
       render();
       focusCursor();
     }
@@ -218,7 +218,7 @@ export function mountNonogram(root: HTMLElement): GameController {
     const result = markCell(state, row, col, 'empty');
     if (result) {
       state = result;
-      void play('blip');
+      void play('move');
       render();
       focusCursor();
     }
@@ -266,14 +266,14 @@ export function mountNonogram(root: HTMLElement): GameController {
         e.preventDefault();
         {
           const result = markCell(state, cursorRow, cursorCol, 'filled');
-          if (result) { state = result; void play('pop'); render(); focusCursor(); }
+          if (result) { state = result; void play('place'); render(); focusCursor(); }
         }
         break;
       case 'x': case 'X': case ' ':
         e.preventDefault();
         {
           const result = markCell(state, cursorRow, cursorCol, 'empty');
-          if (result) { state = result; void play('blip'); render(); focusCursor(); }
+          if (result) { state = result; void play('move'); render(); focusCursor(); }
         }
         break;
       case 'u': case 'U':
