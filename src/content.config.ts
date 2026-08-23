@@ -18,6 +18,8 @@ const gameIds = z.enum([
   'nonogram',
   'twenty-forty-eight',
   'tile-garden',
+  'word-search',
+  'mini-sudoku',
 ]);
 
 const games = defineCollection({

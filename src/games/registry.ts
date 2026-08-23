@@ -13,6 +13,8 @@ import { mountFreeCell } from './freecell/main';
 import { mountNonogram } from './nonogram/main';
 import { mountTwentyFortyEight } from './twenty-forty-eight/main';
 import { mountTileGarden } from './tile-garden/main';
+import { mountWordSearch } from './word-search/main';
+import { mountMiniSudoku } from './mini-sudoku/main';
 import type { GameController } from './shared/types';
 
 export interface GameModule {
@@ -35,6 +37,8 @@ const registry: Record<string, GameModule> = {
   nonogram: { mount: mountNonogram },
   'twenty-forty-eight': { mount: mountTwentyFortyEight },
   'tile-garden': { mount: mountTileGarden },
+  'word-search': { mount: mountWordSearch },
+  'mini-sudoku': { mount: mountMiniSudoku },
 };
 
 export function mountGame(id: string, root: HTMLElement): GameController {
