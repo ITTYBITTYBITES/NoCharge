@@ -93,13 +93,12 @@ test('Word Search records hint from the hint control', async ({ page }) => {
   expect(await soundCalls(page)).toContain('hint');
 });
 
-test('Mini Sudoku records place or error on a digit', async ({ page }) => {
+test('Mini Sudoku records hint from Reveal', async ({ page }) => {
   await page.goto('/games/mini-sudoku/');
   const empty = page.locator('.ms__cell').filter({ hasNotText: /^[1-6]$/ }).first();
   await empty.click();
-  await page.keyboard.press('1');
-  const calls = await soundCalls(page);
-  expect(calls.some((name) => name === 'place' || name === 'error')).toBe(true);
+  await page.getByRole('button', { name: 'Reveal' }).click();
+  expect(await soundCalls(page)).toContain('hint');
 });
 
 test('Tic-Tac-Toe records place then win on a completed line', async ({ page }) => {

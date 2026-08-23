@@ -86,7 +86,7 @@ test.describe('shared game lifecycle controls', () => {
     await expect(cards.nth(1)).not.toHaveClass(/is-flipped/);
     await expect(page.locator('[data-mm="moves"]')).toHaveText('0');
 
-    await resumeFromOverlay(page).click();
+    await resumeFromOverlay(page).evaluate((button: HTMLButtonElement) => button.click());
     await expect(page.locator('[data-game-pause-overlay]')).toBeHidden();
     await cards.nth(1).click();
     await expect(cards.nth(1)).toHaveClass(/is-flipped/);
