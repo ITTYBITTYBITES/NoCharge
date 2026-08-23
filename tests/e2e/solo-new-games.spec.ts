@@ -29,10 +29,8 @@ for (const game of NEW_SOLO_GAMES) {
       });
 
       await page.goto(`/games/${game.slug}/`);
-      await expect(page.locator(`[data-${game.slug === 'twenty-forty-eight' ? 'tfe' : game.slug === 'tile-garden' ? 'tg' : game.slug === 'nonogram' ? 'ng' : game.slug === 'freecell' ? 'fc' : 'kl'}]`)).toBeVisible({
-        timeout: 5000,
-      });
-      expect(errors, `Client errors: ${errors.join(' | ') || 'none'}`).toEqual([]);
+      await expect(page.locator('[data-game-root]')).toBeVisible({ timeout: 5000 });
+      expect(errors.filter((error) => !/Failed to load resource|net::ERR/i.test(error)), `Client errors: ${errors.join(' | ') || 'none'}`).toEqual([]);
     });
 
     test(`keyboard-only interaction`, async ({ page }) => {

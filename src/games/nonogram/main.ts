@@ -34,7 +34,7 @@ export function mountNonogram(root: HTMLElement): GameController {
           <button type="button" class="btn btn--sm" data-ng="clues-btn">Show clues as text</button>
         </div>
       </div>
-      <div class="ng__board" data-ng="board" role="grid" aria-label="Nonogram grid"></div>
+      <div class="ng__board" data-ng="board" role="group" aria-label="Nonogram grid"></div>
       <div class="ng__clues-text" data-ng="clues-text" hidden aria-live="polite"></div>
       <div class="ng__overlay" data-ng="overlay" hidden>
         <h2>Picture revealed</h2>
@@ -132,7 +132,6 @@ export function mountNonogram(root: HTMLElement): GameController {
         const cell = document.createElement('button');
         cell.type = 'button';
         cell.className = 'ng__cell';
-        cell.setAttribute('role', 'gridcell');
         cell.setAttribute('aria-label', `Row ${r + 1}, column ${c + 1}: ${state.grid[r]![c]}`);
         cell.dataset.row = String(r);
         cell.dataset.col = String(c);

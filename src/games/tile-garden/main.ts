@@ -34,7 +34,7 @@ export function mountTileGarden(root: HTMLElement): GameController {
           <button type="button" class="btn btn--sm" data-tg="restart-btn">New game</button>
         </div>
       </div>
-      <div class="tg__board" data-tg="board" role="grid" aria-label="Tile Garden board"></div>
+      <div class="tg__board" data-tg="board" role="group" aria-label="Tile Garden board"></div>
       <div class="tg__overlay" data-tg="overlay" hidden>
         <h2>Garden complete</h2>
         <p data-tg="result" aria-live="polite"></p>
@@ -100,7 +100,6 @@ export function mountTileGarden(root: HTMLElement): GameController {
         const cell = document.createElement('button');
         cell.type = 'button';
         cell.className = 'tg__cell';
-        cell.setAttribute('role', 'gridcell');
 
         const tile = state.grid[r]![c];
         if (tile) {

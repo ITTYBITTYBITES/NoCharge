@@ -26,7 +26,7 @@ export function mountTwentyFortyEight(root: HTMLElement): GameController {
           <button type="button" class="btn btn--sm" data-tfe="restart-btn">New game</button>
         </div>
       </div>
-      <div class="tfe__board" data-tfe="board" role="grid" aria-label="2048 game board"></div>
+      <div class="tfe__board" data-tfe="board" role="group" aria-label="2048 game board"></div>
       <div class="tfe__overlay" data-tfe="overlay" hidden>
         <h2 data-tfe="overlay-title"></h2>
         <p data-tfe="result" aria-live="polite"></p>
@@ -83,7 +83,6 @@ export function mountTwentyFortyEight(root: HTMLElement): GameController {
       for (let c = 0; c < 4; c++) {
         const cell = document.createElement('div');
         cell.className = 'tfe__cell';
-        cell.setAttribute('role', 'gridcell');
         const value = state.grid[r]![c]!;
         if (value > 0) {
           cell.textContent = String(value);

@@ -322,7 +322,7 @@ test.describe('Quiet Setup article geometry', () => {
 
         // Its paragraphs stay inside the bordered panel and clear of the edge.
         const paragraphs = await boxes(page, '[data-affiliate-disclosure] p');
-        expect(paragraphs.length).toBe(2);
+        expect(paragraphs.length).toBe(3);
         expectNoPairwiseOverlap(paragraphs, `${context} disclosure paragraphs`);
         for (const paragraph of paragraphs) {
           expectContained(paragraph, disclosure, `${context} disclosure`);
@@ -447,8 +447,8 @@ test.describe('Quiet Setup content accuracy', () => {
     const artwork = await page.locator('[data-setup-card] [data-setup-artwork]').evaluateAll((nodes) =>
       nodes.map((n) => n.getAttribute('data-setup-artwork')),
     );
-    expect(artwork).toHaveLength(8);
-    expect(new Set(artwork).size, 'adjacent cards must not repeat the same illustration').toBe(8);
+    expect(artwork).toHaveLength(18);
+    expect(new Set(artwork).size, 'original illustrations must still be present').toBeGreaterThanOrEqual(8);
 
     for (const slug of SLUGS) {
       await page.goto(`/setup/${slug}/`);

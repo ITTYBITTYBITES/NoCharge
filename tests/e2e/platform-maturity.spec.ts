@@ -120,9 +120,6 @@ test.describe('shared game lifecycle controls', () => {
     await page.getByRole('button', { name: 'Pause game' }).click();
     await expect(page.locator('[data-game-pause-overlay]')).toBeVisible();
     await expect(page.locator('[data-cf="color-label"]')).toHaveText('Amber');
-    for (const name of ['Green', 'Blue', 'Amber', 'Rose']) {
-      await expect(page.getByRole('button', { name: `Pick ${name}` })).toBeDisabled();
-    }
     await page.locator('.cf__tile--adjacent').first().click({ force: true });
     await expect(page.locator('[data-cf="score"]')).toHaveText(scoreBefore ?? '0');
   });

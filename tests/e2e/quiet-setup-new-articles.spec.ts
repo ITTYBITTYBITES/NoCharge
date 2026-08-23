@@ -27,7 +27,7 @@ for (const slug of NEW_SETUP_ARTICLES) {
   test.describe(`Setup article: ${slug}`, () => {
     test('renders with correct title and content', async ({ page }) => {
       await page.goto(`/setup/${slug}/`);
-      await expect(page.locator('article, main')).toBeVisible();
+      await expect(page.locator('article.setup-article')).toBeVisible();
       await expect(page.locator('h1').first()).toBeVisible();
     });
 
