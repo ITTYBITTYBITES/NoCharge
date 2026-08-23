@@ -228,7 +228,7 @@ export function mountWordTileRush(root: HTMLElement): GameController {
     signalMeaningfulGameInteraction(root);
     path.push(pos);
     grid[pos.r]![pos.c]!.selected = true;
-    void play('blip');
+    void play('move');
     renderCells();
   }
 
@@ -273,7 +273,7 @@ export function mountWordTileRush(root: HTMLElement): GameController {
     setScore(score + gained);
     best = saveScore(GAME_ID, score);
     bestEl.textContent = String(best);
-    void play('pop');
+    void play('place');
     renderCells();
   }
 

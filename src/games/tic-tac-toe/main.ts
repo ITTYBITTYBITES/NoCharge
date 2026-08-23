@@ -282,7 +282,7 @@ export function mountTicTacToe(root: HTMLElement): GameController {
     cell.classList.add(`ttt__cell--${turn.toLowerCase()}`);
     cell.disabled = true;
     cell.setAttribute('aria-label', `${cellName(index, size)}, ${turn}`);
-    void play('pop');
+    void play('place');
 
     const outcome = findWinner(board, size);
     if (outcome) {

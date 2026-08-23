@@ -172,7 +172,7 @@ export function mountLastToken(root: HTMLElement): GameController {
 
     signalMeaningfulGameInteraction(root);
     piles = next;
-    void play('pop');
+    void play('place');
     buildPiles();
 
     if (isRoundOver(piles)) {

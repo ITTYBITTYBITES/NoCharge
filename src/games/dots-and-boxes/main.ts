@@ -207,7 +207,7 @@ export function mountDotsAndBoxes(root: HTMLElement): GameController {
       button.classList.add('is-drawn', `is-drawn--p${turn}`);
       button.setAttribute('aria-label', `${edgeLabel(key, boxes)}, drawn by Player ${turn}`);
     }
-    void play('pop');
+    void play('place');
 
     const names = getPlayerNames();
     for (const boxKey of applied.completed) {
@@ -217,7 +217,7 @@ export function mountDotsAndBoxes(root: HTMLElement): GameController {
         cell.classList.add('is-claimed', `is-claimed--p${turn}`);
         cell.setAttribute('aria-label', `${boxLabel(row, column)}, claimed by Player ${turn}`);
       }
-      void play('pop');
+      void play('place');
     }
     renderScore();
 
