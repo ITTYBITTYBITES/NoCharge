@@ -79,6 +79,10 @@
   background: var(--panel-2, #161b18);
 }
 
+.tfe__overlay[hidden] {
+  display: none;
+}
+
 .tfe__overlay h2 { margin: 0; color: var(--tfe-accent); }
 .tfe__overlay p { color: var(--muted); }
 .tfe__overlay-controls { display: flex; gap: 0.5rem; justify-content: center; }

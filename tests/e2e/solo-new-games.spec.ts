@@ -139,7 +139,7 @@ test.describe('Nonogram specific', () => {
 test.describe('Tile Garden specific', () => {
   test('place tile on grid', async ({ page }) => {
     await page.goto('/games/tile-garden/');
-    await page.keyboard.press('Enter'); // place at cursor
+    await page.locator('.tg__cell').first().dispatchEvent('pointerdown');
     const moves = page.locator('[data-tg="moves"]');
     await expect(moves).toHaveText('1');
   });
