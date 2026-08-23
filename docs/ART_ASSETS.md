@@ -355,7 +355,30 @@ Generated via `npm run art:solo-new` (runs art:klondike, art:freecell, art:nonog
 
 ## 2026-08-23 repaired Setup and new-game art
 
-Quiet Setup repairs use programmatic SVG concepts rasterized to `{800,1200,1600}` at 16:9 in WebP and JPEG under `public/setup-art/`. Topic-correct concepts retained from the first repair pass are `cables`, `monitor-calibration`, `lamp-light`, `footrest-mat`, `headphones`, and `speakers`. Word Search and Mini Sudoku ship programmatic SVG-derived cover, guide, hero, social, and 16:9 raster derivatives under their respective `public/game-art/{slug}/` directories.
+Quiet Setup repairs use programmatic SVG concepts rasterized to `{800,1200,1600}` at 16:9 in WebP and JPEG under `public/setup-art/`. Topic-correct concepts retained from the first repair pass are `cables`, `monitor-calibration`, `lamp-light`, `footrest-mat`, `headphones`, and `speakers`.
+
+### Word Search and Mini Sudoku raster packages
+
+Reproduced with `npm run art:word-search` and `npm run art:mini-sudoku` (`scripts/generate-new-game-art.mjs`). Each package includes cover, guide, hero, social, icon, and 16:9 landscape derivatives at 800×450, 1200×675, and 1600×900 in WebP and JPEG.
+
+| Game / asset | Dimensions | Size |
+| --- | ---: | ---: |
+| word-search / `cover-square.webp` / `.jpg` | 800×800 | 6.0 / 16.4 KB |
+| word-search / `cover-landscape.webp` / `.jpg` | 1280×720 | 6.2 / 17.9 KB |
+| word-search / `hero-square.webp` / `.jpg` | 1200×1200 | 9.5 / 27.5 KB |
+| word-search / `social-card.webp` / `.jpg` | 1200×630 | 5.6 / 15.3 KB |
+| word-search / `guide-header.webp` / `.jpg` | 1280×500 | 4.8 / 12.4 KB |
+| word-search / `landscape-800.webp` / `.jpg` | 800×450 | 3.9 / 9.4 KB |
+| word-search / `landscape-1200.webp` / `.jpg` | 1200×675 | 5.9 / 17.0 KB |
+| word-search / `landscape-1600.webp` / `.jpg` | 1600×900 | 8.3 / 24.0 KB |
+| mini-sudoku / `cover-square.webp` / `.jpg` | 800×800 | 4.9 / 14.6 KB |
+| mini-sudoku / `cover-landscape.webp` / `.jpg` | 1280×720 | 5.3 / 16.3 KB |
+| mini-sudoku / `hero-square.webp` / `.jpg` | 1200×1200 | 8.0 / 24.6 KB |
+| mini-sudoku / `social-card.webp` / `.jpg` | 1200×630 | 4.8 / 13.6 KB |
+| mini-sudoku / `guide-header.webp` / `.jpg` | 1280×500 | 4.0 / 11.1 KB |
+| mini-sudoku / `landscape-800.webp` / `.jpg` | 800×450 | 3.3 / 8.4 KB |
+| mini-sudoku / `landscape-1200.webp` / `.jpg` | 1200×675 | 5.0 / 15.2 KB |
+| mini-sudoku / `landscape-1600.webp` / `.jpg` | 1600×900 | 7.0 / 21.5 KB |
 
 ## 2026-08-23 visual re-audit (topic mismatches)
 
