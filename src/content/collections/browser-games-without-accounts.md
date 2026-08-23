@@ -26,6 +26,16 @@ games:
     reason: "Quick take-away rounds open without sign-in, and only the most recent round result stays on this device."
   - game: pass-the-picture
     reason: "The shared canvas needs no profile, the finished picture downloads as a local file, and nothing is uploaded."
+  - game: klondike
+    reason: "Opens without sign-in. Win count and best moves stay in local browser storage."
+  - game: freecell
+    reason: "Opens without sign-in. Win count stays in local browser storage."
+  - game: nonogram
+    reason: "Opens without sign-in. Puzzle count stays in local browser storage."
+  - game: twenty-forty-eight
+    reason: "Opens without sign-in. Best tile stays in local browser storage."
+  - game: tile-garden
+    reason: "Opens without sign-in. Best tier stays in local browser storage."
 ---
 
 Without an account also means without synchronization or server recovery. Read [how NoCharge saves scores](/articles/how-nocharge-saves-scores-without-an-account/) before treating a local result as permanent.

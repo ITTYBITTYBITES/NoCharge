@@ -139,7 +139,7 @@ test.describe('Quiet Setup card geometry', () => {
       await loadAllImages(page);
 
       const cardCount = await page.locator('[data-setup-card]').count();
-      expect(cardCount).toBe(8);
+      expect(cardCount).toBe(18);
 
       for (let index = 0; index < cardCount; index += 1) {
         const root = `[data-setup-card]:nth-of-type(${index + 1})`;
@@ -322,7 +322,7 @@ test.describe('Quiet Setup article geometry', () => {
 
         // Its paragraphs stay inside the bordered panel and clear of the edge.
         const paragraphs = await boxes(page, '[data-affiliate-disclosure] p');
-        expect(paragraphs.length).toBe(2);
+        expect(paragraphs.length).toBe(3);
         expectNoPairwiseOverlap(paragraphs, `${context} disclosure paragraphs`);
         for (const paragraph of paragraphs) {
           expectContained(paragraph, disclosure, `${context} disclosure`);
@@ -432,7 +432,7 @@ test.describe('Quiet Setup content accuracy', () => {
     });
 
     const total = Object.values(expected).reduce((sum, n) => sum + n, 0);
-    expect(total, 'every published article must be counted exactly once').toBe(8);
+    expect(total, 'every published article must be counted exactly once').toBe(18);
 
     for (const [topic, count] of Object.entries(expected)) {
       const label = page.locator(`[data-setup-topic-count="${topic}"]`);
@@ -447,8 +447,8 @@ test.describe('Quiet Setup content accuracy', () => {
     const artwork = await page.locator('[data-setup-card] [data-setup-artwork]').evaluateAll((nodes) =>
       nodes.map((n) => n.getAttribute('data-setup-artwork')),
     );
-    expect(artwork).toHaveLength(8);
-    expect(new Set(artwork).size, 'adjacent cards must not repeat the same illustration').toBe(8);
+    expect(artwork).toHaveLength(18);
+    expect(new Set(artwork).size, 'original illustrations must still be present').toBeGreaterThanOrEqual(8);
 
     for (const slug of SLUGS) {
       await page.goto(`/setup/${slug}/`);

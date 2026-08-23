@@ -2,7 +2,15 @@ import { PUZZLES } from '../../games/beacon-lattice/puzzles';
 import { normalizeProgress, PROGRESS_KEY, type LatticeProgress } from '../../games/beacon-lattice/progress';
 import { parseRecentlyPlayed, RECENTLY_PLAYED_KEY } from '../../games/shared/recently-played';
 import { parseStoredScore, prefKey, scoreKey } from '../../games/shared/storage';
-import { MEMORY_MATCH_BEST_MOVES_KEY } from '../local-game-data';
+import {
+  MEMORY_MATCH_BEST_MOVES_KEY,
+  KLONDIKE_GAMES_WON_KEY,
+  KLONDIKE_BEST_MOVES_KEY,
+  FREECELL_GAMES_WON_KEY,
+  NONOGRAM_PUZZLES_REVEALED_KEY,
+  TWENTY_FORTY_EIGHT_BEST_TILE_KEY,
+  TILE_GARDEN_BEST_TIER_KEY,
+} from '../local-game-data';
 import { isGameId, type GameId, type ReadableStorage } from './types';
 
 /**
@@ -24,6 +32,8 @@ const MAX_SCORE_RAW_LENGTH = 32;
 const MAX_SCORE = 1e12;
 /** Memory Match cannot plausibly record more moves than this. */
 const MAX_MOVES = 100_000;
+/** Solitaire games cannot plausibly record more wins than this. */
+const MAX_WINS = 100_000;
 
 export const BEACON_PUZZLE_TOTAL = PUZZLES.length;
 const BEACON_PUZZLE_TITLES = new Map(PUZZLES.map((puzzle) => [puzzle.id, puzzle.title]));
@@ -64,6 +74,54 @@ export function readMemoryMatchBestMoves(storage: ReadableStorage): number | nul
   if (raw == null || raw.trim() === '') return null;
   const value = Number(raw);
   if (!Number.isFinite(value) || value <= 0 || value > MAX_MOVES) return null;
+  return Math.floor(value);
+}
+
+export function readKlondikeGamesWon(storage: ReadableStorage): number | null {
+  const raw = readRaw(storage, KLONDIKE_GAMES_WON_KEY, MAX_SCORE_RAW_LENGTH);
+  if (raw == null || raw.trim() === '') return null;
+  const value = Number(raw);
+  if (!Number.isFinite(value) || value < 0 || value > MAX_WINS) return null;
+  return Math.floor(value);
+}
+
+export function readKlondikeBestMoves(storage: ReadableStorage): number | null {
+  const raw = readRaw(storage, KLONDIKE_BEST_MOVES_KEY, MAX_SCORE_RAW_LENGTH);
+  if (raw == null || raw.trim() === '') return null;
+  const value = Number(raw);
+  if (!Number.isFinite(value) || value <= 0 || value > MAX_MOVES) return null;
+  return Math.floor(value);
+}
+
+export function readFreeCellGamesWon(storage: ReadableStorage): number | null {
+  const raw = readRaw(storage, FREECELL_GAMES_WON_KEY, MAX_SCORE_RAW_LENGTH);
+  if (raw == null || raw.trim() === '') return null;
+  const value = Number(raw);
+  if (!Number.isFinite(value) || value < 0 || value > MAX_WINS) return null;
+  return Math.floor(value);
+}
+
+export function readNonogramPuzzlesRevealed(storage: ReadableStorage): number | null {
+  const raw = readRaw(storage, NONOGRAM_PUZZLES_REVEALED_KEY, MAX_SCORE_RAW_LENGTH);
+  if (raw == null || raw.trim() === '') return null;
+  const value = Number(raw);
+  if (!Number.isFinite(value) || value < 0 || value > MAX_SCORE) return null;
+  return Math.floor(value);
+}
+
+export function readTwentyFortyEightBestTile(storage: ReadableStorage): number | null {
+  const raw = readRaw(storage, TWENTY_FORTY_EIGHT_BEST_TILE_KEY, MAX_SCORE_RAW_LENGTH);
+  if (raw == null || raw.trim() === '') return null;
+  const value = Number(raw);
+  if (!Number.isFinite(value) || value < 0 || value > MAX_SCORE) return null;
+  return Math.floor(value);
+}
+
+export function readTileGardenBestTier(storage: ReadableStorage): number | null {
+  const raw = readRaw(storage, TILE_GARDEN_BEST_TIER_KEY, MAX_SCORE_RAW_LENGTH);
+  if (raw == null || raw.trim() === '') return null;
+  const value = Number(raw);
+  if (!Number.isFinite(value) || value < 0 || value > 10) return null;
   return Math.floor(value);
 }
 

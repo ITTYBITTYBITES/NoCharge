@@ -304,7 +304,7 @@ test.describe('arcade page sections and anchors', () => {
     const nav = page.locator('.arcade-sections-nav');
     await expect(nav.getByRole('link', { name: 'Solo games' })).toHaveAttribute('href', '#solo-games');
     await expect(nav.getByRole('link', { name: 'Pass & Play' })).toHaveAttribute('href', '#pass-and-play');
-    await expect(page.locator('.arcade-list .arcade-grid .game-card')).toHaveCount(4);
+    await expect(page.locator('.arcade-list .arcade-grid .game-card')).toHaveCount(9);
     await expect(page.locator('.arcade-passplay .arcade-grid .game-card')).toHaveCount(6);
     await expect(page.getByRole('heading', { name: 'Two players, one device.' })).toBeVisible();
     await expect(page.locator('.arcade-passplay')).toContainText(

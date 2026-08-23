@@ -15,6 +15,8 @@ export const SETUP_TOPIC_IDS = [
   'screens-and-stands',
   'desk-and-comfort',
   'offline-puzzles',
+  'audio',
+  'lighting',
 ] as const;
 
 export type SetupTopicId = (typeof SETUP_TOPIC_IDS)[number];
@@ -25,6 +27,8 @@ export const SETUP_TOPIC_LABELS: Record<SetupTopicId, string> = {
   'screens-and-stands': 'Screens and stands',
   'desk-and-comfort': 'Desk and comfort',
   'offline-puzzles': 'Offline puzzles',
+  audio: 'Audio',
+  lighting: 'Lighting',
 };
 
 export const SETUP_TOPIC_DESCRIPTIONS: Record<SetupTopicId, string> = {
@@ -33,6 +37,8 @@ export const SETUP_TOPIC_DESCRIPTIONS: Record<SetupTopicId, string> = {
   'screens-and-stands': 'Zoom, orientation, stability, and screen placement.',
   'desk-and-comfort': 'Practical, low-noise choices without guarantees.',
   'offline-puzzles': 'Paper formats, progression, print, and answer keys.',
+  audio: 'Headphones, speakers, and quiet-listening tradeoffs.',
+  lighting: 'Color temperature, bias lighting, and evening comfort.',
 };
 
 /** Count published articles by their single primary topic. */

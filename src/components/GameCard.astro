@@ -100,16 +100,22 @@ const { slug, title, tagline, emoji, accent = '#0f9d58', artwork, genre, session
     box-shadow: 0 0.75rem 1.8rem rgba(0, 0, 0, 0.24);
   }
 
+  .game-card__body {
+    min-width: 0;
+  }
+
   .game-card__title {
     font-size: 1.15rem;
     font-weight: 700;
     letter-spacing: -0.02em;
+    overflow-wrap: anywhere;
   }
 
   .game-card__tagline {
     margin-top: 0.2rem;
     color: var(--muted);
     font-size: 0.92rem;
+    overflow-wrap: anywhere;
   }
 
   .game-card__meta {

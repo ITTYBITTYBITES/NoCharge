@@ -40,39 +40,6 @@ const setVisibilityWithoutEvent = async (page: import('@playwright/test').Page, 
 const resumeFromOverlay = (page: import('@playwright/test').Page) =>
   page.locator('[data-game-pause-resume]');
 
-type ColorFlipLifecycleApi = {
-  setVisualScenario(config: {
-    tiles: Array<{ x?: number; y: number; color: 'green' | 'blue' | 'amber' | 'rose' }>;
-    speed?: number;
-  }): void;
-  getVisualState(): {
-    alive: boolean;
-    paused: boolean;
-    score: number;
-    playerColor: 'green' | 'blue' | 'amber' | 'rose';
-    tiles: Array<{ y: number; evaluated: boolean }>;
-  };
-};
-
-const getColorFlipLifecycleState = (page: import('@playwright/test').Page) =>
-  page.evaluate(() => {
-    const api = (window as typeof window & { __NOCHARGE_COLOR_FLIP_TEST__?: ColorFlipLifecycleApi })
-      .__NOCHARGE_COLOR_FLIP_TEST__;
-    if (!api) throw new Error('Color Flip checkpoint test seam is unavailable.');
-    return api.getVisualState();
-  });
-
-const setColorFlipLifecycleScenario = (
-  page: import('@playwright/test').Page,
-  config: Parameters<ColorFlipLifecycleApi['setVisualScenario']>[0],
-) =>
-  page.evaluate((scenario) => {
-    const api = (window as typeof window & { __NOCHARGE_COLOR_FLIP_TEST__?: ColorFlipLifecycleApi })
-      .__NOCHARGE_COLOR_FLIP_TEST__;
-    if (!api) throw new Error('Color Flip checkpoint test seam is unavailable.');
-    api.setVisualScenario(scenario);
-  }, config);
-
 test.describe('shared game lifecycle controls', () => {
   test.beforeEach(async ({ page }) => {
     await denyOptionalServices(page);
@@ -143,17 +110,18 @@ test.describe('shared game lifecycle controls', () => {
     await expect(page.getByRole('button', { name: 'Pause game' })).toBeVisible();
   });
 
-  test('pauses Color Flip with its direct selection visible and unavailable', async ({ page }) => {
+  test('pauses Color Flip with its color selection visible and unavailable', async ({ page }) => {
     await page.goto('/games/color-flip/');
     await page.getByRole('button', { name: 'Start' }).click();
-    await page.getByRole('button', { name: 'Set player color to Amber' }).click();
+    await page.getByRole('button', { name: 'Pick Amber' }).click();
+    await expect(page.locator('[data-cf="color-label"]')).toHaveText('Amber');
+    const scoreBefore = await page.locator('[data-cf="score"]').textContent();
 
     await page.getByRole('button', { name: 'Pause game' }).click();
-    await expect(page.getByRole('button', { name: 'Set player color to Amber' })).toHaveAttribute('aria-pressed', 'true');
-    for (const name of ['Green', 'Blue', 'Amber', 'Rose']) {
-      await expect(page.getByRole('button', { name: `Set player color to ${name}` })).toBeDisabled();
-    }
     await expect(page.locator('[data-game-pause-overlay]')).toBeVisible();
+    await expect(page.locator('[data-cf="color-label"]')).toHaveText('Amber');
+    await page.locator('.cf__tile--adjacent').first().click({ force: true });
+    await expect(page.locator('[data-cf="score"]')).toHaveText(scoreBefore ?? '0');
   });
 
   test('preserves turn-based Color Flip state and disables its choices while paused', async ({ page }) => {
@@ -272,31 +240,20 @@ test.describe('shared game lifecycle controls', () => {
     expect(await page.locator('.wtr__cell').allTextContents()).not.toEqual(gridBeforePause);
   });
 
-  test('stale hidden recovery preserves Color Flip direct state and one checkpoint evaluation', async ({ page }) => {
-    await page.goto('/games/color-flip/?colorFlipTest=checkpoint');
+  test('stale hidden recovery preserves Color Flip color and playfield', async ({ page }) => {
+    await page.goto('/games/color-flip/');
     await page.getByRole('button', { name: 'Start' }).click();
-    await page.getByRole('button', { name: 'Set player color to Amber' }).click();
-    await setVisibility(page, 'hidden');
-    await setColorFlipLifecycleScenario(page, {
-      speed: 0.2,
-      tiles: [{ y: 0.77, color: 'amber' }],
-    });
-    const pausedState = await getColorFlipLifecycleState(page);
+    await page.getByRole('button', { name: 'Pick Amber' }).click();
+    await expect(page.locator('[data-cf="color-label"]')).toHaveText('Amber');
 
-    await page.waitForTimeout(400);
-    expect(await getColorFlipLifecycleState(page)).toEqual(pausedState);
+    await setVisibility(page, 'hidden');
+    await expect(page.locator('[data-game-pause-overlay]')).toBeVisible();
     await setVisibilityWithoutEvent(page, 'visible');
     await resumeFromOverlay(page).click();
 
-    await expect(page.getByRole('button', { name: 'Set player color to Amber' })).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.locator('[data-cf="score"]')).toHaveText('1', { timeout: 1_000 });
-    await resumeFromOverlay(page).evaluate((button: HTMLButtonElement) => button.click());
-    await page.waitForTimeout(500);
-    const resumedState = await getColorFlipLifecycleState(page);
-    expect(resumedState.playerColor).toBe('amber');
-    expect(resumedState.tiles[0]?.y).toBeGreaterThan(pausedState.tiles[0]?.y ?? 0);
-    expect(resumedState.tiles[0]?.evaluated).toBe(true);
-    expect(resumedState.score).toBe(1);
+    await expect(page.locator('[data-cf="color-label"]')).toHaveText('Amber');
+    await expect(page.locator('[data-cf="grid"]')).toBeVisible();
+    await expect(page.locator('.cf__tile--adjacent').first()).toBeVisible();
   });
 
   test('stale hidden recovery leaves turn-based Color Flip usable', async ({ page }) => {
@@ -422,7 +379,7 @@ test('trust pages publish one H1, canonical metadata, footer links, and public r
 test('publishes the article index and game-specific routes with links, breadcrumbs, and Article structured data', async ({ page, request }) => {
   await denyOptionalServices(page);
   await page.goto('/articles/');
-  await expect(page.locator('.articles-grid .article-card')).toHaveCount(17);
+  await expect(page.locator('.articles-grid .article-card')).toHaveCount(23);
 
   for (const slug of articleSlugs) {
     const path = `/articles/${slug}/`;

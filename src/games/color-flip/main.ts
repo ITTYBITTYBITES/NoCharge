@@ -1,50 +1,35 @@
-import {
-  advanceTileForFrame,
-  cleanupOffscreenTiles,
-  evaluateCheckpoint,
-} from './checkpoint-rules';
-import { INITIAL_PLAYER_COLOR, selectColorDirectly, type ColorId } from './color-selection';
 import { play, unlockAudio } from '../shared/audio';
-import { loadScore, saveScore } from '../shared/storage';
+import { loadScore, saveScore, loadPref, savePref } from '../shared/storage';
 import type { GameController, PauseReason } from '../shared/types';
 import { signalMeaningfulGameInteraction } from '../shared/recently-played';
 import { pick } from '../shared/utils';
+import {
+  createGame,
+  pickRoundColor,
+  step,
+  undo as engineUndo,
+  isAdjacent,
+  colorName,
+  colorHex,
+  colorShortcut,
+  type ColorId,
+  type RotationMode,
+  type TapToStepState,
+  ALL_COLORS,
+  GRID_SIZE,
+} from './engine';
 import './styles.css';
 
 const GAME_ID = 'color-flip';
 const TURN_BASED_GAME_ID = 'color-flip-turn-based';
+const ROTATION_PREF_KEY = 'color-flip-rotation';
 
 const COLORS = [
-  { id: 'green', hex: '#0f9d58', shortcut: 'G' },
-  { id: 'blue', hex: '#3b82f6', shortcut: 'B' },
-  { id: 'amber', hex: '#f59e0b', shortcut: 'A' },
-  { id: 'rose', hex: '#f43f5e', shortcut: 'R' },
-] as const satisfies ReadonlyArray<{ id: ColorId; hex: string; shortcut: string }>;
-
-type Tile = {
-  id: number;
-  x: number;
-  y: number;
-  previousY: number;
-  color: ColorId;
-  evaluated: boolean;
-};
-
-type ColorFlipTestApi = {
-  setVisualScenario(config: {
-    tiles: Array<{ x?: number; y: number; color: ColorId }>;
-    speed?: number;
-    playerX?: number;
-    playerColor?: ColorId;
-  }): void;
-  getVisualState(): {
-    alive: boolean;
-    paused: boolean;
-    score: number;
-    playerColor: ColorId;
-    tiles: Tile[];
-  };
-};
+  { id: 'green' as ColorId, hex: '#0f9d58', shortcut: 'G' },
+  { id: 'blue' as ColorId, hex: '#3b82f6', shortcut: 'B' },
+  { id: 'amber' as ColorId, hex: '#f59e0b', shortcut: 'A' },
+  { id: 'rose' as ColorId, hex: '#f43f5e', shortcut: 'R' },
+] as const;
 
 export function mountColorFlip(root: HTMLElement): GameController {
   root.innerHTML = `
@@ -59,34 +44,36 @@ export function mountColorFlip(root: HTMLElement): GameController {
           <span data-cf="color-label">Green</span>
         </div>
         <div class="cf__actions">
+          <button type="button" class="btn btn--ghost btn--sm" data-cf="rotation-btn">Rotation: Never</button>
+          <button type="button" class="btn btn--ghost btn--sm" data-cf="undo-btn" disabled>Undo</button>
           <button type="button" class="btn btn--ghost btn--sm" data-cf="mode">Turn-based mode</button>
         </div>
       </div>
-      <p class="cf__hint" id="cf-instructions" data-cf="hint">Select Start, then choose Green, Blue, Amber, or Rose directly; G, B, A, and R are keyboard shortcuts. The chosen color appears in the player circle, and each tile is judged once at the dashed checkpoint. If the circle already matches, leave it unchanged or select the same color again. Clicking the moving canvas does not select a color.</p>
+      <p class="cf__hint" id="cf-instructions" data-cf="hint">Pick a color for this round, then tap an adjacent tile to step. Match your color to score. Take your time.</p>
       <div class="cf__visual" data-cf="visual">
-        <div class="cf__color-chooser" role="group" aria-labelledby="cf-color-chooser-label">
-          <p class="cf__color-chooser-label" id="cf-color-chooser-label">Choose the player circle color</p>
-          <div class="cf__color-choices">
-            <button type="button" class="cf__color-choice" data-cf-color="green" aria-label="Set player color to Green" aria-keyshortcuts="G" aria-pressed="true" disabled>
-              <span class="cf__choice-label"><span class="cf__choice-swatch cf__choice-swatch--green" aria-hidden="true"></span>G · Green</span>
-              <span class="cf__choice-status" aria-hidden="true">✓ Selected</span>
+        <div class="cf__round-picker" data-cf="round-picker" role="group" aria-label="Pick your color for this round">
+          <p class="cf__round-picker-label">Pick your color <span class="cf__round-picker-name" data-cf="picker-name">Green</span></p>
+          <div class="cf__round-choices">
+            <button type="button" class="cf__round-choice cf__round-choice--green" data-cf-pick="green" aria-label="Pick Green" aria-keyshortcuts="G">
+              <span class="cf__round-swatch" aria-hidden="true"></span>
+              <span>G · Green</span>
             </button>
-            <button type="button" class="cf__color-choice" data-cf-color="blue" aria-label="Set player color to Blue" aria-keyshortcuts="B" aria-pressed="false" disabled>
-              <span class="cf__choice-label"><span class="cf__choice-swatch cf__choice-swatch--blue" aria-hidden="true"></span>B · Blue</span>
-              <span class="cf__choice-status" aria-hidden="true">✓ Selected</span>
+            <button type="button" class="cf__round-choice cf__round-choice--blue" data-cf-pick="blue" aria-label="Pick Blue" aria-keyshortcuts="B">
+              <span class="cf__round-swatch" aria-hidden="true"></span>
+              <span>B · Blue</span>
             </button>
-            <button type="button" class="cf__color-choice" data-cf-color="amber" aria-label="Set player color to Amber" aria-keyshortcuts="A" aria-pressed="false" disabled>
-              <span class="cf__choice-label"><span class="cf__choice-swatch cf__choice-swatch--amber" aria-hidden="true"></span>A · Amber</span>
-              <span class="cf__choice-status" aria-hidden="true">✓ Selected</span>
+            <button type="button" class="cf__round-choice cf__round-choice--amber" data-cf-pick="amber" aria-label="Pick Amber" aria-keyshortcuts="A">
+              <span class="cf__round-swatch" aria-hidden="true"></span>
+              <span>A · Amber</span>
             </button>
-            <button type="button" class="cf__color-choice" data-cf-color="rose" aria-label="Set player color to Rose" aria-keyshortcuts="R" aria-pressed="false" disabled>
-              <span class="cf__choice-label"><span class="cf__choice-swatch cf__choice-swatch--rose" aria-hidden="true"></span>R · Rose</span>
-              <span class="cf__choice-status" aria-hidden="true">✓ Selected</span>
+            <button type="button" class="cf__round-choice cf__round-choice--rose" data-cf-pick="rose" aria-label="Pick Rose" aria-keyshortcuts="R">
+              <span class="cf__round-swatch" aria-hidden="true"></span>
+              <span>R · Rose</span>
             </button>
           </div>
         </div>
         <div class="cf__stage" data-cf="stage">
-          <canvas data-cf="canvas" width="360" height="480" aria-label="Moving Color Flip playfield. Use the nearby color buttons to select a color." aria-describedby="cf-instructions">Color Flip requires a browser with canvas support. Use the nearby Green, Blue, Amber, or Rose button to select a color.</canvas>
+          <div class="cf__grid" data-cf="grid" role="group" aria-label="Tap-to-step tile grid"></div>
           <div class="cf__overlay" data-cf="overlay">
             <h2 data-cf="overlay-heading">Ready?</h2>
             <p data-cf="result" aria-live="polite"></p>
@@ -114,7 +101,6 @@ export function mountColorFlip(root: HTMLElement): GameController {
     </div>
   `;
 
-  const canvas = root.querySelector<HTMLCanvasElement>('[data-cf="canvas"]')!;
   const scoreEl = root.querySelector<HTMLElement>('[data-cf="score"]')!;
   const bestEl = root.querySelector<HTMLElement>('[data-cf="best"]')!;
   const swatch = root.querySelector<HTMLElement>('[data-cf="swatch"]')!;
@@ -122,10 +108,15 @@ export function mountColorFlip(root: HTMLElement): GameController {
   const hint = root.querySelector<HTMLElement>('[data-cf="hint"]')!;
   const visual = root.querySelector<HTMLElement>('[data-cf="visual"]')!;
   const stage = root.querySelector<HTMLElement>('[data-cf="stage"]')!;
-  const colorButtons = [...root.querySelectorAll<HTMLButtonElement>('[data-cf-color]')];
+  const roundPicker = root.querySelector<HTMLElement>('[data-cf="round-picker"]')!;
+  const pickerName = root.querySelector<HTMLElement>('[data-cf="picker-name"]')!;
+  const pickButtons = [...root.querySelectorAll<HTMLButtonElement>('[data-cf-pick]')];
+  const gridEl = root.querySelector<HTMLElement>('[data-cf="grid"]')!;
   const overlay = root.querySelector<HTMLElement>('[data-cf="overlay"]')!;
   const overlayHeading = root.querySelector<HTMLElement>('[data-cf="overlay-heading"]')!;
   const resultEl = root.querySelector<HTMLElement>('[data-cf="result"]')!;
+  const rotationBtn = root.querySelector<HTMLButtonElement>('[data-cf="rotation-btn"]')!;
+  const undoBtn = root.querySelector<HTMLButtonElement>('[data-cf="undo-btn"]')!;
   const modeBtn = root.querySelector<HTMLButtonElement>('[data-cf="mode"]')!;
   const againBtn = root.querySelector<HTMLButtonElement>('[data-cf="again"]')!;
   const accessible = root.querySelector<HTMLElement>('[data-cf="accessible"]')!;
@@ -137,7 +128,6 @@ export function mountColorFlip(root: HTMLElement): GameController {
   const accessibleResult = root.querySelector<HTMLElement>('[data-cf="accessible-result"]')!;
   const accessibleResultText = root.querySelector<HTMLElement>('[data-cf="accessible-result-text"]')!;
   const accessibleAgainBtn = root.querySelector<HTMLButtonElement>('[data-cf="accessible-again"]')!;
-  const ctx = canvas.getContext('2d')!;
 
   let best = loadScore(GAME_ID);
   bestEl.textContent = String(best);
@@ -145,47 +135,26 @@ export function mountColorFlip(root: HTMLElement): GameController {
   let score = 0;
   let turnBased = false;
   let turnBasedAlive = false;
-  let turnBasedTarget: ColorId = INITIAL_PLAYER_COLOR;
-  let playerColor: ColorId = INITIAL_PLAYER_COLOR;
-  let playerX = 0.5;
-  let playerY = 0.78;
-  let speed = 0.12; // world units per second (y decreases = forward)
-  let tiles: Tile[] = [];
-  let alive = false;
-  let raf = 0;
-  let lastTs = 0;
-  let pathAngle = 0;
-  let nextTileY = 1.05;
-  let dpr = 1;
+  let turnBasedTarget: ColorId = 'green';
+  let playerColor: ColorId = 'green';
   let paused = false;
-  let nextTileId = 1;
-  let controlledTestScenario = false;
-  const testMode =
-    navigator.webdriver && new URLSearchParams(window.location.search).get('colorFlipTest') === 'checkpoint';
-  const testWindow = window as typeof window & { __NOCHARGE_COLOR_FLIP_TEST__?: ColorFlipTestApi };
-  let testApi: ColorFlipTestApi | undefined;
+  let state: TapToStepState;
+  let rotation: RotationMode = loadPref(ROTATION_PREF_KEY, 'never') as RotationMode;
+  let rng: () => number;
 
-  const TILE_H = 0.09;
-  const TILE_W = 0.42;
-  const PLAYER_R = 0.028;
-
-  function colorHex(id: ColorId) {
-    return COLORS.find((c) => c.id === id)!.hex;
-  }
-
-  function colorName(id: ColorId) {
-    return id[0]!.toUpperCase() + id.slice(1);
+  function seedRng() {
+    let s = Math.floor(Math.random() * 0x7fffffff) >>> 0 || 1;
+    rng = () => {
+      s = (s * 1664525 + 1013904223) >>> 0;
+      return s / 0x100000000;
+    };
   }
 
   function setPlayerColor(id: ColorId) {
     playerColor = id;
-    const color = COLORS.find((candidate) => candidate.id === id)!;
-    swatch.style.background = color.hex;
+    swatch.style.background = colorHex(id);
     colorLabel.textContent = colorName(id);
     accessibleCurrent.textContent = colorName(id);
-    colorButtons.forEach((button) => {
-      button.setAttribute('aria-pressed', String(button.dataset.cfColor === id));
-    });
   }
 
   function setScore(n: number) {
@@ -201,16 +170,20 @@ export function mountColorFlip(root: HTMLElement): GameController {
     accessibleNext.textContent = `${colorName(id)}, ${id[0]!.toUpperCase()}`;
   }
 
-  function updateVisualColorControls() {
-    const disabled = paused || turnBased || !alive;
-    colorButtons.forEach((button) => {
-      button.disabled = disabled;
-    });
+  function updateRotationBtn() {
+    const labels: Record<RotationMode, string> = {
+      'never': 'Rotation: Never',
+      'every-10': 'Rotation: Every 10',
+      'every-5': 'Rotation: Every 5',
+    };
+    rotationBtn.textContent = labels[rotation];
   }
 
   function updatePausedControls() {
     modeBtn.disabled = paused;
-    updateVisualColorControls();
+    rotationBtn.disabled = paused;
+    undoBtn.disabled = paused || turnBased || !state?.history;
+    pickButtons.forEach((btn) => { btn.disabled = paused || turnBased || state?.phase !== 'picking'; });
     accessibleCycleBtn.disabled = paused || !turnBasedAlive;
     accessibleStepBtn.disabled = paused || !turnBasedAlive;
   }
@@ -225,13 +198,11 @@ export function mountColorFlip(root: HTMLElement): GameController {
   }
 
   function startTurnBased() {
-    cancelAnimationFrame(raf);
-    alive = false;
     turnBasedAlive = true;
     best = loadScore(TURN_BASED_GAME_ID);
     bestEl.textContent = String(best);
     setScore(0);
-    setPlayerColor(INITIAL_PLAYER_COLOR);
+    setPlayerColor('green');
     setTurnBasedTarget(pick(COLORS).id);
     updatePausedControls();
     accessibleResult.hidden = true;
@@ -260,22 +231,18 @@ export function mountColorFlip(root: HTMLElement): GameController {
     stage.hidden = false;
     modeBtn.textContent = 'Turn-based mode';
     hint.textContent =
-      'Select Start, then choose Green, Blue, Amber, or Rose directly; G, B, A, and R are keyboard shortcuts. The chosen color appears in the player circle, and each tile is judged once at the dashed checkpoint. If the circle already matches, leave it unchanged or select the same color again. Clicking the moving canvas does not select a color.';
+      'Pick a color for this round, then tap an adjacent tile to step. Match your color to score. Take your time.';
     best = loadScore(GAME_ID);
     bestEl.textContent = String(best);
-    reset(false);
-  }
-
-  function cyclePlayerColor() {
-    const index = COLORS.findIndex((color) => color.id === playerColor);
-    setPlayerColor(COLORS[(index + 1) % COLORS.length]!.id);
+    resetVisual(false);
   }
 
   function cycleTurnBasedColor() {
     if (paused || !turnBasedAlive) return;
     signalMeaningfulGameInteraction(root);
     unlockAudio();
-    cyclePlayerColor();
+    const index = COLORS.findIndex((c) => c.id === playerColor);
+    setPlayerColor(COLORS[(index + 1) % COLORS.length]!.id);
     announceTurnBased(`Current color ${colorName(playerColor)}. Next tile ${colorName(turnBasedTarget)}.`);
     void play('blip');
   }
@@ -307,284 +274,188 @@ export function mountColorFlip(root: HTMLElement): GameController {
     void play('pop');
   }
 
-  function resize() {
-    const rect = canvas.getBoundingClientRect();
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = Math.max(1, Math.floor(rect.width * dpr));
-    canvas.height = Math.max(1, Math.floor(rect.height * dpr));
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  }
+  // --- Visual mode: tap-to-step ---
 
-  function spawnTiles() {
-    if (controlledTestScenario) return;
-    while (nextTileY > -0.2) {
-      pathAngle += (Math.random() - 0.5) * 0.7;
-      pathAngle = Math.max(-0.9, Math.min(0.9, pathAngle));
-      const x = 0.5 + Math.sin(pathAngle) * 0.22;
-      // Prefer matching color sometimes so the game is fair
-      let color: ColorId;
-      if (Math.random() < 0.45) {
-        color = playerColor;
-      } else {
-        color = pick(COLORS).id;
+  function renderGrid() {
+    gridEl.innerHTML = '';
+    const center = Math.floor(GRID_SIZE / 2);
+
+    for (let row = 0; row < GRID_SIZE; row++) {
+      for (let col = 0; col < GRID_SIZE; col++) {
+        const cell = document.createElement('button');
+        cell.type = 'button';
+        cell.className = 'cf__tile';
+        cell.dataset.row = String(row);
+        cell.dataset.col = String(col);
+
+        if (row === center && col === center) {
+          // Player cell
+          cell.classList.add('cf__tile--player');
+          cell.style.setProperty('--tile-color', colorHex(state.playerColor));
+          cell.setAttribute('aria-label', `Player: ${colorName(state.playerColor)} (${colorShortcut(state.playerColor)})`);
+          cell.innerHTML = `<span class="cf__tile-symbol">${colorShortcut(state.playerColor)}</span>`;
+          cell.disabled = true;
+        } else {
+          const tile = state.grid[row]?.[col];
+          if (tile) {
+            cell.style.setProperty('--tile-color', colorHex(tile.color));
+            cell.classList.add('cf__tile--active');
+            const adj = isAdjacent(col, row, center, center);
+            if (adj && state.phase === 'playing') {
+              cell.classList.add('cf__tile--adjacent');
+              cell.setAttribute('aria-label', `Step to ${colorName(tile.color)} (${colorShortcut(tile.color)})${tile.color === state.playerColor ? ' — matches' : ' — wrong color'}`);
+            } else {
+              cell.disabled = true;
+              cell.setAttribute('aria-label', `Tile: ${colorName(tile.color)} (${colorShortcut(tile.color)})${adj ? '' : ' — not adjacent'}`);
+            }
+            cell.innerHTML = `<span class="cf__tile-letter">${colorShortcut(tile.color)}</span>`;
+
+            if (adj && state.phase === 'playing') {
+              cell.addEventListener('pointerdown', (e) => {
+                e.preventDefault();
+                handleTileTap(col, row);
+              });
+            }
+          } else {
+            cell.classList.add('cf__tile--empty');
+            cell.disabled = true;
+            cell.setAttribute('aria-label', 'Empty');
+          }
+        }
+
+        gridEl.appendChild(cell);
       }
-      // Ensure variety
-      if (tiles.length && tiles[tiles.length - 1]!.color === color && Math.random() < 0.5) {
-        color = pick(COLORS.filter((c) => c.id !== color)).id;
-      }
-      tiles.push({
-        id: nextTileId++,
-        x,
-        y: nextTileY,
-        previousY: nextTileY,
-        color,
-        evaluated: false,
-      });
-      nextTileY -= TILE_H * 0.92;
     }
   }
 
-  function reset(start = true) {
-    cancelAnimationFrame(raf);
-    tiles = [];
-    nextTileY = 1.05;
-    nextTileId = 1;
-    controlledTestScenario = false;
-    pathAngle = 0;
-    playerX = 0.5;
-    playerY = 0.78;
-    speed = 0.14;
-    setScore(0);
-    setPlayerColor(INITIAL_PLAYER_COLOR);
-    alive = start;
-    updateVisualColorControls();
-    lastTs = 0;
-    spawnTiles();
-    // Align the player onto the first few matching tiles.
-    for (let i = 0; i < 8; i++) {
-      if (tiles[i]) tiles[i]!.color = 'green';
-    }
-    resize();
-    draw();
+  function handleTileTap(col: number, row: number) {
+    if (paused || turnBased || state.phase !== 'playing') return;
+    unlockAudio();
+    signalMeaningfulGameInteraction(root);
 
-    if (start) {
-      overlay.classList.remove('is-open');
-      if (!paused) {
-        colorButtons.find((button) => button.dataset.cfColor === playerColor)?.focus({ preventScroll: true });
-        raf = requestAnimationFrame(loop);
-      }
-    } else {
-      overlayHeading.textContent = 'Ready?';
-      resultEl.textContent = 'The run begins when you select Start.';
-      againBtn.textContent = 'Start';
-      overlay.classList.add('is-open');
-    }
-  }
+    const result = step(state, col, row, rng);
+    if (!result) return;
 
-  function endGame() {
-    if (!alive) return;
-    alive = false;
-    updateVisualColorControls();
-    best = saveScore(GAME_ID, score);
+    state = result;
+    setScore(state.score);
+    setPlayerColor(state.playerColor);
+    best = Math.max(best, state.score);
     bestEl.textContent = String(best);
-    overlayHeading.textContent = 'One wrong step';
-    resultEl.textContent = `Score ${score}. Best ${best}.`;
+    saveScore(GAME_ID, best);
+
+    if (state.alive) {
+      void play('pop');
+      renderGrid();
+      updatePausedControls();
+    } else {
+      void play('win');
+      renderGrid();
+      endVisualGame();
+    }
+  }
+
+  function handleArrowStep(dx: number, dy: number) {
+    if (paused || turnBased || state.phase !== 'playing') return;
+    const center = Math.floor(GRID_SIZE / 2);
+    const targetX = center + dx;
+    const targetY = center + dy;
+    if (targetX < 0 || targetX >= GRID_SIZE || targetY < 0 || targetY >= GRID_SIZE) return;
+    handleTileTap(targetX, targetY);
+  }
+
+  function handlePick(color: ColorId) {
+    if (paused || turnBased || state.phase !== 'picking') return;
+    unlockAudio();
+    signalMeaningfulGameInteraction(root);
+    state = pickRoundColor(state, color);
+    setPlayerColor(color);
+    roundPicker.hidden = true;
+    void play('blip');
+    renderGrid();
+    updatePausedControls();
+  }
+
+  function endVisualGame() {
+    overlayHeading.textContent = 'Round over';
+    resultEl.textContent = `Score ${state.score}. Best ${best}.`;
     againBtn.textContent = 'Play again';
     overlay.classList.add('is-open');
+    overlay.hidden = false;
     againBtn.focus();
-    void play('win');
   }
 
-  function selectVisualColor(requestedColor: ColorId) {
-    if (turnBased || paused || !alive) return;
-    unlockAudio();
-    const nextColor = selectColorDirectly(playerColor, requestedColor, true);
-    const changed = nextColor !== playerColor;
-    setPlayerColor(nextColor);
-    draw();
-    if (changed) {
-      signalMeaningfulGameInteraction(root);
-      void play('blip');
+  function resetVisual(start = true) {
+    seedRng();
+    state = createGame(rotation, best);
+    setScore(0);
+    setPlayerColor('green');
+    roundPicker.hidden = !start || false;
+    overlay.classList.remove('is-open');
+    overlay.hidden = true;
+
+    if (start) {
+      roundPicker.hidden = false;
+      pickerName.textContent = 'Green';
+      renderGrid();
+      updatePausedControls();
+      if (!paused) pickButtons[0]?.focus({ preventScroll: true });
+    } else {
+      overlayHeading.textContent = 'Ready?';
+      resultEl.textContent = 'Pick a color to begin.';
+      againBtn.textContent = 'Start';
+      overlay.classList.add('is-open');
+      overlay.hidden = false;
+      roundPicker.hidden = true;
+      renderGrid();
+      updatePausedControls();
     }
   }
 
-  function loop(ts: number) {
-    if (paused) return;
-    if (!alive) {
-      draw();
-      return;
-    }
-    if (!lastTs) lastTs = ts;
-    const dt = Math.min(0.05, (ts - lastTs) / 1000);
-    lastTs = ts;
-
-    // Scroll world toward the checkpoint (tiles move down in screen space).
-    // Each tile retains its pre-frame position so crossing cannot be skipped,
-    // including after a pause where lastTs is reset before movement resumes.
-    const dy = speed * dt;
-    tiles = tiles.map((tile) => advanceTileForFrame(tile, dy, false));
-    nextTileY += dy;
-
-    // Off-screen cleanup is deliberately score-neutral. Points are awarded only
-    // by a successful, one-time checkpoint evaluation below.
-    tiles = cleanupOffscreenTiles(tiles, 1.2).tiles;
-    spawnTiles();
-
-    // Preserve the gentle steering toward the nearest tile ahead.
-    const ahead = tiles
-      .filter((tile) => !tile.evaluated && tile.y < playerY && tile.y > playerY - 0.25)
-      .sort((a, b) => b.y - a.y)[0];
-    if (ahead) {
-      playerX += (ahead.x - playerX) * Math.min(1, dt * 6);
-    }
-
-    // A tile is judged exactly once, when its center crosses the player's
-    // dashed checkpoint line. Intermediate colors between crossings are safe.
-    const horizontalTolerance = TILE_W / 2 + PLAYER_R;
-    for (const tile of tiles) {
-      const result = evaluateCheckpoint(tile, playerY, playerX, playerColor, horizontalTolerance);
-      if (result.status === 'not-crossed' || result.status === 'already-evaluated') continue;
-
-      tile.evaluated = true;
-      if (result.status === 'correct') {
-        setScore(score + result.scoreDelta);
-        speed = Math.min(0.42, speed + 0.004);
-        void play('pop');
-      } else {
-        endGame();
-        break;
-      }
-    }
-
-    draw();
-    if (alive) raf = requestAnimationFrame(loop);
-  }
-
-  function draw() {
-    const w = canvas.clientWidth;
-    const h = canvas.clientHeight;
-    ctx.clearRect(0, 0, w, h);
-
-    // subtle grid
-    ctx.fillStyle = '#101010';
-    ctx.fillRect(0, 0, w, h);
-
-    // The player's center is the single checkpoint used for path and color
-    // evaluation. Keep it visible independently of tile overlap.
-    ctx.save();
-    ctx.setLineDash([7, 7]);
-    ctx.strokeStyle = 'rgba(255,255,255,0.42)';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(0, playerY * h);
-    ctx.lineTo(w, playerY * h);
-    ctx.stroke();
-    ctx.restore();
-
-    for (const t of tiles) {
-      const tw = TILE_W * w;
-      const th = TILE_H * h * 0.95;
-      const x = t.x * w - tw / 2;
-      const y = t.y * h - th / 2;
-      const hex = colorHex(t.color);
-      ctx.fillStyle = hex;
-      ctx.globalAlpha = 0.9;
-      roundRect(ctx, x, y, tw, th, 10);
-      ctx.fill();
-      ctx.globalAlpha = 0.25;
-      ctx.strokeStyle = '#fff';
-      ctx.lineWidth = 1;
-      roundRect(ctx, x, y, tw, th, 10);
-      ctx.stroke();
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = '#04130e';
-      ctx.font = `700 ${Math.max(12, Math.min(18, th * 0.42))}px system-ui, sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(t.color[0]!.toUpperCase(), t.x * w, t.y * h);
-    }
-
-    // player
-    const px = playerX * w;
-    const py = playerY * h;
-    const pr = PLAYER_R * Math.min(w, h) * 3.2;
-    ctx.beginPath();
-    ctx.arc(px, py, pr + 4, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(255,255,255,0.12)';
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(px, py, pr, 0, Math.PI * 2);
-    ctx.fillStyle = colorHex(playerColor);
-    ctx.fill();
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = 'rgba(255,255,255,0.55)';
-    ctx.stroke();
-    ctx.fillStyle = '#04130e';
-    ctx.font = `800 ${Math.max(11, pr)}px system-ui, sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(playerColor[0]!.toUpperCase(), px, py);
-  }
-
-  function roundRect(
-    c: CanvasRenderingContext2D,
-    x: number,
-    y: number,
-    w: number,
-    h: number,
-    r: number,
-  ) {
-    const rr = Math.min(r, w / 2, h / 2);
-    c.beginPath();
-    c.moveTo(x + rr, y);
-    c.arcTo(x + w, y, x + w, y + h, rr);
-    c.arcTo(x + w, y + h, x, y + h, rr);
-    c.arcTo(x, y + h, x, y, rr);
-    c.arcTo(x, y, x + w, y, rr);
-    c.closePath();
-  }
-
-  const onKey = (event: KeyboardEvent) => {
-    if (turnBased || paused || !alive || event.isComposing) return;
-    if (event.ctrlKey || event.altKey || event.metaKey || event.getModifierState('OS')) return;
-
-    const target = event.target;
-    if (
-      target instanceof HTMLElement &&
-      (target.matches('input, textarea, select') || target.isContentEditable)
-    ) {
-      return;
-    }
-
-    const requestedColor = COLORS.find(
-      (color) => color.shortcut.toLowerCase() === event.key.toLowerCase(),
-    )?.id;
-    if (!requestedColor) return;
-
-    event.preventDefault();
-    selectVisualColor(requestedColor);
-  };
-
-  window.addEventListener('keydown', onKey);
-  window.addEventListener('resize', resize);
-
-  colorButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-      const requestedColor = button.dataset.cfColor as ColorId;
-      selectVisualColor(requestedColor);
+  // Event bindings
+  pickButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      handlePick(btn.dataset.cfPick as ColorId);
     });
   });
+
+  rotationBtn.addEventListener('click', () => {
+    if (paused) return;
+    const modes: RotationMode[] = ['never', 'every-10', 'every-5'];
+    const idx = modes.indexOf(rotation);
+    rotation = modes[(idx + 1) % modes.length]!;
+    savePref(ROTATION_PREF_KEY, rotation);
+    updateRotationBtn();
+    // Apply to current game if in picking phase
+    if (state.phase === 'picking') {
+      state = { ...state, rotation };
+    }
+  });
+
+  undoBtn.addEventListener('click', () => {
+    if (paused || turnBased) return;
+    const result = engineUndo(state);
+    if (result) {
+      state = result;
+      setScore(state.score);
+      setPlayerColor(state.playerColor);
+      renderGrid();
+      updatePausedControls();
+    }
+  });
+
   modeBtn.addEventListener('click', () => {
     if (paused) return;
     unlockAudio();
     if (turnBased) exitTurnBased();
     else enterTurnBased();
   });
+
   againBtn.addEventListener('click', () => {
     if (paused) return;
     unlockAudio();
-    reset();
+    resetVisual(true);
   });
+
   accessibleCycleBtn.addEventListener('click', cycleTurnBasedColor);
   accessibleStepBtn.addEventListener('click', stepTurnBased);
   accessibleAgainBtn.addEventListener('click', () => {
@@ -592,81 +463,68 @@ export function mountColorFlip(root: HTMLElement): GameController {
     startTurnBased();
   });
 
-  // An opt-in deterministic seam lets browser tests position known tiles
-  // without coupling gameplay to random generation or animation-frame races.
-  // It is unavailable during ordinary play and does not change player input.
-  if (testMode) {
-    testApi = {
-      setVisualScenario(config) {
-        controlledTestScenario = true;
-        nextTileY = -1;
-        nextTileId = 1;
-        playerX = config.playerX ?? 0.5;
-        speed = config.speed ?? 0.14;
-        setScore(0);
-        if (config.playerColor !== undefined) setPlayerColor(config.playerColor);
-        tiles = config.tiles.map((tile) => ({
-          id: nextTileId++,
-          x: tile.x ?? 0.5,
-          y: tile.y,
-          previousY: tile.y,
-          color: tile.color,
-          evaluated: false,
-        }));
-        lastTs = 0;
-        draw();
-      },
-      getVisualState() {
-        return {
-          alive,
-          paused,
-          score,
-          playerColor,
-          tiles: tiles.map((tile) => ({ ...tile })),
-        };
-      },
-    };
-    testWindow.__NOCHARGE_COLOR_FLIP_TEST__ = testApi;
-  }
+  // Keyboard
+  const onKey = (event: KeyboardEvent) => {
+    if (event.isComposing) return;
+    if (event.ctrlKey || event.altKey || event.metaKey) return;
 
-  // Do not run behind the above-game ad before the player reaches the stage.
-  reset(false);
+    const target = event.target;
+    if (target instanceof HTMLElement && (target.matches('input, textarea, select') || target.isContentEditable)) return;
+
+    if (turnBased) return; // turn-based has its own button controls
+
+    // Color shortcuts for picking phase
+    if (state?.phase === 'picking') {
+      const requestedColor = COLORS.find((c) => c.shortcut.toLowerCase() === event.key.toLowerCase())?.id;
+      if (requestedColor) {
+        event.preventDefault();
+        handlePick(requestedColor);
+        return;
+      }
+    }
+
+    // Arrow keys for stepping
+    if (state?.phase === 'playing') {
+      switch (event.key) {
+        case 'ArrowUp': event.preventDefault(); handleArrowStep(0, -1); break;
+        case 'ArrowDown': event.preventDefault(); handleArrowStep(0, 1); break;
+        case 'ArrowLeft': event.preventDefault(); handleArrowStep(-1, 0); break;
+        case 'ArrowRight': event.preventDefault(); handleArrowStep(1, 0); break;
+      }
+    }
+
+    if (event.key === 'u' || event.key === 'U') {
+      event.preventDefault();
+      undoBtn.click();
+    }
+  };
+
+  window.addEventListener('keydown', onKey);
+
+  updateRotationBtn();
+  resetVisual(false);
 
   return {
     destroy() {
-      alive = false;
-      turnBasedAlive = false;
-      cancelAnimationFrame(raf);
       window.removeEventListener('keydown', onKey);
-      window.removeEventListener('resize', resize);
-      if (testApi && testWindow.__NOCHARGE_COLOR_FLIP_TEST__ === testApi) {
-        delete testWindow.__NOCHARGE_COLOR_FLIP_TEST__;
-      }
       root.innerHTML = '';
     },
     pause(_reason?: PauseReason) {
       if (paused) return;
       paused = true;
-      // Preserve visual positions and reset timing only when we resume. This
-      // prevents a hidden-tab duration becoming one oversized animation step.
-      cancelAnimationFrame(raf);
-      raf = 0;
-      lastTs = 0;
       updatePausedControls();
     },
     resume() {
       if (!paused) return;
       paused = false;
-      lastTs = 0;
       updatePausedControls();
-      if (!turnBased && alive) raf = requestAnimationFrame(loop);
     },
     isPaused() {
       return paused;
     },
     restart() {
       if (turnBased) startTurnBased();
-      else reset(false);
+      else resetVisual(false);
     },
   };
 }

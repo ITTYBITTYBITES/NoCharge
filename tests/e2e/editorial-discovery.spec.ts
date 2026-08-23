@@ -7,7 +7,7 @@ const collectionSlugs=['keyboard-friendly-browser-games','untimed-or-reduced-pre
 test.beforeEach(async({page})=>denyOptionalServices(page));
 
 test('publishes platform articles without fake game controls and with accurate metadata',async({page,request})=>{
- await page.goto('/articles/');await expect(page.getByRole('heading',{name:'Platform articles'})).toBeVisible();await expect(page.locator('.articles-grid .article-card')).toHaveCount(17);
+ await page.goto('/articles/');await expect(page.getByRole('heading',{name:'Platform articles'})).toBeVisible();await expect(page.locator('.articles-grid .article-card')).toHaveCount(23);
  for(const slug of platformSlugs){const path=`/articles/${slug}/`;expect((await request.get(path)).status()).toBe(200);await page.goto(path);await expect(page.locator('.breadcrumbs')).toBeVisible();await expect(page.locator('.article-play').getByRole('link',{name:/Play /})).toHaveCount(0);await expect(page.getByText(/Reviewed by NoCharge/)).toBeVisible();await expect(page.locator('link[rel=canonical]')).toHaveAttribute('href',`https://nocharge.net${path}`);const json=(await page.locator('script[type="application/ld+json"]').allTextContents()).join('\n');expect(json).toContain('"@type":"Article"');expect(json).toContain('"@type":"BreadcrumbList"');expect(json).not.toContain('"@type":"VideoGame"');}
 });
 
@@ -67,7 +67,7 @@ test('orders multiple meaningful game interactions on home and Arcade',async({pa
  expect(await page.evaluate(()=>localStorage.getItem('nocharge:pref:recently-played'))).not.toContain('color-flip');
  await colorFlip.getByRole('button',{name:'Start',exact:true}).click();
  expect(await page.evaluate(()=>localStorage.getItem('nocharge:pref:recently-played'))).not.toContain('color-flip');
- const blue=colorFlip.getByRole('button',{name:'Set player color to Blue',exact:true});
+ const blue=colorFlip.getByRole('button',{name:'Pick Blue',exact:true});
  await expect(blue).toBeEnabled();
  await blue.click();
  await expect.poll(()=>page.evaluate(()=>localStorage.getItem('nocharge:pref:recently-played'))).toContain('color-flip');

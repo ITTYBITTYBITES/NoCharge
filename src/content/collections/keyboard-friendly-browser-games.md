@@ -24,6 +24,16 @@ games:
     reason: "Arrow keys move directly between the squares that are legal for the turn, and Enter or Space places the disc."
   - game: last-token
     reason: "Every legal take is a labeled button reached by Tab or arrows, and Enter or Space removes the tokens."
+  - game: klondike
+    reason: "Keyboard shortcuts (D to draw, U to undo) and tab-navigable stock, waste, tableau columns, and foundations provide complete play without a pointer."
+  - game: freecell
+    reason: "Tab-navigable free cells, foundations, and tableau columns allow full play; U undoes."
+  - game: nonogram
+    reason: "Arrow keys move the grid cursor; F marks filled, X or Space marks empty, U undoes — the full solve loop needs no pointer."
+  - game: twenty-forty-eight
+    reason: "Arrow keys and WASD slide tiles; U undoes. Touch swipe is also available but not required."
+  - game: tile-garden
+    reason: "Arrow keys move the cursor, Enter or Space places a tile, U undoes — complete play without a pointer."
 ---
 
 These games offer a documented keyboard route through current play. “Keyboard-friendly” does not claim completed testing with every keyboard layout or assistive technology; consult the [Accessibility Statement](/accessibility/) for current manual-testing status. Pass the Picture is deliberately excluded because drawing strokes requires a pointer — its color, undo, and restart controls are keyboard-operable, but its core action is not.

@@ -1,0 +1,108 @@
+.tg {
+  display: grid;
+  gap: 1rem;
+  user-select: none;
+  -webkit-user-select: none;
+  --tg-accent: #12b66a;
+}
+
+.tg__hud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.tg__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.15rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.tg__stats strong {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.tg__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tg__board {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0.3rem;
+  max-width: min(100%, 28rem);
+  margin: 0 auto;
+  padding: 0.5rem;
+  background: var(--panel-2, #161b18);
+  border: 1px solid var(--line, #2a3530);
+  border-radius: 0.6rem;
+}
+
+.tg__cell {
+  aspect-ratio: 1;
+  border: 1px solid var(--line, #2a3530);
+  background: var(--panel, #1a1f1c);
+  border-radius: 0.3rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.12s ease;
+  min-width: 0;
+  min-height: 0;
+}
+
+.tg__cell:hover {
+  background: color-mix(in srgb, var(--tg-accent) 10%, var(--panel, #1a1f1c));
+}
+
+.tg__cell--cursor {
+  outline: 2px solid var(--tg-accent);
+  outline-offset: -2px;
+}
+
+.tg__cell--tier-0 { background: #1a2420; }
+.tg__cell--tier-1 { background: #1e3028; }
+.tg__cell--tier-2 { background: #254030; }
+.tg__cell--tier-3 { background: var(--tg-accent); }
+
+.tg__emoji {
+  font-size: clamp(0.9rem, 3vw, 1.3rem);
+  line-height: 1;
+}
+
+.tg__species {
+  font-size: clamp(0.5rem, 1.5vw, 0.65rem);
+  line-height: 1;
+  opacity: 0.7;
+}
+
+.tg__overlay {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  text-align: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel-2, #161b18);
+}
+
+.tg__overlay[hidden] {
+  display: none;
+}
+
+.tg__overlay h2 { margin: 0; color: var(--tg-accent); }
+.tg__overlay p { color: var(--muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  .tg__cell { transition: none; }
+}

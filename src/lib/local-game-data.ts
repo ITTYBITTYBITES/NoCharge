@@ -20,11 +20,28 @@ export const GAME_SCORE_IDS = [
   'color-flip',
   'color-flip-turn-based',
   'beacon-lattice',
+  'klondike',
+  'freecell',
+  'nonogram',
+  'twenty-forty-eight',
+  'tile-garden',
 ] as const;
 
-export const GAME_PREFERENCE_KEYS = ['game-muted', 'beacon-lattice-progress'] as const;
+export const GAME_PREFERENCE_KEYS = [
+  'game-muted',
+  'beacon-lattice-progress',
+  'klondike-draw-mode',
+  'color-flip-rotation',
+] as const;
 
 export const MEMORY_MATCH_BEST_MOVES_KEY = 'nocharge:memory-match:best-moves';
+
+export const KLONDIKE_GAMES_WON_KEY = 'nocharge:klondike:games-won';
+export const KLONDIKE_BEST_MOVES_KEY = 'nocharge:klondike:best-moves';
+export const FREECELL_GAMES_WON_KEY = 'nocharge:freecell:games-won';
+export const NONOGRAM_PUZZLES_REVEALED_KEY = 'nocharge:nonogram:puzzles-revealed';
+export const TWENTY_FORTY_EIGHT_BEST_TILE_KEY = 'nocharge:2048:best-tile';
+export const TILE_GARDEN_BEST_TIER_KEY = 'nocharge:tile-garden:best-tier';
 
 /**
  * Pass & Play match records: exactly one bounded key per game, holding the
@@ -36,6 +53,12 @@ export const PASS_PLAY_MATCH_KEYS: readonly string[] = PASS_PLAY_GAME_IDS.map((i
 export const CLEARABLE_GAME_DATA_KEYS: readonly string[] = [
   ...GAME_SCORE_IDS.map((id) => scoreKey(id)),
   MEMORY_MATCH_BEST_MOVES_KEY,
+  KLONDIKE_GAMES_WON_KEY,
+  KLONDIKE_BEST_MOVES_KEY,
+  FREECELL_GAMES_WON_KEY,
+  NONOGRAM_PUZZLES_REVEALED_KEY,
+  TWENTY_FORTY_EIGHT_BEST_TILE_KEY,
+  TILE_GARDEN_BEST_TIER_KEY,
   ...GAME_PREFERENCE_KEYS.map((preference) => prefKey(preference)),
   RECENTLY_PLAYED_KEY,
   ...PASS_PLAY_MATCH_KEYS,

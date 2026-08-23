@@ -93,3 +93,19 @@ at most four records, newest first, a repeat play updates the existing record, a
 records play. Page views, toolbar controls, consent interactions, and advertisement interactions do not. Opening
 `/my-arcade/` performs reads only, so it cannot add a game, change ordering, change a timestamp, or emit the
 meaningful-play event.
+
+## New metric keys (PR #26, 2026-08-22)
+
+Five new solo games added their metric keys to the allowlist:
+
+| Key | Owner | Data shape | Meaning | Cleared by Clear Game Data |
+|---|---|---|---|---|
+| `nocharge:klondike:games-won` | `src/games/klondike/main.ts` | Decimal integer string | Total Klondike deals completed | Yes |
+| `nocharge:klondike:best-moves` | `src/games/klondike/main.ts` | Decimal integer string | Fewest moves for a won Klondike deal | Yes |
+| `nocharge:freecell:games-won` | `src/games/freecell/main.ts` | Decimal integer string | Total FreeCell deals completed | Yes |
+| `nocharge:nonogram:puzzles-revealed` | `src/games/nonogram/main.ts` | Decimal integer string | Nonogram puzzles completed | Yes |
+| `nocharge:2048:best-tile` | `src/games/twenty-forty-eight/main.ts` | Decimal integer string | Highest tile value reached | Yes |
+| `nocharge:tile-garden:best-tier` | `src/games/tile-garden/main.ts` | Decimal integer string (0-3) | Highest growth tier reached | Yes |
+| `nocharge:pref:color-flip-rotation` | `src/games/color-flip/main.ts` | JSON string: `"never"`, `"every-10"`, `"every-5"` | Color rotation preference | Yes |
+
+All new keys use exact prefixes documented above. The `CLEARABLE_GAME_DATA_KEYS` allowlist in `src/lib/local-game-data.ts` is the single source of truth.

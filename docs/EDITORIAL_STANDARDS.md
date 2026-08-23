@@ -101,3 +101,14 @@ The brand identity, media page, media kit, and feeds are governed by
   GUIDs stay stable changelog anchors.
 - No invented social handles may appear anywhere; account registration and
   verification are owner actions.
+
+## Expanded coverage (PR #26, 2026-08-22)
+
+The Quiet Arcade now includes 9 solo games (4 original + 5 new) and 6 pass-and-play games. Editorial coverage expanded to include:
+
+- 5 new game guides (Klondike, FreeCell, Nonogram, Twenty Forty-Eight, Tile Garden)
+- 6 new game articles (5 per-game + 1 cross-game announcement)
+- 10 new Quiet Setup articles (displays, audio, posture, lighting, desk organization)
+- Color Flip visual mode redesigned from reflex timing to calm tap-to-step
+
+All new content follows existing editorial standards: general-audience wording, no AI claims, no optimal-strategy claims, no dark patterns. Quiet Setup articles maintain affiliate disclosure, new-tab behavior, and editorial-research evidence level.
