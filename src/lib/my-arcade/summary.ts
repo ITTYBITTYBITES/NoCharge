@@ -141,7 +141,7 @@ function twentyFortyEightMetrics(storage: ReadableStorage): LocalGameMetric[] {
 }
 
 function puzzleCountMetrics(storage: ReadableStorage, key: string, label: string): LocalGameMetric[] {
-  const raw = storage.getItem(key); const n = raw == null ? 0 : Number(raw);
+  let raw: string | null = null; try { raw = storage.getItem(key); } catch { return []; } const n = raw == null ? 0 : Number(raw);
   return Number.isFinite(n) && n > 0 ? [{ label, value: formatCount(Math.floor(n)), detail: 'Completed puzzles saved in this browser.' }] : [];
 }
 function wordSearchMetrics(storage: ReadableStorage) { return puzzleCountMetrics(storage, WORD_SEARCH_PUZZLES_SOLVED_KEY, 'Puzzles solved'); }

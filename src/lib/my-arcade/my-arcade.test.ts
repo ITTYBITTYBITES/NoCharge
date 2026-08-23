@@ -340,6 +340,8 @@ describe('My Arcade local dashboard', () => {
       'nocharge:nonogram:high',
       'nocharge:twenty-forty-eight:high',
       'nocharge:tile-garden:high',
+      'nocharge:word-search:puzzles-solved',
+      'nocharge:sudoku:puzzles-solved',
     ]);
     for (const key of storage.readKeys) expect(allowedReads.has(key)).toBe(true);
     // The consent choice and Google's own storage are never read for summaries.
