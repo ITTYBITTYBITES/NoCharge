@@ -204,8 +204,8 @@ export function mountNonogram(root: HTMLElement): GameController {
     // Left click cycles: unknown → filled → empty → unknown
     const result = toggleCell(state, row, col);
     if (result) {
+      cueNonogramMark(state, result, row, col);
       state = result;
-      void play('place');
       render();
       focusCursor();
     }
@@ -217,11 +217,22 @@ export function mountNonogram(root: HTMLElement): GameController {
     cursorCol = col;
     const result = markCell(state, row, col, 'empty');
     if (result) {
+      cueNonogramMark(state, result, row, col);
       state = result;
-      void play('move');
       render();
       focusCursor();
     }
+  }
+
+  function cueNonogramMark(before: NonogramState, after: NonogramState, row: number, col: number) {
+    void play('place');
+    const clues = computeClues(after.puzzle.solution);
+    const rowNow = isRowSatisfied(after.grid, row, clues.rows[row]!);
+    const colNow = isColSatisfied(after.grid, col, clues.cols[col]!);
+    const rowWas = isRowSatisfied(before.grid, row, clues.rows[row]!);
+    const colWas = isColSatisfied(before.grid, col, clues.cols[col]!);
+    if ((!rowWas && rowNow) || (!colWas && colNow)) void play('hint');
+    if (after.grid[row]![col] === 'filled' && after.puzzle.solution[row]![col] === false) void play('error');
   }
 
   function handleUndo() {
@@ -266,7 +277,7 @@ export function mountNonogram(root: HTMLElement): GameController {
         e.preventDefault();
         {
           const result = markCell(state, cursorRow, cursorCol, 'filled');
-          if (result) { state = result; void play('place'); render(); focusCursor(); }
+          if (result) { cueNonogramMark(state, result, cursorRow, cursorCol); state = result; render(); focusCursor(); }
         }
         break;
       case 'x': case 'X': case ' ':

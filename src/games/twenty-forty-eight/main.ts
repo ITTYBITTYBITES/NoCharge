@@ -125,8 +125,8 @@ export function mountTwentyFortyEight(root: HTMLElement): GameController {
     signalMeaningfulGameInteraction(root);
     const next = move(state, direction);
     if (next) {
+      if (next.score > state.score) void play('merge');
       state = next;
-      void play('merge');
       render();
     }
   }

@@ -219,7 +219,7 @@ export function mountKlondike(root: HTMLElement): GameController {
     selected = null;
     state = drawFromStock(state);
     state = autoMoveToFoundation(state);
-    void play('place');
+    void play('flip');
     render();
   }
 
