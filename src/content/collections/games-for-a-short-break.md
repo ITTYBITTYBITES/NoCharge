@@ -30,6 +30,10 @@ games:
     reason: "A typical game takes 3–10 minutes, ending when no moves remain."
   - game: tile-garden
     reason: "A garden session takes 3–15 minutes with no timer or forced pace."
+  - game: word-search
+    reason: "A calm grid with direct keyboard selection and no timer, account, or competitive pressure."
+  - game: mini-sudoku
+    reason: "A small keyboard-friendly logic puzzle with no timer, account, or competitive pressure."
 ---
 
 Session ranges are descriptive, not limits or performance targets. A visitor can stop after one run, replay, or continue through another puzzle.
