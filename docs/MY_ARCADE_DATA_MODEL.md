@@ -109,3 +109,7 @@ Five new solo games added their metric keys to the allowlist:
 | `nocharge:pref:color-flip-rotation` | `src/games/color-flip/main.ts` | JSON string: `"never"`, `"every-10"`, `"every-5"` | Color rotation preference | Yes |
 
 All new keys use exact prefixes documented above. The `CLEARABLE_GAME_DATA_KEYS` allowlist in `src/lib/local-game-data.ts` is the single source of truth.
+
+## Sound and new puzzle keys
+
+Sound preferences use exact localStorage prefixes `nocharge:pref:sound-enabled`, `nocharge:pref:sound-volume`, and `nocharge:pref:ambient-sound`; `nocharge:pref:game-muted` remains the master mute. Word Search uses `nocharge:word-search:puzzles-solved` and `nocharge:word-search:last-list`. Mini Sudoku uses `nocharge:sudoku:puzzles-solved`, `nocharge:sudoku:current-puzzle`, and `nocharge:pref:sudoku-pencil-marks`. Clear Game Data removes these keys and never removes consent storage.

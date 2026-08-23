@@ -34,6 +34,10 @@ games:
     reason: "Arrow keys and WASD slide tiles; U undoes. Touch swipe is also available but not required."
   - game: tile-garden
     reason: "Arrow keys move the cursor, Enter or Space places a tile, U undoes — complete play without a pointer."
+  - game: word-search
+    reason: "A calm grid with direct keyboard selection and no timer, account, or competitive pressure."
+  - game: mini-sudoku
+    reason: "A labeled 6×6 grid supports keyboard entry, movement, checking, and undo without a pointer."
 ---
 
 These games offer a documented keyboard route through current play. “Keyboard-friendly” does not claim completed testing with every keyboard layout or assistive technology; consult the [Accessibility Statement](/accessibility/) for current manual-testing status. Pass the Picture is deliberately excluded because drawing strokes requires a pointer — its color, undo, and restart controls are keyboard-operable, but its core action is not.

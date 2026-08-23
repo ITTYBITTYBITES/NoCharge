@@ -16,6 +16,8 @@ export const MY_ARCADE_GAME_IDS = [
   'nonogram',
   'twenty-forty-eight',
   'tile-garden',
+  'word-search',
+  'mini-sudoku',
 ] as const;
 
 export type GameId = (typeof MY_ARCADE_GAME_IDS)[number];

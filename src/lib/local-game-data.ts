@@ -32,6 +32,10 @@ export const GAME_PREFERENCE_KEYS = [
   'beacon-lattice-progress',
   'klondike-draw-mode',
   'color-flip-rotation',
+  'sound-enabled',
+  'sound-volume',
+  'ambient-sound',
+  'sudoku-pencil-marks',
 ] as const;
 
 export const MEMORY_MATCH_BEST_MOVES_KEY = 'nocharge:memory-match:best-moves';
@@ -42,6 +46,10 @@ export const FREECELL_GAMES_WON_KEY = 'nocharge:freecell:games-won';
 export const NONOGRAM_PUZZLES_REVEALED_KEY = 'nocharge:nonogram:puzzles-revealed';
 export const TWENTY_FORTY_EIGHT_BEST_TILE_KEY = 'nocharge:2048:best-tile';
 export const TILE_GARDEN_BEST_TIER_KEY = 'nocharge:tile-garden:best-tier';
+export const WORD_SEARCH_PUZZLES_SOLVED_KEY = 'nocharge:word-search:puzzles-solved';
+export const WORD_SEARCH_LAST_LIST_KEY = 'nocharge:word-search:last-list';
+export const SUDOKU_PUZZLES_SOLVED_KEY = 'nocharge:sudoku:puzzles-solved';
+export const SUDOKU_CURRENT_PUZZLE_KEY = 'nocharge:sudoku:current-puzzle';
 
 /**
  * Pass & Play match records: exactly one bounded key per game, holding the
@@ -59,6 +67,10 @@ export const CLEARABLE_GAME_DATA_KEYS: readonly string[] = [
   NONOGRAM_PUZZLES_REVEALED_KEY,
   TWENTY_FORTY_EIGHT_BEST_TILE_KEY,
   TILE_GARDEN_BEST_TIER_KEY,
+  WORD_SEARCH_PUZZLES_SOLVED_KEY,
+  WORD_SEARCH_LAST_LIST_KEY,
+  SUDOKU_PUZZLES_SOLVED_KEY,
+  SUDOKU_CURRENT_PUZZLE_KEY,
   ...GAME_PREFERENCE_KEYS.map((preference) => prefKey(preference)),
   RECENTLY_PLAYED_KEY,
   ...PASS_PLAY_MATCH_KEYS,

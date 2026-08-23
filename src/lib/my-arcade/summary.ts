@@ -11,6 +11,7 @@ import {
   readTwentyFortyEightBestTile,
   readTileGardenBestTier,
 } from './readers';
+import { WORD_SEARCH_PUZZLES_SOLVED_KEY, SUDOKU_PUZZLES_SOLVED_KEY } from '../local-game-data';
 import {
   MY_ARCADE_GAME_IDS,
   type GameId,
@@ -139,6 +140,13 @@ function twentyFortyEightMetrics(storage: ReadableStorage): LocalGameMetric[] {
   return [];
 }
 
+function puzzleCountMetrics(storage: ReadableStorage, key: string, label: string): LocalGameMetric[] {
+  const raw = storage.getItem(key); const n = raw == null ? 0 : Number(raw);
+  return Number.isFinite(n) && n > 0 ? [{ label, value: formatCount(Math.floor(n)), detail: 'Completed puzzles saved in this browser.' }] : [];
+}
+function wordSearchMetrics(storage: ReadableStorage) { return puzzleCountMetrics(storage, WORD_SEARCH_PUZZLES_SOLVED_KEY, 'Puzzles solved'); }
+function sudokuMetrics(storage: ReadableStorage) { return puzzleCountMetrics(storage, SUDOKU_PUZZLES_SOLVED_KEY, 'Puzzles solved'); }
+
 function tileGardenMetrics(storage: ReadableStorage): LocalGameMetric[] {
   const tier = readTileGardenBestTier(storage);
   if (tier != null && tier > 0) {
@@ -158,6 +166,8 @@ const METRIC_READERS: Record<GameId, (storage: ReadableStorage) => LocalGameMetr
   'nonogram': nonogramMetrics,
   'twenty-forty-eight': twentyFortyEightMetrics,
   'tile-garden': tileGardenMetrics,
+  'word-search': wordSearchMetrics,
+  'mini-sudoku': sudokuMetrics,
 };
 
 function summarizeGame(

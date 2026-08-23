@@ -36,6 +36,10 @@ games:
     reason: "Opens without sign-in. Best tile stays in local browser storage."
   - game: tile-garden
     reason: "Opens without sign-in. Best tier stays in local browser storage."
+  - game: word-search
+    reason: "A calm grid with direct keyboard selection and no timer, account, or competitive pressure."
+  - game: mini-sudoku
+    reason: "A small keyboard-friendly logic puzzle with no timer, account, or competitive pressure."
 ---
 
 Without an account also means without synchronization or server recovery. Read [how NoCharge saves scores](/articles/how-nocharge-saves-scores-without-an-account/) before treating a local result as permanent.

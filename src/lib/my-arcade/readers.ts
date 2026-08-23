@@ -10,6 +10,8 @@ import {
   NONOGRAM_PUZZLES_REVEALED_KEY,
   TWENTY_FORTY_EIGHT_BEST_TILE_KEY,
   TILE_GARDEN_BEST_TIER_KEY,
+  WORD_SEARCH_PUZZLES_SOLVED_KEY,
+  SUDOKU_PUZZLES_SOLVED_KEY,
 } from '../local-game-data';
 import { isGameId, type GameId, type ReadableStorage } from './types';
 
