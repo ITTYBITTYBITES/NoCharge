@@ -21,7 +21,7 @@ artwork:
 genre: Word
 difficulty: Gentle
 session: 5–15 min
-featured: true
+featured: false
 order: 16
 presentation:
   controlsHeading: Select a straight line from first letter to last.

@@ -21,7 +21,7 @@ artwork:
 genre: Logic
 difficulty: Cell-count levels
 session: 5–20 min
-featured: true
+featured: false
 order: 17
 presentation:
   controlsHeading: Fill each row, column, and 3×2 box with digits 1–6.
