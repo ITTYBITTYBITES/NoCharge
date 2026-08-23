@@ -33,7 +33,7 @@ presentation:
 genre: Logic puzzle
 difficulty: Easy to learn
 session: 2–10 min
-featured: true
+featured: false
 order: 13
 ---
 

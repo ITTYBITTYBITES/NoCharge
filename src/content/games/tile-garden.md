@@ -33,7 +33,7 @@ presentation:
 genre: Merge puzzle
 difficulty: Gentle
 session: 3–15 min
-featured: true
+featured: false
 order: 15
 ---
 

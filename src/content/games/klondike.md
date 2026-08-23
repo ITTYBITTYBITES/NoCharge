@@ -33,7 +33,7 @@ presentation:
 genre: Cards
 difficulty: Familiar rules
 session: 5–15 min
-featured: true
+featured: false
 order: 11
 ---
 

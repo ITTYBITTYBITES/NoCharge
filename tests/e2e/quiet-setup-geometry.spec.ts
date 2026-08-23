@@ -139,7 +139,7 @@ test.describe('Quiet Setup card geometry', () => {
       await loadAllImages(page);
 
       const cardCount = await page.locator('[data-setup-card]').count();
-      expect(cardCount).toBe(8);
+      expect(cardCount).toBe(18);
 
       for (let index = 0; index < cardCount; index += 1) {
         const root = `[data-setup-card]:nth-of-type(${index + 1})`;
@@ -432,7 +432,7 @@ test.describe('Quiet Setup content accuracy', () => {
     });
 
     const total = Object.values(expected).reduce((sum, n) => sum + n, 0);
-    expect(total, 'every published article must be counted exactly once').toBe(8);
+    expect(total, 'every published article must be counted exactly once').toBe(18);
 
     for (const [topic, count] of Object.entries(expected)) {
       const label = page.locator(`[data-setup-topic-count="${topic}"]`);

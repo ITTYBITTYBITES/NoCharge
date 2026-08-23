@@ -73,7 +73,7 @@ export function mountColorFlip(root: HTMLElement): GameController {
           </div>
         </div>
         <div class="cf__stage" data-cf="stage">
-          <div class="cf__grid" data-cf="grid" role="grid" aria-label="Tap-to-step tile grid"></div>
+          <div class="cf__grid" data-cf="grid" role="group" aria-label="Tap-to-step tile grid"></div>
           <div class="cf__overlay" data-cf="overlay">
             <h2 data-cf="overlay-heading">Ready?</h2>
             <p data-cf="result" aria-live="polite"></p>
@@ -285,7 +285,6 @@ export function mountColorFlip(root: HTMLElement): GameController {
         const cell = document.createElement('button');
         cell.type = 'button';
         cell.className = 'cf__tile';
-        cell.setAttribute('role', 'gridcell');
         cell.dataset.row = String(row);
         cell.dataset.col = String(col);
 

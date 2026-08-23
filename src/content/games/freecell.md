@@ -33,7 +33,7 @@ presentation:
 genre: Cards
 difficulty: Strategic
 session: 5–20 min
-featured: true
+featured: false
 order: 12
 ---
 

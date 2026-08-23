@@ -33,7 +33,7 @@ presentation:
 genre: Number puzzle
 difficulty: Easy to learn
 session: 3–10 min
-featured: true
+featured: false
 order: 14
 ---
 
