@@ -8,7 +8,7 @@ topics: [screens-and-stands, desk-and-comfort]
 evidenceLevel: editorial-research
 hasAffiliateLinks: true
 affiliateDisclosure: true
-artwork: hero
+artwork: zoom-display
 featured: true
 draft: false
 affiliateLinks:

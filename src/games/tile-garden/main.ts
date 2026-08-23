@@ -5,7 +5,6 @@ import {
   type TileGardenState,
   type GameMode,
   type Tile,
-  type TileTier,
   TIER_NAMES,
   createGame,
   placeTile,
@@ -14,7 +13,6 @@ import {
 } from './engine';
 import './styles.css';
 
-const GAME_ID = 'tile-garden';
 const BEST_TIER_KEY = 'nocharge:tile-garden:best-tier';
 
 const SPECIES_EMOJI = ['🌱', '🌿', '🌻', '🌷', '🌸', '🪴'];
@@ -112,8 +110,9 @@ export function mountTileGarden(root: HTMLElement): GameController {
 
         if (r === cursorRow && c === cursorCol) cell.classList.add('tg__cell--cursor');
 
-        cell.addEventListener('pointerdown', (e) => {
-          e.preventDefault();
+        // Use click rather than pointerdown so native button activation with
+        // Enter and Space follows the same path as pointer and touch input.
+        cell.addEventListener('click', () => {
           handleCellClick(r, c);
         });
 
@@ -141,6 +140,11 @@ export function mountTileGarden(root: HTMLElement): GameController {
     }
   }
 
+  function focusCursor() {
+    const index = cursorRow * 8 + cursorCol;
+    boardEl.querySelectorAll<HTMLButtonElement>('.tg__cell')[index]?.focus();
+  }
+
   function handleCellClick(row: number, col: number) {
     if (paused || state.won) return;
     unlockAudio();
@@ -155,6 +159,7 @@ export function mountTileGarden(root: HTMLElement): GameController {
       state = result;
       void play('pop');
       render();
+      focusCursor();
     }
   }
 
@@ -180,14 +185,10 @@ export function mountTileGarden(root: HTMLElement): GameController {
   root.addEventListener('keydown', (e) => {
     if (paused) return;
     switch (e.key) {
-      case 'ArrowUp': e.preventDefault(); cursorRow = (cursorRow - 1 + 8) % 8; render(); break;
-      case 'ArrowDown': e.preventDefault(); cursorRow = (cursorRow + 1) % 8; render(); break;
-      case 'ArrowLeft': e.preventDefault(); cursorCol = (cursorCol - 1 + 8) % 8; render(); break;
-      case 'ArrowRight': e.preventDefault(); cursorCol = (cursorCol + 1) % 8; render(); break;
-      case 'Enter': case ' ':
-        e.preventDefault();
-        handleCellClick(cursorRow, cursorCol);
-        break;
+      case 'ArrowUp': e.preventDefault(); cursorRow = (cursorRow - 1 + 8) % 8; render(); focusCursor(); break;
+      case 'ArrowDown': e.preventDefault(); cursorRow = (cursorRow + 1) % 8; render(); focusCursor(); break;
+      case 'ArrowLeft': e.preventDefault(); cursorCol = (cursorCol - 1 + 8) % 8; render(); focusCursor(); break;
+      case 'ArrowRight': e.preventDefault(); cursorCol = (cursorCol + 1) % 8; render(); focusCursor(); break;
       case 'u': case 'U':
         e.preventDefault();
         handleUndo();

@@ -8,7 +8,7 @@ featured: true
 order: 3
 ---
 
-Color Flip is a calm tile puzzle. Pick a color at the start of each round, then tap adjacent tiles to step through the grid. Matching your color scores a point. There is no timer, no reflex pressure, and no "one wrong step and it's over" — take your time.
+Color Flip is a calm tile puzzle. Pick a color at the start of each round, then tap adjacent tiles to step through the grid. Matching your color scores a point. There is no timer or reflex pressure, so you can take your time before each step; a nonmatching tile simply ends the current round.
 
 Every color has a letter label: **G** for green, **B** for blue, **A** for amber, and **R** for rose. Labels and symbols appear on tiles and the player circle, so color is never the sole indicator.
 
