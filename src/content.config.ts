@@ -93,7 +93,7 @@ const setup = defineCollection({
     topic: setupTopics, topics: z.array(setupTopics).min(1), evidenceLevel: evidenceLevels,
     hasAffiliateLinks: z.boolean(), affiliateDisclosure: z.boolean().default(false),
     affiliateLinks: z.array(affiliateLink).default([]),
-    artwork: z.enum(['hero', 'keyboards', 'pointing', 'screens-stands', 'puzzles-desk', 'switches', 'zoom-display', 'desk-noise', 'monitor', 'speakers', 'posture', 'footrest', 'lamp', 'bias-light', 'cables', 'room-lighting', 'screen-film', 'monitor-calibration', 'chair-posture', 'lamp-light', 'footrest-mat', 'headphones']),
+    artwork: z.enum(['hero', 'keyboards', 'pointing', 'screens-stands', 'puzzles-desk', 'switches', 'zoom-display', 'desk-noise', 'monitor', 'speakers', 'posture', 'footrest', 'lamp', 'bias-light', 'cables', 'room-lighting', 'screen-film', 'monitor-calibration', 'chair-posture', 'lamp-light', 'footrest-mat', 'headphones', 'large-dual-monitors']),
     draft: z.boolean().default(false), featured: z.boolean().default(false),
   }).superRefine((data, ctx) => {
     if (data.hasAffiliateLinks && (!data.affiliateDisclosure || data.affiliateLinks.length === 0))

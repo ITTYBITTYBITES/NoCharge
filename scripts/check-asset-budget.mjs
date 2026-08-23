@@ -69,7 +69,7 @@ const expectedEditorial = new Set(editorialFiles);
 for (const file of referencedEditorial) {
   if (!expectedEditorial.has(file)) throw new Error(`Unexpected editorial asset published: ${file}.`);
 }
-const setupNames = ['hero', 'keyboards', 'pointing', 'screens-stands', 'puzzles-desk', 'switches', 'zoom-display', 'desk-noise', 'room-lighting', 'screen-film', 'cables', 'monitor-calibration', 'chair-posture', 'lamp-light', 'footrest-mat', 'headphones', 'speakers'];
+const setupNames = ['hero', 'keyboards', 'pointing', 'screens-stands', 'puzzles-desk', 'switches', 'zoom-display', 'desk-noise', 'room-lighting', 'screen-film', 'cables', 'monitor-calibration', 'chair-posture', 'lamp-light', 'footrest-mat', 'headphones', 'speakers', 'large-dual-monitors'];
 const setupFiles = [];
 for (const name of setupNames) {
   for (const width of editorialWidths) {

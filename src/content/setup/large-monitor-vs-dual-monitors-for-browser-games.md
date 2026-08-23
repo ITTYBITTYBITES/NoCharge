@@ -8,7 +8,7 @@ topics: [screens-and-stands, desk-and-comfort]
 evidenceLevel: editorial-research
 hasAffiliateLinks: true
 affiliateDisclosure: true
-artwork: screens-stands
+artwork: large-dual-monitors
 featured: false
 draft: false
 affiliateLinks:

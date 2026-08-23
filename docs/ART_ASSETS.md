@@ -355,4 +355,17 @@ Generated via `npm run art:solo-new` (runs art:klondike, art:freecell, art:nonog
 
 ## 2026-08-23 repaired Setup and new-game art
 
-Quiet Setup repairs use programmatic SVG concepts rasterized to `{800,1200,1600}` at 16:9 in WebP and JPEG under `public/setup-art/`. Repaired concepts are `room-lighting`, `screen-film`, `cables`, `monitor-calibration`, `chair-posture`, `lamp-light`, `footrest-mat`, `headphones`, and `speakers`. Word Search and Mini Sudoku now ship programmatic SVG-derived cover, guide, hero, social, and 16:9 raster derivatives under their respective `public/game-art/{slug}/` directories.
+Quiet Setup repairs use programmatic SVG concepts rasterized to `{800,1200,1600}` at 16:9 in WebP and JPEG under `public/setup-art/`. Topic-correct concepts retained from the first repair pass are `cables`, `monitor-calibration`, `lamp-light`, `footrest-mat`, `headphones`, and `speakers`. Word Search and Mini Sudoku ship programmatic SVG-derived cover, guide, hero, social, and 16:9 raster derivatives under their respective `public/game-art/{slug}/` directories.
+
+## 2026-08-23 visual re-audit (topic mismatches)
+
+An independent visual inspection of every published 800px hero found four remaining topic mismatches. Those four were regenerated with `scripts/generate-setup-mismatch-art.mjs` (programmatic SVG, no embedded words, charcoal / teal / amber / slate). Topic-correct concepts were not rewritten.
+
+| Concept | Article | Subject | 800 WebP / JPEG | 1200 WebP / JPEG | 1600 WebP / JPEG |
+| --- | --- | --- | ---: | ---: | ---: |
+| `room-lighting` | Ambient room lighting for eye comfort | Monitor with warm bias glow on the wall behind it | 3,970 / 18,411 B | 6,538 / 29,642 B | 9,578 / 47,325 B |
+| `screen-film` | Anti-glare screen film for gaming light | Monitor with a matte film applied and one corner lifted | 2,702 / 12,616 B | 4,718 / 21,321 B | 7,136 / 29,062 B |
+| `chair-posture` | Desk chair posture for long quiet sessions | Upright seated figure at a desk chair | 4,350 / 15,019 B | 6,954 / 25,499 B | 9,932 / 37,465 B |
+| `large-dual-monitors` | Large monitor versus dual monitors | One large display beside a dual-monitor pair (new concept; `screens-stands` stays on the tablet/phone-stand article) | 3,336 / 16,376 B | 5,424 / 28,313 B | 8,108 / 39,882 B |
+
+Reproduce with `node scripts/generate-setup-mismatch-art.mjs`. In-page `alt=""` is unchanged: the article title sits immediately above each hero.
