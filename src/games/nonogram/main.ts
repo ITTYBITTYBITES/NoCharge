@@ -3,7 +3,6 @@ import type { GameController } from '../shared/types';
 import { signalMeaningfulGameInteraction } from '../shared/recently-played';
 import {
   type NonogramState,
-  type CellState,
   createGame,
   toggleCell,
   markCell,
@@ -12,10 +11,9 @@ import {
   isRowSatisfied,
   isColSatisfied,
 } from './engine';
-import { ALL_PUZZLES, PUZZLES_5x5, PUZZLES_10x10, getPuzzleByIndex } from './puzzles';
+import { PUZZLES_5x5, PUZZLES_10x10 } from './puzzles';
 import './styles.css';
 
-const GAME_ID = 'nonogram';
 const PUZZLES_REVEALED_KEY = 'nocharge:nonogram:puzzles-revealed';
 
 export function mountNonogram(root: HTMLElement): GameController {
@@ -65,6 +63,9 @@ export function mountNonogram(root: HTMLElement): GameController {
   let cursorCol = 0;
   let showCluesText = false;
   let revealed = loadRevealedCount();
+  // Rendering also happens for focus movement and clue toggles. Record a
+  // completed puzzle once, rather than incrementing on every later render.
+  let solutionRecorded = false;
 
   function loadRevealedCount(): number {
     try {
@@ -85,6 +86,7 @@ export function mountNonogram(root: HTMLElement): GameController {
     puzzleIndex = puzzleIndex % pool.length;
     const puzzle = pool[puzzleIndex]!;
     state = createGame(puzzle);
+    solutionRecorded = false;
     cursorRow = 0;
     cursorCol = 0;
     overlay.hidden = true;
@@ -142,9 +144,10 @@ export function mountNonogram(root: HTMLElement): GameController {
 
         if (r === cursorRow && c === cursorCol) cell.classList.add('ng__cell--cursor');
 
-        cell.addEventListener('pointerdown', (e) => {
-          e.preventDefault();
-          handleCellClick(r, c, e);
+        // Native click covers mouse, touch, Enter, and Space. The old
+        // pointerdown-only handler made focused cells inert for keyboard users.
+        cell.addEventListener('click', () => {
+          handleCellClick(r, c);
         });
 
         cell.addEventListener('contextmenu', (e) => {
@@ -164,7 +167,8 @@ export function mountNonogram(root: HTMLElement): GameController {
       cluesTextEl.hidden = true;
     }
 
-    if (state.solved) {
+    if (state.solved && !solutionRecorded) {
+      solutionRecorded = true;
       revealed++;
       saveRevealedCount(revealed);
       resultEl.textContent = `${state.puzzle.title} revealed in ${state.moves} moves.`;
@@ -186,7 +190,11 @@ export function mountNonogram(root: HTMLElement): GameController {
     return html;
   }
 
-  function handleCellClick(row: number, col: number, e: Event) {
+  function focusCursor() {
+    boardEl.querySelector<HTMLButtonElement>(`.ng__cell[data-row="${cursorRow}"][data-col="${cursorCol}"]`)?.focus();
+  }
+
+  function handleCellClick(row: number, col: number) {
     if (paused || state.solved) return;
     unlockAudio();
     signalMeaningfulGameInteraction(root);
@@ -199,6 +207,7 @@ export function mountNonogram(root: HTMLElement): GameController {
       state = result;
       void play('pop');
       render();
+      focusCursor();
     }
   }
 
@@ -211,6 +220,7 @@ export function mountNonogram(root: HTMLElement): GameController {
       state = result;
       void play('blip');
       render();
+      focusCursor();
     }
   }
 
@@ -248,22 +258,22 @@ export function mountNonogram(root: HTMLElement): GameController {
     if (paused) return;
     const size = state.puzzle.size;
     switch (e.key) {
-      case 'ArrowUp': e.preventDefault(); cursorRow = (cursorRow - 1 + size) % size; render(); break;
-      case 'ArrowDown': e.preventDefault(); cursorRow = (cursorRow + 1) % size; render(); break;
-      case 'ArrowLeft': e.preventDefault(); cursorCol = (cursorCol - 1 + size) % size; render(); break;
-      case 'ArrowRight': e.preventDefault(); cursorCol = (cursorCol + 1) % size; render(); break;
+      case 'ArrowUp': e.preventDefault(); cursorRow = (cursorRow - 1 + size) % size; render(); focusCursor(); break;
+      case 'ArrowDown': e.preventDefault(); cursorRow = (cursorRow + 1) % size; render(); focusCursor(); break;
+      case 'ArrowLeft': e.preventDefault(); cursorCol = (cursorCol - 1 + size) % size; render(); focusCursor(); break;
+      case 'ArrowRight': e.preventDefault(); cursorCol = (cursorCol + 1) % size; render(); focusCursor(); break;
       case 'f': case 'F':
         e.preventDefault();
         {
           const result = markCell(state, cursorRow, cursorCol, 'filled');
-          if (result) { state = result; void play('pop'); render(); }
+          if (result) { state = result; void play('pop'); render(); focusCursor(); }
         }
         break;
       case 'x': case 'X': case ' ':
         e.preventDefault();
         {
           const result = markCell(state, cursorRow, cursorCol, 'empty');
-          if (result) { state = result; void play('blip'); render(); }
+          if (result) { state = result; void play('blip'); render(); focusCursor(); }
         }
         break;
       case 'u': case 'U':

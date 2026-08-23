@@ -8,7 +8,7 @@ topics: [desk-and-comfort]
 evidenceLevel: editorial-research
 hasAffiliateLinks: true
 affiliateDisclosure: true
-artwork: hero
+artwork: puzzles-desk
 featured: false
 draft: false
 affiliateLinks:

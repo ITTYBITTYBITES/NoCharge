@@ -23,13 +23,13 @@ Using native links, buttons, and form controls where they fit gives browsers and
 
 ## Information beyond color and sound
 
-Color can reinforce state, but it cannot carry the only instruction. Color Flip labels Green, Blue, Amber, and Rose and marks moving tiles with letters. Beacon Lattice prints `0 · Gap`, `1 · Exact`, and `2+ · Overlap`. Memory Match cards have accessible names, while Word Tile Rush exposes selected state and status text.
+Color can reinforce state, but it cannot carry the only instruction. Color Flip labels Green, Blue, Amber, and Rose and marks board tiles with letters. Beacon Lattice prints `0 · Gap`, `1 · Exact`, and `2+ · Overlap`. Memory Match cards have accessible names, while Word Tile Rush exposes selected state and status text.
 
 Sound is optional and shared mute persists locally. A correct move, mismatch, score, or solved state still has visual or textual feedback when audio is muted or unavailable.
 
 ## Timing, motion, and recovery
 
-Not every game is untimed. Memory Match and Beacon Lattice have no countdown. Color Flip includes an untimed Turn-based mode alongside its moving Visual mode. Word Tile Rush remains a timed rising-grid game; its timer starts only with the first selected letter.
+Not every game is untimed. Memory Match, Beacon Lattice, and both Color Flip modes have no countdown. Word Tile Rush remains a timed rising-grid game; its timer starts only with the first selected letter.
 
 The platform respects reduced-motion preferences for interface transitions. The shared game shell provides pause, restart, full-screen or immersive controls, and lifecycle recovery. Timed activity pauses when the tab is hidden or the platform privacy dialog opens. Returning to the tab removes the matching automatic pause without overriding a deliberate player pause.
 
