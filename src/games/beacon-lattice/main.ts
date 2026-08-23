@@ -207,7 +207,7 @@ function mountBeaconLatticeInner(root: HTMLElement): GameController {
     const result = existing ? removeBeacon(state, puzzle, { x, y }) : placeBeacon(state, puzzle, { x, y });
     if (result.ok) {
       signalMeaningfulGameInteraction(root);
-      void play(state.complete ? 'win' : existing ? 'pop' : 'blip');
+      void play(state.complete ? 'win' : existing ? 'error' : 'place');
       if (state.complete) progress = recordSolve(progress, puzzle.id, state.beaconCount);
     }
     render();

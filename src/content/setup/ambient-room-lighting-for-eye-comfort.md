@@ -8,7 +8,7 @@ topics: [lighting, desk-and-comfort]
 evidenceLevel: editorial-research
 hasAffiliateLinks: true
 affiliateDisclosure: true
-artwork: desk-noise
+artwork: room-lighting
 featured: false
 draft: false
 affiliateLinks:

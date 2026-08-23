@@ -34,6 +34,10 @@ games:
     reason: "No timer, no daily challenge, no streak. Tiles slide at the player's pace."
   - game: tile-garden
     reason: "No timer, no lives, no energy system, no streak. Seeds appear at a calm rate with no gatekeeping."
+  - game: word-search
+    reason: "A calm grid with direct keyboard selection and no timer, account, or competitive pressure."
+  - game: mini-sudoku
+    reason: "A small keyboard-friendly logic puzzle with no timer, account, or competitive pressure."
 ---
 
 This collection is about actual timing behavior, not a claim that every game is easy. Word Tile Rush is deliberately excluded because its rising-grid timer starts after the first selected letter and it has no untimed mode.

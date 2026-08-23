@@ -219,7 +219,7 @@ export function mountKlondike(root: HTMLElement): GameController {
     selected = null;
     state = drawFromStock(state);
     state = autoMoveToFoundation(state);
-    void play('pop');
+    void play('place');
     render();
   }
 
@@ -234,7 +234,7 @@ export function mountKlondike(root: HTMLElement): GameController {
       if (result) {
         state = result;
         selected = null;
-        void play('blip');
+        void play('move');
         render();
         return;
       }
@@ -257,7 +257,7 @@ export function mountKlondike(root: HTMLElement): GameController {
       if (result) {
         state = result;
         selected = null;
-        void play('pop');
+        void play('place');
         render();
         return;
       }
@@ -271,7 +271,7 @@ export function mountKlondike(root: HTMLElement): GameController {
           if (result) {
             state = result;
             selected = null;
-            void play('blip');
+            void play('move');
             render();
             return;
           }
@@ -285,7 +285,7 @@ export function mountKlondike(root: HTMLElement): GameController {
       if (result) {
         state = result;
         selected = null;
-        void play('pop');
+        void play('place');
         render();
         return;
       }
@@ -311,7 +311,7 @@ export function mountKlondike(root: HTMLElement): GameController {
       if (result) {
         state = result;
         selected = null;
-        void play('pop');
+        void play('place');
         render();
         return;
       }
@@ -321,7 +321,7 @@ export function mountKlondike(root: HTMLElement): GameController {
       if (result) {
         state = result;
         selected = null;
-        void play('pop');
+        void play('place');
         render();
         return;
       }

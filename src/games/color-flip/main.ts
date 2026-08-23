@@ -244,7 +244,7 @@ export function mountColorFlip(root: HTMLElement): GameController {
     const index = COLORS.findIndex((c) => c.id === playerColor);
     setPlayerColor(COLORS[(index + 1) % COLORS.length]!.id);
     announceTurnBased(`Current color ${colorName(playerColor)}. Next tile ${colorName(turnBasedTarget)}.`);
-    void play('blip');
+    void play('step');
   }
 
   function stepTurnBased() {
@@ -271,7 +271,7 @@ export function mountColorFlip(root: HTMLElement): GameController {
     bestEl.textContent = String(best);
     setTurnBasedTarget(nextTurnBasedTarget());
     announceTurnBased(`Correct. Score ${score}. Next tile ${colorName(turnBasedTarget)}.`);
-    void play('pop');
+    void play('place');
   }
 
   // --- Visual mode: tap-to-step ---
@@ -344,7 +344,7 @@ export function mountColorFlip(root: HTMLElement): GameController {
     saveScore(GAME_ID, best);
 
     if (state.alive) {
-      void play('pop');
+      void play('place');
       renderGrid();
       updatePausedControls();
     } else {
@@ -370,7 +370,7 @@ export function mountColorFlip(root: HTMLElement): GameController {
     state = pickRoundColor(state, color);
     setPlayerColor(color);
     roundPicker.hidden = true;
-    void play('blip');
+    void play('step');
     renderGrid();
     updatePausedControls();
   }

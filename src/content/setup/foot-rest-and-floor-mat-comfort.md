@@ -8,7 +8,7 @@ topics: [desk-and-comfort]
 evidenceLevel: editorial-research
 hasAffiliateLinks: true
 affiliateDisclosure: true
-artwork: puzzles-desk
+artwork: footrest-mat
 featured: false
 draft: false
 affiliateLinks:

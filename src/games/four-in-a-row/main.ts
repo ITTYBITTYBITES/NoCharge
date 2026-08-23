@@ -192,7 +192,7 @@ export function mountFourInARow(root: HTMLElement): GameController {
       cell.append(disc);
     }
     cell.setAttribute('aria-label', `${cellName(dropped.row, col)}, Player ${turn}`);
-    void play('pop');
+    void play('place');
 
     // Full columns close as soon as their top cell fills.
     if (landingRow(board, col) === null) {

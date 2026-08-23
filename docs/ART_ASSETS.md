@@ -352,3 +352,7 @@ Generated via `npm run art:solo-new` (runs art:klondike, art:freecell, art:nonog
 **Number tiles** (2048): CSS-only with tier-based background colors from `#1c2820` (tile-2) to `#12b66a` (tile-2048).
 
 **Nonogram grid**: CSS grid with filled/empty/unknown states. Accent green `#12b66a` for filled cells.
+
+## 2026-08-23 repaired Setup and new-game art
+
+Quiet Setup repairs use programmatic SVG concepts rasterized to `{800,1200,1600}` at 16:9 in WebP and JPEG under `public/setup-art/`. Repaired concepts are `room-lighting`, `screen-film`, `cables`, `monitor-calibration`, `chair-posture`, `lamp-light`, `footrest-mat`, `headphones`, and `speakers`. Word Search and Mini Sudoku now ship programmatic SVG-derived cover, guide, hero, social, and 16:9 raster derivatives under their respective `public/game-art/{slug}/` directories.

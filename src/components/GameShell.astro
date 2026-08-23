@@ -53,6 +53,13 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
       <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="mute" aria-pressed="false">
         Mute sound
       </button>
+      <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="sound" aria-pressed="true">Sound on</button>
+      <label class="game-toolbar__volume">Sound volume
+        <input data-game-toolbar="volume" type="range" min="0" max="100" value="60" aria-label="Sound volume" />
+      </label>
+      <label class="game-toolbar__ambient">Ambient
+        <select data-game-toolbar="ambient" aria-label="Ambient sound"><option value="none">None</option><option value="rainfall">Rainfall</option><option value="cafe">Cafe</option><option value="white-noise">White noise</option></select>
+      </label>
       <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="fullscreen" aria-pressed="false">
         Enter full screen
       </button>
@@ -140,6 +147,19 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
     padding: 0 0 0.75rem;
     border-bottom: 1px solid var(--line);
   }
+
+  .game-toolbar__volume,
+  .game-toolbar__ambient {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--muted);
+    font-size: 0.78rem;
+    font-weight: 650;
+  }
+
+  .game-toolbar__volume input { width: 6rem; accent-color: var(--accent); }
+  .game-toolbar__ambient select { max-width: 8rem; }
 
   .game-toolbar__status {
     flex: 1 1 14rem;

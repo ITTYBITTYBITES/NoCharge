@@ -340,6 +340,8 @@ describe('My Arcade local dashboard', () => {
       'nocharge:nonogram:high',
       'nocharge:twenty-forty-eight:high',
       'nocharge:tile-garden:high',
+      'nocharge:word-search:puzzles-solved',
+      'nocharge:sudoku:puzzles-solved',
     ]);
     for (const key of storage.readKeys) expect(allowedReads.has(key)).toBe(true);
     // The consent choice and Google's own storage are never read for summaries.
@@ -388,10 +390,18 @@ describe('Clear Game Data source of truth', () => {
       'nocharge:nonogram:puzzles-revealed',
       'nocharge:2048:best-tile',
       'nocharge:tile-garden:best-tier',
+      'nocharge:word-search:puzzles-solved',
+      'nocharge:word-search:last-list',
+      'nocharge:sudoku:puzzles-solved',
+      'nocharge:sudoku:current-puzzle',
       'nocharge:pref:game-muted',
       BEACON_PROGRESS_KEY,
       'nocharge:pref:klondike-draw-mode',
       'nocharge:pref:color-flip-rotation',
+      'nocharge:pref:sound-enabled',
+      'nocharge:pref:sound-volume',
+      'nocharge:pref:ambient-sound',
+      'nocharge:pref:sudoku-pencil-marks',
       RECENTLY_PLAYED_KEY,
       'nocharge:passplay:match:tic-tac-toe',
       'nocharge:passplay:match:dots-and-boxes',

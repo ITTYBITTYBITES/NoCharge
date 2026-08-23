@@ -8,7 +8,7 @@ topics: [audio, desk-and-comfort]
 evidenceLevel: editorial-research
 hasAffiliateLinks: true
 affiliateDisclosure: true
-artwork: desk-noise
+artwork: speakers
 featured: false
 draft: false
 affiliateLinks:

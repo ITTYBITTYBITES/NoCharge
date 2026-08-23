@@ -193,7 +193,7 @@ export function mountReversi(root: HTMLElement): GameController {
     }
     // The player to move has no legal move and passes by rule.
     status(`${playerName(names, discToPlayer(disc))} (${discName(disc)}) has no legal move — turn passes.`);
-    void play('blip');
+    void play('move');
     advanceTurn(otherDisc(disc));
   };
 
@@ -204,7 +204,7 @@ export function mountReversi(root: HTMLElement): GameController {
 
     signalMeaningfulGameInteraction(root);
     board = applied.board;
-    void play('pop');
+    void play('place');
 
     const mover = turn;
     renderBoard();

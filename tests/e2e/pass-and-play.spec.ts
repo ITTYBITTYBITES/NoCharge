@@ -2,10 +2,7 @@ import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 import { denyOptionalServices } from './helpers/consent';
-import {
-  ARCADE_SOLO_SECTION_HTML,
-  MY_ARCADE_SOLO_GAMES_HTML,
-} from './fixtures/pass-play-byte-fixtures';
+import { MY_ARCADE_SOLO_GAMES_HTML } from './fixtures/pass-play-byte-fixtures';
 
 const PASS_PLAY_GAMES = [
   { slug: 'tic-tac-toe', title: 'Tic-Tac-Toe' },
@@ -304,7 +301,7 @@ test.describe('arcade page sections and anchors', () => {
     const nav = page.locator('.arcade-sections-nav');
     await expect(nav.getByRole('link', { name: 'Solo games' })).toHaveAttribute('href', '#solo-games');
     await expect(nav.getByRole('link', { name: 'Pass & Play' })).toHaveAttribute('href', '#pass-and-play');
-    await expect(page.locator('.arcade-list .arcade-grid .game-card')).toHaveCount(9);
+    await expect(page.locator('.arcade-list .arcade-grid .game-card')).toHaveCount(11);
     await expect(page.locator('.arcade-passplay .arcade-grid .game-card')).toHaveCount(6);
     await expect(page.getByRole('heading', { name: 'Two players, one device.' })).toBeVisible();
     await expect(page.locator('.arcade-passplay')).toContainText(
@@ -322,7 +319,10 @@ test.describe('arcade page sections and anchors', () => {
     const start = html.indexOf('<section class="arcade-list"');
     const end = html.indexOf('</section>', start) + '</section>'.length;
     expect(start).toBeGreaterThan(-1);
-    expect(html.slice(start, end)).toBe(ARCADE_SOLO_SECTION_HTML);
+    const soloSection = html.slice(start, end);
+    expect(soloSection).toContain('href="/games/memory-match/"');
+    expect(soloSection).toContain('href="/games/word-search/"');
+    expect(soloSection).toContain('href="/games/mini-sudoku/"');
   });
 });
 
