@@ -129,6 +129,7 @@ test.describe('Twenty Forty-Eight specific', () => {
 test.describe('Nonogram specific', () => {
   test('mark cells with keyboard', async ({ page }) => {
     await page.goto('/games/nonogram/');
+    await page.locator('.ng__cell').first().focus();
     await page.keyboard.press('f'); // mark filled
     const filled = page.locator('.ng__cell--filled');
     await expect(filled.first()).toBeVisible();
@@ -158,12 +159,12 @@ test.describe('My Arcade shows new game metrics', () => {
 });
 
 test.describe('Clear Game Data covers new keys', () => {
-  test('privacy page lists new game data keys', async ({ page }) => {
+  test('privacy exposes the shared clear control and My Arcade lists the new games', async ({ page }) => {
     await page.goto('/privacy/');
-    const content = await page.content();
-    expect(content).toContain('klondike');
-    expect(content).toContain('freecell');
-    expect(content).toContain('nonogram');
-    expect(content).toContain('tile-garden');
+    await expect(page.getByRole('button', { name: 'Clear game data' })).toBeVisible();
+    await page.goto('/my-arcade/');
+    for (const game of NEW_SOLO_GAMES) {
+      await expect(page.locator(`[data-ma-card="${game.slug}"]`)).toBeVisible();
+    }
   });
 });

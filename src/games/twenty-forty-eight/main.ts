@@ -87,8 +87,11 @@ export function mountTwentyFortyEight(root: HTMLElement): GameController {
         if (value > 0) {
           cell.textContent = String(value);
           cell.classList.add(`tfe__cell--${Math.min(value, 2048)}`);
+          cell.setAttribute('role', 'img');
+          cell.setAttribute('aria-label', `Row ${r + 1}, column ${c + 1}: ${value}`);
+        } else {
+          cell.setAttribute('aria-hidden', 'true');
         }
-        cell.setAttribute('aria-label', `Row ${r + 1}, column ${c + 1}: ${value > 0 ? value : 'empty'}`);
         boardEl.appendChild(cell);
       }
     }
