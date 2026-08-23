@@ -82,6 +82,16 @@ export function mountFreeCell(root: HTMLElement): GameController {
   let paused = false;
   let selected: { type: 'cell'; idx: number } | { type: 'tableau'; col: number; cardIndex: number } | null = null;
   let gamesWon = loadInt(GAMES_WON_KEY);
+  let heardDeal = false;
+
+  function cuePlacement() {
+    if (!heardDeal) {
+      heardDeal = true;
+      void play('flip');
+      return;
+    }
+    void play('place');
+  }
 
   function loadInt(key: string): number {
     try {
@@ -99,6 +109,7 @@ export function mountFreeCell(root: HTMLElement): GameController {
   function init() {
     state = createGame();
     selected = null;
+    heardDeal = false;
     overlay.hidden = true;
     render();
   }
@@ -185,7 +196,7 @@ export function mountFreeCell(root: HTMLElement): GameController {
     if (selected?.type === 'cell' && selected.idx === idx) {
       // Double-click → try foundation
       const result = moveFreeCellToFoundation(state, idx);
-      if (result) { state = result; selected = null; void play('move'); render(); return; }
+      if (result) { state = result; selected = null; cuePlacement(); render(); return; }
       selected = null;
       render();
       return;
@@ -194,7 +205,7 @@ export function mountFreeCell(root: HTMLElement): GameController {
     if (selected?.type === 'tableau') {
       // Move selected tableau card to this cell
       const result = moveToFreeCell(state, selected.col);
-      if (result) { state = result; selected = null; void play('place'); render(); return; }
+      if (result) { state = result; selected = null; cuePlacement(); render(); return; }
     }
 
     if (state.freeCells[idx]) {
@@ -216,7 +227,7 @@ export function mountFreeCell(root: HTMLElement): GameController {
 
     if (selected?.type === 'cell') {
       const result = moveFreeCellToTableau(state, selected.idx, col);
-      if (result) { state = result; selected = null; void play('place'); render(); return; }
+      if (result) { state = result; selected = null; cuePlacement(); render(); return; }
     }
 
     if (selected?.type === 'tableau') {
@@ -224,14 +235,14 @@ export function mountFreeCell(root: HTMLElement): GameController {
         // Double-click top card → try foundation
         if (cardIndex === state.tableau[col]!.length - 1) {
           const result = moveTableauToFoundation(state, col);
-          if (result) { state = result; selected = null; void play('move'); render(); return; }
+          if (result) { state = result; selected = null; cuePlacement(); render(); return; }
         }
         selected = null;
         render();
         return;
       }
       const result = moveTableau(state, selected.col, selected.cardIndex, col);
-      if (result) { state = result; selected = null; void play('place'); render(); return; }
+      if (result) { state = result; selected = null; cuePlacement(); render(); return; }
     }
 
     selected = { type: 'tableau', col, cardIndex };
@@ -247,11 +258,11 @@ export function mountFreeCell(root: HTMLElement): GameController {
     }
     if (selected?.type === 'cell') {
       const result = moveFreeCellToTableau(state, selected.idx, col);
-      if (result) { state = result; selected = null; void play('place'); render(); return; }
+      if (result) { state = result; selected = null; cuePlacement(); render(); return; }
     }
     if (selected?.type === 'tableau') {
       const result = moveTableau(state, selected.col, selected.cardIndex, col);
-      if (result) { state = result; selected = null; void play('place'); render(); return; }
+      if (result) { state = result; selected = null; cuePlacement(); render(); return; }
     }
     selected = null;
     render();

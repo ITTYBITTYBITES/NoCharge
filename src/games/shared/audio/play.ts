@@ -17,6 +17,9 @@ export function setSoundEnabled(value:boolean) { savePref(SOUND_ENABLED,value); 
 export function getSoundVolume() { const n=loadPref(SOUND_VOLUME,60); return typeof n==='number' && Number.isFinite(n) ? Math.max(0,Math.min(100,n)) : 60; }
 export function setSoundVolume(value:number) { savePref(SOUND_VOLUME,Math.max(0,Math.min(100,Math.round(value)))); }
 export function play(name: SoundName, options: { volume?: number } = {}): Promise<number> {
+  if (typeof window !== 'undefined' && Array.isArray((window as Window & { __nochargeSounds?: string[] }).__nochargeSounds)) {
+    (window as Window & { __nochargeSounds?: string[] }).__nochargeSounds!.push(name);
+  }
   if (isMuted() || !isSoundEnabled() || !unlocked) return Promise.resolve(0);
   const spec=SOUND_BANK[name]; if (!spec) return Promise.resolve(0);
   const run=queue.then(async()=>{ const c=getContext(); if(!c) return 0; if(c.state==='suspended') await c.resume().catch(()=>{}); const now=c.currentTime; const master=(getSoundVolume()/100)*(options.volume ?? 1)*.12;

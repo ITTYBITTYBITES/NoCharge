@@ -345,9 +345,9 @@ test.describe('homepage Pass & Play section', () => {
       'href',
       '/collections/pass-and-play/',
     );
-    // The arcade grid keeps its four solo featured games above this section.
+    // The arcade grid keeps the featured solo games above this section.
     const arcadeGrid = page.locator('#games');
-    await expect(arcadeGrid.locator('.game-card')).toHaveCount(4);
+    await expect(arcadeGrid.locator('.game-card')).toHaveCount(6);
     // Order: arcade grid, then Pass & Play, then guides/articles sections.
     const order = await page.evaluate(() => {
       const ids = ['#games', '#pass-and-play'];

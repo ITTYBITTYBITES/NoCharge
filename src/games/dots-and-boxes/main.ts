@@ -217,8 +217,8 @@ export function mountDotsAndBoxes(root: HTMLElement): GameController {
         cell.classList.add('is-claimed', `is-claimed--p${turn}`);
         cell.setAttribute('aria-label', `${boxLabel(row, column)}, claimed by Player ${turn}`);
       }
-      void play('place');
     }
+    if (applied.completed.length > 0) void play('claim');
     renderScore();
 
     if (isGameComplete(state, boxes)) {

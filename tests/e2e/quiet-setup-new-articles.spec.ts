@@ -103,3 +103,43 @@ test.describe('Setup index shows 18 articles', () => {
     expect(count).toBeGreaterThanOrEqual(18);
   });
 });
+
+const REPAIRED_HEROES = [
+  { slug: 'ambient-room-lighting-for-eye-comfort', artwork: 'room-lighting' },
+  { slug: 'anti-glare-screen-film-for-gaming-light', artwork: 'screen-film' },
+  { slug: 'desk-chair-posture-for-long-quiet-sessions', artwork: 'chair-posture' },
+  { slug: 'large-monitor-vs-dual-monitors-for-browser-games', artwork: 'large-dual-monitors' },
+] as const;
+
+test.describe('Repaired Quiet Setup heroes load', () => {
+  for (const { slug, artwork } of REPAIRED_HEROES) {
+    test(`${slug} hero illustration loads with non-zero dimensions`, async ({ page }) => {
+      const missing: string[] = [];
+      page.on('response', (response) => {
+        if (response.url().includes('/setup-art/') && response.status() >= 400) {
+          missing.push(`${response.status()} ${response.url()}`);
+        }
+      });
+
+      await page.goto(`/setup/${slug}/`);
+      const picture = page.locator('.setup-article > [data-setup-artwork]');
+      await expect(picture).toHaveAttribute('data-setup-artwork', artwork);
+      const image = picture.locator('img');
+      await expect(image).toBeVisible();
+      await expect(image).toHaveJSProperty('complete', true);
+      const box = await image.boundingBox();
+      expect(box, 'hero image must occupy space').not.toBeNull();
+      expect(box!.width).toBeGreaterThan(0);
+      expect(box!.height).toBeGreaterThan(0);
+      const natural = await image.evaluate((el: HTMLImageElement) => ({
+        w: el.naturalWidth,
+        h: el.naturalHeight,
+        current: el.currentSrc,
+      }));
+      expect(natural.w, `naturalWidth for ${natural.current}`).toBeGreaterThan(0);
+      expect(natural.h, `naturalHeight for ${natural.current}`).toBeGreaterThan(0);
+      expect(natural.current).toMatch(new RegExp(`/setup-art/${artwork}-\\d+\\.(webp|jpg)$`));
+      expect(missing, `hero 404s: ${missing.join(', ')}`).toEqual([]);
+    });
+  }
+});

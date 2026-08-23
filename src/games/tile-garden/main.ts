@@ -154,10 +154,13 @@ export function mountTileGarden(root: HTMLElement): GameController {
 
     if (state.grid[row]![col] !== null) return;
 
+    const occupied = (grid: typeof state.grid) => grid.flat().filter(Boolean).length;
+    const before = occupied(state.grid);
     const result = placeTile(state, row, col);
     if (result) {
+      void play('place');
+      if (occupied(result.grid) < before + 1) void play('merge');
       state = result;
-      void play('merge');
       render();
       focusCursor();
     }

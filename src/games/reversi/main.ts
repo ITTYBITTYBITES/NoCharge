@@ -205,6 +205,7 @@ export function mountReversi(root: HTMLElement): GameController {
     signalMeaningfulGameInteraction(root);
     board = applied.board;
     void play('place');
+    if (applied.flips.length > 0) void play('flip');
 
     const mover = turn;
     renderBoard();
