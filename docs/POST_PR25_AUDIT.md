@@ -38,12 +38,12 @@ The Pass & Play merge (PR #25) and everything shipped since are **functionally s
 
 The damage is concentrated in **generated artwork and stale copy**:
 
-- **Count by severity: 0 Critical · 12 Major · 19 Minor.**
+- **Count by severity: 0 Critical · 13 Major · 20 Minor.**
 - The reported "hero/thumbnail images on the new game cards look wrong" is confirmed and is broader than the six Pass & Play cards:
   - **Tic-Tac-Toe** cover/hero/social art draws the "winning line" as a horizontal dashed line through the bottom row — which is `X O X`, **not a win**; the actual win on the pictured board is the diagonal, which the art does not mark (and the alt text claims).
   - **Dots & Boxes** and **Reversi** covers use player colors that don't match the game (P2 light-pink instead of light-blue; teal discs instead of black discs), and their alt texts contradict the pixels.
   - The same failure class hit the solo games shipped around the same time: **Klondike** and **FreeCell** covers clip their card art off the canvas; **Tile Garden** covers render literal `01F 33F` / `01F 33C` text (emoji code points that the SVG rasterizer couldn't draw); **Word Search** and **Mini Sudoku** covers are placeholder title cards.
-- Copy that predates the current 17-game catalog still says the arcade has "ten games / four solo titles" on the About page, the Media boilerplate, and a featured article; the accessibility statement predates Pass & Play; "Every game has a field guide" is false (11 of 17 games have guides); and Mini Sudoku advertises **pencil marks that do not exist in the game**.
+- Copy that predates the current 17-game catalog still says the arcade has "ten games / four solo titles" on the About page, the Media boilerplate, and two featured articles (one of which also claims the homepage grid shows "all nine solo titles" — it shows the six featured games); the local-storage explainer article lists only the original four games' keys; the accessibility statement predates Pass & Play; "Every game has a field guide" is false (11 of 17 games have guides); and Mini Sudoku advertises **pencil marks that do not exist in the game**.
 
 Nothing here blocks play. Nothing touches the no-account / local-data / no-dark-patterns promise. But the art and copy findings are exactly what users will notice on first contact, and several are one-line generator or content fixes.
 
@@ -101,12 +101,13 @@ Nothing here blocks play. Nothing touches the no-account / local-data / no-dark-
 - **What:** Player 2's claimed box and its edges are drawn in **light pink (#ffd3ea)**; in the game Player 2 draws in **light blue (#7dd3fc)** (`PLAYER_COLORS` in `src/games/dots-and-boxes/main.ts`). The alt says "pink and blue drawn edges" — the image shows pink and light-pink, so both players appear to be the same pink.
 - **Root cause:** the generator's `highlight` colour is a lighter tint of the accent rather than the game's P2 colour.
 
-### F-M8 — Stale game-count copy: "ten games / four solo titles" on three public surfaces
+### F-M8 — Stale game-count copy: "ten games / four solo titles" on four public surfaces
 The arcade now has **17 games (11 solo + 6 Pass & Play)**, but:
 - `src/pages/about.astro`: "The current arcade catalog is Memory Match, Word Tile Rush, Color Flip, and Beacon Lattice." (omits 13 games, including all of Pass & Play)
 - `src/pages/media.astro` boilerplate (the recommended external description, "Last reviewed: 2026-08-21"): "The current library has ten original games: the solo titles Memory Match, Word Tile Rush, Color Flip, and Beacon Lattice, plus the Pass & Play family…"
 - `src/content/articles/what-quiet-arcade-means-at-nocharge.md` (featured article): "The Arcade offers ten browser games now: four solo titles (…) and six Pass & Play games."
-- **Why Major:** the About page is the identity page; the Media boilerplate is what partners/publishers copy. All three understate the library by 7 games.
+- `src/content/articles/five-new-single-player-games-for-quiet-arcade.md` (featured, published 2026-08-22): "The Quiet Arcade now has nine solo games and six pass-and-play games. The homepage grid shows all nine solo titles." — nine was the pre-PR #28 count (Word Search + Mini Sudoku shipped 2026-08-23), and the homepage grid renders the **six featured games** only (`featuredGames` in `src/pages/index.astro`), never "all solo titles".
+- **Why Major:** the About page is the identity page; the Media boilerplate is what partners/publishers copy; both featured articles sit on the public article index. All four understate the library, and the grid claim is verifiable in one click.
 
 ### F-M9 — Accessibility statement predates Pass & Play (and the new solo games)
 - **Where:** `src/pages/accessibility.astro` ("Last reviewed: August 17, 2026" — five days before PR #25 shipped).
@@ -127,6 +128,11 @@ The arcade now has **17 games (11 solo + 6 Pass & Play)**, but:
 - **Where:** `src/content/games/mini-sudoku.md` (description: "…with pencil marks…"; controls list: "**Pencil marks** — Keep small candidate notes in a cell while you work"), `src/content/guides/mini-sudoku.md` ("## Pencil marks — Use candidate notes to hold possibilities…"), and the "Pencil marks" control on the live game page.
 - **What:** The game (`src/games/mini-sudoku/main.ts`) has **no way to create pencil marks**: the `marks` state is rendered (empty cells show `marks[i]` contents) but nothing ever writes to it — there is no button, no key binding, no touch gesture. `togglePencilMarks` is imported but never called. The documented storage key `nocharge:pref:sudoku-pencil-marks` (in `local-game-data.ts`, `MY_ARCADE_DATA_MODEL.md`, and asserted in `my-arcade` unit tests) is **never written by any code**.
 - **Why Major:** a control listed on the game page, in its meta description, and in its guide simply doesn't work — the strongest form of "documented feature missing".
+
+### F-M13 — Local-storage explainer article lists only the original four games' keys
+- **Where:** `src/content/articles/how-nocharge-saves-scores-without-an-account.md` ("What the games store" key list; "Clearing only game data" paragraph).
+- **What:** The article says "The current implementation can use these NoCharge game keys:" and lists seven — all of them from the original four games (Memory Match ×2, Word Tile Rush, Color Flip ×2, Beacon Lattice ×2) plus the shared mute preference and Recently Played. It omits the score/progress keys of **all seven new solo games** (Klondike, FreeCell, Nonogram, 2048, Tile Garden, Word Search, Mini Sudoku) and the six Pass & Play match records (`nocharge:passplay:match:<id>`). The clearing paragraph says the control removes "the current score keys, Memory Match fewest moves, Beacon Lattice progress, the shared mute preference, and the Recently Played list" — omitting the P&P records that the Privacy page (which is accurate) and the My Arcade dialog's real scope both include.
+- **Why Major:** this is the public explainer for the site's core no-account/local-data promise, and a visitor who reads it concludes NoCharge stores far less (and that clearing removes less) than is true. It contradicts the Privacy page and `docs/MY_ARCADE_DATA_MODEL.md` on the same facts.
 
 ---
 
@@ -170,6 +176,8 @@ The arcade now has **17 games (11 solo + 6 Pass & Play)**, but:
 
 **F-m19 — Nonogram cover mis-described in the review doc.** `docs/NEW_SOLO_GAMES_VISUAL_REVIEW.md` calls it a "5×5 pixel grid with heart pattern"; the raster shows a plus/cross pattern. (Symptom of the no-visual-review process in §Method.)
 
+**F-m20 — Four internal docs still describe pre-PR #26/#28 catalogs.** `docs/ART_ASSETS.md` says raster covers are reproducible with `art:memory/word/color/beacon/passplay` only — `package.json` also carries `art:klondike`, `art:freecell`, `art:nonogram`, `art:2048`, `art:tile-garden`, `art:word-search`, `art:mini-sudoku` (plus `art:solo-new`). `docs/CONTENT_DEPTH_REVIEW.md` ("/arcade/ … Compare ten games by genre"), `docs/MANUAL_ACCESSIBILITY_CHECKLIST.md` ("checks for all ten games (four solo plus the six Pass & Play games)"), and `docs/BRAND_GUIDE.md`'s screenshot table ("for all four solo games; none for the six Pass & Play games") all describe the 4/10/15-game eras. Internal-only staleness, but the accessibility checklist is the record of which checks were actually performed.
+
 ---
 
 ## 5. Inventory
@@ -203,7 +211,7 @@ beacon-lattice, color-flip, freecell, klondike, memory-match, mini-sudoku, nonog
 
 ### 5.3 Articles (25)
 - **Game articles (19):** freecell, how-diagonal-letter-paths (word-tile-rush), how-exact-coverage (beacon-lattice), how-move-counting (memory-match), how-to-find-forced-beacon (beacon-lattice), keyboard-and-accessible-play (beacon-lattice), keyboard-strategy (memory-match), klondike, managing-a-rising-word-game-grid (word-tile-rush), memory-match-systematic-board-scan, mini-sudoku, nonogram, tile-garden, timing-a-color-change (color-flip), twenty-forty-eight, understanding-the-four-color-cycle (color-flip), visual-mode-versus-turn-based (color-flip), word-search, word-tile-rush-longer-word-scoring.
-- **Platform articles (6):** designing-browser-games-for-more-ways-to-play, five-new-single-player-games-for-quiet-arcade, how-nocharge-saves-scores-without-an-account, how-nocharge-tests-browser-games, pass-and-play-two-players-one-device, what-quiet-arcade-means-at-nocharge (F-M8/F-m12).
+- **Platform articles (6):** designing-browser-games-for-more-ways-to-play, five-new-single-player-games-for-quiet-arcade (F-M8), how-nocharge-saves-scores-without-an-account (F-M13), how-nocharge-tests-browser-games, pass-and-play-two-players-one-device, what-quiet-arcade-means-at-nocharge (F-M8/F-m12).
 - 17 of 25 are `featured: true`.
 
 ### 5.4 Collections (5)
@@ -233,7 +241,7 @@ Top-level: `/`, `/about/`, `/accessibility/`, `/advertising/`, `/arcade/`, `/art
 | `/guides/` | 200 ✓ | 11 cards. **F-M10** ("Guides for every arcade game"). |
 | `/guides/<slug>/` ×11 | 200 ✓ each | Guide header art (carries F-M1/2/3/4/6/7 where present), Play aside icon (F-m1, F-m2), diagrams/screenshots for the original four. Mini Sudoku guide explains the missing pencil marks (F-M12). |
 | `/articles/` | 200 ✓ | 25 cards; featured filter + game/platform grouping correct. |
-| `/articles/<slug>/` ×25 | 200 ✓ each | Article schema with game social image; affiliate policy intact (8+10 paid articles, new-tab, disclosure). what-quiet-arcade: **F-M8, F-m12**. |
+| `/articles/<slug>/` ×25 | 200 ✓ each | Article schema with game social image; affiliate policy intact (8+10 paid articles, new-tab, disclosure). what-quiet-arcade: **F-M8, F-m12**. five-new-single-player-games: **F-M8**. saves-scores: **F-M13**. |
 | `/collections/` | 200 ✓ | 5 cards. |
 | `/collections/<slug>/` ×5 | 200 ✓ each | Build-time membership validation; reasons render; pass-and-play lists all six. keyboard collection: F-m14. |
 | `/setup/` + `/setup/<slug>/` ×18 | 200 ✓ | Feed + validators green; affiliate new-tab cue present. cable-management: **F-m10** (4 numeric ids). |
@@ -301,11 +309,11 @@ Pause/resume note (not a finding): Word Search and Mini Sudoku controllers imple
 6. **R6 (F-m1, F-m2):** Replace the five shared placeholder icons (and the two title-card icons) with per-game icons.
 
 **Batch 2 — Copy corrections (low risk, high trust impact)**
-7. **R7 (F-M8, F-M11):** Update the About catalog list, the Media boilerplate, and the what-quiet-arcade article to the current 17-game library (or phrase as "starts with…"); update My Arcade clear-dialog copy to the actual key scope.
+7. **R7 (F-M8, F-M11, F-M13):** Update the About catalog list, the Media boilerplate, the what-quiet-arcade article, and the five-new-single-player-games article (nine-solo count; "homepage grid shows all nine solo titles" — the grid renders the six featured games) to the current 17-game library (or phrase as "starts with…"); refresh the saves-scores article's key list and Clear-game-data paragraph to the current allowlist (11 solo games' score/progress keys + preferences + six P&P match records); update My Arcade clear-dialog copy to the actual key scope.
 8. **R8 (F-M9):** Re-review the accessibility statement against the current 17 games (five fully keyboard Pass & Play games, PTP's documented pointer limit, new solo keyboard paths); bump the review date.
 9. **R9 (F-M10):** Either soften to "Solo games each have a field guide; Pass & Play rules are documented on their game pages" or schedule the six Pass & Play guides.
 10. **R10 (F-m12):** Fix the Mini Sudoku date: either implement pencil marks (input path + optional persistence) or remove the feature from the description, controls list, and guide.
-11. **R11 (F-m11, F-m12, F-m16):** Add the missing changelog entries (solo games + sound, Word Search + Mini Sudoku), correct the what-quiet-arcade metadata date, and refresh the `MY_ARCADE_DATA_MODEL.md` key count.
+11. **R11 (F-m11, F-m12, F-m16, F-m20):** Add the missing changelog entries (solo games + sound, Word Search + Mini Sudoku), correct the what-quiet-arcade metadata date, and refresh the stale internal docs: `MY_ARCADE_DATA_MODEL.md` key count, `ART_ASSETS.md` art-script list, `CONTENT_DEPTH_REVIEW.md` and `MANUAL_ACCESSIBILITY_CHECKLIST.md` game counts, `BRAND_GUIDE.md` screenshot table.
 
 **Batch 3 — Word Search / Mini Sudoku hardening + process**
 12. **R12 (F-m6, F-m7, F-m13, F-m14):** Add real keyboard navigation to Word Search (arrow-cursor + Enter, matching the rest of the arcade) or downgrade the copy to what exists; make the hint announce only the first letter; clear stale hint highlights; add a visible New-puzzle affordance on completion; tighten the keyboard-collection rationale.
@@ -326,7 +334,9 @@ Pause/resume note (not a finding): Word Search and Mini Sudoku controllers imple
 - Emoji artefact: `scripts/generate-tile-garden-art.mjs` (`tierEmoji` in `<text>`) vs. `src/games/tile-garden/main.ts` (in-browser emoji, unaffected).
 - Placeholder icons: identical md5 `1ff8eb1dc5b7c5f080f5e6fca3252aea` across five `icon.svg` files; usage in `src/pages/guides/[slug].astro` (`guide-play__icon`, 44 px).
 - Pencil marks: `src/content/games/mini-sudoku.md` (controls list), `src/content/guides/mini-sudoku.md` (§Pencil marks), `src/games/mini-sudoku/main.ts` (`marks` never written), `src/lib/local-game-data.ts` (`sudoku-pencil-marks`), `src/lib/my-arcade/my-arcade.test.ts` (key asserted in clear list).
-- Stale counts: `src/pages/about.astro`, `src/pages/media.astro:77,90`, `src/content/articles/what-quiet-arcade-means-at-nocharge.md:16`, `src/pages/my-arcade.astro:227`.
+- Stale counts: `src/pages/about.astro`, `src/pages/media.astro:77,90`, `src/content/articles/what-quiet-arcade-means-at-nocharge.md:16`, `src/content/articles/five-new-single-player-games-for-quiet-arcade.md:56-58`, `src/pages/my-arcade.astro:227`.
+- Stale storage-key list (F-M13): `src/content/articles/how-nocharge-saves-scores-without-an-account.md:22-30` (seven keys, original four only) and `:54` (clear paragraph omits P&P records) vs. `CLEARABLE_GAME_DATA_KEYS` in `src/lib/local-game-data.ts` and the accurate Privacy page.
+- Stale internal docs (F-m20): `docs/ART_ASSETS.md:3` (missing the seven post-PR #26 art scripts in `package.json`), `docs/CONTENT_DEPTH_REVIEW.md:8` ("ten games"), `docs/MANUAL_ACCESSIBILITY_CHECKLIST.md:7` ("all ten games, four solo plus six Pass & Play"), `docs/BRAND_GUIDE.md:32` (screenshot table describes the four-game era).
 - Guide coverage: 11 files in `src/content/guides/` vs. 17 games; arcade CTAs at `src/pages/arcade.astro` (arcade-guide-cta) and `src/pages/guides/index.astro` (all-guides-heading).
 - html-validate failures: `npm run validate:html` (6 errors) — Shiki inline styles in `dist/articles/twenty-forty-eight-…` and `dist/guides/twenty-forty-eight`; numeric ids in `dist/setup/cable-management-for-a-calm-desk`.
 - Crawl: 94 HTML routes, 0 missing assets/routes (this audit's scratch crawler, not committed).
