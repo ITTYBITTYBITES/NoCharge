@@ -32,7 +32,11 @@ const lattice = (w, h) => {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><defs><radialGradient id="b" cx="68%" cy="40%" r="75%"><stop stop-color="${accent}" stop-opacity=".16"/><stop offset=".5" stop-color="#151a18"/><stop offset="1" stop-color="#101210"/></radialGradient></defs><rect width="${w}" height="${h}" fill="url(#b)"/>${lines.join('')}${marks}<circle cx="${w * 0.8}" cy="${h * 0.22}" r="${Math.min(w, h) * 0.16}" fill="${highlight}" opacity=".05"/></svg>`;
 };
 
-await writeFile(new URL('source.svg', dirUrl), lattice(1280, 720));
+// Canonical vector source lives outside public/ (never shipped); the CI
+// art-drift step in deploy.yml regenerates it and fails on any drift.
+const srcDir = fileURLToPath(new URL('./art-sources/beacon-lattice/', import.meta.url));
+await mkdir(srcDir, { recursive: true });
+await writeFile(srcDir + 'source.svg', lattice(1280, 720));
 const jobs = [
   ['cover-square', 800, 800],
   ['cover-landscape', 1280, 720],

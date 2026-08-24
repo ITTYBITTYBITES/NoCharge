@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <defs>
+    <radialGradient id="bg" cx="72%" cy="42%" r="76%"><stop stop-color="#203229"/><stop offset=".42" stop-color="#171e1a"/><stop offset="1" stop-color="#101210"/></radialGradient>
+    <linearGradient id="c1" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#27372f"/><stop offset="1" stop-color="#171d19"/></linearGradient>
+    <linearGradient id="c2" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#31483a"/><stop offset="1" stop-color="#19221d"/></linearGradient>
+    <filter id="glow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="grain"><feTurbulence baseFrequency=".72" numOctaves="2" seed="17" stitchTiles="stitch"/><feColorMatrix values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 .035 0"/></filter>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <circle cx="876.064" cy="352.8" r="223.2" fill="#12b66a" opacity=".055"/>
+  <path d="M76.8 554.4 C320 396.00000000000006, 396.8 640.8, 677.7760000000001 401.76" fill="none" stroke="#12b66a" stroke-opacity=".24" stroke-width="2.8444444444444446"/>
+  <path d="M102.4 590.4 C345.6 446.4, 460.79999999999995 676.8, 716.9440000000001 450.72" fill="none" stroke="#91e8ba" stroke-opacity=".12" stroke-width="1.5644444444444445"/>
+  
+  <g transform="rotate(-8 763.456 334.44)">
+    <rect x="641.056" y="181.44" width="244.8" height="306" rx="23.256" fill="#141815" stroke="#35473d" stroke-width="2.8444444444444446"/>
+    <path d="M685.12 242.64H841.792M685.12 426.24H841.792" stroke="#91e8ba" stroke-opacity=".12" stroke-width="2.8444444444444446"/>
+    <path d="m763.456 282.42 44.064 44.064-44.064 44.064-44.064-44.064Z" fill="none" stroke="#12b66a" stroke-width="4.266666666666667"/>
+  </g>
+  <g transform="rotate(7 905.4399999999999 377.28000000000003)">
+    <rect x="783.04" y="224.28000000000003" width="244.8" height="306" rx="23.256" fill="url(#c2)" stroke="#12b66a" stroke-opacity=".66" stroke-width="3.4133333333333336"/>
+    <rect x="805.072" y="246.31200000000004" width="200.736" height="261.936" rx="14.688" fill="none" stroke="#91e8ba" stroke-opacity=".09" stroke-width="2.8444444444444446"/>
+    <path d="m905.4399999999999 334.44000000000005 48.96000000000001 48.96000000000001-48.96000000000001 48.96000000000001-48.96000000000001-48.96000000000001Z" fill="none" stroke="#91e8ba" stroke-width="4.835555555555556" filter="url(#glow)"/>
+  </g>
+  <g fill="#91e8ba"><circle cx="153.6" cy="129.6" r="3.4133333333333336" opacity=".7"/><circle cx="294.40000000000003" cy="223.2" r="2.2755555555555556" opacity=".42"/><circle cx="1126.4" cy="554.4" r="2.8444444444444446" opacity=".5"/></g>
+  <rect width="1280" height="720" filter="url(#grain)" opacity=".65"/>
+  </svg>

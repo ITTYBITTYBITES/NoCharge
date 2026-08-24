@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+    <defs>
+      <radialGradient id="bg" cx="50%" cy="45%" r="80%"><stop stop-color="#161e1a"/><stop offset="1" stop-color="#0a0f0c"/></radialGradient>
+      <filter id="grain"><feTurbulence baseFrequency=".7" numOctaves="2" seed="23"/><feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 .04 0"/></filter>
+    </defs>
+    <rect width="1280" height="720" fill="url(#bg)"/>
+    <rect x="460" y="180" width="71" height="71" rx="2" fill="#1a2420" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="532" y="180" width="71" height="71" rx="2" fill="#12b66a" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="604" y="180" width="71" height="71" rx="2" fill="#12b66a" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="676" y="180" width="71" height="71" rx="2" fill="#12b66a" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="748" y="180" width="71" height="71" rx="2" fill="#1a2420" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="460" y="252" width="71" height="71" rx="2" fill="#12b66a" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="532" y="252" width="71" height="71" rx="2" fill="#12b66a" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="604" y="252" width="71" height="71" rx="2" fill="#12b66a" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="676" y="252" width="71" height="71" rx="2" fill="#12b66a" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="748" y="252" width="71" height="71" rx="2" fill="#12b66a" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="460" y="324" width="71" height="71" rx="2" fill="#12b66a" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="532" y="324" width="71" height="71" rx="2" fill="#12b66a" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="604" y="324" width="71" height="71" rx="2" fill="#12b66a" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="676" y="324" width="71" height="71" rx="2" fill="#12b66a" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="748" y="324" width="71" height="71" rx="2" fill="#12b66a" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="460" y="396" width="71" height="71" rx="2" fill="#1a2420" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="532" y="396" width="71" height="71" rx="2" fill="#12b66a" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="604" y="396" width="71" height="71" rx="2" fill="#12b66a" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="676" y="396" width="71" height="71" rx="2" fill="#12b66a" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="748" y="396" width="71" height="71" rx="2" fill="#1a2420" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="460" y="468" width="71" height="71" rx="2" fill="#1a2420" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="532" y="468" width="71" height="71" rx="2" fill="#1a2420" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="604" y="468" width="71" height="71" rx="2" fill="#12b66a" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="676" y="468" width="71" height="71" rx="2" fill="#1a2420" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="748" y="468" width="71" height="71" rx="2" fill="#1a2420" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+    <rect width="1280" height="720" filter="url(#grain)" opacity=".5"/>
+  </svg>

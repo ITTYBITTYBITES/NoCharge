@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+    <defs>
+      <radialGradient id="bg" cx="70%" cy="42%" r="80%"><stop stop-color="#a78bfa" stop-opacity=".14"/><stop offset=".5" stop-color="#10161a"/><stop offset="1" stop-color="#0a0e11"/></radialGradient>
+      <filter id="grain"><feTurbulence baseFrequency=".7" numOctaves="2" seed="61"/><feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 .04 0"/></filter>
+    </defs>
+    <rect width="1280" height="720" fill="url(#bg)"/>
+    <rect x="445.6" y="165.60000000000002" width="64.8" height="64.8" fill="#182220" stroke="#4a5852" stroke-width="2"/>
+<text x="454.672" y="192.81600000000003" font-family="system-ui" font-size="18.144000000000002" font-weight="700" fill="#a78bfa">135</text>
+<rect x="511.40000000000003" y="165.60000000000002" width="63.8" height="64.8" fill="#182220" stroke="#4a5852" stroke-width="2"/>
+<text x="542.8000000000001" y="209.01600000000002" text-anchor="middle" font-family="system-ui" font-size="32.4" font-weight="700" fill="#cfd8d3">2</text>
+<rect x="576.2" y="165.60000000000002" width="63.8" height="64.8" fill="#182220" stroke="#4a5852" stroke-width="2"/>
+<rect x="640" y="165.60000000000002" width="64.8" height="64.8" fill="#182220" stroke="#4a5852" stroke-width="2"/>
+<text x="672.4" y="209.01600000000002" text-anchor="middle" font-family="system-ui" font-size="32.4" font-weight="700" fill="#cfd8d3">5</text>
+<rect x="705.8" y="165.60000000000002" width="63.8" height="64.8" fill="#182220" stroke="#4a5852" stroke-width="2"/>
+<rect x="770.6" y="165.60000000000002" width="63.8" height="64.8" fill="#182220" stroke="#4a5852" stroke-width="2"/>
+<text x="802" y="209.01600000000002" text-anchor="middle" font-family="system-ui" font-size="32.4" font-weight="700" fill="#cfd8d3">3</text>
+<rect x="445.6" y="231.40000000000003" width="64.8" height="63.8" fill="#182220" stroke="#4a5852" stroke-width="2"/>
+<text x="478" y="273.81600000000003" text-anchor="middle" font-family="system-ui" font-size="32.4" font-weight="700" fill="#cfd8d3">4</text>
+<rect x="511.40000000000003" y="231.40000000000003" width="63.8" height="63.8" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<rect x="576.2" y="231.40000000000003" width="63.8" height="63.8" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="607.6" y="273.81600000000003" text-anchor="middle" font-family="system-ui" font-size="32.4" font-weight="700" fill="#cfd8d3">6</text>
+<rect x="640" y="231.40000000000003" width="64.8" height="63.8" fill="#182220" stroke="#4a5852" stroke-width="2"/>
+<rect x="705.8" y="231.40000000000003" width="63.8" height="63.8" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="737.1999999999999" y="273.81600000000003" text-anchor="middle" font-family="system-ui" font-size="32.4" font-weight="700" fill="#cfd8d3">1</text>
+<rect x="770.6" y="231.40000000000003" width="63.8" height="63.8" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<rect x="445.6" y="295.20000000000005" width="64.8" height="64.8" fill="#182220" stroke="#4a5852" stroke-width="2"/>
+<rect x="511.40000000000003" y="295.20000000000005" width="63.8" height="64.8" fill="#182220" stroke="#4a5852" stroke-width="2"/>
+<text x="542.8000000000001" y="338.61600000000004" text-anchor="middle" font-family="system-ui" font-size="32.4" font-weight="700" fill="#cfd8d3">5</text>
+<rect x="576.2" y="295.20000000000005" width="63.8" height="64.8" fill="#182220" stroke="#4a5852" stroke-width="2"/>
+<rect x="640" y="295.20000000000005" width="64.8" height="64.8" fill="#182220" stroke="#4a5852" stroke-width="2"/>
+<text x="672.4" y="338.61600000000004" text-anchor="middle" font-family="system-ui" font-size="32.4" font-weight="700" fill="#cfd8d3">3</text>
+<rect x="705.8" y="295.20000000000005" width="63.8" height="64.8" fill="#182220" stroke="#4a5852" stroke-width="2"/>
+<rect x="770.6" y="295.20000000000005" width="63.8" height="64.8" fill="#182220" stroke="#4a5852" stroke-width="2"/>
+<text x="802" y="338.61600000000004" text-anchor="middle" font-family="system-ui" font-size="32.4" font-weight="700" fill="#cfd8d3">6</text>
+<rect x="445.6" y="361" width="64.8" height="63.8" fill="#182220" stroke="#4a5852" stroke-width="2"/>
+<text x="478" y="403.416" text-anchor="middle" font-family="system-ui" font-size="32.4" font-weight="700" fill="#cfd8d3">6</text>
+<rect x="511.40000000000003" y="361" width="63.8" height="63.8" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<rect x="576.2" y="361" width="63.8" height="63.8" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="607.6" y="403.416" text-anchor="middle" font-family="system-ui" font-size="32.4" font-weight="700" fill="#cfd8d3">1</text>
+<rect x="640" y="361" width="64.8" height="63.8" fill="#182220" stroke="#4a5852" stroke-width="2"/>
+<rect x="705.8" y="361" width="63.8" height="63.8" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="737.1999999999999" y="403.416" text-anchor="middle" font-family="system-ui" font-size="32.4" font-weight="700" fill="#cfd8d3">4</text>
+<rect x="770.6" y="361" width="63.8" height="63.8" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<rect x="445.6" y="424.8" width="64.8" height="64.8" fill="#182220" stroke="#4a5852" stroke-width="2"/>
+<rect x="511.40000000000003" y="424.8" width="63.8" height="64.8" fill="#182220" stroke="#4a5852" stroke-width="2"/>
+<text x="542.8000000000001" y="468.216" text-anchor="middle" font-family="system-ui" font-size="32.4" font-weight="700" fill="#cfd8d3">3</text>
+<rect x="576.2" y="424.8" width="63.8" height="64.8" fill="#182220" stroke="#4a5852" stroke-width="2"/>
+<rect x="640" y="424.8" width="64.8" height="64.8" fill="#182220" stroke="#4a5852" stroke-width="2"/>
+<text x="672.4" y="468.216" text-anchor="middle" font-family="system-ui" font-size="32.4" font-weight="700" fill="#cfd8d3">6</text>
+<rect x="705.8" y="424.8" width="63.8" height="64.8" fill="#182220" stroke="#4a5852" stroke-width="2"/>
+<rect x="770.6" y="424.8" width="63.8" height="64.8" fill="#182220" stroke="#4a5852" stroke-width="2"/>
+<text x="802" y="468.216" text-anchor="middle" font-family="system-ui" font-size="32.4" font-weight="700" fill="#cfd8d3">2</text>
+<rect x="445.6" y="490.6" width="64.8" height="63.8" fill="#182220" stroke="#4a5852" stroke-width="2"/>
+<text x="478" y="533.016" text-anchor="middle" font-family="system-ui" font-size="32.4" font-weight="700" fill="#cfd8d3">2</text>
+<rect x="511.40000000000003" y="490.6" width="63.8" height="63.8" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<rect x="576.2" y="490.6" width="63.8" height="63.8" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="607.6" y="533.016" text-anchor="middle" font-family="system-ui" font-size="32.4" font-weight="700" fill="#cfd8d3">4</text>
+<rect x="640" y="490.6" width="64.8" height="63.8" fill="#182220" stroke="#4a5852" stroke-width="2"/>
+<rect x="705.8" y="490.6" width="63.8" height="63.8" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="737.1999999999999" y="533.016" text-anchor="middle" font-family="system-ui" font-size="32.4" font-weight="700" fill="#cfd8d3">5</text>
+<rect x="770.6" y="490.6" width="63.8" height="63.8" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<rect x="445.6" y="165.60000000000002" width="388.79999999999995" height="388.79999999999995" fill="none" stroke="#57645b" stroke-width="3"/>
+    <rect width="1280" height="720" filter="url(#grain)" opacity=".5"/>
+  </svg>
