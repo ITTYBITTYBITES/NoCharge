@@ -148,7 +148,7 @@ test.describe('media page', () => {
     await expect(page.getByText('Memory Match, Word Tile Rush, Color Flip, Beacon Lattice').first()).toBeVisible();
     // The footer carries the same address on every page, so scope to the page.
     await expect(page.locator('.media-page').getByText('hello@nocharge.net')).toBeVisible();
-    await expect(page.getByText(/Last reviewed: 2026-08-21/)).toBeVisible();
+    await expect(page.getByText(/Last reviewed: 2026-08-24/)).toBeVisible();
     // No press-only address, no social destinations, no Amazon content.
     await expect(page.getByText('press@nocharge.net')).toHaveCount(0);
     expect(await page.locator('a[href*="amazon"]').count()).toBe(0);

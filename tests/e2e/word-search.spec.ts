@@ -21,7 +21,8 @@ async function readGrid(page: import('@playwright/test').Page): Promise<{ size: 
 /** Locate a placed word in the letter grid, scanning all 8 directions from every first letter. */
 function findPlacement(letters: string[], size: number, word: string): { start: { row: number; col: number }; end: { row: number; col: number } } {
   const target = word.toLowerCase();
-  const at = (r: number, c: number) => letters[r * size + c];
+  // The DOM renders uppercase letters; compare case-insensitively.
+  const at = (r: number, c: number) => (letters[r * size + c] ?? '').toLowerCase();
   const dirs = [
     [-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1],
   ];
