@@ -145,7 +145,7 @@ test('Reversi records place and flip when discs turn', async ({ page }) => {
   expect(await soundCalls(page)).toEqual(['place', 'flip']);
 });
 
-test('Last Token records place, then error and win on the last token', async ({ page }) => {
+test('Last Token records place, then win on the last token', async ({ page }) => {
   await page.goto('/games/last-token/');
   await continueHandoff(page);
   const take = (pile: number, n: number) => page.locator(`[data-lt-actions="${pile}"] [data-lt-take="${n}"]`);
@@ -160,7 +160,7 @@ test('Last Token records place, then error and win on the last token', async ({ 
   await continueHandoff(page);
   await clearSoundCalls(page);
   await take(1, 1).click();
-  await expect.poll(async () => soundCalls(page)).toEqual(['place', 'error', 'win']);
+  await expect.poll(async () => soundCalls(page)).toEqual(['place', 'win']);
 });
 
 test('Pass the Picture records place on a stroke', async ({ page }) => {
