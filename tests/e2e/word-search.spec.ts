@@ -132,15 +132,27 @@ test('new puzzle asks before discarding a started puzzle', async ({ page }) => {
   const { start, end } = findPlacement(letters, size, 'cat');
   await cellAt(page, start.row, start.col, size).click();
   await cellAt(page, end.row, end.col, size).click();
-  const dialogPromise = page.waitForEvent('dialog');
+  // Native confirm() is synchronous: it blocks the click's task until the
+  // dialog is answered, so each dialog must be handled the moment it appears —
+  // never after awaiting the click (that deadlocks until the test timeout).
+  const dismissDialog = page
+    .waitForEvent('dialog', { timeout: 5000 })
+    .then((d) => {
+      void d.dismiss();
+      return d;
+    });
   await page.getByRole('button', { name: 'New puzzle' }).click();
-  const dialog = await dialogPromise;
+  const dialog = await dismissDialog;
   expect(dialog.message()).toContain('Start a new puzzle?');
-  await dialog.dismiss();
   expect((await readGrid(page)).letters).toEqual(letters);
-  const acceptPromise = page.waitForEvent('dialog');
+  const acceptDialog = page
+    .waitForEvent('dialog', { timeout: 5000 })
+    .then((d) => {
+      void d.accept();
+      return d;
+    });
   await page.getByRole('button', { name: 'New puzzle' }).click();
-  await (await acceptPromise).accept();
+  await acceptDialog;
   expect((await readGrid(page)).letters).not.toEqual(letters);
 });
 
