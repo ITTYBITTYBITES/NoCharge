@@ -1,0 +1,333 @@
+# Post PR #25 (Pass & Play) — full-site audit
+
+**Audit date:** 2026-08-24
+**Branch / commit:** `arena/01a03563-nocharge` from `main` @ `230cb76` ("Merge PR #29: Fix Quiet Setup illustrations and complete PR #28 gaps")
+**Scope:** Every public route, every game, all content collections, generated artwork, local-storage model, metadata/SEO, security posture, and CI-validated behavior — the entire shipped site.
+**Mode:** Investigation only. **No fixes are made in this PR.** Findings are catalogued for a follow-up fix PR.
+
+## Severity definitions (used consistently throughout)
+
+- **Critical** — site broken, a game unplayable, data loss, security/CSP regressions, or a broken core promise (no accounts, no dark patterns, local-only data).
+- **Major** — visible glitch users will see and complain about, broken layout, wrong copy, or missing new-game polish (the class of issues flagged in the original PR #25 review).
+- **Minor** — cosmetic, edge case, polish, internal-documentation staleness.
+
+## Method and verification
+
+| Step | Result |
+| --- | --- |
+| `npx vitest run` (all unit tests) | 31 files, **325 tests passed** |
+| `npx astro check` | 0 errors, 0 warnings, 33 hints |
+| `npm run build` | **92 pages built**, success |
+| `npm run check:links` | 0 broken internal links (92 HTML files) |
+| `npm run validate:sitemap` | passed, 91 public routes in main sitemap |
+| `npm run check:assets` | asset budget passed (8 scripts / 177 KB; largest image 145.7 KB) |
+| `npm run inspect:structured-data` | passed (Article, BreadcrumbList, CollectionPage, ItemList, ListItem, Organization, VideoGame, WebPage, WebSite) |
+| `npm run validate:html` (html-validate, no config in repo) | **6 errors** (see Minor F-m10) |
+| `npm run validate:feed`, `validate:brand`, `validate:media-kit`, `validate:brand-media`, `validate:setup`, `inspect:favicons` | all passed |
+| Full crawl of all 94 HTML routes (status, h1/title, every local `src`/`href` vs. `dist/`) | **no missing routes, no missing assets, no page without an h1 or title** |
+| Artwork: every one of the 17 game-art packages visually inspected (cover-square, cover-landscape, plus source SVGs and generator scripts) | Findings F-M1…F-M7 (below) |
+| Playwright e2e suite | **Not re-runnable in this sandbox** (browser binary download blocked by the network). Findings therefore rest on code review + the unit/build/validator gates above + visual inspection; CI (`deploy.yml`: `npm run check` → build → `playwright test --project=chromium`) remains the browser gate. |
+
+Note on the historical visual-review process: `docs/PASS_AND_PLAY_VISUAL_REVIEW.md` and `docs/NEW_SOLO_GAMES_VISUAL_REVIEW.md` state they are "built from capture-time DOM assertions (green CI = PASS), **not by hand-opened images**." That is exactly why the broken raster artwork in this audit shipped: e2e tests assert that the right image *files are referenced*, never what the pixels show. See Recommendation R8.
+
+---
+
+## 1. Summary
+
+The Pass & Play merge (PR #25) and everything shipped since are **functionally sound**: all 17 games mount, all engines pass unit tests, the shared handoff screen behaves as documented (session-only names, one bounded match record per game, no timers, no AI, no network), the storage model is bounded and correctly excluded from Clear-Game-Data-elsewhere, all 92 routes serve, links resolve, and the security/CSP posture is unchanged and documented. **No Critical findings.**
+
+The damage is concentrated in **generated artwork and stale copy**:
+
+- **Count by severity: 0 Critical · 12 Major · 19 Minor.**
+- The reported "hero/thumbnail images on the new game cards look wrong" is confirmed and is broader than the six Pass & Play cards:
+  - **Tic-Tac-Toe** cover/hero/social art draws the "winning line" as a horizontal dashed line through the bottom row — which is `X O X`, **not a win**; the actual win on the pictured board is the diagonal, which the art does not mark (and the alt text claims).
+  - **Dots & Boxes** and **Reversi** covers use player colors that don't match the game (P2 light-pink instead of light-blue; teal discs instead of black discs), and their alt texts contradict the pixels.
+  - The same failure class hit the solo games shipped around the same time: **Klondike** and **FreeCell** covers clip their card art off the canvas; **Tile Garden** covers render literal `01F 33F` / `01F 33C` text (emoji code points that the SVG rasterizer couldn't draw); **Word Search** and **Mini Sudoku** covers are placeholder title cards.
+- Copy that predates the current 17-game catalog still says the arcade has "ten games / four solo titles" on the About page, the Media boilerplate, and a featured article; the accessibility statement predates Pass & Play; "Every game has a field guide" is false (11 of 17 games have guides); and Mini Sudoku advertises **pencil marks that do not exist in the game**.
+
+Nothing here blocks play. Nothing touches the no-account / local-data / no-dark-patterns promise. But the art and copy findings are exactly what users will notice on first contact, and several are one-line generator or content fixes.
+
+---
+
+## 2. Critical findings
+
+**None.** Specifically verified and found clean:
+
+- All 17 games build, mount (registry), and pass unit tests; the six Pass & Play engines are pure functions with bounded rules (no AI, no timers, no network — matching the published promise).
+- No data loss paths: Pass & Play writes exactly one bounded record per game (`nocharge:passplay:match:<id>`, 2 KB cap, defensive parser); Clear Game Data uses an explicit allowlist that never touches `nocharge:consent` or Google-owned storage.
+- No security/CSP regressions: strict meta CSP with explicit Google ad/analytics origins, `ads.txt` line matches `ADSENSE_ADS_TXT_LINE` exactly, `.well-known/security.txt` present, `referrer` policy set, no third-party script beyond the documented Google tags.
+- No dark patterns in the new games: no timers, streaks, leaderboards, or forced progression in any of the six (also asserted by the e2e dark-pattern scan in `tests/e2e/pass-and-play.spec.ts` / `my-arcade.spec.ts`).
+- All 92 routes return 200 (unknown URLs return the custom no-index 404), no missing local assets anywhere in the built HTML.
+
+---
+
+## 3. Major findings
+
+### F-M1 — Tic-Tac-Toe cover art marks the wrong winning line (all four assets)
+- **Where:** `public/game-art/tic-tac-toe/{cover-square,cover-landscape,guide-header,social-card}.{webp,jpg}`, rendered on the home/arcade/recently-played/my-arcade cards, the game-page hero, and the OG/Twitter card.
+- **What:** The board depicted is `X O X / O X O / X O X` — the only winning line is the **diagonal** (X at r1c1, r2c2, r3c3). The art instead draws a dashed "winning line" **horizontally through the bottom row**, i.e. through `X O X`, which is not a win. The alt text ("…blue X marks complete a winning diagonal") contradicts the pixels, and the engine (`findWinner`) of course highlights the diagonal in real play — so card, hero, and actual game all disagree.
+- **Root cause:** `scripts/generate-pass-play-art.mjs` hard-codes the indicator at `y0 + 2*cell + cell/2` (a full-width horizontal line at row 3) instead of the diagonal of the marks it draws.
+- **Why Major:** this is the lead Pass & Play game (registry order 5, home-page highlight, collection lead). A user who reads the card sees a board where the marked line doesn't win.
+
+### F-M2 — Klondike cover art is clipped / off-centre (square + landscape)
+- **Where:** `public/game-art/klondike/cover-square.*` (800×800) and `cover-landscape.*` (1280×720, the game-page hero) and `social-card.*`.
+- **What:** Square: the 4th card of the fan starts at x ≈ 664 with width ≈ 176 and is **cut off at the right canvas edge**; the top half of the canvas is empty. Landscape: the fan is centred at 60 % of the width, leaving the entire left half of the hero empty.
+- **Root cause:** `scripts/generate-klondike-art.mjs` computes card offsets (`cx + cardW*1.5` etc.) without checking the bounding box; `cx = w*0.6` in landscape mode.
+- **Why Major:** broken composition on a featured signature game's hero image.
+
+### F-M3 — FreeCell cover art is clipped (square) and empty (landscape)
+- **Where:** `public/game-art/freecell/cover-square.*`, `cover-landscape.*`, `social-card.*`.
+- **What:** Square: the row of 8 card stacks overflows and is **clipped at both left and right canvas edges**. Landscape hero: eight *empty outlined* card columns (no cards, no free-cell/foundation distinction) floating in a mostly empty frame.
+- **Why Major:** the hero and card thumbnails for a signature game read as broken/unfinished.
+
+### F-M4 — Tile Garden cover art contains literal glyph artefacts
+- **Where:** `public/game-art/tile-garden/cover-square.*`, `cover-landscape.*`, `social-card.*` (all four motif sizes).
+- **What:** Tier-1/2 tiles display the text **"01F 33F"** and **"01F 33C"** — the Unicode code points of 🌱 (U+1F33F) and 🌼 (U+1F33C) rendered by the SVG rasterizer (sharp/librsvg has no emoji font) as fallback glyphs. The in-game board renders the same emoji fine in browsers.
+- **Root cause:** `scripts/generate-tile-garden-art.mjs` embeds emoji in `<text>` and rasterizes without an emoji-capable font.
+- **Why Major:** the hero/cards for a featured game show nonsense text on five tiles.
+
+### F-M5 — Word Search and Mini Sudoku covers (and icons) are placeholder title cards
+- **Where:** `public/game-art/word-search/*` and `public/game-art/mini-sudoku/*` (covers, guide headers, social cards, `icon.svg`, plus committed `*.svg` source files).
+- **What:** Instead of a depiction of the game (a letter grid; a 6×6 number grid), both games' covers are a generic generator output: the game **name in large text over a dark blob** ("WORD SEARCH", "MINI SUDOKU"). Their `icon.svg` files are 256×256 versions of the same card (illegible at the 44 px size used on guide pages). The front-matter alt text ("Programmatic word-search illustration in the Quiet Arcade palette") does not describe what the image actually is.
+- **Why Major:** both are featured games; the cards look like un-shipped placeholders next to the rest of the arcade, and the alt text is wrong on top of it.
+
+### F-M6 — Reversi cover art uses the wrong disc colours; alt text disagrees
+- **Where:** `public/game-art/reversi/*` (all four assets).
+- **What:** The art draws the two disc colours as **teal (#2dd4bf, the page accent) and cream**, while the actual game renders **black (#10130f) and white (#e8e3d8)** discs (`rev__cell--black/--white` in `src/games/reversi/styles.css`). The alt text says "black and white discs", so the alt, the art, and the game are three different things. The in-game legal-move hint is a small solid teal dot; the art shows a dashed ring (see F-m4).
+- **Root cause:** `scripts/generate-pass-play-art.mjs` reuses `accent` for the "black" disc.
+
+### F-M7 — Dots & Boxes cover art uses the wrong Player-2 colour; alt text disagrees
+- **Where:** `public/game-art/dots-and-boxes/*` (all four assets).
+- **What:** Player 2's claimed box and its edges are drawn in **light pink (#ffd3ea)**; in the game Player 2 draws in **light blue (#7dd3fc)** (`PLAYER_COLORS` in `src/games/dots-and-boxes/main.ts`). The alt says "pink and blue drawn edges" — the image shows pink and light-pink, so both players appear to be the same pink.
+- **Root cause:** the generator's `highlight` colour is a lighter tint of the accent rather than the game's P2 colour.
+
+### F-M8 — Stale game-count copy: "ten games / four solo titles" on three public surfaces
+The arcade now has **17 games (11 solo + 6 Pass & Play)**, but:
+- `src/pages/about.astro`: "The current arcade catalog is Memory Match, Word Tile Rush, Color Flip, and Beacon Lattice." (omits 13 games, including all of Pass & Play)
+- `src/pages/media.astro` boilerplate (the recommended external description, "Last reviewed: 2026-08-21"): "The current library has ten original games: the solo titles Memory Match, Word Tile Rush, Color Flip, and Beacon Lattice, plus the Pass & Play family…"
+- `src/content/articles/what-quiet-arcade-means-at-nocharge.md` (featured article): "The Arcade offers ten browser games now: four solo titles (…) and six Pass & Play games."
+- **Why Major:** the About page is the identity page; the Media boilerplate is what partners/publishers copy. All three understate the library by 7 games.
+
+### F-M9 — Accessibility statement predates Pass & Play (and the new solo games)
+- **Where:** `src/pages/accessibility.astro` ("Last reviewed: August 17, 2026" — five days before PR #25 shipped).
+- **What:** The keyboard paragraph names only Memory Match, Word Tile Rush, Color Flip, and Beacon Lattice. It omits that **five of the six Pass & Play games are fully keyboard-operable** (Tic-Tac-Toe, Dots & Boxes, Four in a Row, Reversi, Last Token — arrow keys + Enter, with Reversi moving only between legal squares) and that Pass the Picture documents its pointer-only stroke limit — a fact the rest of the site touts. The new solo games' keyboard paths (arrows/WASD, D/U shortcuts, etc.) are also absent.
+- **Why Major:** the statement is a public accessibility promise; it currently undersells the site's own documented capabilities.
+
+### F-M10 — "Every game has a field guide" — false (11 of 17 games have guides)
+- **Where:** `src/pages/arcade.astro` ("Every game has a field guide." + "…each with a full guide when you want the details") and `src/pages/guides/index.astro` heading "Guides for every arcade game".
+- **What:** Guides exist for the 11 solo games only. **All six Pass & Play games have no guide** (and none are draft). No dead links result (game pages gate the guide link on `hasGuide`), but the copy over-promises on the exact section the merge added.
+- **Why Major:** wrong copy users can verify in one click.
+
+### F-M11 — My Arcade "Clear game data" confirmation copy says "all four solo games"
+- **Where:** `src/pages/my-arcade.astro` (confirm dialog: "This removes best scores for all four solo games, Memory Match fewest moves, Beacon Lattice puzzle progress, …").
+- **What:** The clearing flow (shared `CLEARABLE_GAME_DATA_KEYS` in `src/lib/local-game-data.ts`) actually removes score/progress keys for **11 solo games** (memory-match, word-tile-rush, color-flip + turn-based, beacon-lattice, klondike, freecell, nonogram, twenty-forty-eight, tile-garden, word-search, mini-sudoku) plus preferences, Recently Played, and the six Pass & Play records. The "four" count is the pre-PR #26 number. The same stale "four" appears in the page's own comments ("keeps exactly the four games it has always shown") even though the rendered grid iterates all 11.
+- **Why Major:** it is a data-deletion confirmation; the user is told what will be removed, and the copy understates it.
+
+### F-M12 — Mini Sudoku advertises pencil marks that do not exist
+- **Where:** `src/content/games/mini-sudoku.md` (description: "…with pencil marks…"; controls list: "**Pencil marks** — Keep small candidate notes in a cell while you work"), `src/content/guides/mini-sudoku.md` ("## Pencil marks — Use candidate notes to hold possibilities…"), and the "Pencil marks" control on the live game page.
+- **What:** The game (`src/games/mini-sudoku/main.ts`) has **no way to create pencil marks**: the `marks` state is rendered (empty cells show `marks[i]` contents) but nothing ever writes to it — there is no button, no key binding, no touch gesture. `togglePencilMarks` is imported but never called. The documented storage key `nocharge:pref:sudoku-pencil-marks` (in `local-game-data.ts`, `MY_ARCADE_DATA_MODEL.md`, and asserted in `my-arcade` unit tests) is **never written by any code**.
+- **Why Major:** a control listed on the game page, in its meta description, and in its guide simply doesn't work — the strongest form of "documented feature missing".
+
+---
+
+## 4. Minor findings
+
+**F-m1 — Five games share one generic placeholder icon.** `freecell`, `klondike`, `nonogram`, `tile-garden`, `twenty-forty-eight` all ship the identical 247-byte `icon.svg` (md5 `1ff8eb1d…` — a plain green rounded square). It is the 44 px "Play" icon on each guide page, where it is indistinguishable between games.
+
+**F-m2 — Word Search and Mini Sudoku icons are title cards.** Their `icon.svg` files are 256 px versions of the placeholder cover (F-M5) — unreadable at 44 px on guide pages.
+
+**F-m3 — Last Token art piles match no preset.** The cover depicts piles of 3/2/5 (the middle pair rendered as two near-overlapping circles that read as a single pale token). The game's presets are 3-4-5, 1-3-5-7, and 3-5. Reads as "mid-game", but never matches a selectable starting position.
+
+**F-m4 — Reversi art hint glyph doesn't match the game.** Art: dashed ring at f3. Game: small solid teal dot in the centre of each legal square. (The pictured position also isn't reachable from the standard opening, which is fine for art — but the marker style should match.)
+
+**F-m5 — Pass the Picture art palette ≠ in-game palette.** The art's 8 swatches (red/yellow/mint/blue/violet/pink/cream/teal) differ from `PICTURE_PALETTE` (dark ink #1f2430, red, amber, green, blue, violet, pink, lime); the art canvas is square, the in-game canvas is 4:3 (960×720). Strokes shown (red/blue/green) are in both, so the cover is plausible — but the swatch row misrepresents the actual colours a player picks.
+
+**F-m6 — Word Search's "full keyboard controls" claim is overstated.** Front-matter description: "…touch selection, and full keyboard controls"; the game has **no keyboard-specific handling at all** (0 `keydown` listeners) — it is operable via Tab/Enter on the 64–100 grid buttons, but has no arrow navigation, unlike every other grid game on the site. The in-page control line ("use the grid buttons") is vague about this.
+
+**F-m7 — Word Search hint reveals the full word to screen readers.** `status.textContent = 'Hint: first letter of ' + <full word>` in an `sr-only` live region, while the page promises a hint that "can identify a starting letter". Sight users see only the start-cell highlight (which also never clears); screen-reader users hear the whole answer.
+
+**F-m8 — Word Search and Mini Sudoku write `localStorage` unguarded.** Both call `localStorage.getItem/setItem` directly in their completion handlers; every other game goes through guarded helpers (`getBrowserStorage()` / `parseStoredScore`). In blocked-storage environments (some private-browsing modes) completing a puzzle can throw instead of recording.
+
+**F-m9 — Word Search / Mini Sudoku grid ARIA.** Both use `role="grid"` on the board but the cells are plain `<button>`s with no `role="gridcell"`/`aria-rowindex`/`aria-colindex`; Word Search declares `aria-rowcount` but not `aria-colcount`. Screen-reader grid semantics are therefore incomplete.
+
+**F-m10 — `html-validate` fails with 6 errors and no config exists in the repo.** (a) Shiki's `<pre style="…">` inline styles on the 2048 article and guide (2 errors); (b) four element ids starting with a digit on `/setup/cable-management-for-a-calm-desk/` (`id="1-group-cables-by-destination"`, …). The historical `AUDIT.md` claims inline styles were "excluded" from validation — no `.htmlvalidate` config is present to exclude anything. The ids work in browsers but fail `valid-id`.
+
+**F-m11 — Changelog has no entries for the shipped solo-game launches.** The public changelog jumps 2026-08-21 (brand) → 2026-08-22 (Pass & Play). There is no entry for the five Quiet Arcade solo games + sound pass (PR #26) or Word Search + Mini Sudoku (PR #28), even though articles, guides, and game pages for all of them shipped. The changelog is the site's "verified public updates" record (per the About page).
+
+**F-m12 — Anachronistic editorial dates.** `what-quiet-arcade-means-at-nocharge.md` is `published/updated: 2026-08-19` but describes the six Pass & Play games that shipped 2026-08-22 — the content post-dates its own metadata.
+
+**F-m13 — Word Search UX edges.** Changing theme or size mid-puzzle silently discards progress (no confirm, no notice); after "Puzzle complete" (sr-only status) there is no explicit New-puzzle control — the theme/size selects double as restart; the completed grid is not visually locked.
+
+**F-m14 — Keyboard collection rationale is thin for Word Search.** `collections/keyboard-friendly-browser-games.md` admits only a game "when its complete play loop is documented and operable from a keyboard"; the Word Search reason ("A calm grid with direct keyboard selection…") asserts "direct keyboard selection" that the game does not implement (see F-m6).
+
+**F-m15 — Last Token round-end plays two sounds at once** (`play('error')` then `play('win')` in `finishRound`). Interpretable as "loser erred / winner won", but it is a double blip where one result sound would be cleaner.
+
+**F-m16 — `docs/MY_ARCADE_DATA_MODEL.md` §4 count is stale.** It says the clear list is "exactly the fifteen game keys … the nine solo keys plus the six" Pass & Play records; the allowlist now holds 10 score keys + 13 named progress keys + 8 preference keys + Recently Played + 6 match records.
+
+**F-m17 — No gameplay e2e spec for Word Search / Mini Sudoku.** All other 15 games have gameplay specs (mount, moves, win, keyboard, storage). The two newest games are only covered by `sound-events.spec.ts` checks plus unit-level engine tests.
+
+**F-m18 — Unreferenced art shipped to production.** `hero-square.{jpg,webp}` (klondike, freecell, nonogram, twenty-forty-eight, tile-garden, word-search, mini-sudoku), `landscape-800/1200/1600` (word-search, mini-sudoku), the committed `*.svg` sources for word-search/mini-sudoku covers, and the six Pass & Play `source.svg` files are all copied to `dist/` but referenced by no page. Dead weight, and the source SVGs expose the art's vector sources publicly.
+
+**F-m19 — Nonogram cover mis-described in the review doc.** `docs/NEW_SOLO_GAMES_VISUAL_REVIEW.md` calls it a "5×5 pixel grid with heart pattern"; the raster shows a plus/cross pattern. (Symptom of the no-visual-review process in §Method.)
+
+---
+
+## 5. Inventory
+
+### 5.1 Games (17) — `src/games/` + `src/content/games/`
+
+| # (order) | Slug | Title | Genre | Featured | Guide | Art status | Notes |
+|---|---|---|---|---|---|---|---|
+| 1 | memory-match | Memory Match | Memory | ✓ | ✓ | OK (baseline) | Original four; screenshots in guide |
+| 2 | word-tile-rush | Word Tile Rush | Word | ✓ | ✓ | OK | Original four |
+| 3 | color-flip | Color Flip | Reflex/Calm | ✓ | ✓ | OK | Original four; visual + turn-based modes |
+| 4 | beacon-lattice | Beacon Lattice | Logic | ✓ | ✓ | OK | Original four; only genuine gameplay captures |
+| 5 | tic-tac-toe | Tic-Tac-Toe | Pass & Play | — | — | **F-M1** | PR #25; 3×3 / 4×4 / match modes |
+| 6 | dots-and-boxes | Dots & Boxes | Pass & Play | — | — | **F-M7** | PR #25; 4×4 / 6×6 |
+| 7 | four-in-a-row | Four in a Row | Pass & Play | — | — | OK | PR #25; 7×6 / 6×5 |
+| 8 | reversi | Reversi | Pass & Play | — | — | **F-M6, F-m4** | PR #25; 8×8, hints, auto-pass |
+| 9 | last-token | Last Token | Pass & Play | — | — | F-m3, F-m15 | PR #25; 3 presets, misère |
+| 10 | pass-the-picture | Pass the Picture | Pass & Play | — | — | F-m5 (minor) | PR #25; co-op canvas, local PNG |
+| 11 | klondike | Klondike Solitaire | Solitaire | — | ✓ | **F-M2, F-m1** | PR #26; shared solitaire engine |
+| 12 | freecell | FreeCell | Solitaire | — | ✓ | **F-M3, F-m1** | PR #26 |
+| 13 | nonogram | Nonogram | Logic | — | ✓ | OK (F-m19 doc) | PR #26 |
+| 14 | twenty-forty-eight | 2048 | Logic | — | ✓ | OK (F-m1) | PR #26 |
+| 15 | tile-garden | Tile Garden | Merge | — | ✓ | **F-M4, F-m1** | PR #26; emoji tiles |
+| 16 | word-search | Word Search | Word | ✓ | ✓ | **F-M5, F-m2** | PR #28 |
+| 17 | mini-sudoku | Mini Sudoku 6×6 | Logic | ✓ | ✓ | **F-M5, F-m2, F-M12** | PR #28 |
+
+Registry order = display order everywhere (arcade, collections, My Arcade). 6 featured games drive the home grid; 3 Pass & Play highlights (tic-tac-toe, dots-and-boxes, pass-the-picture) drive the home Pass & Play section.
+
+### 5.2 Guides (11)
+beacon-lattice, color-flip, freecell, klondike, memory-match, mini-sudoku, nonogram, tile-garden, twenty-forty-eight, word-search, word-tile-rush. All map to existing games; none for the six Pass & Play games (see F-M10).
+
+### 5.3 Articles (25)
+- **Game articles (19):** freecell, how-diagonal-letter-paths (word-tile-rush), how-exact-coverage (beacon-lattice), how-move-counting (memory-match), how-to-find-forced-beacon (beacon-lattice), keyboard-and-accessible-play (beacon-lattice), keyboard-strategy (memory-match), klondike, managing-a-rising-word-game-grid (word-tile-rush), memory-match-systematic-board-scan, mini-sudoku, nonogram, tile-garden, timing-a-color-change (color-flip), twenty-forty-eight, understanding-the-four-color-cycle (color-flip), visual-mode-versus-turn-based (color-flip), word-search, word-tile-rush-longer-word-scoring.
+- **Platform articles (6):** designing-browser-games-for-more-ways-to-play, five-new-single-player-games-for-quiet-arcade, how-nocharge-saves-scores-without-an-account, how-nocharge-tests-browser-games, pass-and-play-two-players-one-device, what-quiet-arcade-means-at-nocharge (F-M8/F-m12).
+- 17 of 25 are `featured: true`.
+
+### 5.4 Collections (5)
+browser-games-without-accounts (17 games), games-for-a-short-break (14), keyboard-friendly-browser-games (16; F-m14), pass-and-play (6), untimed-or-reduced-pressure-browser-games (16). All member games exist; all reasons ≥ 20 chars (schema-enforced); build-time validation in `collection-validation.ts`.
+
+### 5.5 Quiet Setup (18 articles)
+Feed-validated (18 items), 19 direct paid Amazon links with `tag=nocharge-20` + new-tab policy, per-article artwork, validators green.
+
+### 5.6 Changelog (10 entries)
+2026-08-15 ×4 (launch, adsterra-era consent, artwork, accessibility), 08-18 AdSense replacement, 08-19 beacon + editorial, 08-21 brand + My Arcade, 08-22 Pass & Play. **Missing: solo-game launches (F-m11).**
+
+### 5.7 Public routes (92 built pages)
+Top-level: `/`, `/about/`, `/accessibility/`, `/advertising/`, `/arcade/`, `/articles/` (+25), `/changelog/`, `/collections/` (+5), `/games/` (+17), `/guides/` (+11), `/help/`, `/media/`, `/my-arcade/`, `/privacy/`, `/setup/` (+18), `/terms/`, `/404` (custom, no-index, no ads). Non-HTML: `/feed.xml` (10 items), `/setup/feed.xml` (18 items), `/sitemap.xml` (91 URLs), `/sitemap-setup.xml`, `/health.json`, `/manifest.webmanifest`, `/robots.txt`, `/ads.txt`, `CNAME` (nocharge.net), `/icons/*`, `/brand/*`, `/social/*`, `/game-art/*`, `/editorial-art/*`, `/setup-art/*`, `/game-assets/*` (blip/pop/win.wav), `/apple-touch-icon.png`, favicon set, `/.well-known/security.txt`.
+
+### 5.8 Art packages
+17 game packages (icon, cover-square, cover-landscape, guide-header, social-card — webp+jpg; plus 3 "original four" screenshot pairs; plus unreferenced hero-square/landscape-800–1600/svg sources — F-m18), 21 editorial-art sets, 19 setup-art sets, brand kit + PWA icons + media kit (all validated).
+
+---
+
+## 6. Per-page audit
+
+| Route | Status | Findings |
+|---|---|---|
+| `/` | 200 ✓ | Hero, 6 featured cards, Pass & Play section (3 cards + See all), guides, articles, FAQ, CTA. FAQ keyboard list is accurate but omits Pass & Play (acceptable). Recently Played strip works. No findings. |
+| `/arcade/` | 200 ✓ | 17 cards (11 solo + 6 P&P with "2 players" pill), anchor nav, `games.length` fact (17, correct). **F-M10** ("Every game has a field guide"). |
+| `/games/<slug>/` ×17 | 200 ✓ each | Hero art (F-M1/2/3/4/5/6/7 per game), controls section, About, facts, related games/articles, VideoGame schema + per-game social card. Mini Sudoku: **F-M12** in controls list. Word Search: F-m6 in description/controls. |
+| `/guides/` | 200 ✓ | 11 cards. **F-M10** ("Guides for every arcade game"). |
+| `/guides/<slug>/` ×11 | 200 ✓ each | Guide header art (carries F-M1/2/3/4/6/7 where present), Play aside icon (F-m1, F-m2), diagrams/screenshots for the original four. Mini Sudoku guide explains the missing pencil marks (F-M12). |
+| `/articles/` | 200 ✓ | 25 cards; featured filter + game/platform grouping correct. |
+| `/articles/<slug>/` ×25 | 200 ✓ each | Article schema with game social image; affiliate policy intact (8+10 paid articles, new-tab, disclosure). what-quiet-arcade: **F-M8, F-m12**. |
+| `/collections/` | 200 ✓ | 5 cards. |
+| `/collections/<slug>/` ×5 | 200 ✓ each | Build-time membership validation; reasons render; pass-and-play lists all six. keyboard collection: F-m14. |
+| `/setup/` + `/setup/<slug>/` ×18 | 200 ✓ | Feed + validators green; affiliate new-tab cue present. cable-management: **F-m10** (4 numeric ids). |
+| `/changelog/` | 200 ✓ | 10 entries, date-desc. **F-m11** (missing launch entries). |
+| `/my-arcade/` | 200 ✓, no ads | Continue-playing (Recently Played), 11 solo cards, P&P section (empty-state + records), storage explanation, Clear control. **F-M11** (clear copy "four solo games"). |
+| `/about/` | 200 ✓, no ads | **F-M8** ("current arcade catalog is" the original four). |
+| `/help/` | 200 ✓, no ads | Pass & Play help section accurate (handoff, session names, local records, PTP pointer note). |
+| `/accessibility/` | 200 ✓, no ads | **F-M9** (stale keyboard inventory; review date predates PR #25). |
+| `/advertising/` | 200 ✓, no ads | Accurately describes the single-banner model, Google consent platform, no own ad toggle. |
+| `/media/` | 200 ✓, no ads | **F-M8** (boilerplate "ten original games: four solo…"). Kit + brand assets validated. |
+| `/privacy/` | 200 ✓, no ads | Local-data section covers Pass & Play keys, exclusions correct (consent + Google storage untouched); Clear control shares the allowlist. |
+| `/terms/` | 200 ✓, no ads | No findings. |
+| `/404` | 404 ✓ | Custom, no-index, no ads, two escape links. |
+| `/health.json` | 200 ✓ | `{status:"ok", site, release, builtAt}`; release fixed at 1.0.0 (CI never sets `PUBLIC_RELEASE`). |
+| `/feed.xml`, `/setup/feed.xml` | 200 ✓ | Validators pass (10 / 18 items, no affiliate content in general feed). |
+| `/sitemap.xml`, `/sitemap-setup.xml` | 200 ✓ | 91 + setup URLs; ad-free pages correctly excluded/included; robots.txt points at both. |
+| Static files | 200 ✓ | `ads.txt` matches publisher config exactly; `CNAME` = nocharge.net; manifest + icon set validated; `security.txt` present. |
+
+Ad placement is consistent by design: banner on all indexable pages except the 11 pages that explicitly pass `showAds={false}` (404, about, accessibility, advertising, changelog, media, my-arcade, privacy, terms, setup index + setup articles). No page has two banners; the banner is in-flow and labelled.
+
+---
+
+## 7. Per-game audit
+
+### Pass & Play (PR #25) — six games
+Shared infrastructure (`src/games/shared/pass-play.ts`, `HandoffScreen.astro`): handoff dialog with focus trap, Escape/Enter-continue, focus return, session-only names (never persisted — verified in code and by e2e), one bounded record per game, `keepVisible` only for Pass the Picture, forced-colors treatment. Engines are pure and unit-tested; e2e suite (`pass-and-play.spec.ts`, 39 tests) covers moves, handoff, names, records, keyboard, axe, reduced-motion, pause-recovery. **No functional findings in any of the six** — the findings are art/copy:
+
+| Game | Functional | Art | Copy/other |
+|---|---|---|---|
+| Tic-Tac-Toe | ✓ (3×3/4×4/match, alternating opener, first-to-3, bounded record) | **F-M1** wrong winning line in all 4 assets | — |
+| Dots & Boxes | ✓ (chain rule, 4×4/6×6, 320 px scroll contained) | **F-M7** P2 colour wrong | — |
+| Four in a Row | ✓ (7×6/6×5, alternating opener, drop anim gated by reduced motion) | OK (colours match; mid-game state, no false win) | — |
+| Reversi | ✓ (standard start verified: black d5/e4, white d4/e5; auto-pass; legal-move hints) | **F-M6** disc colours + alt; F-m4 hint glyph | — |
+| Last Token | ✓ (misère, 3 presets, alternating opener) | F-m3 piles vs presets | F-m15 double sound |
+| Pass the Picture | ✓ (2–5 passes, shared-visible handoff, undo restores author's pass, local PNG download) | F-m5 palette/canvas mismatch | — |
+
+### Solo games
+
+| Game | Functional | Art | Copy/other |
+|---|---|---|---|
+| Memory Match | ✓ (baseline; native buttons; best-moves key) | OK | — |
+| Word Tile Rush | ✓ (timer starts on first letter; Submit button) | OK | — |
+| Color Flip | ✓ (visual + turn-based, pause, focus-on-Play-again) | OK | — |
+| Beacon Lattice | ✓ (24 puzzles, progress, only genuine gameplay captures) | OK | — |
+| Klondike | ✓ (shared solitaire engine, D/U shortcuts, games-won + best-moves) | **F-M2** clipped/off-centre; F-m1 icon | — |
+| FreeCell | ✓ (multi-card move formula, U undo, games-won) | **F-M3** clipped/empty; F-m1 icon | — |
+| Nonogram | ✓ (completion recorded once — PR #26 fix verified in code) | OK; F-m19 doc mismatch | — |
+| 2048 | ✓ (arrows/WASD, U undo, best-tile) | OK | F-m1 icon; F-m10 (shiki inline style in article) |
+| Tile Garden | ✓ (keyboard placement fixed in PR #26) | **F-M4** glyph artefacts; F-m1 icon | — |
+| Word Search | Playable (Tab/Enter; themes; hint; puzzles-solved counter) | **F-M5** placeholder cover; F-m2 icon | F-m6 keyboard claim, F-m7 hint, F-m8 unguarded storage, F-m9 ARIA, F-m13 UX edges, F-m14 collection, F-m17 no e2e spec |
+| Mini Sudoku | Playable (digits/arrows/Backspace, check/reveal/undo, unique-solution generator) | **F-M5** placeholder cover; F-m2 icon | **F-M12 pencil marks missing**, F-m8, F-m9, F-m17 |
+
+Pause/resume note (not a finding): Word Search and Mini Sudoku controllers implement no-op pause — acceptable because both are untimed; the shared toolbar overlay still blocks the board.
+
+---
+
+## 8. Recommendations (prioritized fix list)
+
+**Batch 1 — Artwork (the reported issue; all are generator/content fixes, no gameplay risk)**
+1. **R1 (F-M1):** Fix the tic-tac-toe motif in `scripts/generate-pass-play-art.mjs` to draw the winning indicator along the actual diagonal of the depicted marks (or change the marks so the horizontal line wins), then regenerate the four assets. Add a sanity check to the generator (or a test) that the marked line is a winning line per `findWinner`.
+2. **R2 (F-M2, F-M3):** Re-tune `generate-klondike-art.mjs` / `generate-freecell-art.mjs` bounding-box math so nothing clips at any canvas size, and centre the landscape compositions (or deliberately frame the negative space). Regenerate.
+3. **R3 (F-M4):** In `generate-tile-garden-art.mjs`, replace emoji `<text>` with vector shapes (or install/point to an emoji font before rasterizing). Regenerate; verify no code-point text survives in the output.
+4. **R4 (F-M5):** Produce real covers for Word Search and Mini Sudoku (letter grid with a highlighted word; 6×6 grid with clues) and matching icons; correct the two `alt:` strings.
+5. **R5 (F-M6, F-M7, F-m4, F-m3, F-m5-PTP):** Align Pass & Play art with the games: Reversi black/white discs + solid-dot hint marker; Dots & Boxes P2 in #7dd3fc; Pass the Picture swatches equal to `PICTURE_PALETTE` and 4:3 canvas; Last Token piles matching a real preset. Regenerate.
+6. **R6 (F-m1, F-m2):** Replace the five shared placeholder icons (and the two title-card icons) with per-game icons.
+
+**Batch 2 — Copy corrections (low risk, high trust impact)**
+7. **R7 (F-M8, F-M11):** Update the About catalog list, the Media boilerplate, and the what-quiet-arcade article to the current 17-game library (or phrase as "starts with…"); update My Arcade clear-dialog copy to the actual key scope.
+8. **R8 (F-M9):** Re-review the accessibility statement against the current 17 games (five fully keyboard Pass & Play games, PTP's documented pointer limit, new solo keyboard paths); bump the review date.
+9. **R9 (F-M10):** Either soften to "Solo games each have a field guide; Pass & Play rules are documented on their game pages" or schedule the six Pass & Play guides.
+10. **R10 (F-m12):** Fix the Mini Sudoku date: either implement pencil marks (input path + optional persistence) or remove the feature from the description, controls list, and guide.
+11. **R11 (F-m11, F-m12, F-m16):** Add the missing changelog entries (solo games + sound, Word Search + Mini Sudoku), correct the what-quiet-arcade metadata date, and refresh the `MY_ARCADE_DATA_MODEL.md` key count.
+
+**Batch 3 — Word Search / Mini Sudoku hardening + process**
+12. **R12 (F-m6, F-m7, F-m13, F-m14):** Add real keyboard navigation to Word Search (arrow-cursor + Enter, matching the rest of the arcade) or downgrade the copy to what exists; make the hint announce only the first letter; clear stale hint highlights; add a visible New-puzzle affordance on completion; tighten the keyboard-collection rationale.
+13. **R13 (F-m8, F-m9):** Route both games through the shared guarded storage helpers; complete the grid ARIA (gridcell roles/indices, colcount) or drop `role="grid"`.
+14. **R14 (F-m10):** Add an `.htmlvalidate` config (exclude Shiki inline styles as the historical audit intended) and fix the four numeric ids in the cable-management article.
+15. **R15 (F-m17):** Add gameplay e2e specs for Word Search and Mini Sudoku (mount, solve flow, keyboard, storage) to match the other 15 games.
+16. **R16 (F-m18):** Remove or reference the unreferenced art (hero-square set, landscape-800/1200/1600, committed cover SVGs, Pass & Play `source.svg`) — keep source SVGs in `scripts/` or a non-public location if they should exist at all.
+17. **R17 (process, addresses the root cause of F-M1…F-M7, F-m19):** Add a visual-review step for generated artwork to the PR checklist: the art generators are deterministic, so a PR that regenerates art should diff the outputs and at least one reviewer must open the rasters (the current "DOM assertions only" reviews are exactly how all of these shipped). Cheap automation: a CI job that re-runs the generators and fails if committed assets drift from the generators.
+
+**Suggested sequencing:** Batch 1 + R7–R10 are the user-visible fixes (≈ the "fixes come next" scope). Batch 3 is hardening. None of the findings require schema, storage-key, or routing changes, so the fix PRs can land independently without regressing currently-working behaviour.
+
+---
+
+## Appendix — evidence pointers
+
+- Winning-line math: `src/games/tic-tac-toe/engine.ts` `findWinner` vs. `scripts/generate-pass-play-art.mjs` tic-tac-toe motif (dashed line at `y0 + 2*cell + cell/2`).
+- Colour sources: `src/games/dots-and-boxes/main.ts` (`PLAYER_COLORS`), `src/games/reversi/styles.css` (`rev__cell--black/--white`), `src/games/pass-the-picture/engine.ts` (`PICTURE_PALETTE`), `src/games/pass-the-picture/main.ts` (canvas 960×720).
+- Emoji artefact: `scripts/generate-tile-garden-art.mjs` (`tierEmoji` in `<text>`) vs. `src/games/tile-garden/main.ts` (in-browser emoji, unaffected).
+- Placeholder icons: identical md5 `1ff8eb1dc5b7c5f080f5e6fca3252aea` across five `icon.svg` files; usage in `src/pages/guides/[slug].astro` (`guide-play__icon`, 44 px).
+- Pencil marks: `src/content/games/mini-sudoku.md` (controls list), `src/content/guides/mini-sudoku.md` (§Pencil marks), `src/games/mini-sudoku/main.ts` (`marks` never written), `src/lib/local-game-data.ts` (`sudoku-pencil-marks`), `src/lib/my-arcade/my-arcade.test.ts` (key asserted in clear list).
+- Stale counts: `src/pages/about.astro`, `src/pages/media.astro:77,90`, `src/content/articles/what-quiet-arcade-means-at-nocharge.md:16`, `src/pages/my-arcade.astro:227`.
+- Guide coverage: 11 files in `src/content/guides/` vs. 17 games; arcade CTAs at `src/pages/arcade.astro` (arcade-guide-cta) and `src/pages/guides/index.astro` (all-guides-heading).
+- html-validate failures: `npm run validate:html` (6 errors) — Shiki inline styles in `dist/articles/twenty-forty-eight-…` and `dist/guides/twenty-forty-eight`; numeric ids in `dist/setup/cable-management-for-a-calm-desk`.
+- Crawl: 94 HTML routes, 0 missing assets/routes (this audit's scratch crawler, not committed).
+- CI gate: `.github/workflows/deploy.yml` — `npm run check` → `npm run build` → `playwright test --project=chromium` → GitHub Pages.
