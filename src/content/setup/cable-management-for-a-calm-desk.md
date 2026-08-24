@@ -24,19 +24,19 @@ A desk covered in tangled cables creates visual noise. Even if you don't conscio
 
 Before buying organizers, try these free strategies:
 
-### 1. Group cables by destination
+### Group cables by destination
 
 Gather all cables going to the same area (monitor, computer, charger) and bundle them together with a twist tie, rubber band, or spare bread clip. Three bundles are calmer than twelve individual cables.
 
-### 2. Route cables behind the desk
+### Route cables behind the desk
 
 Most cables can reach their destination by going behind the desk edge rather than across the surface. Push cables to the back of the desk and let them drop behind.
 
-### 3. Unplug what you don't use
+### Unplug what you don't use
 
 Chargers for devices that aren't currently charging, USB cables for disconnected peripherals, and power strips for unused devices all add visual clutter. Unplug and store them.
 
-### 4. Use the desk's built-in routing
+### Use the desk's built-in routing
 
 Many desks have cable holes, channels, or hooks on the underside. Route power and data cables through these to keep them off the visible surface.
 

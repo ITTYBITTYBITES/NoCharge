@@ -17,7 +17,7 @@ artwork:
   socialCard: /game-art/mini-sudoku/social-card.jpg
   socialCardFallback: /game-art/mini-sudoku/social-card.jpg
   socialCardWebp: /game-art/mini-sudoku/social-card.webp
-  alt: Programmatic mini-sudoku illustration in the Quiet Arcade palette
+  alt: 6×6 grid with given digits and pencil notes in the Quiet Arcade palette
 genre: Logic
 difficulty: Cell-count levels
 session: 5–20 min
@@ -27,9 +27,11 @@ presentation:
   controlsHeading: Fill each row, column, and 3×2 box with digits 1–6.
   controls:
     - label: Fill
-      description: Select a cell and type a digit from 1 to 6.
+      description: Select a cell and type a digit from 1 to 6, or use the on-screen digit pad.
     - label: Pencil marks
-      description: Keep small candidate notes in a cell while you work.
+      description: Toggle Marks, then enter digits in an empty cell to keep small candidate notes while you work.
+    - label: Clear or undo
+      description: ✕ or Backspace clears the selected cell; U undoes the last entry.
     - label: Check or reveal
       description: Check highlights wrong cells; Reveal fills only the selected cell.
 ---

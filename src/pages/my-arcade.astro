@@ -13,7 +13,7 @@ const games = (await getCollection('games'))
 // Section 2 lists the six Pass & Play games in registry order. Each row shows
 // only the most recent match record, read from nocharge:passplay:match:* keys.
 const passPlayGames = games.filter((game) => isPassPlayGameId(game.id));
-// The solo dashboard keeps exactly the four games it has always shown.
+// The solo dashboard lists every solo game in registry order.
 const soloGames = games.filter((game) => !isPassPlayGameId(game.id));
 
 const title = 'My Arcade';
@@ -157,8 +157,8 @@ const schema = [
         </div>
         <div class="ma-games__grid">
           {
-            /* Section 1 stays the solo dashboard: four games, unchanged. The
-               Pass & Play games are covered by their own section below. */
+            /* Section 1 is the solo dashboard: every solo game in registry order.
+               The Pass & Play games are covered by their own section below. */
             soloGames.map((game) => (
               <article class="ma-card panel" data-ma-card={game.id}>
                 {game.data.artwork && (
@@ -224,8 +224,9 @@ const schema = [
         <div class="ma-confirm" data-ma-clear-confirm hidden>
           <p class="ma-confirm__title">Remove saved game data from this browser?</p>
           <p>
-            This removes best scores for all four solo games, Memory Match fewest moves, Beacon Lattice puzzle
-            progress, the shared sound preference, Recently Played, and the six Pass &amp; Play match records. It
+            This removes best scores and saved progress for all eleven solo games — including Memory Match fewest moves
+            and Beacon Lattice puzzle progress — the shared sound preference, Recently Played, and the six Pass
+            &amp; Play match records. It
             does not change your analytics consent choice, Google&rsquo;s Privacy &amp; messaging choices, or any
             other storage on this device.
           </p>

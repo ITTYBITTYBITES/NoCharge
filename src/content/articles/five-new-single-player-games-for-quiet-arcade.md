@@ -4,7 +4,7 @@ description: Klondike Solitaire, FreeCell, Nonogram, Twenty Forty-Eight, and Til
 kind: platform
 category: announcement
 published: "2026-08-22"
-updated: "2026-08-22"
+updated: "2026-08-24"
 author: "NoCharge"
 reviewer: "NoCharge"
 readTime: 5
@@ -53,6 +53,6 @@ Read: [Tile Garden calm design](/articles/tile-garden-on-nocharge-a-calm-merge-g
 
 ## What this means for the arcade
 
-The Quiet Arcade now has nine solo games and six pass-and-play games. The homepage grid shows all nine solo titles. The existing collections — keyboard-friendly, untimed, without accounts, and short-break games — have been updated to include the new titles where they fit.
+The Quiet Arcade has grown since: eleven solo games and six pass-and-play games. The homepage grid features a selection of titles — Memory Match, Word Tile Rush, Color Flip, Beacon Lattice, Word Search, and Mini Sudoku — while the full catalog lives on the [Arcade page](/arcade/). The existing collections — keyboard-friendly, untimed, without accounts, and short-break games — have been updated to include the new titles where they fit.
 
 Nothing about the existing games has changed. Memory Match, Word Tile Rush, Color Flip, Beacon Lattice, and the six pass-and-play titles continue to work exactly as before.
