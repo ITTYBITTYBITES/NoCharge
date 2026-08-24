@@ -3,7 +3,7 @@
 **Audit date:** 2026-08-24
 **Branch / commit:** `arena/01a03563-nocharge` from `main` @ `230cb76` ("Merge PR #29: Fix Quiet Setup illustrations and complete PR #28 gaps")
 **Scope:** Every public route, every game, all content collections, generated artwork, local-storage model, metadata/SEO, security posture, and CI-validated behavior — the entire shipped site.
-**Mode:** Investigation only. **No fixes are made in this PR.** Findings are catalogued for a follow-up fix PR.
+**Mode:** Investigation (2026-08-24), then **user-directed fixes in the same PR.** The original investigation-only constraint was lifted with the instruction: *"Fix every single thing you found and then scan everything again to make sure it didn't introduce errors."* Every finding below is resolved in this PR (§9), and §10 re-runs the full validation battery to prove no regressions. Mobile/gameplay browser testing was explicitly handed off to a separate agent with a real browser environment; the Playwright suite (including two new gameplay specs) is the browser gate for this PR in CI.
 
 ## Severity definitions (used consistently throughout)
 
@@ -26,7 +26,8 @@
 | `npm run validate:feed`, `validate:brand`, `validate:media-kit`, `validate:brand-media`, `validate:setup`, `inspect:favicons` | all passed |
 | Full crawl of all 94 HTML routes (status, h1/title, every local `src`/`href` vs. `dist/`) | **no missing routes, no missing assets, no page without an h1 or title** |
 | Artwork: every one of the 17 game-art packages visually inspected (cover-square, cover-landscape, plus source SVGs and generator scripts) | Findings F-M1…F-M7 (below) |
-| Playwright e2e suite | **Not re-runnable in this sandbox** (browser binary download blocked by the network). Findings therefore rest on code review + the unit/build/validator gates above + visual inspection; CI (`deploy.yml`: `npm run check` → build → `playwright test --project=chromium`) remains the browser gate. |
+| Playwright e2e suite | **Not re-runnable in this sandbox** (browser binary download blocked by the network). Findings therefore rest on code review + the unit/build/validator gates above + visual inspection; CI (`deploy.yml`: art-drift check → `npm run check` → build → `playwright test --project=chromium`) is the browser gate. |
+| Post-fix re-scan (the whole table re-run, plus the 94-route crawl, content greps, and generator determinism checks) | See **§10 Re-scan results** — all green. |
 
 Note on the historical visual-review process: `docs/PASS_AND_PLAY_VISUAL_REVIEW.md` and `docs/NEW_SOLO_GAMES_VISUAL_REVIEW.md` state they are "built from capture-time DOM assertions (green CI = PASS), **not by hand-opened images**." That is exactly why the broken raster artwork in this audit shipped: e2e tests assert that the right image *files are referenced*, never what the pixels show. See Recommendation R8.
 
@@ -38,7 +39,7 @@ The Pass & Play merge (PR #25) and everything shipped since are **functionally s
 
 The damage is concentrated in **generated artwork and stale copy**:
 
-- **Count by severity: 0 Critical · 13 Major · 20 Minor.**
+- **Count by severity: 0 Critical · 15 Major · 21 Minor.** (13 Major / 20 Minor at investigation time; F-M14, F-M15 and F-m21 were found *while fixing* — catalogued in their sections below and resolved the same way.)
 - The reported "hero/thumbnail images on the new game cards look wrong" is confirmed and is broader than the six Pass & Play cards:
   - **Tic-Tac-Toe** cover/hero/social art draws the "winning line" as a horizontal dashed line through the bottom row — which is `X O X`, **not a win**; the actual win on the pictured board is the diagonal, which the art does not mark (and the alt text claims).
   - **Dots & Boxes** and **Reversi** covers use player colors that don't match the game (P2 light-pink instead of light-blue; teal discs instead of black discs), and their alt texts contradict the pixels.
@@ -46,6 +47,8 @@ The damage is concentrated in **generated artwork and stale copy**:
 - Copy that predates the current 17-game catalog still says the arcade has "ten games / four solo titles" on the About page, the Media boilerplate, and two featured articles (one of which also claims the homepage grid shows "all nine solo titles" — it shows the six featured games); the local-storage explainer article lists only the original four games' keys; the accessibility statement predates Pass & Play; "Every game has a field guide" is false (11 of 17 games have guides); and Mini Sudoku advertises **pencil marks that do not exist in the game**.
 
 Nothing here blocks play. Nothing touches the no-account / local-data / no-dark-patterns promise. But the art and copy findings are exactly what users will notice on first contact, and several are one-line generator or content fixes.
+
+**Resolution (same day):** the investigation-only mode was lifted and **all 36 findings were fixed in this PR** — seven artwork-generator rewrites plus a full regeneration of all 17 packages, Mini Sudoku and Word Search gameplay hardening (which surfaced the two new Major findings F-M14/F-M15), copy corrections across About/Media/Accessibility/My Arcade/arcade/guides/game pages/three articles/one collection, the storage-key truth (five dead clear keys removed, two planned persistences implemented), two missing changelog entries, five internal docs, two new e2e gameplay specs, an html-validate config, and a CI art-drift gate. §9 maps every finding to its fix; §10 is the regression re-scan.
 
 ---
 
@@ -134,6 +137,20 @@ The arcade now has **17 games (11 solo + 6 Pass & Play)**, but:
 - **What:** The article says "The current implementation can use these NoCharge game keys:" and lists seven — all of them from the original four games (Memory Match ×2, Word Tile Rush, Color Flip ×2, Beacon Lattice ×2) plus the shared mute preference and Recently Played. It omits the score/progress keys of **all seven new solo games** (Klondike, FreeCell, Nonogram, 2048, Tile Garden, Word Search, Mini Sudoku) and the six Pass & Play match records (`nocharge:passplay:match:<id>`). The clearing paragraph says the control removes "the current score keys, Memory Match fewest moves, Beacon Lattice progress, the shared mute preference, and the Recently Played list" — omitting the P&P records that the Privacy page (which is accurate) and the My Arcade dialog's real scope both include.
 - **Why Major:** this is the public explainer for the site's core no-account/local-data promise, and a visitor who reads it concludes NoCharge stores far less (and that clearing removes less) than is true. It contradicts the Privacy page and `docs/MY_ARCADE_DATA_MODEL.md` on the same facts.
 
+### F-M14 — Mini Sudoku is unplayable on touch devices (no digit-entry path)
+- **Where:** `src/games/mini-sudoku/main.ts` (pre-fix).
+- **What:** Cells are `<button>`s, not `<input>`s, and the only digit-entry path was a physical 1–6 keyboard — buttons never open a soft keyboard. On phones and tablets a cell can be *selected* but never *filled*: the game cannot be played at all on the device class where most casual play happens. Every other one of the 17 games has a touch path (native buttons, tap-to-select, or pointer handlers — verified game by game during the fix phase).
+- **Why Major:** a featured game that is unfinishable on touch, while the site markets itself on touch-friendly calm play.
+- **Found:** during the fix phase (the F-M12 pencil-mark work exposed that the game had no input path at all).
+- **Fix (this PR):** on-screen digit pad (1–6 + ✕ erase), shared `clearSelected()` for Backspace and ✕, and the pencil-mark mode (see F-M12). Regression-tested in `tests/e2e/mini-sudoku.spec.ts`.
+
+### F-M15 — Mini Sudoku arrow-key play dies after the first press
+- **Where:** `src/games/mini-sudoku/main.ts` (pre-fix keydown handler; verified pre-existing against `git show HEAD:src/games/mini-sudoku/main.ts`).
+- **What:** Each arrow key calls `render()`, which rebuilds all 36 cell buttons (`grid.innerHTML = ''`). The currently focused button is destroyed mid-keystroke, focus falls to `<body>`, and the *next* arrow key targets `body` — whose keydown never bubbles through the game root where the listener is attached. Selection moves exactly one step, then silently stops.
+- **Why Major:** arrow + 1–6 is the documented keyboard path — the game's accessibility story — and it degrades one keypress in. (Word Search is unaffected: its arrow handler moves focus without re-rendering.)
+- **Found:** during the fix phase, while re-reading the keydown path for F-M14.
+- **Fix (this PR):** arrow handlers `render()` and then focus the newly selected cell; roving `tabIndex` (selected = 0, others −1). Covered by the "arrow keys keep focus inside the grid across repeated presses" e2e test, which presses four arrows in a row and asserts focus followed each one.
+
 ---
 
 ## 4. Minor findings
@@ -178,6 +195,8 @@ The arcade now has **17 games (11 solo + 6 Pass & Play)**, but:
 
 **F-m20 — Four internal docs still describe pre-PR #26/#28 catalogs.** `docs/ART_ASSETS.md` says raster covers are reproducible with `art:memory/word/color/beacon/passplay` only — `package.json` also carries `art:klondike`, `art:freecell`, `art:nonogram`, `art:2048`, `art:tile-garden`, `art:word-search`, `art:mini-sudoku` (plus `art:solo-new`). `docs/CONTENT_DEPTH_REVIEW.md` ("/arcade/ … Compare ten games by genre"), `docs/MANUAL_ACCESSIBILITY_CHECKLIST.md` ("checks for all ten games (four solo plus the six Pass & Play games)"), and `docs/BRAND_GUIDE.md`'s screenshot table ("for all four solo games; none for the six Pass & Play games") all describe the 4/10/15-game eras. Internal-only staleness, but the accessibility checklist is the record of which checks were actually performed.
 
+**F-m21 — Clear-allowlist keys that no game code ever writes.** `CLEARABLE_GAME_DATA_KEYS` (`src/lib/local-game-data.ts`, asserted in `src/lib/my-arcade/my-arcade.test.ts`) listed seven keys that no game ever wrote: five `nocharge:<id>:high` keys (klondike, freecell, nonogram, twenty-forty-eight, tile-garden) — those games record progress under *named* keys (`games-won`, `best-moves`, `puzzles-revealed`, `best-tile`, `best-tier`) and never call `saveScore()` — plus `nocharge:word-search:last-list` and `nocharge:sudoku:current-puzzle`, two persistence features that were planned but never implemented. Dead clear entries are harmless at clear time, but the data model and its unit tests described storage that does not exist. **Fix (this PR):** the two persistences were implemented (Word Search saves/restores its last theme list; Mini Sudoku saves the in-progress puzzle on every render and validates any restore against the puzzle's unique solution), so those two keys are now real; the five dead `*:high` keys were removed from `GAME_SCORE_IDS` and from both unit-test lists; `docs/MY_ARCADE_DATA_MODEL.md` §4 was rewritten to the true key inventory (F-m16).
+
 ---
 
 ## 5. Inventory
@@ -220,14 +239,14 @@ browser-games-without-accounts (17 games), games-for-a-short-break (14), keyboar
 ### 5.5 Quiet Setup (18 articles)
 Feed-validated (18 items), 19 direct paid Amazon links with `tag=nocharge-20` + new-tab policy, per-article artwork, validators green.
 
-### 5.6 Changelog (10 entries)
-2026-08-15 ×4 (launch, adsterra-era consent, artwork, accessibility), 08-18 AdSense replacement, 08-19 beacon + editorial, 08-21 brand + My Arcade, 08-22 Pass & Play. **Missing: solo-game launches (F-m11).**
+### 5.6 Changelog (10 entries at audit time → 12 after fixes)
+2026-08-15 ×4 (launch, adsterra-era consent, artwork, accessibility), 08-18 AdSense replacement, 08-19 beacon + editorial, 08-21 brand + My Arcade, 08-22 Pass & Play. **Missing at audit: solo-game launches (F-m11) — both entries added in this PR (2026-08-22 solo games + sound pass; 2026-08-23 Word Search + Mini Sudoku).**
 
 ### 5.7 Public routes (92 built pages)
 Top-level: `/`, `/about/`, `/accessibility/`, `/advertising/`, `/arcade/`, `/articles/` (+25), `/changelog/`, `/collections/` (+5), `/games/` (+17), `/guides/` (+11), `/help/`, `/media/`, `/my-arcade/`, `/privacy/`, `/setup/` (+18), `/terms/`, `/404` (custom, no-index, no ads). Non-HTML: `/feed.xml` (10 items), `/setup/feed.xml` (18 items), `/sitemap.xml` (91 URLs), `/sitemap-setup.xml`, `/health.json`, `/manifest.webmanifest`, `/robots.txt`, `/ads.txt`, `CNAME` (nocharge.net), `/icons/*`, `/brand/*`, `/social/*`, `/game-art/*`, `/editorial-art/*`, `/setup-art/*`, `/game-assets/*` (blip/pop/win.wav), `/apple-touch-icon.png`, favicon set, `/.well-known/security.txt`.
 
 ### 5.8 Art packages
-17 game packages (icon, cover-square, cover-landscape, guide-header, social-card — webp+jpg; plus 3 "original four" screenshot pairs; plus unreferenced hero-square/landscape-800–1600/svg sources — F-m18), 21 editorial-art sets, 19 setup-art sets, brand kit + PWA icons + media kit (all validated).
+17 game packages (icon, cover-square, cover-landscape, guide-header, social-card — webp+jpg each; plus the four original games' diagram SVGs and screenshot pairs). At audit time these also shipped unreferenced hero-square/landscape-800–1600/svg files (F-m18) — **all 45 removed in this PR**, canonical vectors moved to `scripts/art-sources/<slug>/source.svg` (see `docs/ART_ASSETS.md`, 2026-08-24 section). 21 editorial-art sets, 19 setup-art sets, brand kit + PWA icons + media kit (all validated).
 
 ---
 
@@ -325,6 +344,96 @@ Pause/resume note (not a finding): Word Search and Mini Sudoku controllers imple
 
 **Suggested sequencing:** Batch 1 + R7–R10 are the user-visible fixes (≈ the "fixes come next" scope). Batch 3 is hardening. None of the findings require schema, storage-key, or routing changes, so the fix PRs can land independently without regressing currently-working behaviour.
 
+**Status:** every recommendation above was implemented in this PR (see §9); R14 is the only one whose mechanics changed — `Astro` has no `{#anchor}` heading syntax (tested; the literal braces would render), so the numeric ids were removed at the source instead of remapped.
+
+---
+
+## 10. Re-scan after fixes (regression proof)
+
+Run 2026-08-24 immediately after all fixes, against a fresh `npm run build` and the live preview of `dist/`:
+
+| Check | Result |
+| --- | --- |
+| `npx vitest run` | 31 files, **325 tests passed** — engines, storage helpers, my-arcade readers and the rewritten clear-list assertions all green |
+| `npx astro check` | 0 errors, 0 warnings (34 hints) |
+| `npm run build` | **92 pages** built |
+| `npm run check:links` | 92 HTML files, 0 broken internal links |
+| `npm run validate:sitemap` | 91 public routes |
+| `npm run check:assets` | budget passed (8 scripts / 180,205 B; largest image 145,650 B) |
+| `npm run validate:html` | **0 problems** (was 6 — F-m10 resolved by `.htmlvalidate.json` + un-numbered headings) |
+| `npm run validate:feed` | Setup feed 18 items; general (changelog) feed **12 items** = 10 at audit + the two new entries (F-m11) |
+| `validate:brand` / `validate:media-kit` / `validate:brand-media` | all passed (media-kit byte-identical; 92 pages of metadata audited) |
+| `npm run validate:setup` | 18 articles, 19 direct paid links |
+| `inspect:structured-data` / `inspect:favicons` | passed |
+| `npx playwright test --list` | **434 tests in 31 files compile**, including the 14 new Word Search / Mini Sudoku gameplay tests; the full run (and axe/mobile checks) is CI's job — no browser binary exists in this sandbox |
+| 94-route live crawl of the built site | 0 missing routes, 0 missing local assets, 0 pages without h1/title, 0 status issues |
+| Content greps over `dist/` | About + Media "eleven solo titles" / "seventeen original browser games"; "Last reviewed: August 24, 2026" (accessibility); "Each solo game has a field guide" (/arcade/); "Field guides for the solo arcade games" (/guides/); eleven-game clear dialog with the test-asserted consent sentence verbatim; both new changelog slugs present; named progress keys + `nocharge:passplay:match:*` in the saves-scores article; **zero** `{#…}` brace artifacts and **zero** digit-leading ids in built HTML |
+| Art determinism | all 12 generators run back-to-back twice; md5 over every SVG + WebP/JPEG output **identical** between runs, so the new CI drift check cannot flap |
+| Art inventory | 17/17 `scripts/art-sources/<slug>/source.svg`; 17/17 distinct `icon.svg`; none of the 45 removed files is referenced by any code, test, script, or built page (grep + crawl) |
+
+**Verdict:** no regressions introduced. The only behavioural changes a user sees are the fixes themselves: the new art, the digit pad / pencil marks / U-C-R keys / focus-retention in Mini Sudoku, the arrow-cursor / hint / New-puzzle behaviour in Word Search, the corrected copy, the two new changelog entries, and the single `win` sound at Last Token round end (asserted by the updated `sound-events.spec.ts`). The 14 new gameplay tests use only deterministic discovery (seed extraction from saved state, DOM-grid word scanning, backtracking solve) so they cannot depend on a particular random puzzle, and they are written defensively — CI is their first real run.
+
+## 9. Fixes applied in this PR (finding → fix)
+
+Applied 2026-08-24 after the user lifted the investigation-only constraint. All 36 findings are resolved; "evidence" is the §10 re-scan unless a hand check is named (artwork was, per the R17 process, opened as rasters after every regeneration).
+
+### 9.1 Artwork (R1–R6, R16)
+
+All 17 packages regenerated from deterministic generators (md5-identical SVG and raster on re-run — no `Date`/`Math.random` in any generator).
+
+| Finding | Fix | Evidence |
+| --- | --- | --- |
+| F-M1 | `generate-pass-play-art.mjs`: the winning indicator is drawn corner-to-corner along the actual diagonal of the depicted marks | Regenerated tic-tac-toe package; raster opened — diagonal runs through the three X's |
+| F-M2 | `generate-klondike-art.mjs`: the fan's *rotated* bounding box is now computed per frame; the stack is shifted so margins are symmetric at 800×800, 1280×720 and 1200×630 (≥ 82 px on every edge). Re-verification during regeneration caught a **second** clip the original generator had (4th card 31 px off the bottom of the landscape frame, 51 px on the social card; the square sat low) — same fix removes it | All 16 rotated corners asserted geometrically per frame + rasters opened |
+| F-M3 | `generate-freecell-art.mjs`: eight tableau columns with visible top-card ranks (A 2 3 K Q J 10 4) and a 4 + 4 free-cell/foundation row, all inside the canvas | Square + landscape rasters opened |
+| F-M4 | `generate-tile-garden-art.mjs`: vector-drawn plants per tier (sprout / leafy / daisy / blossom) — no emoji `<text>` anywhere in the package | Raster opened: four distinct vector plants, all four tiers visible, no `01F 33F` text |
+| F-M5 | `generate-new-game-art.mjs` rewritten: Word Search cover is a real 8×8 letter grid with the QUIET row highlighted; Mini Sudoku cover is a real 6×6 grid with givens, 3×2 box lines and pencil notes; both get per-game icons | Covers + icons opened; `alt:` corrected in `src/content/games/{word-search,mini-sudoku}.md` |
+| F-M6 | `generate-pass-play-art.mjs`: discs now black `#10130f` / white `#e8e3d8` with rims, matching `src/games/reversi/styles.css` | Raster opened |
+| F-M7 | Dots & Boxes P2 drawn in the game's `#7dd3fc` | Raster opened |
+| F-m1, F-m2 | Seven new per-game icons (klondike, freecell, nonogram, twenty-forty-eight, tile-garden, word-search, mini-sudoku); the five shared placeholder icons and the two title-card icons are gone | All 17 `icon.svg` present and distinct |
+| F-m3 | Last Token motif is the 3-4-5 preset as coin stacks, middle pile's top coin highlighted | Raster opened |
+| F-m4 | Reversi hint marker is the small solid teal dot (`r = cell × 0.09`) matching the in-game legal-move hint | Raster opened |
+| F-m5 | Pass the Picture motif: 4:3 paper, swatch row exactly `PICTURE_PALETTE`, in-game stroke colours | Raster opened |
+| F-m18 | 45 unreferenced files `git rm`'d (five `hero-square` pairs, `landscape-800/1200/1600` for 2048 + Mini Sudoku, ten public SVG twins); the canonical vectors now live in `scripts/art-sources/<slug>/source.svg` — outside `public/`, never shipped | Crawl shows no missing references; `check:assets` green; `dist/` no longer carries the dead files |
+
+**Process (R17):** new `deploy.yml` step "Check generated art sources for drift" re-runs all twelve generator commands and fails on `git diff --exit-code -- scripts/art-sources` (rasters deliberately excluded — font rasterisation differs across environments); `.github/PULL_REQUEST_TEMPLATE.md` requires a human to open regenerated rasters. This addresses the root cause of F-M1…F-M7 and F-m19 (the "DOM assertions only, never hand-opened images" review process).
+
+### 9.2 Game code (R12–R15, F-M12/M14/M15, F-m21)
+
+| Finding | Fix |
+| --- | --- |
+| F-M12 | Pencil marks **implemented** (rather than de-listed): Marks toggle button (`aria-pressed`, persists `nocharge:pref:sudoku-pencil-marks`), digits route to `togglePencilMarks` in mark mode, notes rendered with `has-marks`, cleared on new puzzle/restore, ✕ clears. The documented feature now exists, so the description, controls list and guide stay true. The same cross-check found the guide's **U/C/R key claims** also unimplemented — U (undo), C (check) and R (reveal) bindings were added to the game (ignored while the difficulty select has focus) so the guide is true |
+| F-M14 | On-screen digit pad (1–6 + ✕ erase) with shared `clearSelected()` for Backspace and ✕ |
+| F-M15 | Arrow handlers re-focus the selected cell after `render()`; roving `tabIndex` |
+| F-m6 | Word Search: real arrow-key cursor navigation (roving focus, Enter/Space select) matching the rest of the arcade; game-page description/controls and the collection reason now state it (F-m14 fixed too) |
+| F-m7 | Hint announces `Hint: starting letter X` only (was: the full word in the sr-only region); stale `.is-hint` highlight cleared before the new one |
+| F-m8 | Both completion counters go through guarded try/catch helpers (`recordSolved()`); Mini Sudoku save/restore fully guarded |
+| F-m9 | `role="grid"` dropped from both boards (cells are fully labelled buttons; complete semantics without gridcell/rowindex boilerplate), `aria-rowcount` dropped with it |
+| F-m13 | Word Search: explicit **New puzzle** button with `confirm` when progress exists (theme/size switches confirm too); completed grid gets `.is-locked` (pointer-events off, dimmed) |
+| F-m15 | Last Token: single `play('win')` at round end (redundant `play('error')` removed); `sound-events.spec.ts` expectation updated to `['place', 'win']` |
+| F-m17 | New `tests/e2e/word-search.spec.ts` (7 tests) and `tests/e2e/mini-sudoku.spec.ts` (7 tests): mount, pointer find/solve, full solve → win + storage counter, arrow/Enter keyboard play, hint, new-puzzle confirm, theme persistence, digit pad, arrow focus retention (F-M15 regression), C/U/R keys, pencil marks, reload persistence |
+| F-m21 | Implemented the two dead-key persistences — `nocharge:word-search:last-list` (saved on switch, restored on mount) and `nocharge:sudoku:current-puzzle` (saved on every render; restore validates difficulty, 6×6 shape, 0–6 integers and every entry against `createPuzzle(d, seed).solution`) — and removed the five dead `*:high` keys from `GAME_SCORE_IDS` + both test lists |
+
+Both games also: current-puzzle/last-list state survives reload; `restart` controller now reinitialises cleanly; no schema, routing, or CSP changes.
+
+### 9.3 Copy and content (R7–R11, R14)
+
+| Finding | Fix |
+| --- | --- |
+| F-M8 | About: catalog now "seventeen games: eleven solo titles — … — and six Pass & Play games … listed in full on the Arcade page". Media: boilerplate lists all 11 solo titles ("seventeen original browser games — eleven solo titles and six Pass & Play"), "Last reviewed: 2026-08-24". what-quiet-arcade: "seventeen browser games now: eleven solo titles (…)". five-new-single-player-games: the "nine solo / grid shows all nine" claim is replaced with 11 + 6 and "the homepage grid features a selection of titles — … — while the full catalog lives on the Arcade page" |
+| F-M9 | Accessibility statement rewritten to cover all 17 games (Klondike/FreeCell D/U, Nonogram F/X/Space, 2048 arrows/WASD/U, Tile Garden cursor, Word Search arrows + Enter, Mini Sudoku arrows + keyboard/digit pad + U/C/R, the five keyboard Pass & Play games, Pass the Picture's documented pointer-only limit); "Last reviewed: August 24, 2026" |
+| F-M10 | `/arcade/` guide heading → "Each solo game has a field guide."; `/guides/` → "Field guides for the solo arcade games". (The "full guide" line inside `/arcade/`'s solo-only section is accurate there and was left.) |
+| F-M11 | My Arcade clear dialog → "This removes best scores and saved progress for all eleven solo games — including Memory Match fewest moves and Beacon Lattice puzzle progress — the shared sound preference, Recently Played, and the six Pass & Play match records. It does not change your analytics consent choice, …" (the `my-arcade.spec.ts`-asserted consent sentence preserved verbatim); stale page comments corrected |
+| F-M13 | saves-scores article: key list rewritten to the real keys (named per-game keys, `nocharge:pref:*` group, Recently Played, six bounded `nocharge:passplay:match:*` records); clearing paragraph now includes the six P&P records; reviewed 2026-08-24 |
+| F-m11 | Two changelog entries added — 2026-08-22 (five solo games + sound pass, `launch`) and 2026-08-23 (Word Search + Mini Sudoku, `launch`) → 12 entries, date-desc order intact |
+| F-m12 | what-quiet-arcade and five-new-single-player-games `updated: 2026-08-24` (content and metadata now in the same era) |
+| F-m14 | Keyboard collection Word Search reason → "Arrow keys move a focus cursor across a calm, untimed grid and Enter selects cells — complete play without a pointer." (true after the F-m6 fix) |
+| F-m16 | `MY_ARCADE_DATA_MODEL.md` §4 rewritten: thirty-one keys — five `:high`, eleven named progress keys, eight preference keys, Recently Played, six bounded match records |
+| F-m19 | `NEW_SOLO_GAMES_VISUAL_REVIEW.md`: nonogram described as the "plus/cross pattern" |
+| F-m20 | `ART_ASSETS.md` (full repro list + 2026-08-24 regeneration section), `CONTENT_DEPTH_REVIEW.md` ("seventeen games"), `MANUAL_ACCESSIBILITY_CHECKLIST.md` ("all seventeen games (eleven solo plus the six Pass & Play games…)"), `BRAND_GUIDE.md` screenshot table ("original four solo games only; none for the seven later solo games or the six Pass & Play games" + "generated decorative art is never presented as a live-game screenshot for any game") |
+| F-m10 | `.htmlvalidate.json` created: `html-validate:recommended` with `no-inline-style` off (Shiki token colours — the historical exclusion intent, finally with a real config). The four numeric ids fixed at the source: the cable-management step headings lost their "1.–4." prefixes (no anchor references exist anywhere in the repo; Astro has no `{#anchor}` syntax — tested, the braces would render literally). `npm run validate:html` → **0 problems** |
+| Guide drift | Word Search guide: controls rewritten (arrow-cursor + Enter/Space, Show word list / Hint / New-puzzle behaviours); Mini Sudoku guide: digit pad, Marks toggle, U/C/R documented — both now match the shipped code (`updated: 2026-08-24`) |
+
 ---
 
 ## Appendix — evidence pointers
@@ -340,4 +449,12 @@ Pause/resume note (not a finding): Word Search and Mini Sudoku controllers imple
 - Guide coverage: 11 files in `src/content/guides/` vs. 17 games; arcade CTAs at `src/pages/arcade.astro` (arcade-guide-cta) and `src/pages/guides/index.astro` (all-guides-heading).
 - html-validate failures: `npm run validate:html` (6 errors) — Shiki inline styles in `dist/articles/twenty-forty-eight-…` and `dist/guides/twenty-forty-eight`; numeric ids in `dist/setup/cable-management-for-a-calm-desk`.
 - Crawl: 94 HTML routes, 0 missing assets/routes (this audit's scratch crawler, not committed).
-- CI gate: `.github/workflows/deploy.yml` — `npm run check` → `npm run build` → `playwright test --project=chromium` → GitHub Pages.
+- CI gate: `.github/workflows/deploy.yml` — art-drift check (12 generator commands + `git diff --exit-code -- scripts/art-sources`, added in this PR) → `npm run check` → `npm run build` → `playwright test --project=chromium` → GitHub Pages.
+
+**Fix-phase evidence (this PR):**
+- Art regeneration: `scripts/art-sources/` (17 canonical `source.svg` files, outside `public/`); determinism verified by md5-comparing SVG + raster output across two consecutive runs; every regenerated raster hand-opened (see §9.1).
+- html-validate: `.htmlvalidate.json` (recommended ruleset, `no-inline-style` off for Shiki); the cable-management headings un-numbered in `src/content/setup/cable-management-for-a-calm-desk.md` (no anchor references exist in the repo).
+- New gameplay specs: `tests/e2e/word-search.spec.ts`, `tests/e2e/mini-sudoku.spec.ts` (14 tests; `npx playwright test --list` = 434 tests in 31 files).
+- Process: `.github/PULL_REQUEST_TEMPLATE.md` (art/storage/game-count checklist).
+- Storage truth: `src/lib/local-game-data.ts` (`GAME_SCORE_IDS` back to the five real `:high` keys), `src/lib/my-arcade/my-arcade.test.ts` (clear list = the real keys), the two implemented persistences in `src/games/word-search/main.ts` / `src/games/mini-sudoku/main.ts`.
+- Pre-existing F-M15 verification: `git show HEAD:src/games/mini-sudoku/main.ts` (arrow handler re-rendered without re-focus).

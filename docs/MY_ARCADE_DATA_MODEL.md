@@ -6,7 +6,7 @@ Audit of every value NoCharge already stores in the visitor's browser, and the r
 This document contains **no real visitor data and no screenshots of local storage**. Every value shown below is an
 invented representative example written for this audit.
 
-Reviewed 2026-08-21 against `src/games/`, `src/components/ConsentManager.astro`, and `src/pages/privacy.astro`; extended 2026-08-22 for the six `nocharge:passplay:match:*` keys read by the Pass &amp; Play section.
+Reviewed 2026-08-21 against `src/games/`, `src/components/ConsentManager.astro`, and `src/pages/privacy.astro`; extended 2026-08-22 for the six `nocharge:passplay:match:*` keys read by the Pass &amp; Play section; re-verified 2026-08-24 against the current allowlist (31 keys) after Word Search and Mini Sudoku began writing every key this document lists.
 
 ## 1. Scope of the audit
 
@@ -80,8 +80,11 @@ Guarantees, each covered by a unit test in `src/lib/my-arcade/my-arcade.test.ts`
 `src/lib/local-game-data.ts` is the single allowlist. `/privacy/` and `/my-arcade/` both import it, so the two
 controls cannot diverge.
 
-It removes exactly the fifteen game keys in the table above: the nine solo keys plus the six bounded
-`nocharge:passplay:match:*` records, so one confirmed flow clears both My Arcade sections together. It deliberately
+It removes exactly the thirty-one keys in `CLEARABLE_GAME_DATA_KEYS`: the five `:high` score keys of the original
+four games, the eleven named progress keys (fewest moves, games-won counts, best tile and best tier, puzzles solved
+or revealed, the Word Search last theme, and the in-progress Mini Sudoku puzzle), the eight preference keys (the
+mute and sound set, the per-game choices, and Beacon Lattice progress), the Recently Played key, and the six bounded
+`nocharge:passplay:match:*` records — so one confirmed flow clears both My Arcade sections together. It deliberately
 does **not** remove `nocharge:consent`, Google's Privacy & messaging storage, or any other origin storage. A unit
 test asserts the exact list and the untouched keys, and `tests/e2e/my-arcade.spec.ts` asserts the same thing in a
 real browser.
