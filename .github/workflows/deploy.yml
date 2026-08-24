@@ -33,6 +33,22 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Check generated art sources for drift
+        run: |
+          node scripts/generate-memory-match-art.mjs
+          node scripts/generate-word-tile-rush-art.mjs
+          node scripts/generate-color-flip-art.mjs
+          node scripts/generate-beacon-lattice-art.mjs
+          node scripts/generate-pass-play-art.mjs
+          node scripts/generate-klondike-art.mjs
+          node scripts/generate-freecell-art.mjs
+          node scripts/generate-nonogram-art.mjs
+          node scripts/generate-twenty-forty-eight-art.mjs
+          node scripts/generate-tile-garden-art.mjs
+          node scripts/generate-new-game-art.mjs word-search
+          node scripts/generate-new-game-art.mjs mini-sudoku
+          git diff --exit-code -- scripts/art-sources
+
       - name: Check types and Astro files
         run: npm run check
 
