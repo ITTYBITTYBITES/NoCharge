@@ -144,12 +144,12 @@ The arcade now has **17 games (11 solo + 6 Pass & Play)**, but:
 - **Found:** during the fix phase (the F-M12 pencil-mark work exposed that the game had no input path at all).
 - **Fix (this PR):** on-screen digit pad (1–6 + ✕ erase), shared `clearSelected()` for Backspace and ✕, and the pencil-mark mode (see F-M12). Regression-tested in `tests/e2e/mini-sudoku.spec.ts`.
 
-### F-M15 — Mini Sudoku arrow-key play dies after the first press
-- **Where:** `src/games/mini-sudoku/main.ts` (pre-fix keydown handler; verified pre-existing against `git show HEAD:src/games/mini-sudoku/main.ts`).
-- **What:** Each arrow key calls `render()`, which rebuilds all 36 cell buttons (`grid.innerHTML = ''`). The currently focused button is destroyed mid-keystroke, focus falls to `<body>`, and the *next* arrow key targets `body` — whose keydown never bubbles through the game root where the listener is attached. Selection moves exactly one step, then silently stops.
-- **Why Major:** arrow + 1–6 is the documented keyboard path — the game's accessibility story — and it degrades one keypress in. (Word Search is unaffected: its arrow handler moves focus without re-rendering.)
-- **Found:** during the fix phase, while re-reading the keydown path for F-M14.
-- **Fix (this PR):** arrow handlers `render()` and then focus the newly selected cell; roving `tabIndex` (selected = 0, others −1). Covered by the "arrow keys keep focus inside the grid across repeated presses" e2e test, which presses four arrows in a row and asserts focus followed each one.
+### F-M15 — Mini Sudoku keyboard play dies after one board mutation (arrows or digits)
+- **Where:** `src/games/mini-sudoku/main.ts` (pre-fix; verified pre-existing against `git show HEAD:src/games/mini-sudoku/main.ts`).
+- **What:** Every board mutation (arrow move, digit entry, undo, reveal, erase) calls `render()`, which rebuilds all 36 cell buttons (`grid.innerHTML = ''`). The currently focused button is destroyed, focus falls to `<body>`, and the *next* keystroke targets `body` — whose keydown never bubbles through the game root where the listener is attached. So after a single arrow press — or after typing one digit — keyboard play silently stops; "select a cell and type 1–6" fails on the second digit.
+- **Why Major:** arrow + 1–6 is the documented keyboard path — the game's accessibility story — and it degrades one keypress in.
+- **Found:** during the fix phase (arrow path) while re-reading the keydown path for F-M14; the digit-entry half was caught by the pre-CI defensive review of the new e2e specs (the C/U/R test would have failed on CI).
+- **Fix (this PR):** `render()` restores focus to the selected cell whenever focus was inside the grid (covers arrows, digit entry, undo, reveal, erase); arrow handlers additionally focus the newly selected cell explicitly; roving `tabIndex` (selected = 0, others −1). Word Search's `render()` got the same guard — its end-of-selection rebuild killed the arrow cursor after the first word found via Enter. Covered by the "arrow keys keep focus inside the grid across repeated presses" and "typing fills, U undoes, C checks, R reveals" e2e tests.
 
 ---
 
@@ -404,7 +404,7 @@ All 17 packages regenerated from deterministic generators (md5-identical SVG and
 | --- | --- |
 | F-M12 | Pencil marks **implemented** (rather than de-listed): Marks toggle button (`aria-pressed`, persists `nocharge:pref:sudoku-pencil-marks`), digits route to `togglePencilMarks` in mark mode, notes rendered with `has-marks`, cleared on new puzzle/restore, ✕ clears. The documented feature now exists, so the description, controls list and guide stay true. The same cross-check found the guide's **U/C/R key claims** also unimplemented — U (undo), C (check) and R (reveal) bindings were added to the game (ignored while the difficulty select has focus) so the guide is true |
 | F-M14 | On-screen digit pad (1–6 + ✕ erase) with shared `clearSelected()` for Backspace and ✕ |
-| F-M15 | Arrow handlers re-focus the selected cell after `render()`; roving `tabIndex` |
+| F-M15 | `render()` restores focus to the selected cell whenever focus was inside the grid — covering arrows, digit entry, undo, reveal and erase (a first pass fixed only the arrow path; the pre-CI review of the new e2e specs caught that typed digits still dropped focus to `<body>`). Word Search's `render()` got the same guard (its end-of-selection rebuild killed the arrow cursor). Explicit re-focus in the arrow handlers; roving `tabIndex` |
 | F-m6 | Word Search: real arrow-key cursor navigation (roving focus, Enter/Space select) matching the rest of the arcade; game-page description/controls and the collection reason now state it (F-m14 fixed too) |
 | F-m7 | Hint announces `Hint: starting letter X` only (was: the full word in the sr-only region); stale `.is-hint` highlight cleared before the new one |
 | F-m8 | Both completion counters go through guarded try/catch helpers (`recordSolved()`); Mini Sudoku save/restore fully guarded |

@@ -99,12 +99,12 @@ test('arrow keys move the focus cursor and Enter selects cells', async ({ page }
   const { size, letters } = await readGrid(page);
   const { start, end } = findPlacement(letters, size, 'dog');
   await cellAt(page, start.row, start.col, size).click();
-  const keyFor = (dr: number, dc: number) =>
-    dr === -1 ? 'ArrowUp' : dr === 1 ? 'ArrowDown' : dc === -1 ? 'ArrowLeft' : 'ArrowRight';
-  const dr = Math.sign(end.row - start.row);
-  const dc = Math.sign(end.col - start.col);
-  const steps = Math.max(Math.abs(end.row - start.row), Math.abs(end.col - start.col));
-  for (let i = 0; i < steps; i++) await page.keyboard.press(keyFor(dr, dc));
+  // L-shaped walk: the cursor moves one cell at a time orthogonally, so a
+  // diagonal word is reached via both axes (rows first, then columns).
+  const vKey = end.row > start.row ? 'ArrowDown' : 'ArrowUp';
+  const hKey = end.col > start.col ? 'ArrowRight' : 'ArrowLeft';
+  for (let i = 0; i < Math.abs(end.row - start.row); i++) await page.keyboard.press(vKey);
+  for (let i = 0; i < Math.abs(end.col - start.col); i++) await page.keyboard.press(hKey);
   // Focus must be on the end cell after the walk (roving tabIndex re-focused each step).
   const focused = await page.evaluate(() => (document.activeElement as HTMLElement | null)?.textContent ?? '');
   expect(focused).toBe(letters[end.row * size + end.col]);
