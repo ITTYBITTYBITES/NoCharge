@@ -48,6 +48,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
   let previousBodyStyle = '';
   let destroyed = false;
   let menu: ShellMenuState = 'closed';
+  let lastEnterTrigger: HTMLElement | null = null;
 
   const nativeFullscreenSupported =
     typeof document !== 'undefined' &&
@@ -174,11 +175,15 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     window.scrollTo(0, scrollY);
     updateFullscreen();
     announce('Focus mode exited.');
-    if (returnFocus) window.setTimeout(() => (playButton || fullscreenButton)?.focus({ preventScroll: true }), 0);
+    if (returnFocus) {
+      const target = lastEnterTrigger || playButton || fullscreenButton;
+      window.setTimeout(() => target?.focus({ preventScroll: true }), 0);
+    }
   };
 
-  const enterImmersive = () => {
+  const enterImmersive = (trigger: HTMLElement | null = null) => {
     if (immersive) return;
+    if (trigger) lastEnterTrigger = trigger;
     scrollY = window.scrollY;
     previousBodyStyle = document.body.style.cssText;
     document.body.style.position = 'fixed';
@@ -190,7 +195,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     announce('Focus mode entered. The playable board is expanded.');
   };
 
-  const requestFullscreen = async () => {
+  const requestFullscreen = async (trigger: HTMLElement | null = null) => {
     if (immersive) {
       exitImmersive();
       return;
@@ -205,8 +210,10 @@ export function mountGameShell(viewport: HTMLElement): () => void {
       return;
     }
 
+    if (trigger) lastEnterTrigger = trigger;
+
     if (!nativeFullscreenSupported) {
-      enterImmersive();
+      enterImmersive(trigger);
       return;
     }
 
@@ -214,7 +221,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
       const request = viewport.requestFullscreen as (options?: { navigationUI?: string }) => Promise<void>;
       await request.call(viewport, { navigationUI: 'hide' });
     } catch {
-      enterImmersive();
+      enterImmersive(trigger);
     }
   };
 
@@ -241,7 +248,8 @@ export function mountGameShell(viewport: HTMLElement): () => void {
       announce('Full screen entered. Pause, sound, and exit controls remain available.');
     } else if (!immersive) {
       announce('Full screen exited.');
-      window.setTimeout(() => (playButton || fullscreenButton)?.focus({ preventScroll: true }), 0);
+      const target = lastEnterTrigger || fullscreenButton || playButton;
+      window.setTimeout(() => target?.focus({ preventScroll: true }), 0);
     }
   };
 
@@ -306,12 +314,12 @@ export function mountGameShell(viewport: HTMLElement): () => void {
   });
   playButton?.addEventListener('click', () => {
     unlockAudio();
-    void requestFullscreen();
+    void requestFullscreen(playButton);
   });
-  fullscreenButton?.addEventListener('click', () => void requestFullscreen());
+  fullscreenButton?.addEventListener('click', () => void requestFullscreen(fullscreenButton));
   focusInMenu?.addEventListener('click', () => {
     setMenu('close');
-    void requestFullscreen();
+    void requestFullscreen(focusInMenu);
   });
   const restartGame = () => {
     if (!controller.restart) return;
