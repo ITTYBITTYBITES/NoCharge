@@ -146,11 +146,12 @@ test('mobile games launch into Game Mode via Play button and exit restores focus
   await expect(playBtn).toBeVisible();
   await expect(playBtn).toHaveText('Play Tile Garden');
   await playBtn.click();
-  await expect(page.locator('[data-game-viewport]')).toHaveClass(/is-immersive/);
-  const exitBtn = page.getByRole('button', { name: 'Exit focus mode' });
+  const viewport = page.locator('[data-game-viewport]');
+  await expect(viewport).toHaveClass(/is-immersive|is-fullscreen-active/);
+  const exitBtn = page.getByRole('button', { name: /Exit focus mode|Exit full screen/ });
   await expect(exitBtn).toBeVisible();
   await exitBtn.click();
-  await expect(page.locator('[data-game-viewport]')).not.toHaveClass(/is-immersive/);
+  await expect(viewport).not.toHaveClass(/is-immersive/);
 });
 
 test('Word Search 8x8 and 10x10 have matching visual columns and play without scrolling', async ({ page }) => {

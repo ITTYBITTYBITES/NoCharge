@@ -30,9 +30,8 @@ test.describe('My Arcade solo extension', () => {
     ];
 
     for (const gameId of soloGames) {
-      // Each game should have a row in the dashboard
-      const gameSection = page.locator(`[data-my-arcade-game="${gameId}"], :text("${gameId}")`).first();
-      await expect(gameSection.or(dashboard)).toBeVisible();
+      // Each game should have a card in the dashboard
+      await expect(page.locator(`[data-ma-card="${gameId}"]`)).toBeVisible();
     }
   });
 
