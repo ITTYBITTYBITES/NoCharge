@@ -55,5 +55,5 @@ for (const location of locations) {
 
 const setupSitemap = readFileSync(setupSitemapPath, 'utf8');
 const setupLocations = [...setupSitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
-if (setupLocations.length !== 19 || setupLocations.some((location) => !new URL(location).pathname.startsWith('/setup/'))) throw new Error('Dedicated setup sitemap must contain only the index and 18 articles.');
+if (setupLocations.length !== 31 || setupLocations.some((location) => !new URL(location).pathname.startsWith('/setup/'))) throw new Error('Dedicated setup sitemap must contain only the index and 30 articles.');
 console.log(`Sitemap validation passed with ${locations.length} public routes.`);

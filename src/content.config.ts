@@ -66,7 +66,7 @@ const articles = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/articles' }),
   schema: z.discriminatedUnion('kind', [
     articleBase.extend({ kind: z.literal('game'), game: gameIds, gameplayVersion: z.string().optional() }),
-    articleBase.extend({ kind: z.literal('platform'), category: z.enum(['trust', 'privacy', 'accessibility', 'testing', 'announcement']) }),
+    articleBase.extend({ kind: z.literal('platform'), category: z.enum(['trust', 'privacy', 'accessibility', 'testing', 'announcement', 'hardware', 'accessories', 'ergonomics']) }),
   ]),
 });
 

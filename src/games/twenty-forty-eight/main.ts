@@ -10,7 +10,6 @@ import {
 } from './engine';
 import './styles.css';
 
-const GAME_ID = 'twenty-forty-eight';
 const BEST_TILE_KEY = 'nocharge:2048:best-tile';
 
 export function mountTwentyFortyEight(root: HTMLElement): GameController {

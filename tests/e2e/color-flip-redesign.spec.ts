@@ -77,7 +77,6 @@ test.describe('Color Flip visual mode redesign', () => {
 
     // After 5 steps, the color label should have changed from Green
     const colorLabel = page.locator('[data-cf="color-label"]');
-    const text = await colorLabel.textContent();
     // With "every 5" rotation, color should have changed
     // (may still be green if game ended; check it's visible)
     await expect(colorLabel).toBeVisible();

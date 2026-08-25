@@ -71,7 +71,7 @@ test('settings menu is accessible and has no duplicate sound or new-game control
   await expect(page.locator('[data-game-settings-panel]')).toBeHidden();
 });
 
-test('focus mode shows an exit control and keeps the board visible', async ({ page }) => {
+test('focus mode shows an exit control and keeps the board visible without scrolling', async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 800 });
   await page.addInitScript(() => {
     Object.defineProperty(document, 'fullscreenEnabled', { configurable: true, get: () => false });
@@ -95,29 +95,41 @@ test('focus mode shows an exit control and keeps the board visible', async ({ pa
   await expect(page.locator('[data-game-viewport]')).not.toHaveClass(/is-immersive/);
 });
 
-test('FreeCell and Klondike boards scroll to every pile', async ({ page }) => {
+test('FreeCell and Klondike boards fit without internal scrolling on mobile portrait screens', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 568 });
   for (const [path, board, lastCol] of [
     ['/games/freecell/', '[data-fc="board"]', '[data-fc-col="7"]'],
     ['/games/klondike/', '[data-kl="board"]', '[data-kl-col="6"]'],
   ] as const) {
     await page.goto(path);
-    const scroller = page.locator(board);
-    await expect(scroller).toBeVisible();
-    const before = await scroller.evaluate((el) => el.scrollWidth > el.clientWidth + 4);
-    expect(before).toBe(true);
-    await scroller.evaluate((el) => {
-      el.scrollLeft = el.scrollWidth;
-    });
+    const boardEl = page.locator(board);
+    await expect(boardEl).toBeVisible();
+    const hasScroll = await boardEl.evaluate((el) => el.scrollWidth > el.clientWidth + 1);
+    expect(hasScroll, `${path} should not have horizontal scroll`).toBe(false);
     const last = page.locator(lastCol);
     await expect(last).toBeVisible();
     const box = await last.boundingBox();
     expect(box).not.toBeNull();
-    expect(box!.x + box!.width).toBeGreaterThan(0);
+    expect(box!.x + box!.width).toBeLessThanOrEqual(320);
+    expect(box!.x).toBeGreaterThanOrEqual(0);
   }
 });
 
-test('fixed-grid games use available width with 44px cells when space allows', async ({ page }) => {
+test('Tile Garden and Word Search fit without internal scrolling on 320px width', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 568 });
+  for (const [path, boardSelector] of [
+    ['/games/tile-garden/', '[data-tg="board"]'],
+    ['/games/word-search/', '[data-ws-board]'],
+  ] as const) {
+    await page.goto(path);
+    const boardEl = page.locator(boardSelector);
+    await expect(boardEl).toBeVisible();
+    const hasScroll = await boardEl.evaluate((el) => el.scrollWidth > el.clientWidth + 1);
+    expect(hasScroll, `${path} should not have horizontal scroll`).toBe(false);
+  }
+});
+
+test('fixed-grid games use available width with readable cells and no internal overflow', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/games/twenty-forty-eight/');
   const cell = page.locator('.tfe__cell').first();
@@ -127,7 +139,23 @@ test('fixed-grid games use available width with 44px cells when space allows', a
   expect(box!.height).toBeGreaterThanOrEqual(44);
 });
 
-test('Word Search 8x8 and 10x10 have matching visual columns and play', async ({ page }) => {
+test('mobile games launch into Game Mode via Play button and exit restores focus', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 800 });
+  await page.goto('/games/tile-garden/');
+  const playBtn = page.locator('[data-game-play-btn]');
+  await expect(playBtn).toBeVisible();
+  await expect(playBtn).toHaveText('Play Tile Garden');
+  await playBtn.click();
+  const viewport = page.locator('[data-game-viewport]');
+  await expect(viewport).toHaveClass(/is-immersive|is-fullscreen-active/);
+  const exitBtn = page.getByRole('button', { name: /Exit focus mode|Exit full screen|Exit game/i });
+  await expect(exitBtn).toBeVisible();
+  await exitBtn.click();
+  await expect(viewport).not.toHaveClass(/is-immersive/);
+  await expect(viewport).not.toHaveClass(/is-fullscreen-active/);
+});
+
+test('Word Search 8x8 and 10x10 have matching visual columns and play without scrolling', async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 800 });
   await page.goto('/games/word-search/');
   const grid = page.locator('[data-ws-grid]');

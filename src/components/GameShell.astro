@@ -24,6 +24,16 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
       {artwork && <p class="eyebrow">Quiet Arcade · {title}</p>}
       <h1 class="page-title">{title}</h1>
       <p class="lede">{tagline}</p>
+      <div class="game-shell__play-action">
+        <button
+          type="button"
+          class="btn btn--primary game-shell__play-btn"
+          data-game-play-btn
+          aria-controls="game-viewport"
+        >
+          Play {title}
+        </button>
+      </div>
     </div>
     {
       artwork && (
@@ -45,7 +55,7 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
     }
   </div>
 
-  <section class="game-viewport panel" data-game-viewport aria-label={`${title} game area`}>
+  <section class="game-viewport panel" data-game-viewport id="game-viewport" aria-label={`${title} game area`}>
     <div class="game-toolbar" role="toolbar" aria-label="Game controls">
       <div class="game-toolbar__primary">
         <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="pause" aria-pressed="false">
@@ -144,6 +154,35 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
 
   .game-shell__heading .eyebrow {
     margin-bottom: 0.7rem;
+  }
+
+  .game-shell__play-action {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 0.75rem;
+  }
+
+  .game-shell__play-btn {
+    font-size: 1.05rem;
+    font-weight: 700;
+    padding: 0.65rem 1.4rem;
+    min-height: 48px;
+    background: var(--accent);
+    color: #0b1510;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(18, 182, 106, 0.35);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+
+  .game-shell__play-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(18, 182, 106, 0.45);
+  }
+
+  .game-shell__play-btn:active {
+    transform: translateY(1px);
   }
 
   .game-shell__top :global(.game-shell__artwork) {
@@ -313,7 +352,7 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
     border: 0;
     border-radius: 0;
     background: var(--bg);
-    overflow: auto;
+    overflow: hidden;
   }
 
   .game-viewport:fullscreen {
@@ -343,8 +382,9 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
   .game-viewport.is-immersive .game-viewport__content {
     display: grid;
     align-content: center;
+    justify-items: center;
     min-height: min-content;
-    overflow: auto;
+    overflow: visible;
   }
 
   .game-viewport:fullscreen :global(.game-root),
@@ -374,9 +414,11 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
       display: none;
     }
 
-    /* The normal mobile entry point lives in Game settings. Once fallback
-       focus mode is active this same toolbar button is the always-visible,
-       keyboard-focusable exit control. */
+    /* The normal mobile entry point lives in Game settings. Once Game Mode
+       or fallback focus mode is active this same toolbar button is the
+       always-visible, keyboard-focusable exit control. */
+    .game-viewport:fullscreen .game-toolbar > [data-game-toolbar="fullscreen"],
+    .game-viewport.is-fullscreen-active .game-toolbar > [data-game-toolbar="fullscreen"],
     .game-viewport.is-immersive .game-toolbar > [data-game-toolbar="fullscreen"] {
       display: inline-flex;
     }

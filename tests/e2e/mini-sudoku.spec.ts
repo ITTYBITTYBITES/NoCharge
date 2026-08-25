@@ -106,8 +106,6 @@ test('arrow keys keep focus inside the grid across repeated presses', async ({ p
   await page.goto('/games/mini-sudoku/');
   const board = await readBoard(page);
   const index = board.indexOf(0);
-  const row = Math.floor(index / N);
-  const col = index % N;
   await cellAt(page, index).click();
   const focusedLabel = () =>
     page.evaluate(() => (document.activeElement as HTMLElement | null)?.getAttribute('aria-label') ?? '');

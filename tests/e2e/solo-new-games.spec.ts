@@ -152,9 +152,7 @@ test.describe('My Arcade shows new game metrics', () => {
     await page.goto('/my-arcade/');
     // Each new game should appear in the dashboard
     for (const game of NEW_SOLO_GAMES) {
-      const row = page.locator(`text=${game.name}`).first();
-      // Game name may be in the heading or row
-      await expect(page.locator('[data-my-arcade]')).toBeVisible();
+      await expect(page.locator(`[data-ma-card="${game.slug}"]`)).toBeVisible();
     }
   });
 });

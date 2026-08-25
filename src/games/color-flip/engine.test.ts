@@ -5,8 +5,6 @@ import {
   step,
   undo,
   isAdjacent,
-  type ColorId,
-  ALL_COLORS,
   GRID_SIZE,
 } from './engine';
 
@@ -50,7 +48,6 @@ describe('Color Flip tap-to-step engine', () => {
     let game = createGame('never', 0, 42);
     game = pickRoundColor(game, 'green');
 
-    const center = Math.floor(GRID_SIZE / 2);
     // Step to corner (not adjacent)
     const result = step(game, 0, 0, () => 0.5);
     expect(result).toBeNull();
