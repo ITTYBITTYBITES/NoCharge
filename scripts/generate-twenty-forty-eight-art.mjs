@@ -1,6 +1,6 @@
 import sharp from 'sharp';
 import { fileURLToPath } from 'node:url';
-import { mkdir } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 
 const out = fileURLToPath(new URL('../public/game-art/twenty-forty-eight/', import.meta.url));
 await mkdir(out, { recursive: true });
@@ -9,8 +9,8 @@ function art(w, h, mode = 'landscape') {
   const square = mode === 'square';
   const gridSize = 4;
   const cellSize = (square ? w * 0.55 : h * 0.55) / gridSize;
-  const gx = square ? w * 0.225 : w * 0.35;
-  const gy = h * 0.225;
+  const gx = w * 0.5 - (gridSize * cellSize) / 2;
+  const gy = h * 0.5 - (gridSize * cellSize) / 2;
   const stroke = Math.max(1, w / 600);
   const gap = cellSize * 0.08;
 
@@ -57,12 +57,20 @@ const jobs = [
   ['cover-square.webp', 800, 800, 'square'],
   ['cover-landscape.webp', 1280, 720, 'landscape'],
   ['social-card.webp', 1200, 630, 'landscape'],
-  ['hero-square.webp', 1200, 1200, 'square'],
 ];
 
 for (const [name, w, h, mode] of jobs) {
   await sharp(Buffer.from(art(w, h, mode))).webp({ quality: 76, effort: 6 }).toFile(`${out}${name}`);
   await sharp(Buffer.from(art(w, h, mode))).jpeg({ quality: 76 }).toFile(`${out}${name.replace('.webp', '.jpg')}`);
 }
+
+// Canonical vector source lives outside public/ (never shipped); the CI
+// art-drift step in deploy.yml regenerates it and fails on any drift.
+const srcOut = fileURLToPath(new URL('./art-sources/twenty-forty-eight/', import.meta.url));
+await mkdir(srcOut, { recursive: true });
+await writeFile(srcOut + 'source.svg', art(1280, 720, 'landscape'));
+
+const icon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><rect width="96" height="96" rx="22" fill="#151b18"/><g><rect x="20" y="20" width="22" height="22" rx="5" fill="#244030"/><rect x="46" y="20" width="22" height="22" rx="5" fill="#367048"/><rect x="20" y="46" width="22" height="22" rx="5" fill="#3c8050"/><rect x="46" y="46" width="22" height="22" rx="5" fill="#12b66a"/><text x="57" y="62" fill="#e8f0ec" font-size="11" font-family="system-ui" font-weight="700" text-anchor="middle">4</text><text x="31" y="36" fill="#c8d0cc" font-size="11" font-family="system-ui" font-weight="700" text-anchor="middle">8</text></g><text x="48" y="86" fill="#12b66a" font-size="14" font-family="system-ui" font-weight="700" text-anchor="middle">2048</text></svg>`;
+await writeFile(new URL('icon.svg', `file://${out}`), icon);
 
 console.log('2048 art generated.');

@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+    <defs>
+      <radialGradient id="bg" cx="70%" cy="42%" r="80%"><stop stop-color="#38bdf8" stop-opacity=".14"/><stop offset=".5" stop-color="#101b19"/><stop offset="1" stop-color="#0a1211"/></radialGradient>
+      <filter id="grain"><feTurbulence baseFrequency=".7" numOctaves="2" seed="53"/><feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 .04 0"/></filter>
+    </defs>
+    <rect width="1280" height="720" fill="url(#bg)"/>
+    <rect x="454.29999999999995" y="174.29999999999998" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#38bdf8" stroke="#2a3530" stroke-width="1"/>
+<text x="476.19999999999993" y="204.15599999999998" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#0b1512">Q</text>
+<rect x="501.09999999999997" y="174.29999999999998" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#38bdf8" stroke="#2a3530" stroke-width="1"/>
+<text x="523" y="204.15599999999998" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#0b1512">U</text>
+<rect x="547.9" y="174.29999999999998" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#38bdf8" stroke="#2a3530" stroke-width="1"/>
+<text x="569.8" y="204.15599999999998" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#0b1512">I</text>
+<rect x="594.6999999999999" y="174.29999999999998" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#38bdf8" stroke="#2a3530" stroke-width="1"/>
+<text x="616.5999999999999" y="204.15599999999998" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#0b1512">E</text>
+<rect x="641.5" y="174.29999999999998" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#38bdf8" stroke="#2a3530" stroke-width="1"/>
+<text x="663.4" y="204.15599999999998" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#0b1512">T</text>
+<rect x="688.3" y="174.29999999999998" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="710.1999999999999" y="204.15599999999998" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">X</text>
+<rect x="735.0999999999999" y="174.29999999999998" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="756.9999999999999" y="204.15599999999998" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">S</text>
+<rect x="781.9" y="174.29999999999998" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="803.8" y="204.15599999999998" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">K</text>
+<rect x="454.29999999999995" y="221.1" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="476.19999999999993" y="250.956" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">S</text>
+<rect x="501.09999999999997" y="221.1" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="523" y="250.956" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">K</text>
+<rect x="547.9" y="221.1" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="569.8" y="250.956" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">A</text>
+<rect x="594.6999999999999" y="221.1" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="616.5999999999999" y="250.956" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">R</text>
+<rect x="641.5" y="221.1" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="663.4" y="250.956" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">C</text>
+<rect x="688.3" y="221.1" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="710.1999999999999" y="250.956" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">V</text>
+<rect x="735.0999999999999" y="221.1" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="756.9999999999999" y="250.956" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">G</text>
+<rect x="781.9" y="221.1" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="803.8" y="250.956" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">M</text>
+<rect x="454.29999999999995" y="267.9" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="476.19999999999993" y="297.756" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">G</text>
+<rect x="501.09999999999997" y="267.9" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="523" y="297.756" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">M</text>
+<rect x="547.9" y="267.9" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="569.8" y="297.756" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">Z</text>
+<rect x="594.6999999999999" y="267.9" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="616.5999999999999" y="297.756" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">P</text>
+<rect x="641.5" y="267.9" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="663.4" y="297.756" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">O</text>
+<rect x="688.3" y="267.9" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="710.1999999999999" y="297.756" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">H</text>
+<rect x="735.0999999999999" y="267.9" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="756.9999999999999" y="297.756" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">P</text>
+<rect x="781.9" y="267.9" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="803.8" y="297.756" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">T</text>
+<rect x="454.29999999999995" y="314.7" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="476.19999999999993" y="344.556" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">P</text>
+<rect x="501.09999999999997" y="314.7" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="523" y="344.556" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">T</text>
+<rect x="547.9" y="314.7" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="569.8" y="344.556" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">W</text>
+<rect x="594.6999999999999" y="314.7" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="616.5999999999999" y="344.556" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">Y</text>
+<rect x="641.5" y="314.7" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="663.4" y="344.556" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">D</text>
+<rect x="688.3" y="314.7" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="710.1999999999999" y="344.556" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">N</text>
+<rect x="735.0999999999999" y="314.7" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="756.9999999999999" y="344.556" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">T</text>
+<rect x="781.9" y="314.7" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="803.8" y="344.556" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">L</text>
+<rect x="454.29999999999995" y="361.5" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="476.19999999999993" y="391.356" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">T</text>
+<rect x="501.09999999999997" y="361.5" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="523" y="391.356" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">L</text>
+<rect x="547.9" y="361.5" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="569.8" y="391.356" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">E</text>
+<rect x="594.6999999999999" y="361.5" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="616.5999999999999" y="391.356" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">R</text>
+<rect x="641.5" y="361.5" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="663.4" y="391.356" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">A</text>
+<rect x="688.3" y="361.5" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="710.1999999999999" y="391.356" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">S</text>
+<rect x="735.0999999999999" y="361.5" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="756.9999999999999" y="391.356" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">H</text>
+<rect x="781.9" y="361.5" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="803.8" y="391.356" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">D</text>
+<rect x="454.29999999999995" y="408.3" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="476.19999999999993" y="438.156" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">H</text>
+<rect x="501.09999999999997" y="408.3" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="523" y="438.156" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">D</text>
+<rect x="547.9" y="408.3" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="569.8" y="438.156" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">B</text>
+<rect x="594.6999999999999" y="408.3" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="616.5999999999999" y="438.156" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">F</text>
+<rect x="641.5" y="408.3" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="663.4" y="438.156" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">K</text>
+<rect x="688.3" y="408.3" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="710.1999999999999" y="438.156" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">W</text>
+<rect x="735.0999999999999" y="408.3" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="756.9999999999999" y="438.156" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">W</text>
+<rect x="781.9" y="408.3" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="803.8" y="438.156" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">O</text>
+<rect x="454.29999999999995" y="455.1" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="476.19999999999993" y="484.956" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">W</text>
+<rect x="501.09999999999997" y="455.1" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="523" y="484.956" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">O</text>
+<rect x="547.9" y="455.1" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="569.8" y="484.956" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">R</text>
+<rect x="594.6999999999999" y="455.1" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="616.5999999999999" y="484.956" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">Q</text>
+<rect x="641.5" y="455.1" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="663.4" y="484.956" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">U</text>
+<rect x="688.3" y="455.1" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="710.1999999999999" y="484.956" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">B</text>
+<rect x="735.0999999999999" y="455.1" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="756.9999999999999" y="484.956" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">S</text>
+<rect x="781.9" y="455.1" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="803.8" y="484.956" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">X</text>
+<rect x="454.29999999999995" y="501.9" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="476.19999999999993" y="531.756" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">S</text>
+<rect x="501.09999999999997" y="501.9" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="523" y="531.756" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">X</text>
+<rect x="547.9" y="501.9" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="569.8" y="531.756" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">H</text>
+<rect x="594.6999999999999" y="501.9" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="616.5999999999999" y="531.756" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">N</text>
+<rect x="641.5" y="501.9" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="663.4" y="531.756" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">T</text>
+<rect x="688.3" y="501.9" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="710.1999999999999" y="531.756" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">F</text>
+<rect x="735.0999999999999" y="501.9" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="756.9999999999999" y="531.756" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">N</text>
+<rect x="781.9" y="501.9" width="43.800000000000004" height="43.800000000000004" rx="5.6160000000000005" fill="#182220" stroke="#2a3530" stroke-width="1"/>
+<text x="803.8" y="531.756" text-anchor="middle" font-family="system-ui" font-size="22.464000000000002" font-weight="700" fill="#cfd8d3">R</text>
+    <rect width="1280" height="720" filter="url(#grain)" opacity=".5"/>
+  </svg>

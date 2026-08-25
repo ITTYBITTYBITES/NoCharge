@@ -1,5 +1,6 @@
 import sharp from 'sharp';
 import { fileURLToPath } from 'node:url';
+import { mkdir, writeFile } from 'node:fs/promises';
 
 // Editable source for the Memory Match raster package. The illustration and
 // gameplay-preview SVG strings remain vector until Sharp creates final exports.
@@ -57,6 +58,12 @@ const jobs=[
 for (const [name,w,h,mode,q] of jobs) {
   await sharp(Buffer.from(art(w,h,mode))).webp({quality:q, effort:6}).toFile(`${out}${name}`);
 }
+
+// Canonical vector source lives outside public/ (never shipped); the CI
+// art-drift step in deploy.yml regenerates it and fails on any drift.
+const srcOut = fileURLToPath(new URL('./art-sources/memory-match/', import.meta.url));
+await mkdir(srcOut, { recursive: true });
+await writeFile(srcOut + 'source.svg', art(1280, 720, 'landscape'));
 
 const glyphs=['diamond','circle','triangle','square','circle','diamond','square','triangle','triangle','circle','diamond','square','square','triangle','circle','diamond'];
 function glyph(type,cx,cy,s,color){

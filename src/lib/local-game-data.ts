@@ -20,11 +20,6 @@ export const GAME_SCORE_IDS = [
   'color-flip',
   'color-flip-turn-based',
   'beacon-lattice',
-  'klondike',
-  'freecell',
-  'nonogram',
-  'twenty-forty-eight',
-  'tile-garden',
 ] as const;
 
 export const GAME_PREFERENCE_KEYS = [

@@ -35,7 +35,7 @@ games:
   - game: tile-garden
     reason: "Arrow keys move the cursor, Enter or Space places a tile, U undoes — complete play without a pointer."
   - game: word-search
-    reason: "A calm grid with direct keyboard selection and no timer, account, or competitive pressure."
+    reason: "Arrow keys move a focus cursor across a calm, untimed grid and Enter selects cells — complete play without a pointer."
   - game: mini-sudoku
     reason: "A labeled 6×6 grid supports keyboard entry, movement, checking, and undo without a pointer."
 ---

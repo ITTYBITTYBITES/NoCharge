@@ -4,7 +4,7 @@ This handoff records checks automation cannot complete. It does not claim certif
 
 ## 1. Automated checks completed by the repository suite
 
-- [x] Chromium Playwright interaction checks for all ten games (four solo plus the six Pass &amp; Play games, their shared handoff screen, and their bounded local records), shared lifecycle, Recently Played, My Arcade, collections, and platform articles
+- [x] Chromium Playwright interaction checks for all seventeen games (eleven solo plus the six Pass &amp; Play games, their shared handoff screen, and their bounded local records), shared lifecycle, Recently Played, My Arcade, collections, and platform articles
 - [x] Axe scans against the maintained public route matrix
 - [x] Keyboard interaction checks for representative game and platform paths, including keyboard-only runs of the five keyboard-operable Pass &amp; Play games (Pass the Picture's pointer-only drawing is documented on its page and in the platform article)
 - [x] HTML, headings, internal links, sitemap, structured data, and asset-budget validation

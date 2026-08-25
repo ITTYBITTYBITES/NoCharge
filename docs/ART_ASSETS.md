@@ -1,6 +1,6 @@
 # Game artwork inventory
 
-All packages are original Quiet Arcade work. Raster covers are reproducible with `npm run art:memory`, `npm run art:word`, `npm run art:color`, `npm run art:beacon`, and `npm run art:passplay` (the six Pass &amp; Play games). `npm run art:beacon` writes covers and diagrams only and does not overwrite gameplay screenshots. Beacon Lattice `screenshot-desktop.webp` and `screenshot-mobile.webp` must be replaced with mounted-DOM captures via `npm run capture:beacon` before they are documented as gameplay rasters. JPEG social cards are used for Open Graph, Twitter, and structured data. The Pass &amp; Play packages contain covers, headers, social cards, and icons only — no gameplay screenshots are published for them; their gameplay evidence is mounted-DOM captures in the short-lived `pr-visual-captures` artifact (see `docs/PASS_AND_PLAY_VISUAL_REVIEW.md`).
+All packages are original Quiet Arcade work. Raster covers are reproducible with the `art:*` scripts in `package.json`: `art:memory`, `art:word`, `art:color`, `art:beacon`, `art:passplay` (the six Pass &amp; Play games), `art:klondike`, `art:freecell`, `art:nonogram`, `art:2048`, `art:tile-garden` (`art:solo-new` runs the five together), `art:word-search`, and `art:mini-sudoku`. Every generator also writes the canonical vector source to `scripts/art-sources/<slug>/source.svg` (outside `public/`, never shipped), and the CI art-drift step in `deploy.yml` re-runs all twelve generators and fails if the committed vectors drift. `npm run art:beacon` writes covers and diagrams only and does not overwrite gameplay screenshots. Beacon Lattice `screenshot-desktop.webp` and `screenshot-mobile.webp` must be replaced with mounted-DOM captures via `npm run capture:beacon` before they are documented as gameplay rasters. JPEG social cards are used for Open Graph, Twitter, and structured data. The Pass &amp; Play packages contain covers, headers, social cards, and icons only — no gameplay screenshots are published for them; their gameplay evidence is mounted-DOM captures in the short-lived `pr-visual-captures` artifact (see `docs/PASS_AND_PLAY_VISUAL_REVIEW.md`).
 
 | Game / asset | Dimensions | Size |
 | --- | ---: | ---: |
@@ -392,3 +392,48 @@ An independent visual inspection of every published 800px hero found four remain
 | `large-dual-monitors` | Large monitor versus dual monitors | One large display beside a dual-monitor pair (new concept; `screens-stands` stays on the tablet/phone-stand article) | 3,336 / 16,376 B | 5,424 / 28,313 B | 8,108 / 39,882 B |
 
 Reproduce with `node scripts/generate-setup-mismatch-art.mjs`. In-page `alt=""` is unchanged: the article title sits immediately above each hero.
+
+## 2026-08-24 full regeneration (post-PR #25 audit)
+
+Every one of the seventeen game packages was regenerated from deterministic
+SVG generators (verified byte-identical on re-run; no `Date`/`Math.random`),
+and every defect the audit found in the rasters was fixed at the source:
+
+- Tic-Tac-Toe: the winning line now runs corner to corner through the three
+  marks (it previously crossed the empty middle cell).
+- Klondike: the four-card fan is centred in every frame; the 4th card was
+  clipped at the bottom of the landscape and social-card frames.
+- FreeCell: all eight tableau columns fit with visible top-card ranks and a
+  4 + 4 free-cell / foundation row.
+- Tile Garden: vector-drawn plants (sprout, leafy, daisy, blossom) — the
+  cover no longer renders an emoji code point as a text glyph.
+- Reversi: vector discs (dark with rim, cream with rim) plus a small solid
+  teal hint dot instead of a glyph.
+- Dots &amp; Boxes: player-two edges/boxes now use the blue `#7dd3fc`.
+- Last Token: 3-4-5 coin stacks with the middle pile's top coin highlighted.
+- Pass the Picture: 4:3 paper with the exact in-game PICTURE_PALETTE swatches.
+- Word Search / Mini Sudoku: real 8×8 letter grid (QUIET row highlighted) and
+  6×6 grid (givens, box lines, pencil notes) — the placeholder compositions
+  are gone.
+- Seven new game icons: `klondike`, `freecell`, `nonogram`,
+  `twenty-forty-eight`, `tile-garden`, `word-search`, `mini-sudoku`.
+
+**Package shape.** The standard solo/P&amp;P package is now exactly eight
+shipped files: `cover-square` (800×800), `cover-landscape` (1280×720),
+`guide-header` (1280×640), `social-card` (1200×630), each WebP + JPEG, plus
+`icon.svg`. The four original games additionally keep their diagram SVGs and
+mounted-DOM screenshots. Removed as unreferenced (45 files): the five
+`hero-square` packages (klondike, freecell, nonogram, twenty-forty-eight,
+tile-garden), the `landscape-800/1200/1600` derivatives (twenty-forty-eight,
+mini-sudoku), and the ten public SVG twins that Word Search and Mini Sudoku
+shipped under `public/`.
+
+**Canonical vectors.** The per-package `source.svg` files listed in the
+inventory tables above no longer live in `public/`; all seventeen now live in
+`scripts/art-sources/<slug>/source.svg`. CI regenerates every source with the
+twelve generator commands and runs `git diff --exit-code -- scripts/art-sources`.
+Raster files are deliberately not diff-checked (font rasterisation differs
+across environments); the PR template requires a human to open regenerated
+rasters. The byte-size tables for the PR #26 and 2026-08-23 packages above
+pre-date this regeneration and their removed derivative rows are superseded
+by this section.

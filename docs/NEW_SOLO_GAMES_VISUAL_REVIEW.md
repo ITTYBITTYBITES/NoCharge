@@ -14,7 +14,7 @@ Reviewed 2026-08-22.
 |------|--------|-------|
 | Klondike | 4 fanned cards on dark green gradient | Cards show red ♥ suit. Grain filter overlay. |
 | FreeCell | 8 card stacks in a row | Face-up card silhouettes. Dark green gradient. |
-| Nonogram | 5×5 pixel grid with heart pattern | Green filled cells on dark background. |
+| Nonogram | 5×5 pixel grid with plus/cross pattern | Green filled cells on dark background. |
 | Twenty Forty-Eight | 4×4 number tile grid | Tiles show values 2 through 2048. Green gradient fills. |
 | Tile Garden | 4×4 plant tile grid | Tier-0 through tier-2 tiles with emoji. |
 

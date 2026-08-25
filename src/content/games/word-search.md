@@ -17,7 +17,7 @@ artwork:
   socialCard: /game-art/word-search/social-card.jpg
   socialCardFallback: /game-art/word-search/social-card.jpg
   socialCardWebp: /game-art/word-search/social-card.webp
-  alt: Programmatic word-search illustration in the Quiet Arcade palette
+  alt: Letter grid with one word highlighted in the Quiet Arcade palette
 genre: Word
 difficulty: Gentle
 session: 5–15 min
@@ -29,9 +29,11 @@ presentation:
     - label: Touch or pointer
       description: Tap the first letter, then the last letter of a word.
     - label: Keyboard
-      description: Use the grid buttons and the same calm, direct controls.
+      description: Arrow keys move the focus cursor; Enter or Space selects a cell.
     - label: Themes
       description: Choose from eight general-audience word lists.
+    - label: New puzzle
+      description: Start a fresh grid at any time; theme or size changes ask first if you have progress.
 ---
 
 Word Search is untimed and has no score, streak, or leaderboard. Choose a theme, trace a horizontal, vertical, or diagonal word, and keep found words highlighted. A hint can identify a starting letter without interrupting the puzzle.

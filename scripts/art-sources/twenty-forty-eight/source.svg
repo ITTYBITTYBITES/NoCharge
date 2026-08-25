@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+    <defs>
+      <radialGradient id="bg" cx="55%" cy="45%" r="80%"><stop stop-color="#161e1a"/><stop offset="1" stop-color="#0a0f0c"/></radialGradient>
+      <filter id="grain"><feTurbulence baseFrequency=".7" numOctaves="2" seed="31"/><feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 .04 0"/></filter>
+    </defs>
+    <rect width="1280" height="720" fill="url(#bg)"/>
+    <rect x="434.08" y="154.07999999999998" width="411.84000000000003" height="411.84000000000003" rx="11.88" fill="#0f1510"/>
+    <rect x="449.92" y="169.91999999999996" width="83.16000000000001" height="83.16000000000001" rx="7.920000000000002" fill="#1c2820" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<text x="491.5" y="220.40999999999997" fill="#c8d0cc" font-size="29.700000000000003" font-family="system-ui" font-weight="700" text-anchor="middle">2</text>
+<rect x="548.92" y="169.91999999999996" width="83.16000000000001" height="83.16000000000001" rx="7.920000000000002" fill="#1e3428" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<text x="590.5" y="220.40999999999997" fill="#c8d0cc" font-size="29.700000000000003" font-family="system-ui" font-weight="700" text-anchor="middle">4</text>
+<rect x="647.92" y="169.91999999999996" width="83.16000000000001" height="83.16000000000001" rx="7.920000000000002" fill="#244030" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<text x="689.5" y="220.40999999999997" fill="#e8f0ec" font-size="29.700000000000003" font-family="system-ui" font-weight="700" text-anchor="middle">8</text>
+<rect x="746.92" y="169.91999999999996" width="83.16000000000001" height="83.16000000000001" rx="7.920000000000002" fill="#2a5038" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<text x="788.5" y="220.40999999999997" fill="#e8f0ec" font-size="29.700000000000003" font-family="system-ui" font-weight="700" text-anchor="middle">16</text>
+<rect x="449.92" y="268.92" width="83.16000000000001" height="83.16000000000001" rx="7.920000000000002" fill="#306040" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<text x="491.5" y="319.41" fill="#e8f0ec" font-size="29.700000000000003" font-family="system-ui" font-weight="700" text-anchor="middle">32</text>
+<rect x="548.92" y="268.92" width="83.16000000000001" height="83.16000000000001" rx="7.920000000000002" fill="#367048" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<text x="590.5" y="319.41" fill="#e8f0ec" font-size="29.700000000000003" font-family="system-ui" font-weight="700" text-anchor="middle">64</text>
+<rect x="647.92" y="268.92" width="83.16000000000001" height="83.16000000000001" rx="7.920000000000002" fill="#3c8050" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<text x="689.5" y="319.41" fill="#e8f0ec" font-size="29.700000000000003" font-family="system-ui" font-weight="700" text-anchor="middle">128</text>
+<rect x="746.92" y="268.92" width="83.16000000000001" height="83.16000000000001" rx="7.920000000000002" fill="#428858" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<text x="788.5" y="319.41" fill="#e8f0ec" font-size="29.700000000000003" font-family="system-ui" font-weight="700" text-anchor="middle">256</text>
+<rect x="449.92" y="367.92" width="83.16000000000001" height="83.16000000000001" rx="7.920000000000002" fill="#489060" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<text x="491.5" y="418.41" fill="#e8f0ec" font-size="29.700000000000003" font-family="system-ui" font-weight="700" text-anchor="middle">512</text>
+<rect x="548.92" y="367.92" width="83.16000000000001" height="83.16000000000001" rx="7.920000000000002" fill="#4e9868" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<text x="590.5" y="416.034" fill="#e8f0ec" font-size="21.780000000000005" font-family="system-ui" font-weight="700" text-anchor="middle">1024</text>
+<rect x="647.92" y="367.92" width="83.16000000000001" height="83.16000000000001" rx="7.920000000000002" fill="#12b66a" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<text x="689.5" y="416.034" fill="#e8f0ec" font-size="21.780000000000005" font-family="system-ui" font-weight="700" text-anchor="middle">2048</text>
+<rect x="746.92" y="367.92" width="83.16000000000001" height="83.16000000000001" rx="7.920000000000002" fill="#161b18" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="449.92" y="466.92" width="83.16000000000001" height="83.16000000000001" rx="7.920000000000002" fill="#161b18" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="548.92" y="466.92" width="83.16000000000001" height="83.16000000000001" rx="7.920000000000002" fill="#161b18" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="647.92" y="466.92" width="83.16000000000001" height="83.16000000000001" rx="7.920000000000002" fill="#161b18" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+<rect x="746.92" y="466.92" width="83.16000000000001" height="83.16000000000001" rx="7.920000000000002" fill="#161b18" stroke="#2a3530" stroke-width="2.1333333333333333"/>
+    <rect width="1280" height="720" filter="url(#grain)" opacity=".5"/>
+  </svg>

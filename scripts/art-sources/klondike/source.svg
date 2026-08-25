@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+    <defs>
+      <radialGradient id="bg" cx="60%" cy="45%" r="80%"><stop stop-color="#1a2820"/><stop offset="1" stop-color="#0a0f0c"/></radialGradient>
+      <filter id="grain"><feTurbulence baseFrequency=".7" numOctaves="2" seed="7"/><feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 .04 0"/></filter>
+    </defs>
+    <rect width="1280" height="720" fill="url(#bg)"/>
+    <g transform="rotate(-12 332.79999999999995 273.98400000000004)">
+      <rect x="230.39999999999995" y="130.62400000000002" width="204.8" height="286.71999999999997" rx="16.384" fill="#1a2420" stroke="#2a4030" stroke-width="3.2"/>
+      <text x="271.35999999999996" y="216.64000000000001" fill="#e85d5d" font-size="71.67999999999999" font-family="serif">♥</text>
+    </g>
+<g transform="rotate(-4 537.6 331.328)">
+      <rect x="435.20000000000005" y="187.96800000000002" width="204.8" height="286.71999999999997" rx="16.384" fill="#1a2420" stroke="#2a4030" stroke-width="3.2"/>
+      <text x="476.16" y="273.98400000000004" fill="#e85d5d" font-size="71.67999999999999" font-family="serif">♥</text>
+    </g>
+<g transform="rotate(4 742.4 388.672)">
+      <rect x="640" y="245.312" width="204.8" height="286.71999999999997" rx="16.384" fill="#1a2420" stroke="#2a4030" stroke-width="3.2"/>
+      <text x="680.96" y="331.328" fill="#e85d5d" font-size="71.67999999999999" font-family="serif">♥</text>
+    </g>
+<g transform="rotate(12 947.2 446.01599999999996)">
+      <rect x="844.8000000000001" y="302.656" width="204.8" height="286.71999999999997" rx="16.384" fill="#1a2420" stroke="#2a4030" stroke-width="3.2"/>
+      <text x="885.76" y="388.672" fill="#e85d5d" font-size="71.67999999999999" font-family="serif">♥</text>
+    </g>
+    <rect width="1280" height="720" filter="url(#grain)" opacity=".5"/>
+  </svg>

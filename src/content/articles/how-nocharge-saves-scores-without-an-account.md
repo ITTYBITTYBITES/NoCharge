@@ -4,7 +4,7 @@ kind: platform
 category: privacy
 description: "A plain-language map of NoCharge’s local scores, Beacon Lattice progress, shared mute preference, browser limits, and Clear Game Data control."
 published: "2026-08-19"
-updated: "2026-08-19"
+updated: "2026-08-24"
 author: "NoCharge"
 reviewer: "NoCharge"
 readTime: 6
@@ -25,8 +25,17 @@ The current implementation can use these NoCharge game keys:
 - `nocharge:word-tile-rush:high` for the best Word Tile Rush score.
 - `nocharge:color-flip:high` for Visual mode and `nocharge:color-flip-turn-based:high` for Turn-based mode.
 - `nocharge:beacon-lattice:high` for the highest completed-puzzle count written alongside Beacon Lattice progress.
+- `nocharge:klondike:games-won` and `nocharge:klondike:best-moves` for Klondike results.
+- `nocharge:freecell:games-won` for FreeCell results.
+- `nocharge:nonogram:puzzles-revealed` for Nonogram results.
+- `nocharge:2048:best-tile` for 2048 results.
+- `nocharge:tile-garden:best-tier` for Tile Garden results.
+- `nocharge:word-search:puzzles-solved` and `nocharge:word-search:last-list` for the Word Search completion count and last chosen theme.
+- `nocharge:sudoku:puzzles-solved` and `nocharge:sudoku:current-puzzle` for Mini Sudoku completions and the in-progress puzzle.
+- One bounded `nocharge:passplay:match:<game>` key per Pass & Play game, holding the most recent match only.
 - `nocharge:pref:beacon-lattice-progress` for the current puzzle, completed puzzle IDs, and best solved beacon counts.
-- `nocharge:pref:game-muted` for the sound choice shared by every game.
+- `nocharge:pref:klondike-draw-mode`, `nocharge:pref:color-flip-rotation`, and `nocharge:pref:sudoku-pencil-marks` for per-game choices.
+- `nocharge:pref:game-muted`, `nocharge:pref:sound-enabled`, `nocharge:pref:sound-volume`, and `nocharge:pref:ambient-sound` for the shared sound choices.
 - `nocharge:pref:recently-played` for at most four stable game IDs and last-played timestamps.
 
 Recently Played does not retain moves, selected cards, typed words, tile paths, scores, or a device identifier. A game enters that list only after a meaningful action inside the mounted game, not after a card or page view.
@@ -51,7 +60,7 @@ If a result is missing:
 
 ## Clearing only game data
 
-The [Privacy page](/privacy/) offers **Clear Game Data**. It removes the current score keys, Memory Match best moves, Beacon Lattice progress, shared mute preference, and Recently Played list. It does not call `localStorage.clear()`: unrelated storage on the origin is left alone. NoCharge’s analytics consent remains as chosen, and the control does not claim to erase Google’s separate advertising-consent records.
+The [Privacy page](/privacy/) offers **Clear Game Data**. It removes the score and progress keys above — including Memory Match best moves, Beacon Lattice progress, and the six Pass & Play match records — plus the shared mute and sound preferences and the Recently Played list. It does not call `localStorage.clear()`: unrelated storage on the origin is left alone. NoCharge’s analytics consent remains as chosen, and the control does not claim to erase Google’s separate advertising-consent records.
 
 Browser settings can clear all site data more broadly, but that may also remove privacy choices and other site storage. Use the narrower NoCharge button when the goal is only to reset local play history and preferences.
 

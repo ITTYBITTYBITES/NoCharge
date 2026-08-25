@@ -1,0 +1,21 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <defs>
+    <radialGradient id="bg" cx="72%" cy="42%" r="80%">
+      <stop stop-color="#facc15" stop-opacity=".16"/>
+      <stop offset=".5" stop-color="#171f1b"/>
+      <stop offset="1" stop-color="#101210"/>
+    </radialGradient>
+    <filter id="grain"><feTurbulence baseFrequency=".75" seed="47"/><feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 .025 0"/></filter>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <circle cx="1049.6" cy="172.79999999999998" r="216" fill="#facc15" opacity=".05"/>
+  <rect x="380.8" y="165.60000000000002" width="518.4" height="388.79999999999995" rx="32.4" fill="#f6f2e8" opacity=".95"/>
+        <path d="M484.48 305.568 q77.75999999999999 -77.75999999999999 155.51999999999998 0" stroke="#f87171" stroke-width="9.425454545454546" fill="none" stroke-linecap="round"/>
+        <circle cx="562.24" cy="290.016" r="9.331199999999999" fill="#1f2430"/>
+        <circle cx="717.76" cy="290.016" r="9.331199999999999" fill="#1f2430"/>
+        <path d="M536.3199999999999 383.32800000000003 q103.68 85.53599999999999 207.36 0" stroke="#16a34a" stroke-width="9.425454545454546" fill="none" stroke-linecap="round"/>
+        <path d="M505.216 445.536 q134.784 -38.879999999999995 259.2 7.775999999999999" stroke="#0ea5e9" stroke-width="8.639999999999999" fill="none" stroke-linecap="round"/>
+        <circle cx="453.37600000000003" cy="499.96799999999996" r="16.5888" fill="#1f2430" stroke="#d8d2c2" stroke-width="2.0736"/><circle cx="507.808" cy="499.96799999999996" r="16.5888" fill="#f87171" stroke="#d8d2c2" stroke-width="2.0736"/><circle cx="562.24" cy="499.96799999999996" r="16.5888" fill="#f59e0b" stroke="#d8d2c2" stroke-width="2.0736"/><circle cx="616.672" cy="499.96799999999996" r="16.5888" fill="#16a34a" stroke="#d8d2c2" stroke-width="2.0736"/><circle cx="671.104" cy="499.96799999999996" r="16.5888" fill="#0ea5e9" stroke="#d8d2c2" stroke-width="2.0736"/><circle cx="725.5360000000001" cy="499.96799999999996" r="16.5888" fill="#8b5cf6" stroke="#d8d2c2" stroke-width="2.0736"/><circle cx="779.9680000000001" cy="499.96799999999996" r="16.5888" fill="#ec4899" stroke="#d8d2c2" stroke-width="2.0736"/><circle cx="834.4" cy="499.96799999999996" r="16.5888" fill="#a3e635" stroke="#d8d2c2" stroke-width="2.0736"/>
+  <rect width="1280" height="720" filter="url(#grain)"/>
+</svg>
