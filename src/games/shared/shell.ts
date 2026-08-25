@@ -90,11 +90,13 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     const activeNative = document.fullscreenElement === viewport;
     const labels = focusModeLabel(nativeFullscreenSupported, activeNative, immersive);
     if (fullscreenButton) {
-      // While hidden, keep this exit-only button out of entry-control role
-      // queries. It becomes the compact, correctly named exit when active.
       const active = activeNative || immersive;
-      fullscreenButton.textContent = active ? labels.text : 'Leave expanded game';
-      fullscreenButton.setAttribute('aria-label', active ? labels.aria : 'Leave expanded game');
+      // Desktop retains a direct focus shortcut. On compact toolbars and while
+      // settings are open, the menu is the one entry point; give the hidden
+      // shortcut a distinct name so role queries never see duplicate actions.
+      const directEntryVisible = !active && menu === 'closed' && !window.matchMedia('(max-width: 34rem)').matches;
+      fullscreenButton.textContent = active || directEntryVisible ? labels.text : 'Leave expanded game';
+      fullscreenButton.setAttribute('aria-label', active || directEntryVisible ? labels.aria : 'Leave expanded game');
       fullscreenButton.setAttribute('aria-pressed', String(active));
     }
     if (focusInMenu) {
@@ -108,10 +110,6 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     const active = activeNative || immersive;
     viewport.classList.toggle('is-immersive', immersive);
     viewport.classList.toggle('is-fullscreen-active', active);
-    // The compact exit control is only exposed while focus/fullscreen is active.
-    // Normal entry remains in Game settings, so phone toolbars have no duplicate
-    // sound, restart, or focus actions.
-    fullscreenButton?.toggleAttribute('hidden', !active);
     applyFocusLabels();
   };
 
@@ -122,6 +120,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     if (settingsCatch) settingsCatch.hidden = !open;
     settingsButton?.setAttribute('aria-expanded', String(open));
     viewport.classList.toggle('is-settings-open', open);
+    applyFocusLabels();
     if (open) {
       settingsPanel?.querySelector<HTMLElement>('button, input, select')?.focus({ preventScroll: true });
     } else {
@@ -321,9 +320,9 @@ export function mountGameShell(viewport: HTMLElement): () => void {
   document.addEventListener('fullscreenchange', onFullscreenChange);
   document.addEventListener('keydown', onKeyDown);
   window.addEventListener('pagehide', onPageHide);
-  window.addEventListener('orientationchange', () => {
-    if (immersive) updateFullscreen();
-  });
+  const onViewportResize = () => applyFocusLabels();
+  window.addEventListener('orientationchange', onViewportResize);
+  window.addEventListener('resize', onViewportResize);
 
   restartButton?.toggleAttribute('hidden', !controller.restart);
   restartInMenuButton?.toggleAttribute('hidden', !controller.restart);
@@ -342,6 +341,8 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     document.removeEventListener('fullscreenchange', onFullscreenChange);
     document.removeEventListener('keydown', onKeyDown);
     window.removeEventListener('pagehide', onPageHide);
+    window.removeEventListener('orientationchange', onViewportResize);
+    window.removeEventListener('resize', onViewportResize);
     root.removeEventListener('nocharge:meaningful-game-interaction', onMeaningfulInteraction);
     controller.destroy();
   };

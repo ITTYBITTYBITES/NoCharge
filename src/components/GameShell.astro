@@ -84,8 +84,8 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
       <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="restart">
         New game
       </button>
-      <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="fullscreen" aria-pressed="false" hidden>
-        Exit focus mode
+      <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="fullscreen" aria-pressed="false">
+        Focus mode
       </button>
       <p class="game-toolbar__status" data-game-toolbar-status aria-live="polite" aria-atomic="true"></p>
     </div>
@@ -218,7 +218,8 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
   /* Desktop retains a quick restart; the mobile compact toolbar keeps it in
      Game settings. Opening settings also replaces the desktop shortcut with
      the single menu action, avoiding duplicate accessible names. */
-  .is-settings-open .game-toolbar > [data-game-toolbar="restart"] {
+  .is-settings-open .game-toolbar > [data-game-toolbar="restart"],
+  .is-settings-open .game-toolbar > [data-game-toolbar="fullscreen"] {
     display: none;
   }
 
@@ -368,7 +369,8 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
   }
 
   @media (max-width: 34rem) {
-    .game-toolbar > [data-game-toolbar="restart"] {
+    .game-toolbar > [data-game-toolbar="restart"],
+    .game-toolbar > [data-game-toolbar="fullscreen"] {
       display: none;
     }
 
