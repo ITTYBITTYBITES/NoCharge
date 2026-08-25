@@ -78,8 +78,8 @@ test('focus mode shows an exit control and keeps the board visible', async ({ pa
   });
   await page.goto('/games/twenty-forty-eight/');
   await page.getByRole('button', { name: 'Game settings' }).click();
-  const enterFocus = page.getByRole('button', { name: 'Focus mode', exact: true });
-  await expect(enterFocus).toHaveCount(1);
+  const enterFocus = page.getByRole('button', { name: 'Focus mode' });
+  await expect(page.locator('[data-game-toolbar="focus-in-menu"]')).toHaveCount(1);
   await enterFocus.click();
   await expect(page.locator('[data-game-viewport]')).toHaveClass(/is-immersive/);
   const exitFocus = page.getByRole('button', { name: 'Exit focus mode' });
