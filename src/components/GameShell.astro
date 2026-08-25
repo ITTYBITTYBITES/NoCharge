@@ -490,10 +490,11 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
   .game-viewport:fullscreen .game-viewport__content,
   .game-viewport.is-immersive .game-viewport__content {
     display: grid;
-    align-content: center;
+    align-content: start;
     justify-items: center;
-    min-height: min-content;
-    overflow: visible;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
   }
 
   .game-viewport:fullscreen :global(.game-root),

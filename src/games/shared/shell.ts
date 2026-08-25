@@ -241,7 +241,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
       announce('Full screen entered. Pause, sound, and exit controls remain available.');
     } else if (!immersive) {
       announce('Full screen exited.');
-      window.setTimeout(() => fullscreenButton?.focus({ preventScroll: true }), 0);
+      window.setTimeout(() => (playButton || fullscreenButton)?.focus({ preventScroll: true }), 0);
     }
   };
 
@@ -249,6 +249,16 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     if (event.key === 'Escape' && menu === 'open') {
       event.preventDefault();
       setMenu('close');
+      return;
+    }
+    // If a solitaire fan is open, let its own Escape handler close it without exiting Game Mode.
+    if (event.key === 'Escape') {
+      const openFan = document.querySelector('[data-fc="fan"]:not([hidden]), [data-kl="fan"]:not([hidden])');
+      if (openFan) return;
+    }
+    if (event.key === 'Escape' && document.fullscreenElement === viewport) {
+      event.preventDefault();
+      void document.exitFullscreen().catch(() => {});
       return;
     }
     if (event.key === 'Escape' && immersive) {

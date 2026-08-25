@@ -101,6 +101,7 @@ export function mountKlondike(root: HTMLElement): GameController {
   const tableauEl = root.querySelector<HTMLElement>('[data-kl="tableau"]')!;
   const fanEl = root.querySelector<HTMLElement>('[data-kl="fan"]')!;
   const foundationEls = root.querySelectorAll<HTMLElement>('[data-kl-fn]');
+  const gameEl = root.querySelector<HTMLElement>('.kl')!;
 
   let state: KlondikeState;
   let paused = false;
@@ -149,17 +150,36 @@ export function mountKlondike(root: HTMLElement): GameController {
     return root.closest('.is-immersive, .is-fullscreen-active') !== null;
   }
 
-  /** Vertical room left for the tableau (or the fan that replaces it). */
-  function tableauHeight(): number {
-    const boardHeight = boardEl.clientHeight;
-    if (boardHeight <= 0) return 0;
-    return Math.max(0, boardHeight - topEl.offsetHeight - COLUMN_GAP_PX);
+  function getViewport(): HTMLElement | null {
+    return root.closest('[data-game-viewport]') as HTMLElement | null;
+  }
+
+  /** Vertical room left for the tableau (or the fan that replaces it) inside the fixed stage. */
+  function tableauAvailableHeight(): number {
+    const viewport = getViewport();
+    if (!viewport) return 0;
+    const viewportRect = viewport.getBoundingClientRect();
+    const tableauRect = tableauEl.getBoundingClientRect();
+    if (tableauRect.top > 0 && tableauRect.width > 0) {
+      return Math.max(0, viewportRect.bottom - tableauRect.top - 12);
+    }
+    const boardRect = boardEl.getBoundingClientRect();
+    const hudEl = root.querySelector<HTMLElement>('.kl__hud');
+    const hudH = hudEl ? hudEl.getBoundingClientRect().height : 0;
+    const topH = topEl.getBoundingClientRect().height || topEl.offsetHeight;
+    const estimatedTop = boardRect.top + hudH + topH + COLUMN_GAP_PX + 8;
+    if (estimatedTop > 0) {
+      return Math.max(0, viewportRect.bottom - estimatedTop - 12);
+    }
+    const toolbar = viewport.querySelector<HTMLElement>('.game-toolbar');
+    const toolbarH = toolbar ? toolbar.getBoundingClientRect().height : 0;
+    return Math.max(0, viewportRect.height - toolbarH - hudH - topH - COLUMN_GAP_PX - 24);
   }
 
   /** Height budget a single column may occupy. */
   function columnBudget(): number {
     if (!inGameMode()) return DESKTOP_COLUMN_BUDGET_PX;
-    const height = tableauHeight();
+    const height = tableauAvailableHeight();
     return height > 0 ? height : DESKTOP_COLUMN_BUDGET_PX;
   }
 
@@ -178,21 +198,26 @@ export function mountKlondike(root: HTMLElement): GameController {
       cardAspect: CARD_ASPECT,
       rows: 1,
       rowGap: COLUMN_GAP_PX,
-      availableHeight: gameMode ? tableauHeight() : 0,
+      availableHeight: gameMode ? tableauAvailableHeight() : 0,
     });
 
     const key = [boardWidth, gameMode ? 1 : 0, geometry.cardHeight.toFixed(2)].join('|');
     if (key === geometryKey) return;
     geometryKey = key;
 
+    gameEl.style.setProperty('--kl-card-h', `${Math.max(12, Math.floor(geometry.cardHeight))}px`);
+    gameEl.style.setProperty('--kl-column-gap', `${COLUMN_GAP_PX}px`);
     root.style.setProperty('--kl-card-h', `${Math.max(12, Math.floor(geometry.cardHeight))}px`);
     root.style.setProperty('--kl-column-gap', `${COLUMN_GAP_PX}px`);
   }
 
   function cardHeight(): number {
-    const raw = root.style.getPropertyValue('--kl-card-h');
+    const raw = gameEl.style.getPropertyValue('--kl-card-h') || root.style.getPropertyValue('--kl-card-h');
     const parsed = Number.parseFloat(raw);
-    return Number.isFinite(parsed) && parsed > 0 ? parsed : 48;
+    if (Number.isFinite(parsed) && parsed > 0) return parsed;
+    const computed = getComputedStyle(gameEl).getPropertyValue('--kl-card-h');
+    const parsedComputed = Number.parseFloat(computed);
+    return Number.isFinite(parsedComputed) && parsedComputed > 0 ? parsedComputed : 48;
   }
 
   /** Steps for a column: one for the covered run, one for the open tail. */
@@ -232,7 +257,16 @@ export function mountKlondike(root: HTMLElement): GameController {
     fanColumn = col;
     fanPage = 0;
     render();
-    fanEl.querySelector<HTMLElement>('[data-kl-fan-close]')?.focus({ preventScroll: true });
+    const attemptFocus = () => {
+      const closeBtn = fanEl.querySelector<HTMLElement>('[data-kl-fan-close]');
+      if (closeBtn) {
+        try { closeBtn.focus({ preventScroll: true }); } catch { closeBtn.focus(); }
+      }
+    };
+    attemptFocus();
+    window.setTimeout(attemptFocus, 0);
+    window.setTimeout(attemptFocus, 50);
+    window.setTimeout(attemptFocus, 150);
   }
 
   function closeFan(returnFocus = true) {
@@ -241,7 +275,16 @@ export function mountKlondike(root: HTMLElement): GameController {
     fanPage = 0;
     render();
     if (returnFocus && col !== null) {
-      root.querySelector<HTMLElement>(`[data-kl-col="${col}"] [data-kl-expand]`)?.focus({ preventScroll: true });
+      const attemptFocus = () => {
+        const trigger = root.querySelector<HTMLElement>(`[data-kl-col="${col}"] [data-kl-expand]`);
+        if (trigger) {
+          try { trigger.focus({ preventScroll: true }); } catch { trigger.focus(); }
+        }
+      };
+      attemptFocus();
+      window.setTimeout(attemptFocus, 0);
+      window.setTimeout(attemptFocus, 50);
+      window.setTimeout(attemptFocus, 150);
     }
   }
 
@@ -254,12 +297,13 @@ export function mountKlondike(root: HTMLElement): GameController {
 
     const col = fanColumn;
     const pile = state.tableau[col]!;
-    const availableHeight = inGameMode() ? tableauHeight() : Math.max(240, tableauHeight());
+    const availableHeight = inGameMode() ? tableauAvailableHeight() : Math.max(240, tableauAvailableHeight());
     const availableWidth = boardEl.clientWidth;
+    const ch = cardHeight();
     const plan = fanLayout(
       {
         count: pile.length,
-        cardHeight: cardHeight(),
+        cardHeight: ch,
         // The fan bar sits above the cards inside the same fixed stage, so it
         // has to come out of the budget before the cards are sized.
         availableHeight: Math.max(0, availableHeight - FAN_BAR_RESERVE_PX),
@@ -270,7 +314,7 @@ export function mountKlondike(root: HTMLElement): GameController {
     );
     const shown = pile.slice(plan.startIndex, plan.startIndex + Math.max(1, plan.perPage));
     const horizontalStep = plan.compressed && shown.length > 1
-      ? Math.max(24, Math.floor((availableWidth - cardHeight() * (5 / 7)) / (shown.length - 1)))
+      ? Math.max(24, Math.floor((availableWidth - ch * (5 / 7)) / (shown.length - 1)))
       : 0;
 
     fanEl.hidden = false;
@@ -295,7 +339,7 @@ export function mountKlondike(root: HTMLElement): GameController {
       const cardEl = renderCard(card, card.faceUp);
       cardEl.classList.add('kl__fan-card');
       cardEl.dataset.klFanCard = String(index);
-      cardEl.style.marginTop = offset === 0 ? '0px' : `${plan.step}px`;
+      cardEl.style.marginTop = offset === 0 ? '0px' : `${plan.step - ch}px`;
       if (horizontalStep > 0) cardEl.style.marginLeft = `${horizontalStep}px`;
       if (card.faceUp) {
         cardEl.setAttribute('role', 'button');
@@ -346,21 +390,37 @@ export function mountKlondike(root: HTMLElement): GameController {
       pile.className = 'kl__pile';
       const { down, up } = splitColumn(column);
       const steps = columnSteps(col);
+      const ch = cardHeight();
 
       if (column.length === 0) {
         const empty = document.createElement('div');
         empty.className = 'kl__card kl__card--empty';
-        empty.setAttribute('aria-hidden', 'true');
+        empty.setAttribute('aria-hidden', 'false');
+        empty.setAttribute('role', 'button');
+        empty.setAttribute('tabindex', '0');
+        empty.setAttribute('aria-label', `Column ${col + 1}, empty`);
+        empty.addEventListener('pointerdown', (e) => { e.preventDefault(); handleColumnClick(col); });
+        empty.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleColumnClick(col); } });
         pile.appendChild(empty);
       }
 
       column.forEach((card, i) => {
         const cardEl = renderCard(card, card.faceUp);
         cardEl.dataset.klCard = String(i);
-        // First card of a run keeps the run gap; the rest use the run's step.
         const isFirstOfRun = i === 0 || i === down;
-        const step = card.faceUp ? steps.up : steps.down;
-        cardEl.style.marginTop = isFirstOfRun ? (i === 0 ? '0px' : `${RUN_GAP_PX}px`) : `${step}px`;
+        // Overlapping logic: visible strip = step, margin = step - cardHeight
+        // For first card of second run, add RUN_GAP between runs.
+        let margin = 0;
+        if (i === 0) {
+          margin = 0;
+        } else if (isFirstOfRun) {
+          // Gap between down and up runs: previous step + RUN_GAP - cardHeight
+          margin = steps.down - ch + RUN_GAP_PX;
+        } else {
+          const step = card.faceUp ? steps.up : steps.down;
+          margin = step - ch;
+        }
+        cardEl.style.marginTop = `${margin}px`;
         if (card.faceUp) {
           if (selected?.type === 'tableau' && selected.col === col && i >= selected.cardIndex) {
             cardEl.classList.add('is-selected');
@@ -381,11 +441,9 @@ export function mountKlondike(root: HTMLElement): GameController {
       });
       wrapper.appendChild(pile);
 
+      // Accessibility: wrapper is group, not button, to avoid nested interactive.
+      wrapper.setAttribute('role', 'group');
       wrapper.setAttribute('aria-label', `Tableau column ${col + 1}, ${column.length} cards, ${up} face up${column.length > 0 ? `, top: ${column[column.length - 1]!.faceUp ? cardName(column[column.length - 1]!) : 'hidden'}` : ''}`);
-      wrapper.addEventListener('pointerdown', (e) => { e.preventDefault(); handleColumnClick(col); });
-      wrapper.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleColumnClick(col); } });
-      wrapper.tabIndex = 0;
-      wrapper.setAttribute('role', 'button');
       tableauEl.appendChild(wrapper);
     });
   }
@@ -602,8 +660,7 @@ export function mountKlondike(root: HTMLElement): GameController {
   drawToggle.addEventListener('click', handleDrawToggle);
   againBtn.addEventListener('click', () => init());
 
-  // Keyboard shortcuts
-  root.addEventListener('keydown', (e) => {
+  const onKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Escape' && fanColumn !== null) {
       // Stop here so Escape closes the fan without also exiting Game Mode.
       e.preventDefault();
@@ -613,22 +670,38 @@ export function mountKlondike(root: HTMLElement): GameController {
     }
     if (e.key === 'u' || e.key === 'U') { e.preventDefault(); handleUndo(); }
     if (e.key === 'd' || e.key === 'D') { e.preventDefault(); handleStockClick(); }
-  });
+  };
+
+  const onDocKeyDownCapture = (e: KeyboardEvent) => {
+    if (e.key === 'Escape' && fanColumn !== null) {
+      e.preventDefault();
+      e.stopPropagation();
+      closeFan();
+    }
+  };
+
+  root.addEventListener('keydown', onKeyDown);
+  document.addEventListener('keydown', onDocKeyDownCapture, true);
 
   init();
 
   if (typeof ResizeObserver === 'function') {
     observer = new ResizeObserver(() => {
+      const prev = geometryKey;
       fitBoard();
-      render();
+      if (geometryKey !== prev) render();
     });
     observer.observe(boardEl);
+    const viewport = getViewport();
+    if (viewport) observer.observe(viewport);
   }
 
   return {
     destroy() {
       observer?.disconnect();
       observer = null;
+      root.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('keydown', onDocKeyDownCapture, true);
       root.innerHTML = '';
     },
     pause() { paused = true; },

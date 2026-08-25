@@ -88,6 +88,7 @@ export function mountFreeCell(root: HTMLElement): GameController {
   const fanEl = root.querySelector<HTMLElement>('[data-fc="fan"]')!;
   const cellEls = root.querySelectorAll<HTMLElement>('[data-fc-cell]');
   const foundationEls = root.querySelectorAll<HTMLElement>('[data-fc-fn]');
+  const gameEl = root.querySelector<HTMLElement>('.fc')!;
 
   let state: FreeCellState;
   let paused = false;
@@ -102,6 +103,7 @@ export function mountFreeCell(root: HTMLElement): GameController {
   /** Last applied geometry, used to avoid a measure/render feedback loop. */
   let geometryKey = '';
   let observer: ResizeObserver | null = null;
+  let currentRowHeight = 0;
 
   function cuePlacement() {
     if (!heardDeal) {
@@ -157,6 +159,10 @@ export function mountFreeCell(root: HTMLElement): GameController {
     return root.closest('.is-immersive, .is-fullscreen-active') !== null;
   }
 
+  function getViewport(): HTMLElement | null {
+    return root.closest('[data-game-viewport]') as HTMLElement | null;
+  }
+
   /**
    * Measure the stage and solve the tableau geometry.
    *
@@ -170,7 +176,7 @@ export function mountFreeCell(root: HTMLElement): GameController {
     if (boardWidth <= 0) return;
 
     const gameMode = inGameMode();
-    const available = gameMode ? tableauHeight() : 0;
+    const available = gameMode ? tableauAvailableHeight() : 0;
 
     const plan: RowPlanInput = {
       width: boardWidth,
@@ -192,34 +198,63 @@ export function mountFreeCell(root: HTMLElement): GameController {
       availableHeight: available,
     });
 
+    currentRowHeight = geometry.rowHeight;
+
     const key = [boardWidth, columns, rows, gameMode ? 1 : 0, geometry.cardHeight.toFixed(2), geometry.rowHeight.toFixed(2)].join('|');
     if (key === geometryKey) return;
     geometryKey = key;
 
-    root.style.setProperty('--fc-columns', String(columns));
-    root.style.setProperty('--fc-card-h', `${Math.max(12, Math.floor(geometry.cardHeight))}px`);
+    gameEl.style.setProperty('--fc-columns', String(columns));
+    gameEl.style.setProperty('--fc-card-h', `${Math.max(12, Math.floor(geometry.cardHeight))}px`);
     // Outside Game Mode the rows keep their natural height; only Game Mode
     // gets a hard row budget.
+    if (gameMode && geometry.rowHeight > 0) {
+      gameEl.style.setProperty('--fc-row-h', `${Math.max(24, Math.floor(geometry.rowHeight))}px`);
+    } else {
+      gameEl.style.removeProperty('--fc-row-h');
+    }
+    gameEl.style.setProperty('--fc-column-gap', `${COLUMN_GAP_PX}px`);
+    gameEl.style.setProperty('--fc-row-gap', `${ROW_GAP_PX}px`);
+    // Also mirror to root for any external queries.
+    root.style.setProperty('--fc-columns', String(columns));
+    root.style.setProperty('--fc-card-h', `${Math.max(12, Math.floor(geometry.cardHeight))}px`);
     if (gameMode && geometry.rowHeight > 0) {
       root.style.setProperty('--fc-row-h', `${Math.max(24, Math.floor(geometry.rowHeight))}px`);
     } else {
       root.style.removeProperty('--fc-row-h');
     }
-    root.style.setProperty('--fc-column-gap', `${COLUMN_GAP_PX}px`);
-    root.style.setProperty('--fc-row-gap', `${ROW_GAP_PX}px`);
   }
 
-  /** Vertical room left for the tableau (or the fan that replaces it). */
-  function tableauHeight(): number {
-    const boardHeight = boardEl.clientHeight;
-    if (boardHeight <= 0) return 0;
-    return Math.max(0, boardHeight - topEl.offsetHeight - ROW_GAP_PX);
+  /** Vertical room left for the tableau (or the fan that replaces it) inside the fixed stage. */
+  function tableauAvailableHeight(): number {
+    const viewport = getViewport();
+    if (!viewport) return 0;
+    const viewportRect = viewport.getBoundingClientRect();
+    // If tableau already laid out, measure from its top to viewport bottom.
+    const tableauRect = tableauEl.getBoundingClientRect();
+    if (tableauRect.top > 0 && tableauRect.width > 0) {
+      return Math.max(0, viewportRect.bottom - tableauRect.top - 12);
+    }
+    // Fallback: estimate from board top + hud + top row.
+    const boardRect = boardEl.getBoundingClientRect();
+    const hudEl = root.querySelector<HTMLElement>('.fc__hud');
+    const hudH = hudEl ? hudEl.getBoundingClientRect().height : 0;
+    const topH = topEl.getBoundingClientRect().height || topEl.offsetHeight;
+    const estimatedTableauTop = boardRect.top + hudH + topH + ROW_GAP_PX + 8;
+    if (estimatedTableauTop > 0) {
+      return Math.max(0, viewportRect.bottom - estimatedTableauTop - 12);
+    }
+    // Last resort: viewport minus toolbar, hud, top.
+    const toolbar = viewport.querySelector<HTMLElement>('.game-toolbar');
+    const toolbarH = toolbar ? toolbar.getBoundingClientRect().height : 0;
+    return Math.max(0, viewportRect.height - toolbarH - hudH - topH - ROW_GAP_PX - 24);
   }
 
   /** Height budget a single column may occupy. */
   function columnBudget(): number {
     if (!inGameMode()) return DESKTOP_COLUMN_BUDGET_PX;
-    const height = tableauHeight();
+    if (currentRowHeight > 0) return currentRowHeight;
+    const height = tableauAvailableHeight();
     return height > 0 ? height : DESKTOP_COLUMN_BUDGET_PX;
   }
 
@@ -237,7 +272,16 @@ export function mountFreeCell(root: HTMLElement): GameController {
     fanColumn = col;
     fanPage = 0;
     render();
-    fanEl.querySelector<HTMLElement>('[data-fc-fan-close]')?.focus({ preventScroll: true });
+    const attemptFocus = () => {
+      const closeBtn = fanEl.querySelector<HTMLElement>('[data-fc-fan-close]');
+      if (closeBtn) {
+        try { closeBtn.focus({ preventScroll: true }); } catch { closeBtn.focus(); }
+      }
+    };
+    attemptFocus();
+    window.setTimeout(attemptFocus, 0);
+    window.setTimeout(attemptFocus, 50);
+    window.setTimeout(attemptFocus, 150);
   }
 
   function closeFan(returnFocus = true) {
@@ -246,7 +290,16 @@ export function mountFreeCell(root: HTMLElement): GameController {
     fanPage = 0;
     render();
     if (returnFocus && col !== null) {
-      root.querySelector<HTMLElement>(`[data-fc-col="${col}"] [data-fc-expand]`)?.focus({ preventScroll: true });
+      const attemptFocus = () => {
+        const trigger = root.querySelector<HTMLElement>(`[data-fc-col="${col}"] [data-fc-expand]`);
+        if (trigger) {
+          try { trigger.focus({ preventScroll: true }); } catch { trigger.focus(); }
+        }
+      };
+      attemptFocus();
+      window.setTimeout(attemptFocus, 0);
+      window.setTimeout(attemptFocus, 50);
+      window.setTimeout(attemptFocus, 150);
     }
   }
 
@@ -259,12 +312,13 @@ export function mountFreeCell(root: HTMLElement): GameController {
 
     const col = fanColumn;
     const pile = state.tableau[col]!;
-    const availableHeight = inGameMode() ? tableauHeight() : Math.max(240, tableauHeight());
+    const availableHeight = inGameMode() ? tableauAvailableHeight() : Math.max(240, tableauAvailableHeight());
     const availableWidth = boardEl.clientWidth;
+    const ch = cardHeight();
     const plan = fanLayout(
       {
         count: pile.length,
-        cardHeight: cardHeight(),
+        cardHeight: ch,
         // The fan bar sits above the cards inside the same fixed stage, so it
         // has to come out of the budget before the cards are sized.
         availableHeight: Math.max(0, availableHeight - FAN_BAR_RESERVE_PX),
@@ -275,7 +329,7 @@ export function mountFreeCell(root: HTMLElement): GameController {
     );
     const shown = pile.slice(plan.startIndex, plan.startIndex + Math.max(1, plan.perPage));
     const horizontalStep = plan.compressed && shown.length > 1
-      ? Math.max(24, Math.floor((availableWidth - cardHeight() * (5 / 7)) / (shown.length - 1)))
+      ? Math.max(24, Math.floor((availableWidth - ch * (5 / 7)) / (shown.length - 1)))
       : 0;
 
     fanEl.hidden = false;
@@ -302,7 +356,8 @@ export function mountFreeCell(root: HTMLElement): GameController {
       cardEl.dataset.fcFanCard = String(index);
       cardEl.setAttribute('role', 'button');
       cardEl.setAttribute('tabindex', '0');
-      cardEl.style.marginTop = offset === 0 ? '0px' : `${plan.step}px`;
+      // Overlapping: visible strip is plan.step, so margin is step - cardHeight
+      cardEl.style.marginTop = offset === 0 ? '0px' : `${plan.step - ch}px`;
       if (horizontalStep > 0) cardEl.style.marginLeft = `${horizontalStep}px`;
       if (selected?.type === 'tableau' && selected.col === col && index >= selected.cardIndex) {
         cardEl.classList.add('is-selected');
@@ -319,9 +374,12 @@ export function mountFreeCell(root: HTMLElement): GameController {
   }
 
   function cardHeight(): number {
-    const raw = root.style.getPropertyValue('--fc-card-h');
+    const raw = gameEl.style.getPropertyValue('--fc-card-h') || root.style.getPropertyValue('--fc-card-h');
     const parsed = Number.parseFloat(raw);
-    return Number.isFinite(parsed) && parsed > 0 ? parsed : 48;
+    if (Number.isFinite(parsed) && parsed > 0) return parsed;
+    const computed = getComputedStyle(gameEl).getPropertyValue('--fc-card-h');
+    const parsedComputed = Number.parseFloat(computed);
+    return Number.isFinite(parsedComputed) && parsedComputed > 0 ? parsedComputed : 48;
   }
 
   function renderTableau() {
@@ -359,13 +417,19 @@ export function mountFreeCell(root: HTMLElement): GameController {
       if (column.length === 0) {
         const empty = document.createElement('div');
         empty.className = 'fc__card fc__card--empty';
-        empty.setAttribute('aria-hidden', 'true');
+        empty.setAttribute('aria-hidden', 'false');
+        empty.setAttribute('role', 'button');
+        empty.setAttribute('tabindex', '0');
+        empty.setAttribute('aria-label', `Column ${col + 1}, empty`);
+        empty.addEventListener('pointerdown', (e) => { e.preventDefault(); handleColumnClick(col); });
+        empty.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleColumnClick(col); } });
         pile.appendChild(empty);
       }
       column.forEach((card, i) => {
         const cardEl = renderCard(card, true);
         cardEl.dataset.fcCard = String(i);
-        cardEl.style.marginTop = i === 0 ? '0px' : `${step}px`;
+        // Overlapping: step is visible strip, margin = step - cardHeight
+        cardEl.style.marginTop = i === 0 ? '0px' : `${step - height}px`;
         if (selected?.type === 'tableau' && selected.col === col && i >= selected.cardIndex) {
           cardEl.classList.add('is-selected');
         }
@@ -384,14 +448,12 @@ export function mountFreeCell(root: HTMLElement): GameController {
       });
       wrapper.appendChild(pile);
 
+      // Accessibility: wrapper is a group, not a button, to avoid nested interactive violation.
+      wrapper.setAttribute('role', 'group');
       wrapper.setAttribute(
         'aria-label',
         `Column ${col + 1}, ${column.length} cards${column.length > 0 ? ', top: ' + cardName(column[column.length - 1]!) : ''}`,
       );
-      wrapper.addEventListener('pointerdown', (e) => { e.preventDefault(); handleColumnClick(col); });
-      wrapper.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleColumnClick(col); } });
-      wrapper.tabIndex = 0;
-      wrapper.setAttribute('role', 'button');
       tableauEl.appendChild(wrapper);
     });
   }
@@ -535,7 +597,7 @@ export function mountFreeCell(root: HTMLElement): GameController {
   undoBtn.addEventListener('click', handleUndo);
   againBtn.addEventListener('click', () => init());
 
-  root.addEventListener('keydown', (e) => {
+  const onKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Escape' && fanColumn !== null) {
       // Stop here so Escape closes the fan without also exiting Game Mode.
       e.preventDefault();
@@ -544,22 +606,40 @@ export function mountFreeCell(root: HTMLElement): GameController {
       return;
     }
     if (e.key === 'u' || e.key === 'U') { e.preventDefault(); handleUndo(); }
-  });
+  };
+
+  // Document-level capture to catch Escape even when focus is on body (e.g. after failed focus).
+  const onDocKeyDownCapture = (e: KeyboardEvent) => {
+    if (e.key === 'Escape' && fanColumn !== null) {
+      e.preventDefault();
+      e.stopPropagation();
+      closeFan();
+    }
+  };
+
+  root.addEventListener('keydown', onKeyDown);
+  document.addEventListener('keydown', onDocKeyDownCapture, true);
 
   init();
 
   if (typeof ResizeObserver === 'function') {
     observer = new ResizeObserver(() => {
+      const prev = geometryKey;
       fitBoard();
-      render();
+      if (geometryKey !== prev) render();
     });
     observer.observe(boardEl);
+    // Also observe viewport for Game Mode changes.
+    const viewport = getViewport();
+    if (viewport) observer.observe(viewport);
   }
 
   return {
     destroy() {
       observer?.disconnect();
       observer = null;
+      root.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('keydown', onDocKeyDownCapture, true);
       root.innerHTML = '';
     },
     pause() { paused = true; },
