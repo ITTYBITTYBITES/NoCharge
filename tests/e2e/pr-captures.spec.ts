@@ -64,10 +64,10 @@ test('captures desktop and mobile platform-maturity review screens', async ({ pa
     await page.waitForLoadState('networkidle');
     await shot(`desktop-${game}-normal`);
 
-    await page.getByRole('button', { name: /Enter (full screen|immersive mode)/ }).click();
+    await page.getByRole('button', { name: /Enter full screen|Focus mode/ }).first().click();
     await page.waitForTimeout(200);
     await shot(`desktop-${game}-fullscreen-or-immersive`);
-    const exit = page.getByRole('button', { name: /Exit (full screen|immersive mode)/ });
+    const exit = page.getByRole('button', { name: /Exit (full screen|focus mode)/ });
     if (await exit.count()) await exit.click();
     await page.waitForTimeout(100);
   }
@@ -89,10 +89,11 @@ test('captures desktop and mobile platform-maturity review screens', async ({ pa
     await page.waitForLoadState('networkidle');
     await shot(`mobile-${game}-normal`);
 
-    await page.getByRole('button', { name: /Enter (full screen|immersive mode)/ }).click();
+    await page.getByRole('button', { name: 'Game settings' }).click();
+    await page.getByRole('button', { name: /Enter full screen|Focus mode/ }).first().click();
     await page.waitForTimeout(200);
     await shot(`mobile-${game}-fullscreen-or-immersive`);
-    const exit = page.getByRole('button', { name: /Exit (full screen|immersive mode)/ });
+    const exit = page.getByRole('button', { name: /Exit (full screen|focus mode)/ });
     if (await exit.count()) await exit.click();
     await page.waitForTimeout(100);
   }

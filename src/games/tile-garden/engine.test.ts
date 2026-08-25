@@ -1,5 +1,21 @@
 import { describe, it, expect } from 'vitest';
-import { createGame, placeTile, undo, clearTile } from './engine';
+import {
+  createGame,
+  placeTile,
+  undo,
+  clearTile,
+  GARDEN_CENTER_CELLS,
+  type TileGardenState,
+  type Tile,
+} from './engine';
+
+function withNext(state: TileGardenState, tile: Tile): TileGardenState {
+  return { ...state, nextTile: tile };
+}
+
+function place(state: TileGardenState, row: number, col: number, tile: Tile = { tier: 0, species: 0 }) {
+  return placeTile(withNext(state, tile), row, col)!;
+}
 
 describe('Tile Garden engine', () => {
   it('creates an empty 8x8 grid', () => {
@@ -10,62 +26,105 @@ describe('Tile Garden engine', () => {
   });
 
   it('places a tile on an empty cell', () => {
-    const game = createGame();
-    const result = placeTile(game, 0, 0);
+    const result = placeTile(createGame(), 0, 0);
     expect(result).not.toBeNull();
-    expect(result!.grid[0]![0]).not.toBeNull();
     expect(result!.grid[0]![0]!.tier).toBe(0);
     expect(result!.moves).toBe(1);
   });
 
   it('cannot place on occupied cell', () => {
-    const game = createGame();
-    const placed = placeTile(game, 0, 0);
-    expect(placed).not.toBeNull();
-    const result = placeTile(placed!, 0, 0);
-    expect(result).toBeNull();
+    const placed = placeTile(createGame(), 0, 0)!;
+    expect(placeTile(placed, 0, 0)).toBeNull();
   });
 
-  it('merges 2x2 same-tier same-species into tier up', () => {
+  it('places the merged tile at the top-left of the 2×2 block', () => {
     let game = createGame();
-    // Force specific nextTile species to 0
-    game = { ...game, nextTile: { tier: 0, species: 0 } };
+    game = place(game, 2, 3);
+    game = place(game, 2, 4);
+    game = place(game, 3, 3);
+    game = place(game, 3, 4);
+    expect(game.grid[2]![3]).toEqual({ tier: 1, species: 0 });
+    expect(game.grid[2]![4]).toBeNull();
+    expect(game.grid[3]![3]).toBeNull();
+    expect(game.grid[3]![4]).toBeNull();
+  });
 
-    // Place 4 seeds of same species in a 2x2 block
-    game = placeTile(game, 0, 0)!;
-    game = { ...game, nextTile: { tier: 0, species: 0 } };
-    game = placeTile(game, 0, 1)!;
-    game = { ...game, nextTile: { tier: 0, species: 0 } };
-    game = placeTile(game, 1, 0)!;
-    game = { ...game, nextTile: { tier: 0, species: 0 } };
-    game = placeTile(game, 1, 1)!;
+  it('cascades when four sprouts form after a seed merge', () => {
+    let game = createGame();
+    game = place(game, 0, 0);
+    game = place(game, 0, 1);
+    game = place(game, 1, 0);
+    game = place(game, 1, 1);
+    expect(game.grid[0]![0]?.tier).toBe(1);
+    game = place(game, 0, 1, { tier: 1, species: 0 });
+    game = place(game, 1, 0, { tier: 1, species: 0 });
+    game = place(game, 1, 1, { tier: 1, species: 0 });
+    expect(game.grid[0]![0]?.tier).toBe(2);
+    expect(game.grid[0]![1]).toBeNull();
+    expect(game.grid[1]![0]).toBeNull();
+    expect(game.grid[1]![1]).toBeNull();
+  });
 
-    // After merge: one cell should have tier 1
-    let hasTier1 = false;
-    for (let r = 0; r < 8; r++) {
-      for (let c = 0; c < 8; c++) {
-        if (game.grid[r]![c]?.tier === 1) hasTier1 = true;
-      }
+  it('undo restores the exact pre-merge state', () => {
+    let game = createGame();
+    game = place(game, 0, 0);
+    game = place(game, 0, 1);
+    game = place(game, 1, 0);
+    const beforeMerge = game;
+    game = place(game, 1, 1);
+    expect(game.grid[0]![0]?.tier).toBe(1);
+    const undone = undo(game)!;
+    expect(undone.grid[0]![0]).toEqual(beforeMerge.grid[0]![0]);
+    expect(undone.grid[0]![1]).toEqual(beforeMerge.grid[0]![1]);
+    expect(undone.grid[1]![0]).toEqual(beforeMerge.grid[1]![0]);
+    expect(undone.grid[1]![1]).toBeNull();
+    expect(undone.moves).toBe(beforeMerge.moves);
+  });
+
+  it('garden mode wins with a flower at each intended center cell', () => {
+    for (const { row, col } of GARDEN_CENTER_CELLS) {
+      let game = createGame('garden');
+      game.grid[row]![col] = { tier: 3, species: 0 };
+      const placed = placeTile(withNext(game, { tier: 0, species: 1 }), 0, 0);
+      expect(placed?.won, `flower at ${row},${col}`).toBe(true);
     }
-    expect(hasTier1).toBe(true);
   });
 
-  it('undo restores previous state', () => {
-    let game = createGame();
-    game = placeTile(game, 3, 3)!;
-    expect(game.grid[3]![3]).not.toBeNull();
-    const undone = undo(game);
-    expect(undone).not.toBeNull();
-    expect(undone!.grid[3]![3]).toBeNull();
-    expect(undone!.moves).toBe(0);
+  it('does not win when a flower is away from center', () => {
+    let game = createGame('garden');
+    game.grid[0]![0] = { tier: 2, species: 0 };
+    game.grid[0]![1] = { tier: 2, species: 0 };
+    game.grid[1]![0] = { tier: 2, species: 0 };
+    const result = placeTile(withNext(game, { tier: 2, species: 0 }), 1, 1)!;
+    expect(result.grid[0]![0]?.tier).toBe(3);
+    expect(result.won).toBe(false);
+  });
+
+  it('meadow mode never enters the garden win state', () => {
+    let game = createGame('meadow');
+    game.grid[3]![3] = { tier: 2, species: 0 };
+    game.grid[3]![4] = { tier: 2, species: 0 };
+    game.grid[4]![3] = { tier: 2, species: 0 };
+    const result = placeTile(withNext(game, { tier: 2, species: 0 }), 4, 4)!;
+    expect(result.grid[3]![3]?.tier).toBe(3);
+    expect(result.won).toBe(false);
+  });
+
+  it('sketch mode does not auto-merge', () => {
+    let game = createGame('sketch');
+    game = place(game, 0, 0);
+    game = place(game, 0, 1);
+    game = place(game, 1, 0);
+    game = place(game, 1, 1);
+    expect(game.grid[0]![0]?.tier).toBe(0);
+    expect(game.grid[1]![1]?.tier).toBe(0);
+    expect(game.won).toBe(false);
   });
 
   it('clearTile works in sketch mode', () => {
     let game = createGame('sketch');
     game = placeTile(game, 0, 0)!;
-    expect(game.grid[0]![0]).not.toBeNull();
     const cleared = clearTile(game, 0, 0);
-    expect(cleared).not.toBeNull();
     expect(cleared!.grid[0]![0]).toBeNull();
   });
 
@@ -73,11 +132,5 @@ describe('Tile Garden engine', () => {
     expect(createGame('garden').mode).toBe('garden');
     expect(createGame('meadow').mode).toBe('meadow');
     expect(createGame('sketch').mode).toBe('sketch');
-  });
-
-  it('garden mode wins with a flower at center', () => {
-    // This is a complex test — just verify the win check exists
-    const game = createGame('garden');
-    expect(game.won).toBe(false);
   });
 });

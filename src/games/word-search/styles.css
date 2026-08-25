@@ -1,1 +1,96 @@
-.ws{display:grid;gap:1rem}.ws__controls{display:flex;flex-wrap:wrap;gap:.6rem;align-items:end}.ws__controls label{display:grid;gap:.2rem;font-size:.8rem;font-weight:650}.ws__grid{display:grid;grid-template-columns:repeat(8,minmax(2rem,1fr));max-width:34rem;margin:auto;border:2px solid var(--line)}.ws__cell{aspect-ratio:1;border:1px solid var(--line);background:var(--panel-2);font-weight:700;color:var(--ink)}.ws__cell.is-start,.ws__cell.is-hint{background:color-mix(in srgb,var(--accent) 35%,var(--panel))}.ws__words{columns:2;list-style:none;padding:0;margin:0;line-height:1.8}.ws__words[hidden]{display:none}@media(max-width:520px){.ws__grid{min-width:20rem;overflow:auto}.ws__controls{align-items:stretch}.ws__controls>*{max-width:100%}}.ws__grid.is-locked .ws__cell{pointer-events:none;opacity:.55}@media(forced-colors:active){.ws__cell{border:1px solid ButtonText}.ws__cell.is-start{outline:3px solid Highlight}}
+.ws {
+  display: grid;
+  gap: 1rem;
+}
+
+.ws__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: end;
+}
+
+.ws__controls label {
+  display: grid;
+  gap: 0.2rem;
+  font-size: 0.8rem;
+  font-weight: 650;
+}
+
+.ws__board {
+  max-width: 100%;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.ws__grid {
+  --ws-size: 8;
+  --ws-cell: 2.75rem;
+  display: grid;
+  grid-template-columns: repeat(var(--ws-size), minmax(0, 1fr));
+  width: min(100%, 34rem);
+  margin: auto;
+  border: 2px solid var(--line);
+}
+
+.ws__grid[data-size="10"] {
+  grid-template-columns: repeat(10, var(--ws-cell));
+  width: max(100%, calc(10 * var(--ws-cell)));
+}
+
+.ws__cell {
+  aspect-ratio: 1;
+  min-width: 0;
+  min-height: 2.75rem;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.ws__grid[data-size="10"] .ws__cell {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+}
+
+.ws__cell.is-start,
+.ws__cell.is-hint {
+  background: color-mix(in srgb, var(--accent) 35%, var(--panel));
+}
+
+.ws__words {
+  columns: 2;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  line-height: 1.8;
+}
+
+.ws__words[hidden] {
+  display: none;
+}
+
+.ws__grid.is-locked .ws__cell {
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+@media (max-width: 520px) {
+  .ws__controls {
+    align-items: stretch;
+  }
+
+  .ws__controls > * {
+    max-width: 100%;
+  }
+}
+
+@media (forced-colors: active) {
+  .ws__cell {
+    border: 1px solid ButtonText;
+  }
+
+  .ws__cell.is-start {
+    outline: 3px solid Highlight;
+  }
+}

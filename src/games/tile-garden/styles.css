@@ -35,9 +35,11 @@
 
 .tg__board {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
+  grid-template-columns: repeat(8, minmax(2.75rem, 1fr));
   gap: 0.3rem;
-  max-width: min(100%, 28rem);
+  width: min(100%, 36rem);
+  max-width: 100%;
+  overflow-x: auto;
   margin: 0 auto;
   padding: 0.5rem;
   background: var(--panel-2, #161b18);

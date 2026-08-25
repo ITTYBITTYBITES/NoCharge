@@ -37,6 +37,6 @@ featured: false
 order: 15
 ---
 
-Tile Garden is a calm merge game built around four growth tiers: seed, sprout, bloom, and flower. Place seed tiles on an 8×8 grid. When four same-species tiles form a 2×2 block, they merge into one tile of the next tier.
+Tile Garden is a calm merge game built around four growth tiers: seed, sprout, bloom, and flower. Place seed tiles on an 8×8 grid. When four same-species tiles form a 2×2 block, they merge into one tile of the next tier at the top-left of that block.
 
 Three modes: Garden (standard rules, win with a flower at center), Meadow (endless play, no win condition), and Sketch (creative mode with free placement, no required merges). There are no lives, no timer, no energy system, and no "buy more moves." New seeds appear at a calm rate.

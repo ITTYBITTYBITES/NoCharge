@@ -2,10 +2,11 @@
  * Tile Garden engine — pure rules, no DOM, no localStorage.
  * Calm merge game on 8×8 grid with 4 tiers: seed → sprout → bloom → flower.
  * Player places tiles on empty cells; 4 same-tier tiles in a 2×2 block
- * auto-merge into one tier-up tile centered; surrounding cells empty.
+ * auto-merge into one tier-up tile at the top-left of that block;
+ * the other three cells empty.
  * Three modes: Garden (default), Meadow (endless), Sketch (creative).
  */
-import { createGrid, cloneGrid, block2x2, block2x2InBounds } from '../shared/grid';
+import { createGrid, block2x2 } from '../shared/grid';
 
 export type TileTier = 0 | 1 | 2 | 3; // seed, sprout, bloom, flower
 export type GameMode = 'garden' | 'meadow' | 'sketch';
@@ -57,6 +58,17 @@ function generateNextTile(): Tile {
   };
 }
 
+export const GARDEN_CENTER_CELLS = [
+  { row: 3, col: 3 },
+  { row: 3, col: 4 },
+  { row: 4, col: 3 },
+  { row: 4, col: 4 },
+] as const;
+
+export function hasGardenWin(grid: (Tile | null)[][]): boolean {
+  return GARDEN_CENTER_CELLS.some(({ row, col }) => grid[row]![col]?.tier === 3);
+}
+
 /** Place a tile on an empty cell. Returns null if cell is occupied. */
 export function placeTile(
   state: TileGardenState,
@@ -99,13 +111,9 @@ export function placeTile(
   }
   newState = { ...newState, bestTier };
 
-  // Check win condition (Garden mode: a flower at center)
-  if (state.mode === 'garden') {
-    const center = newState.grid[3]![3]; // center of 8x8 is (3,3) or (4,4)
-    const center2 = newState.grid[4]![4];
-    if ((center && center.tier === 3) || (center2 && center2.tier === 3)) {
-      newState = { ...newState, won: true };
-    }
+  // Garden win: a flower (tier 3) on any of the four center cells.
+  if (state.mode === 'garden' && hasGardenWin(newState.grid)) {
+    newState = { ...newState, won: true };
   }
 
   return newState;
@@ -129,14 +137,10 @@ function processMerges(state: TileGardenState): TileGardenState {
           tiles[0]!.tier < 3 &&
           tiles.every((t) => t!.tier === tiles[0]!.tier && t!.species === tiles[0]!.species)
         ) {
-          // Merge: clear all four, place tier-up at center (r+1, c+1 approximated)
-          const mergeRow = r + 1;
-          const mergeCol = c + 1;
-          // Only merge if merge target is within one of the 2x2 cells
+          // Deterministic merge: result always occupies the top-left of the 2×2.
           for (const cell of cells) {
             grid[cell.row]![cell.col] = null;
           }
-          // Place merged tile at top-left of the 2x2 block
           grid[r]![c] = { tier: (tiles[0]!.tier + 1) as TileTier, species: tiles[0]!.species };
           merged = true;
           break;

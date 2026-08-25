@@ -51,8 +51,11 @@ test.describe('shared game lifecycle controls', () => {
       const viewport = page.locator('[data-game-viewport]');
       await expect(viewport.getByRole('button', { name: /Pause game/ })).toBeVisible();
       await expect(viewport.getByRole('button', { name: /Mute game sound/ })).toBeVisible();
-      await expect(viewport.getByRole('button', { name: /Enter (full screen|immersive mode)/ })).toBeVisible();
+      await expect(viewport.getByRole('button', { name: 'Game settings' })).toBeVisible();
+      await viewport.getByRole('button', { name: 'Game settings' }).click();
       await expect(viewport.getByRole('button', { name: 'New game' })).toBeVisible();
+      await expect(viewport.getByRole('button', { name: /Enter full screen|Focus mode/ })).toBeVisible();
+      await page.keyboard.press('Escape');
     }
   });
 
@@ -304,7 +307,7 @@ test.describe('fullscreen and immersive game viewport', () => {
   test('enters and exits the browser-supported fullscreen viewport with an accessible toolbar', async ({ page }) => {
     await page.goto('/games/memory-match/');
     const fullscreen = page.getByRole('button', { name: 'Enter full screen' });
-    const immersive = page.getByRole('button', { name: 'Enter immersive mode' });
+    const immersive = page.getByRole('button', { name: 'Focus mode' });
 
     if (await fullscreen.count()) {
       await fullscreen.click();
@@ -328,8 +331,8 @@ test.describe('fullscreen and immersive game viewport', () => {
       // Browsers without the Fullscreen API deliberately expose immersive mode.
       await immersive.click();
       await expect(page.locator('[data-game-viewport]')).toHaveClass(/is-immersive/);
-      await expect(page.getByRole('button', { name: 'Exit immersive mode' })).toBeVisible();
-      await page.getByRole('button', { name: 'Exit immersive mode' }).click();
+      await expect(page.getByRole('button', { name: 'Exit focus mode' })).toBeVisible();
+      await page.getByRole('button', { name: 'Exit focus mode' }).click();
       await expect(page.locator('[data-game-viewport]')).not.toHaveClass(/is-immersive/);
     }
   });
@@ -339,12 +342,12 @@ test.describe('fullscreen and immersive game viewport', () => {
       Object.defineProperty(document, 'fullscreenEnabled', { configurable: true, get: () => false });
     });
     await page.goto('/games/word-tile-rush/');
-    const enter = page.getByRole('button', { name: 'Enter immersive mode' });
+    const enter = page.getByRole('button', { name: 'Focus mode' });
     test.skip((await enter.count()) === 0, 'This browser does not allow the Fullscreen feature-detection override.');
     await enter.click();
     await expect(page.locator('[data-game-viewport]')).toHaveClass(/is-immersive/);
     await expect.poll(() => page.evaluate(() => document.body.style.position)).toBe('fixed');
-    await page.getByRole('button', { name: 'Exit immersive mode' }).click();
+    await page.getByRole('button', { name: 'Exit focus mode' }).click();
     await expect.poll(() => page.evaluate(() => document.body.style.position)).toBe('');
   });
 
@@ -360,8 +363,8 @@ test.describe('fullscreen and immersive game viewport', () => {
     const enter = page.getByRole('button', { name: 'Enter full screen' });
     test.skip((await enter.count()) === 0, 'This browser does not allow the Fullscreen feature-detection override.');
     await enter.click();
-    await expect(page.locator('[data-game-toolbar-status]')).toContainText('Full screen is unavailable');
-    await expect(page.locator('[data-game-viewport]')).not.toHaveClass(/is-fullscreen-active/);
+    await expect(page.locator('[data-game-viewport]')).toHaveClass(/is-immersive/);
+    await expect(page.getByRole('button', { name: 'Exit focus mode' })).toBeVisible();
   });
 });
 
