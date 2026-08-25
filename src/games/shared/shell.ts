@@ -90,9 +90,12 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     const activeNative = document.fullscreenElement === viewport;
     const labels = focusModeLabel(nativeFullscreenSupported, activeNative, immersive);
     if (fullscreenButton) {
-      fullscreenButton.textContent = labels.text;
-      fullscreenButton.setAttribute('aria-label', labels.aria);
-      fullscreenButton.setAttribute('aria-pressed', String(activeNative || immersive));
+      // While hidden, keep this exit-only button out of entry-control role
+      // queries. It becomes the compact, correctly named exit when active.
+      const active = activeNative || immersive;
+      fullscreenButton.textContent = active ? labels.text : 'Leave expanded game';
+      fullscreenButton.setAttribute('aria-label', active ? labels.aria : 'Leave expanded game');
+      fullscreenButton.setAttribute('aria-pressed', String(active));
     }
     if (focusInMenu) {
       focusInMenu.textContent = labels.text;
