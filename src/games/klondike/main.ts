@@ -1,6 +1,6 @@
 import { play, unlockAudio } from '../shared/audio';
 import { loadPref, savePref } from '../shared/storage';
-import type { GameController, PauseReason } from '../shared/types';
+import type { GameController } from '../shared/types';
 import { signalMeaningfulGameInteraction } from '../shared/recently-played';
 import {
   type KlondikeState,
@@ -22,7 +22,6 @@ import {
 } from '../shared/solitaire';
 import './styles.css';
 
-const GAME_ID = 'klondike';
 const DRAW_MODE_KEY = 'klondike-draw-mode';
 const GAMES_WON_KEY = 'nocharge:klondike:games-won';
 const BEST_MOVES_KEY = 'nocharge:klondike:best-moves';

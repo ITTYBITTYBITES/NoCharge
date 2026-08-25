@@ -35,6 +35,7 @@ This matrix connects public claims to runtime or platform sources of truth. “L
 | How NoCharge saves scores without an account | Exact keys and clear behavior | Shared storage, game modules, Privacy clear script | Storage/privacy change | Privacy + technical | 2026-08-19 | No encryption/security claim |
 | Designing browser games for more ways to play | Current input/accessibility/lifecycle behavior | Runtime, shell, statement, tests | Input/UI/accessibility change | Accessibility editorial | 2026-08-19 | Manual AT checks remain required |
 | How NoCharge tests browser games | CI scripts and documented manual gates | `package.json`, workflows, CI docs, tests | Test/CI/tooling change | QA editorial | 2026-08-19 | Firefox/WebKit/Lighthouse are manual release checks |
+| Functional game QA matrix | Functional gameplay QA, unit tests, e2e tests, device verification | `docs/FUNCTIONAL_GAME_QA_MATRIX.md`, `src/games/` | Game engine/route/interaction change | Full functional QA review | 2026-08-25 | Covers all 17 published games across desktop and mobile |
 
 ## Review procedure
 

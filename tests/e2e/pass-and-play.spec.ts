@@ -182,7 +182,6 @@ test.describe('the six games', () => {
     page.on('download', (download) => downloads.push(download.suggestedFilename()));
     await page.getByRole('button', { name: '2 passes each' }).click();
     const box = await page.locator('[data-ptp-canvas]').boundingBox();
-    const progress = page.locator('[data-ptp-progress]');
     const drawStroke = async (offset: number) => {
       await page.mouse.move(box!.x + box!.width * (0.25 + offset * 0.12), box!.y + box!.height * 0.6);
       await page.mouse.down();

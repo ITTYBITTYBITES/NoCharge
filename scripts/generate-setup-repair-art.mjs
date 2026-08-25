@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import sharp from 'sharp';
 export const REPAIRED = ['room-lighting','screen-film','cables','monitor-calibration','chair-posture','lamp-light','footrest-mat','headphones','speakers'];

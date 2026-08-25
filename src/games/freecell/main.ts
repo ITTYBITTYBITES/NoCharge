@@ -1,5 +1,5 @@
 import { play, unlockAudio } from '../shared/audio';
-import type { GameController, PauseReason } from '../shared/types';
+import type { GameController } from '../shared/types';
 import { signalMeaningfulGameInteraction } from '../shared/recently-played';
 import {
   type FreeCellState,
@@ -10,7 +10,6 @@ import {
   moveTableau,
   moveTableauToFoundation,
   undo as engineUndo,
-  autoMoveToFoundation,
 } from './engine';
 import {
   type Card,
@@ -21,7 +20,6 @@ import {
 } from '../shared/solitaire';
 import './styles.css';
 
-const GAME_ID = 'freecell';
 const GAMES_WON_KEY = 'nocharge:freecell:games-won';
 
 export function mountFreeCell(root: HTMLElement): GameController {

@@ -15,7 +15,6 @@ import {
   type ColorId,
   type RotationMode,
   type TapToStepState,
-  ALL_COLORS,
   GRID_SIZE,
 } from './engine';
 import './styles.css';

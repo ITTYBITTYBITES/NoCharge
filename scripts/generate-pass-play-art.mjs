@@ -59,7 +59,7 @@ const GAMES = {
     accent: '#f472b6', // in-game Player 1
     highlight: '#ffd3ea',
     p2: '#7dd3fc', // in-game Player 2 (PLAYER_COLORS in main.ts)
-    motif: (w, h, accent, highlight, p2) => {
+    motif: (w, h, accent, _highlight, p2) => {
       const cols = 5;
       const rows = 4;
       const pitch = Math.min(w / (cols + 1.6), h / (rows + 1.6));
@@ -180,7 +180,7 @@ const GAMES = {
   'pass-the-picture': {
     accent: '#facc15',
     highlight: '#fff3c4',
-    motif: (w, h, accent, highlight) => {
+    motif: (w, h, _accent, _highlight) => {
       // 4:3 paper, like the in-game 960×720 canvas.
       const paperW = Math.min(w, h) * 0.72;
       const paperH = paperW * 0.75;

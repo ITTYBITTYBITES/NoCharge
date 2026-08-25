@@ -6,7 +6,6 @@
 import {
   type Card,
   type Suit,
-  type Rank,
   suitColor,
   shuffledDeck,
   randomSeed,

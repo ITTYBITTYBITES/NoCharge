@@ -3,8 +3,10 @@ import {
   createGame,
   drawFromStock,
   moveWasteToTableau,
+  moveWasteToFoundation,
   moveTableau,
   moveTableauToFoundation,
+  autoMoveToFoundation,
   undo,
   canPlaceOnTableau,
   canPlaceOnFoundation,
@@ -45,13 +47,11 @@ describe('Klondike engine', () => {
 
   it('recycles waste when stock is empty', () => {
     let game = createGame(12345);
-    // Draw all cards
     while (game.stock.length > 0) {
       game = drawFromStock(game);
     }
     expect(game.stock.length).toBe(0);
     expect(game.waste.length).toBeGreaterThan(0);
-    // Recycle
     const recycled = drawFromStock(game);
     expect(recycled.stock.length).toBeGreaterThan(0);
     expect(recycled.waste.length).toBe(0);
@@ -61,15 +61,79 @@ describe('Klondike engine', () => {
     const queenHearts: Card = { suit: 'hearts', rank: 12, faceUp: true, id: 0 };
     const jackSpades: Card = { suit: 'spades', rank: 11, faceUp: true, id: 1 };
     const jackHearts: Card = { suit: 'hearts', rank: 11, faceUp: true, id: 2 };
+    const kingSpades: Card = { suit: 'spades', rank: 13, faceUp: true, id: 3 };
 
     expect(canPlaceOnTableau(jackSpades, [queenHearts])).toBe(true);
     expect(canPlaceOnTableau(jackHearts, [queenHearts])).toBe(false);
+    // King on empty column
+    expect(canPlaceOnTableau(kingSpades, [])).toBe(true);
+    expect(canPlaceOnTableau(queenHearts, [])).toBe(false);
   });
 
   it('canPlaceOnFoundation requires same suit ascending from ace', () => {
     expect(canPlaceOnFoundation({ suit: 'spades', rank: 1, faceUp: true, id: 0 }, [])).toBe(true);
     expect(canPlaceOnFoundation({ suit: 'spades', rank: 2, faceUp: true, id: 1 }, [{ suit: 'spades', rank: 1, faceUp: true, id: 0 }])).toBe(true);
     expect(canPlaceOnFoundation({ suit: 'hearts', rank: 2, faceUp: true, id: 2 }, [{ suit: 'spades', rank: 1, faceUp: true, id: 0 }])).toBe(false);
+  });
+
+  it('moves waste to tableau and waste to foundation', () => {
+    const game = createGame(12345);
+    // Setup deterministic waste and tableau
+    game.waste = [{ suit: 'spades', rank: 1, faceUp: true, id: 99 }];
+    // Move ace of spades to foundation
+    const toFoundation = moveWasteToFoundation(game);
+    expect(toFoundation).not.toBeNull();
+    expect(toFoundation!.foundations[0]!.length).toBe(1);
+    expect(toFoundation!.waste.length).toBe(0);
+
+    // Waste to tableau
+    const game2 = createGame(12345);
+    game2.tableau[0] = [{ suit: 'hearts', rank: 10, faceUp: true, id: 100 }];
+    game2.waste = [{ suit: 'spades', rank: 9, faceUp: true, id: 101 }];
+    const toTableau = moveWasteToTableau(game2, 0);
+    expect(toTableau).not.toBeNull();
+    expect(toTableau!.tableau[0]!.length).toBe(2);
+    expect(toTableau!.waste.length).toBe(0);
+  });
+
+  it('moves tableau card and sequence to another tableau column', () => {
+    const game = createGame(12345);
+    game.tableau[0] = [{ suit: 'spades', rank: 13, faceUp: true, id: 1 }];
+    game.tableau[1] = [
+      { suit: 'hearts', rank: 12, faceUp: true, id: 2 },
+      { suit: 'spades', rank: 11, faceUp: true, id: 3 },
+    ];
+    // Move sequence from col 1 to col 0
+    const moved = moveTableau(game, 1, 0, 0);
+    expect(moved).not.toBeNull();
+    expect(moved!.tableau[0]!.length).toBe(3);
+    expect(moved!.tableau[1]!.length).toBe(0);
+  });
+
+  it('moves tableau card to foundation and detects win when all 52 placed', () => {
+    const game = createGame(12345);
+    game.tableau[0] = [{ suit: 'spades', rank: 1, faceUp: true, id: 1 }];
+    const res = moveTableauToFoundation(game, 0);
+    expect(res).not.toBeNull();
+    expect(res!.foundations[0]!.length).toBe(1);
+    expect(res!.won).toBe(false);
+
+    // Full foundations
+    const wonGame = { ...game, foundations: Array.from({ length: 4 }, () => Array.from({ length: 13 }, (_, i) => ({ suit: 'spades' as const, rank: (i + 1) as any, faceUp: true, id: i }))) };
+    wonGame.tableau[0] = [{ suit: 'spades', rank: 1, faceUp: true, id: 50 }];
+    wonGame.foundations[0] = Array.from({ length: 12 }, (_, i) => ({ suit: 'spades' as const, rank: (i + 1) as any, faceUp: true, id: i }));
+    wonGame.tableau[0] = [{ suit: 'spades', rank: 13, faceUp: true, id: 50 }];
+    const winResult = moveTableauToFoundation(wonGame, 0);
+    expect(winResult?.won).toBe(true);
+  });
+
+  it('autoMoveToFoundation automatically places aces and twos', () => {
+    const game = createGame(12345);
+    game.tableau[0] = [{ suit: 'spades', rank: 1, faceUp: true, id: 1 }];
+    game.tableau[1] = [{ suit: 'hearts', rank: 1, faceUp: true, id: 2 }];
+    const auto = autoMoveToFoundation(game);
+    expect(auto.tableau[0]!.length).toBe(0);
+    expect(auto.tableau[1]!.length).toBe(0);
   });
 
   it('undo restores previous state', () => {
