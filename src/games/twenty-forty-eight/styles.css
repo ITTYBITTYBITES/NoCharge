@@ -34,9 +34,9 @@
 
 .tfe__board {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(2.75rem, 1fr));
   gap: 0.5rem;
-  max-width: min(100%, 22rem);
+  width: min(100%, 28rem);
   margin: 0 auto;
   padding: 0.6rem;
   background: var(--panel-2, #161b18);

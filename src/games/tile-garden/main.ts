@@ -29,7 +29,6 @@ export function mountTileGarden(root: HTMLElement): GameController {
         <div class="tg__controls">
           <button type="button" class="btn btn--sm" data-tg="mode-btn">Garden</button>
           <button type="button" class="btn btn--sm" data-tg="undo-btn">Undo</button>
-          <button type="button" class="btn btn--sm" data-tg="restart-btn">New game</button>
         </div>
       </div>
       <div class="tg__board" data-tg="board" role="group" aria-label="Tile Garden board"></div>
@@ -46,7 +45,6 @@ export function mountTileGarden(root: HTMLElement): GameController {
   const nextEl = root.querySelector<HTMLElement>('[data-tg="next"]')!;
   const modeBtn = root.querySelector<HTMLButtonElement>('[data-tg="mode-btn"]')!;
   const undoBtn = root.querySelector<HTMLButtonElement>('[data-tg="undo-btn"]')!;
-  const restartBtn = root.querySelector<HTMLButtonElement>('[data-tg="restart-btn"]')!;
   const boardEl = root.querySelector<HTMLElement>('[data-tg="board"]')!;
   const overlay = root.querySelector<HTMLElement>('[data-tg="overlay"]')!;
   const resultEl = root.querySelector<HTMLElement>('[data-tg="result"]')!;
@@ -181,7 +179,6 @@ export function mountTileGarden(root: HTMLElement): GameController {
 
   modeBtn.addEventListener('click', handleModeToggle);
   undoBtn.addEventListener('click', handleUndo);
-  restartBtn.addEventListener('click', () => init());
   againBtn.addEventListener('click', () => init());
 
   // Keyboard

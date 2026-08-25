@@ -23,7 +23,6 @@ export function mountTwentyFortyEight(root: HTMLElement): GameController {
         </div>
         <div class="tfe__controls">
           <button type="button" class="btn btn--sm" data-tfe="undo-btn">Undo</button>
-          <button type="button" class="btn btn--sm" data-tfe="restart-btn">New game</button>
         </div>
       </div>
       <div class="tfe__board" data-tfe="board" role="group" aria-label="2048 game board"></div>
@@ -41,7 +40,6 @@ export function mountTwentyFortyEight(root: HTMLElement): GameController {
   const scoreEl = root.querySelector<HTMLElement>('[data-tfe="score"]')!;
   const bestEl = root.querySelector<HTMLElement>('[data-tfe="best"]')!;
   const undoBtn = root.querySelector<HTMLButtonElement>('[data-tfe="undo-btn"]')!;
-  const restartBtn = root.querySelector<HTMLButtonElement>('[data-tfe="restart-btn"]')!;
   const boardEl = root.querySelector<HTMLElement>('[data-tfe="board"]')!;
   const overlay = root.querySelector<HTMLElement>('[data-tfe="overlay"]')!;
   const overlayTitle = root.querySelector<HTMLElement>('[data-tfe="overlay-title"]')!;
@@ -138,7 +136,6 @@ export function mountTwentyFortyEight(root: HTMLElement): GameController {
   }
 
   undoBtn.addEventListener('click', handleUndo);
-  restartBtn.addEventListener('click', () => init());
   againBtn.addEventListener('click', () => init());
   continueBtn.addEventListener('click', () => {
     continuing = true;

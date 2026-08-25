@@ -103,7 +103,7 @@ test('immersive mode keeps beacon controls visible', async ({ page }) => {
     Object.defineProperty(document, 'fullscreenEnabled', { configurable: true, get: () => false });
   });
   await page.goto('/games/beacon-lattice/');
-  const enter = page.getByRole('button', { name: 'Enter immersive mode' });
+  const enter = page.getByRole('button', { name: 'Focus mode' });
   test.skip((await enter.count()) === 0, 'Fullscreen override unavailable.');
   await enter.click();
   await expect(page.locator('[data-game-viewport]')).toHaveClass(/is-immersive/);

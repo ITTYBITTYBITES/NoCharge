@@ -31,6 +31,16 @@
 .fc__board {
   display: grid;
   gap: 1rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding-top: 0.4rem;
+  scrollbar-gutter: stable;
+}
+
+.fc__board::after {
+  content: '';
+  display: block;
+  height: 0;
 }
 
 .fc__top {
@@ -49,8 +59,8 @@
 
 .fc__cell,
 .fc__foundation {
-  width: clamp(2.6rem, 8vw, 3.8rem);
-  height: clamp(3.6rem, 11vw, 5.3rem);
+  width: clamp(2.75rem, 8vw, 3.8rem);
+  height: clamp(3.8rem, 11vw, 5.3rem);
   cursor: pointer;
   border-radius: 0.35rem;
 }
@@ -119,13 +129,20 @@
 .fc__overlay h2 { margin: 0; color: var(--fc-accent); }
 .fc__overlay p { color: var(--muted); }
 
-@media (max-width: 40rem) {
-  .fc__top {
-    grid-template-columns: 1fr;
-    gap: 0.6rem;
+@media (max-width: 48rem) {
+  .fc__board {
+    background:
+      linear-gradient(to right, var(--panel, #1a1f1c), transparent 1.25rem),
+      linear-gradient(to left, var(--panel, #1a1f1c), transparent 1.25rem);
+    background-attachment: local, local;
   }
-  .fc__cells,
-  .fc__foundations {
-    justify-content: center;
+
+  .fc__top,
+  .fc__tableau {
+    min-width: 36rem;
+  }
+
+  .fc__top {
+    grid-template-columns: repeat(4, auto) 1fr repeat(4, auto);
   }
 }

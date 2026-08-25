@@ -12,7 +12,7 @@ NoCharge Tile Garden is a calm merge game where you grow plants through four tie
 
 ## How to play
 
-Each turn, place the next seed tile on any empty cell. Seeds have one of six species (visually distinct). When four tiles of the same tier and species form a 2×2 block, they auto-merge into one tile of the next tier, centered in that block.
+Each turn, place the next seed tile on any empty cell. Seeds have one of six species (visually distinct). When four tiles of the same tier and species form a 2×2 block, they auto-merge into one tile of the next tier at the top-left cell of that block. The other three cells clear.
 
 The four tiers are:
 
@@ -32,7 +32,7 @@ The four tiers are:
 
 ### Garden (default)
 
-Standard rules apply. The game is "won" when a flower tile appears near the center of the board. This is a soft goal — there is no pressure to reach it quickly, and you can keep playing after.
+Standard rules apply. The game is "won" when a flower tile appears on any of the four center cells. This is a soft goal — there is no pressure to reach it quickly, and you can keep playing after.
 
 ### Meadow (endless)
 

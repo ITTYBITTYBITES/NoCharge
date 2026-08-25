@@ -133,7 +133,7 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
     display: grid;
     min-height: 0;
     padding: 0.75rem;
-    overflow: hidden;
+    overflow: visible;
     isolation: isolate;
   }
 
@@ -146,6 +146,37 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
     gap: 0.5rem;
     padding: 0 0 0.75rem;
     border-bottom: 1px solid var(--line);
+  }
+
+  .game-toolbar__primary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .game-toolbar__panel[hidden] {
+    display: none;
+  }
+
+  .game-toolbar__panel {
+    position: absolute;
+    z-index: 5;
+    top: calc(100% - 0.35rem);
+    left: 0;
+    display: grid;
+    gap: 0.65rem;
+    min-width: min(18rem, 100%);
+    padding: 0.85rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--panel);
+    box-shadow: var(--shadow);
+  }
+
+  .game-toolbar__panel-title {
+    margin: 0;
+    font-size: 0.95rem;
   }
 
   .game-toolbar__volume,
@@ -172,6 +203,17 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
   .game-viewport__content {
     min-height: 0;
     padding: 0.85rem 0 0;
+  }
+
+  .game-viewport__settings-catch[hidden] {
+    display: none;
+  }
+
+  .game-viewport__settings-catch {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    background: transparent;
   }
 
   .game-viewport__pause[hidden] {
@@ -259,6 +301,11 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
     top: 0;
     padding-bottom: 0.75rem;
     background: var(--bg);
+  }
+
+  .game-viewport.is-immersive .game-toolbar__panel .game-toolbar__volume,
+  .game-viewport.is-immersive .game-toolbar__panel .game-toolbar__ambient {
+    display: grid;
   }
 
   .game-viewport:fullscreen .game-viewport__content,
