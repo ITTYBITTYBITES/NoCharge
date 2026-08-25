@@ -414,9 +414,11 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
       display: none;
     }
 
-    /* The normal mobile entry point lives in Game settings. Once fallback
-       focus mode is active this same toolbar button is the always-visible,
-       keyboard-focusable exit control. */
+    /* The normal mobile entry point lives in Game settings. Once Game Mode
+       or fallback focus mode is active this same toolbar button is the
+       always-visible, keyboard-focusable exit control. */
+    .game-viewport:fullscreen .game-toolbar > [data-game-toolbar="fullscreen"],
+    .game-viewport.is-fullscreen-active .game-toolbar > [data-game-toolbar="fullscreen"],
     .game-viewport.is-immersive .game-toolbar > [data-game-toolbar="fullscreen"] {
       display: inline-flex;
     }
