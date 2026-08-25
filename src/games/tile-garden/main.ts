@@ -97,6 +97,10 @@ export function mountTileGarden(root: HTMLElement): GameController {
         cell.type = 'button';
         cell.className = 'tg__cell';
 
+        if (currentMode === 'garden' && (r === 3 || r === 4) && (c === 3 || c === 4)) {
+          cell.classList.add('tg__cell--center');
+        }
+
         const tile = state.grid[r]![c];
         if (tile) {
           cell.classList.add(`tg__cell--tier-${tile.tier}`);

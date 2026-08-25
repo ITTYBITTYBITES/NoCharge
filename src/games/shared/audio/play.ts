@@ -22,7 +22,9 @@ function getContext() {
 export function unlockAudio() {
   unlocked = true;
   const c = getContext();
-  if (c?.state === 'suspended') void c.resume();
+  if (c?.state === 'suspended') {
+    void c.resume().catch(() => {});
+  }
 }
 
 export function isMuted() {

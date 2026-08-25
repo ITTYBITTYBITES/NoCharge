@@ -5,6 +5,11 @@ import { play, unlockAudio } from '../shared/audio';
 import type { GameController } from '../shared/types';
 import './styles.css';
 
+interface Coord {
+  row: number;
+  col: number;
+}
+
 export function mountWordSearch(root: HTMLElement): GameController {
   root.innerHTML = `
     <div class="ws">
@@ -27,8 +32,11 @@ export function mountWordSearch(root: HTMLElement): GameController {
 
   let puzzle: WordSearchPuzzle;
   let found: string[] = [];
-  let first: { row: number; col: number } | null = null;
+  let foundCells: Set<number> = new Set();
+  let first: Coord | null = null;
   let cursor = 0;
+  let isDragging = false;
+  let dragStart: Coord | null = null;
 
   const grid = root.querySelector<HTMLElement>('[data-ws-grid]')!;
   const list = root.querySelector<HTMLUListElement>('[data-ws-words]')!;
@@ -42,8 +50,11 @@ export function mountWordSearch(root: HTMLElement): GameController {
   function init() {
     puzzle = createPuzzle(WORD_LISTS[theme.value as WordListId], Number(size.value));
     found = [];
+    foundCells.clear();
     first = null;
     cursor = 0;
+    isDragging = false;
+    dragStart = null;
     render();
   }
 
@@ -66,18 +77,49 @@ export function mountWordSearch(root: HTMLElement): GameController {
     }
   }
 
-  function selectCell(r: number, c: number) {
-    cursor = r * puzzle.size + c;
-    const cell = grid.children[cursor] as HTMLButtonElement | undefined;
-    if (!first) {
-      first = { row: r, col: c };
-      cell?.classList.add('is-start');
-      return;
+  function getLineCells(start: Coord, end: Coord): Coord[] | null {
+    const dr = end.row - start.row;
+    const dc = end.col - start.col;
+    const stepR = dr === 0 ? 0 : dr > 0 ? 1 : -1;
+    const stepC = dc === 0 ? 0 : dc > 0 ? 1 : -1;
+
+    // Must be straight line: horizontal, vertical, or diagonal
+    if (dr !== 0 && dc !== 0 && Math.abs(dr) !== Math.abs(dc)) {
+      return null;
     }
-    const word = selectedWord(puzzle, first, { row: r, col: c });
-    first = null;
+
+    const steps = Math.max(Math.abs(dr), Math.abs(dc));
+    const cells: Coord[] = [];
+    for (let i = 0; i <= steps; i++) {
+      cells.push({ row: start.row + i * stepR, col: start.col + i * stepC });
+    }
+    return cells;
+  }
+
+  function clearSelecting() {
+    grid.querySelectorAll('.ws__cell.is-selecting').forEach((el) => el.classList.remove('is-selecting'));
+  }
+
+  function highlightLine(start: Coord, end: Coord) {
+    clearSelecting();
+    const cells = getLineCells(start, end);
+    if (!cells) return;
+    for (const { row, col } of cells) {
+      const idx = row * puzzle.size + col;
+      grid.children[idx]?.classList.add('is-selecting');
+    }
+  }
+
+  function checkWordSelection(start: Coord, end: Coord): boolean {
+    const word = selectedWord(puzzle, start, end);
     if (word && !found.includes(word)) {
       found.push(word);
+      const cells = getLineCells(start, end);
+      if (cells) {
+        for (const { row, col } of cells) {
+          foundCells.add(row * puzzle.size + col);
+        }
+      }
       status.textContent = `Found: ${word}`;
       void play('place');
       if (isComplete(found, puzzle.words)) {
@@ -86,9 +128,78 @@ export function mountWordSearch(root: HTMLElement): GameController {
         recordSolved();
         void play('win');
       }
-    } else {
-      status.textContent = word ? 'Already found' : 'Select a straight line';
+      render();
+      return true;
     }
+    status.textContent = word ? 'Already found' : 'Select a straight line';
+    return false;
+  }
+
+  function cellFromPoint(x: number, y: number): Coord | null {
+    const el = document.elementFromPoint(x, y) as HTMLElement | null;
+    if (!el || !el.classList.contains('ws__cell')) return null;
+    const row = Number(el.dataset.row);
+    const col = Number(el.dataset.col);
+    if (!Number.isFinite(row) || !Number.isFinite(col)) return null;
+    return { row, col };
+  }
+
+  function handlePointerDown(e: PointerEvent) {
+    if (isComplete(found, puzzle.words)) return;
+    unlockAudio();
+    const cell = cellFromPoint(e.clientX, e.clientY);
+    if (!cell) return;
+
+    isDragging = true;
+    dragStart = cell;
+    cursor = cell.row * puzzle.size + cell.col;
+    grid.setPointerCapture(e.pointerId);
+    highlightLine(cell, cell);
+  }
+
+  function handlePointerMove(e: PointerEvent) {
+    if (!isDragging || !dragStart) return;
+    const cell = cellFromPoint(e.clientX, e.clientY);
+    if (cell) {
+      cursor = cell.row * puzzle.size + cell.col;
+      highlightLine(dragStart, cell);
+    }
+  }
+
+  function handlePointerUp(e: PointerEvent) {
+    if (!isDragging || !dragStart) return;
+    isDragging = false;
+    clearSelecting();
+
+    const cell = cellFromPoint(e.clientX, e.clientY);
+    if (cell) {
+      if (dragStart.row === cell.row && dragStart.col === cell.col) {
+        // Single tap -> two-click fallback
+        handleTwoClickSelect(cell.row, cell.col);
+      } else {
+        checkWordSelection(dragStart, cell);
+        first = null;
+      }
+    }
+    dragStart = null;
+  }
+
+  function handlePointerCancel() {
+    isDragging = false;
+    dragStart = null;
+    clearSelecting();
+  }
+
+  function handleTwoClickSelect(r: number, c: number) {
+    cursor = r * puzzle.size + c;
+    if (!first) {
+      first = { row: r, col: c };
+      const cell = grid.children[cursor] as HTMLButtonElement | undefined;
+      cell?.classList.add('is-start');
+      return;
+    }
+    checkWordSelection(first, { row: r, col: c });
+    first = null;
     render();
   }
 
@@ -98,22 +209,35 @@ export function mountWordSearch(root: HTMLElement): GameController {
     grid.style.setProperty('--ws-size', String(puzzle.size));
     grid.dataset.size = String(puzzle.size);
     if (!isComplete(found, puzzle.words)) grid.classList.remove('is-locked');
+
     for (let r = 0; r < puzzle.size; r++) {
       for (let c = 0; c < puzzle.size; c++) {
+        const idx = r * puzzle.size + c;
         const b = document.createElement('button');
         b.type = 'button';
         b.className = 'ws__cell';
+        b.dataset.row = String(r);
+        b.dataset.col = String(c);
         b.textContent = puzzle.grid[r]![c]!.toUpperCase();
         b.setAttribute('aria-label', `Row ${r + 1}, column ${c + 1}, ${puzzle.grid[r]![c]}`);
-        b.tabIndex = r * puzzle.size + c === cursor ? 0 : -1;
+        b.tabIndex = idx === cursor ? 0 : -1;
+
+        if (foundCells.has(idx)) b.classList.add('is-found');
         if (first && first.row === r && first.col === c) b.classList.add('is-start');
-        b.addEventListener('click', () => selectCell(r, c));
+
         grid.append(b);
       }
     }
     if (hadFocus) (grid.children[cursor] as HTMLButtonElement | undefined)?.focus();
-    list.innerHTML = puzzle.words.map((w) => `<li>${found.includes(w) ? '✓' : '○'} ${w}</li>`).join('');
+    list.innerHTML = puzzle.words
+      .map((w) => `<li class="${found.includes(w) ? 'is-found' : ''}">${found.includes(w) ? '✓' : '○'} ${w}</li>`)
+      .join('');
   }
+
+  grid.addEventListener('pointerdown', handlePointerDown);
+  grid.addEventListener('pointermove', handlePointerMove);
+  grid.addEventListener('pointerup', handlePointerUp);
+  grid.addEventListener('pointercancel', handlePointerCancel);
 
   root.querySelector('[data-ws-list]')?.addEventListener('click', () => {
     list.hidden = !list.hidden;
@@ -150,25 +274,49 @@ export function mountWordSearch(root: HTMLElement): GameController {
 
   root.addEventListener('keydown', (e) => {
     const k = e.key;
-    if (k !== 'ArrowRight' && k !== 'ArrowLeft' && k !== 'ArrowDown' && k !== 'ArrowUp') return;
-    e.preventDefault();
     const n = puzzle.size;
     let r = Math.floor(cursor / n);
     let c = cursor % n;
-    if (k === 'ArrowUp') r = Math.max(0, r - 1);
-    else if (k === 'ArrowDown') r = Math.min(n - 1, r + 1);
-    else if (k === 'ArrowLeft') c = Math.max(0, c - 1);
-    else c = Math.min(n - 1, c + 1);
+
+    if (k === 'ArrowUp') {
+      e.preventDefault();
+      r = Math.max(0, r - 1);
+    } else if (k === 'ArrowDown') {
+      e.preventDefault();
+      r = Math.min(n - 1, r + 1);
+    } else if (k === 'ArrowLeft') {
+      e.preventDefault();
+      c = Math.max(0, c - 1);
+    } else if (k === 'ArrowRight') {
+      e.preventDefault();
+      c = Math.min(n - 1, c + 1);
+    } else if (k === 'Enter' || k === ' ') {
+      e.preventDefault();
+      handleTwoClickSelect(r, c);
+      return;
+    } else {
+      return;
+    }
+
     cursor = r * n + c;
     (grid.children[cursor] as HTMLButtonElement | undefined)?.focus();
+    if (first) {
+      highlightLine(first, { row: r, col: c });
+    }
   });
 
   init();
   unlockAudio();
   return {
-    destroy() {},
-    pause() {},
-    resume() {},
+    destroy() {
+      root.innerHTML = '';
+    },
+    pause() {
+      handlePointerCancel();
+    },
+    resume() {
+      handlePointerCancel();
+    },
     isPaused: () => false,
     restart: init,
   };
