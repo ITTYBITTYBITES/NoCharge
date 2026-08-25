@@ -34,6 +34,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
   const focusInMenu = viewport.querySelector<HTMLButtonElement>('[data-game-toolbar="focus-in-menu"]');
   const restartButton = viewport.querySelector<HTMLButtonElement>('[data-game-toolbar="restart"]');
   const restartInMenuButton = viewport.querySelector<HTMLButtonElement>('[data-game-toolbar="restart-in-menu"]');
+  const playButton = viewport.closest('.game-shell')?.querySelector<HTMLButtonElement>('[data-game-play-btn]');
   const settingsButton = viewport.querySelector<HTMLButtonElement>('[data-game-toolbar="settings"]');
   const settingsPanel = viewport.querySelector<HTMLElement>('[data-game-settings-panel]');
   const settingsCatch = viewport.querySelector<HTMLElement>('[data-game-settings-catch]');
@@ -173,7 +174,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     window.scrollTo(0, scrollY);
     updateFullscreen();
     announce('Focus mode exited.');
-    if (returnFocus) window.setTimeout(() => fullscreenButton?.focus({ preventScroll: true }), 0);
+    if (returnFocus) window.setTimeout(() => (playButton || fullscreenButton)?.focus({ preventScroll: true }), 0);
   };
 
   const enterImmersive = () => {
@@ -292,6 +293,10 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     if (value === 'none') stopAmbient();
     else startAmbient(value);
     updateMute();
+  });
+  playButton?.addEventListener('click', () => {
+    unlockAudio();
+    void requestFullscreen();
   });
   fullscreenButton?.addEventListener('click', () => void requestFullscreen());
   focusInMenu?.addEventListener('click', () => {

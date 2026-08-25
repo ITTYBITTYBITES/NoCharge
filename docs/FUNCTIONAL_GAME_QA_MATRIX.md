@@ -7,25 +7,25 @@
 
 ## Summary Matrix
 
-| Game | Route | Engine / Unit Tests | Desktop Playwright E2E Tests | Mobile Playwright E2E Tests | Manual Real-Device Checks Required | Known Limitations |
+| Game | Route | Engine / Unit Tests | Desktop Playwright E2E Tests | Mobile Playwright E2E Tests | Manual Real-Device Checks Required | Mobile Stage & Game Mode Strategy |
 |---|---|---|---|---|---|---|
-| **Memory Match** | `/games/memory-match/` | `src/games/memory-match/engine.test.ts` (11 tests) | `tests/e2e/games.spec.ts`, `tests/e2e/platform-maturity.spec.ts` | `tests/e2e/mobile-games.spec.ts` (320, 360, 375, 390, 412) | VoiceOver on iOS Safari card announcements; Android Chrome rapid double-tap | 4×4 grid fixed size (16 cards, 8 pairs) |
-| **Word Tile Rush** | `/games/word-tile-rush/` | `src/games/word-tile-rush/engine.test.ts` (9 tests) | `tests/e2e/games.spec.ts`, `tests/e2e/platform-maturity.spec.ts` | `tests/e2e/mobile-games.spec.ts` | Touch drag trajectory on low-end capacitive touchscreens | Minimum 3-letter words from offline embedded dictionary |
-| **Color Flip** | `/games/color-flip/` | `src/games/color-flip/engine.test.ts` (12 tests), `checkpoint-rules.test.ts` (8), `color-selection.test.ts` (10) | `tests/e2e/color-flip-redesign.spec.ts`, `tests/e2e/games.spec.ts` | `tests/e2e/mobile-games.spec.ts` | High-contrast display mode on OLED vs LCD screens | Visual mode is tap-to-step (calm); turn-based mode is untimed text alternative |
-| **Beacon Lattice** | `/games/beacon-lattice/` | `src/games/beacon-lattice/quality.test.ts` (47), `patterns.test.ts` (39), `progress.test.ts` (2), `screenshots.test.ts` (3) | `tests/e2e/beacon-lattice.spec.ts`, `tests/e2e/beacon-screenshots.spec.ts` | `tests/e2e/mobile-games.spec.ts` | Touch target accuracy on compact 5×5 and 7×7 grids | 24 fixed hand-crafted puzzles with exact coverage targets |
-| **Tic-Tac-Toe** | `/games/tic-tac-toe/` | `src/games/tic-tac-toe/engine.test.ts` (15 tests), `src/games/shared/pass-play.test.ts` (18) | `tests/e2e/pass-and-play.spec.ts` | `tests/e2e/mobile-games.spec.ts`, `tests/e2e/pass-and-play.spec.ts` | Physical two-player device handoff physical handling | 2-player local pass-and-play; no computer AI opponent |
-| **Dots & Boxes** | `/games/dots-and-boxes/` | `src/games/dots-and-boxes/engine.test.ts` (11 tests), `src/games/shared/pass-play.test.ts` (18) | `tests/e2e/pass-and-play.spec.ts` | `tests/e2e/mobile-games.spec.ts`, `tests/e2e/pass-and-play.spec.ts` | Thin edge line hit-testing on small screens (6×6 mode) | 6×6 mode scrolls horizontally on narrow (<360px) viewports |
-| **Four in a Row** | `/games/four-in-a-row/` | `src/games/four-in-a-row/engine.test.ts` (11 tests), `src/games/shared/pass-play.test.ts` (18) | `tests/e2e/pass-and-play.spec.ts` | `tests/e2e/mobile-games.spec.ts`, `tests/e2e/pass-and-play.spec.ts` | Column drop button tap size and gravity animation fluidity | 2-player local pass-and-play; gravity drop only |
-| **Reversi** | `/games/reversi/` | `src/games/reversi/engine.test.ts` (13 tests), `src/games/shared/pass-play.test.ts` (18) | `tests/e2e/pass-and-play.spec.ts` | `tests/e2e/mobile-games.spec.ts`, `tests/e2e/pass-and-play.spec.ts` | Disc flip visual cue visibility in outdoor daylight | 8×8 standard board; legal moves indicator toggleable |
-| **Last Token** | `/games/last-token/` | `src/games/last-token/engine.test.ts` (8 tests), `src/games/shared/pass-play.test.ts` (18) | `tests/e2e/pass-and-play.spec.ts` | `tests/e2e/mobile-games.spec.ts`, `tests/e2e/pass-and-play.spec.ts` | Button row tap target spacing when piles have 1 token left | Misère play rules: taking the very last token loses |
-| **Pass the Picture** | `/games/pass-the-picture/` | `src/games/pass-the-picture/engine.test.ts` (9 tests), `src/games/shared/pass-play.test.ts` (18) | `tests/e2e/pass-and-play.spec.ts` | `tests/e2e/mobile-games.spec.ts`, `tests/e2e/pass-and-play.spec.ts` | Apple Pencil / stylus vs finger drawing stroke precision | Canvas is pointer-only; keyboard play not supported for drawing |
-| **Klondike** | `/games/klondike/` | `src/games/klondike/engine.test.ts` (14 tests) | `tests/e2e/solo-new-games.spec.ts` | `tests/e2e/mobile-games.spec.ts` | Horizontal tableau swipe vs page drag on mobile WebKit | Draw-1 and Draw-3 modes; standard 7-column layout |
-| **FreeCell** | `/games/freecell/` | `src/games/freecell/engine.test.ts` (14 tests) | `tests/e2e/solo-new-games.spec.ts` | `tests/e2e/mobile-games.spec.ts` | 8-column layout readability on small screens (320px) | Multi-card moves bounded by `(freeCells + 1) * 2^emptyCols` |
-| **Nonogram** | `/games/nonogram/` | `src/games/nonogram/engine.test.ts` (12 tests) | `tests/e2e/solo-new-games.spec.ts` | `tests/e2e/mobile-games.spec.ts` | Clue number legibility and touch drag cell marking | 5×5 and 10×10 puzzles; 24 curated unique puzzles |
-| **Twenty Forty-Eight** | `/games/twenty-forty-eight/` | `src/games/twenty-forty-eight/engine.test.ts` (11 tests) | `tests/e2e/solo-new-games.spec.ts` | `tests/e2e/mobile-games.spec.ts` | Touch swipe gesture threshold vs scroll on mobile Safari | 4×4 grid; continues past 2048 until no merges possible |
-| **Tile Garden** | `/games/tile-garden/` | `src/games/tile-garden/engine.test.ts` (12 tests) | `tests/e2e/solo-new-games.spec.ts` | `tests/e2e/mobile-games.spec.ts` | Cascade animation frame rate on battery saver mode | 8×8 board; Garden, Meadow, and Sketch modes |
-| **Word Search** | `/games/word-search/` | `src/games/word-search/engine.test.ts` (21 tests) | `tests/e2e/word-search.spec.ts` | `tests/e2e/mobile-games.spec.ts`, `tests/e2e/word-search.spec.ts` | Diagonal touch drag selection precision | 8×8 and 10×10 sizes across 4 themes (animals, nature, space, colors) |
-| **Mini Sudoku** | `/games/mini-sudoku/` | `src/games/mini-sudoku/engine.test.ts` (4 tests) | `tests/e2e/mini-sudoku.spec.ts` | `tests/e2e/mobile-games.spec.ts`, `tests/e2e/mini-sudoku.spec.ts` | Keypad touch target responsiveness and pencil mark clarity | 6×6 board with 2×3 blocks; Easy, Medium, and Hard tiers |
+| **Memory Match** | `/games/memory-match/` | `src/games/memory-match/engine.test.ts` (11 tests) | `tests/e2e/games.spec.ts`, `tests/e2e/platform-maturity.spec.ts` | `tests/e2e/mobile-games.spec.ts` (320, 360, 375, 390, 412) | VoiceOver on iOS Safari card announcements; Android Chrome rapid double-tap | 4×4 grid fits 320px portrait without scrolling; Game Mode launch via Play button |
+| **Word Tile Rush** | `/games/word-tile-rush/` | `src/games/word-tile-rush/engine.test.ts` (9 tests) | `tests/e2e/games.spec.ts`, `tests/e2e/platform-maturity.spec.ts` | `tests/e2e/mobile-games.spec.ts` | Touch drag trajectory on low-end capacitive touchscreens | 6×8 grid fits 320px portrait; pointer drag with 1-step backtrack |
+| **Color Flip** | `/games/color-flip/` | `src/games/color-flip/engine.test.ts` (12 tests), `checkpoint-rules.test.ts` (8), `color-selection.test.ts` (10) | `tests/e2e/color-flip-redesign.spec.ts`, `tests/e2e/games.spec.ts` | `tests/e2e/mobile-games.spec.ts` | High-contrast display mode on OLED vs LCD screens | 5×5 viewport grid with G/B/A/R shortcuts; turn-based untimed mode alternative |
+| **Beacon Lattice** | `/games/beacon-lattice/` | `src/games/beacon-lattice/quality.test.ts` (47), `patterns.test.ts` (39), `progress.test.ts` (2), `screenshots.test.ts` (3) | `tests/e2e/beacon-lattice.spec.ts`, `tests/e2e/beacon-screenshots.spec.ts` | `tests/e2e/mobile-games.spec.ts` | Touch target accuracy on compact 5×5 and 7×7 grids | Responsive grid sizing; exact coverage calculation |
+| **Tic-Tac-Toe** | `/games/tic-tac-toe/` | `src/games/tic-tac-toe/engine.test.ts` (15 tests), `src/games/shared/pass-play.test.ts` (18) | `tests/e2e/pass-and-play.spec.ts` | `tests/e2e/mobile-games.spec.ts`, `tests/e2e/pass-and-play.spec.ts` | Physical two-player device handoff handling | 3×3 and 4×4 modes fit 320px without scrolling; Pass & Play handoffs |
+| **Dots & Boxes** | `/games/dots-and-boxes/` | `src/games/dots-and-boxes/engine.test.ts` (11 tests), `src/games/shared/pass-play.test.ts` (18) | `tests/e2e/pass-and-play.spec.ts` | `tests/e2e/mobile-games.spec.ts`, `tests/e2e/pass-and-play.spec.ts` | Thin edge line hit-testing on small screens (6×6 mode) | Responsive `--dab-unit` scaling fits 320px without horizontal scroll |
+| **Four in a Row** | `/games/four-in-a-row/` | `src/games/four-in-a-row/engine.test.ts` (11 tests), `src/games/shared/pass-play.test.ts` (18) | `tests/e2e/pass-and-play.spec.ts` | `tests/e2e/mobile-games.spec.ts`, `tests/e2e/pass-and-play.spec.ts` | Column drop button tap size and gravity animation fluidity | 7×6 standard and 6×5 small boards fit 320px without scrolling |
+| **Reversi** | `/games/reversi/` | `src/games/reversi/engine.test.ts` (13 tests), `src/games/shared/pass-play.test.ts` (18) | `tests/e2e/pass-and-play.spec.ts` | `tests/e2e/mobile-games.spec.ts`, `tests/e2e/pass-and-play.spec.ts` | Disc flip visual cue visibility in outdoor daylight | 8×8 standard board fits 320px; toggleable legal moves cues |
+| **Last Token** | `/games/last-token/` | `src/games/last-token/engine.test.ts` (8 tests), `src/games/shared/pass-play.test.ts` (18) | `tests/e2e/pass-and-play.spec.ts` | `tests/e2e/mobile-games.spec.ts`, `tests/e2e/pass-and-play.spec.ts` | Button row tap target spacing when piles have 1 token left | Misère play rules; token rows fit 320px without scroll |
+| **Pass the Picture** | `/games/pass-the-picture/` | `src/games/pass-the-picture/engine.test.ts` (9 tests), `src/games/shared/pass-play.test.ts` (18) | `tests/e2e/pass-and-play.spec.ts` | `tests/e2e/mobile-games.spec.ts`, `tests/e2e/pass-and-play.spec.ts` | Apple Pencil / stylus vs finger drawing stroke precision | 4:3 canvas aspect ratio fits 320px; pointer-only drawing documented |
+| **Klondike** | `/games/klondike/` | `src/games/klondike/engine.test.ts` (14 tests) | `tests/e2e/solo-new-games.spec.ts` | `tests/e2e/mobile-games.spec.ts` | Single-tap vs double-tap foundation auto-move feel | Mobile no-scroll layout: 7-column grid with proportional card overlap; Game Mode launch |
+| **FreeCell** | `/games/freecell/` | `src/games/freecell/engine.test.ts` (14 tests) | `tests/e2e/solo-new-games.spec.ts` | `tests/e2e/mobile-games.spec.ts` | 8-column layout readability on small screens (320px) | Mobile no-scroll layout: 8-column grid with proportional cascade overlap; Game Mode launch |
+| **Nonogram** | `/games/nonogram/` | `src/games/nonogram/engine.test.ts` (12 tests) | `tests/e2e/solo-new-games.spec.ts` | `tests/e2e/mobile-games.spec.ts` | Clue number legibility and touch drag cell marking | 5×5 and 10×10 puzzles fit 320px; text clues accessibility alternative |
+| **Twenty Forty-Eight** | `/games/twenty-forty-eight/` | `src/games/twenty-forty-eight/engine.test.ts` (11 tests) | `tests/e2e/solo-new-games.spec.ts` | `tests/e2e/mobile-games.spec.ts` | Touch swipe gesture threshold vs scroll on mobile Safari | Responsive 4×4 grid fits 320px; swipe and arrow keys |
+| **Tile Garden** | `/games/tile-garden/` | `src/games/tile-garden/engine.test.ts` (12 tests) | `tests/e2e/solo-new-games.spec.ts` | `tests/e2e/mobile-games.spec.ts` | Cascade animation frame rate on battery saver mode | Responsive 8×8 grid fits 320px without internal scroll; center 2×2 bloom zone cues |
+| **Word Search** | `/games/word-search/` | `src/games/word-search/engine.test.ts` (21 tests) | `tests/e2e/word-search.spec.ts` | `tests/e2e/mobile-games.spec.ts`, `tests/e2e/word-search.spec.ts` | Diagonal touch drag selection precision | Responsive 8×8 and 10×10 grids fit 320px without internal scroll; touch drag path |
+| **Mini Sudoku** | `/games/mini-sudoku/` | `src/games/mini-sudoku/engine.test.ts` (4 tests) | `tests/e2e/mini-sudoku.spec.ts` | `tests/e2e/mobile-games.spec.ts`, `tests/e2e/mini-sudoku.spec.ts` | Keypad touch target responsiveness and pencil mark clarity | 6×6 grid with 2×3 blocks; keypad fits 320px without scroll |
 
 ---
 
@@ -159,7 +159,7 @@
   - 8 tableau columns dealt with all 52 cards face up.
   - 4 open free cells and 4 foundation piles.
   - Single card movement to/from free cells.
-  - Multi-card tableau sequence moves constrained by `(freeCells + 1) * 2^emptyCols`.
+  - Multi-card tableau sequence moves bounded by `(freeCells + 1) * 2^emptyCols`.
   - Foundation building (Ace to King by suit).
   - Auto-move to foundation for safe cards.
   - Unlimited Undo and Win detection.
@@ -234,6 +234,7 @@
 
 1. **Mounting:**
    - Every game initializes cleanly into its container without unhandled exceptions.
+   - Primary `Play [Game Title]` action launches Game Mode on mobile.
    - Shared game toolbar provides Pause/Resume, Mute toggle, and Settings modal.
    - Shared and in-game Restart controls reset all game-specific state cleanly.
 
@@ -245,9 +246,8 @@
 
 3. **Audio Architecture:**
    - Web Audio synthesizer generates procedural sounds without network audio asset requests.
-   - Unlocked only on explicit first user gesture.
+   - AudioContext unlocking includes `.catch(() => {})` handlers to prevent unhandled promise rejections on mobile browsers.
    - Shared mute state persists in `localStorage` across page reloads and between games.
-   - Rapid actions do not create audio backlogs.
 
 4. **Accessibility:**
    - Skip links, landmark regions, logical tab index, visible high-contrast focus rings.
@@ -263,4 +263,4 @@
      - 390 × 844 (iPhone 13/14)
      - 412 × 915 (Pixel / Galaxy standard)
    - Zero horizontal document-level overflow on all game routes.
-   - Touch targets meet or exceed 44×44px where space permits.
+   - Zero internal horizontal or vertical scrolling in primary game boards.

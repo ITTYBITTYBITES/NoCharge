@@ -139,6 +139,20 @@ test('fixed-grid games use available width with readable cells and no internal o
   expect(box!.height).toBeGreaterThanOrEqual(44);
 });
 
+test('mobile games launch into Game Mode via Play button and exit restores focus', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 800 });
+  await page.goto('/games/tile-garden/');
+  const playBtn = page.locator('[data-game-play-btn]');
+  await expect(playBtn).toBeVisible();
+  await expect(playBtn).toHaveText('Play Tile Garden');
+  await playBtn.click();
+  await expect(page.locator('[data-game-viewport]')).toHaveClass(/is-immersive/);
+  const exitBtn = page.getByRole('button', { name: 'Exit focus mode' });
+  await expect(exitBtn).toBeVisible();
+  await exitBtn.click();
+  await expect(page.locator('[data-game-viewport]')).not.toHaveClass(/is-immersive/);
+});
+
 test('Word Search 8x8 and 10x10 have matching visual columns and play without scrolling', async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 800 });
   await page.goto('/games/word-search/');

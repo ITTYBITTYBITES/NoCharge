@@ -139,7 +139,7 @@ test.describe('Quiet Setup card geometry', () => {
       await loadAllImages(page);
 
       const cardCount = await page.locator('[data-setup-card]').count();
-      expect(cardCount).toBe(18);
+      expect(cardCount).toBe(30);
 
       for (let index = 0; index < cardCount; index += 1) {
         const root = `[data-setup-card]:nth-of-type(${index + 1})`;
@@ -432,7 +432,7 @@ test.describe('Quiet Setup content accuracy', () => {
     });
 
     const total = Object.values(expected).reduce((sum, n) => sum + n, 0);
-    expect(total, 'every published article must be counted exactly once').toBe(18);
+    expect(total, 'every published article must be counted exactly once').toBe(30);
 
     for (const [topic, count] of Object.entries(expected)) {
       const label = page.locator(`[data-setup-topic-count="${topic}"]`);
@@ -447,7 +447,7 @@ test.describe('Quiet Setup content accuracy', () => {
     const artwork = await page.locator('[data-setup-card] [data-setup-artwork]').evaluateAll((nodes) =>
       nodes.map((n) => n.getAttribute('data-setup-artwork')),
     );
-    expect(artwork).toHaveLength(18);
+    expect(artwork).toHaveLength(30);
     expect(new Set(artwork).size, 'original illustrations must still be present').toBeGreaterThanOrEqual(8);
 
     for (const slug of SLUGS) {

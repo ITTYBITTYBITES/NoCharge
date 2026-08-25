@@ -59,11 +59,13 @@ describe('Quiet Setup topic counts', () => {
   });
 
   it('uses singular wording for one guide and plural for the rest', () => {
-    const counts = countByPrimaryTopic(articles);
-    expect(formatGuideCount(counts['pointing-devices'])).toBe('1 guide');
-    expect(formatGuideCount(counts.keyboards)).toBe('2 guides');
-    expect(formatGuideCount(0)).toBe('0 guides');
     expect(formatGuideCount(1)).toBe('1 guide');
+    expect(formatGuideCount(2)).toBe('2 guides');
+    expect(formatGuideCount(0)).toBe('0 guides');
+    const counts = countByPrimaryTopic(articles);
+    for (const count of Object.values(counts)) {
+      expect(formatGuideCount(count)).toBe(count === 1 ? '1 guide' : `${count} guides`);
+    }
   });
 
   it('labels every topic the index can render', () => {

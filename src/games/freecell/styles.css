@@ -1,6 +1,6 @@
 .fc {
   display: grid;
-  gap: clamp(0.4rem, 1.5vw, 0.75rem);
+  gap: clamp(0.35rem, 1.2vw, 0.65rem);
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
@@ -8,6 +8,7 @@
   width: 100%;
   max-width: min(100%, 36rem);
   margin-inline: auto;
+  box-sizing: border-box;
 }
 
 .fc__hud {
@@ -15,15 +16,15 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .fc__stats {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem 1rem;
+  gap: 0.4rem 0.8rem;
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 .fc__stats strong {
@@ -33,18 +34,20 @@
 
 .fc__board {
   display: grid;
-  gap: clamp(0.4rem, 1.5vw, 0.75rem);
+  gap: clamp(0.35rem, 1.2vw, 0.65rem);
   width: 100%;
   padding-top: 0.2rem;
   overflow: visible;
+  box-sizing: border-box;
 }
 
 .fc__top {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: clamp(2px, 0.8vw, 6px);
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: clamp(1px, 0.5vw, 4px);
   align-items: start;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .fc__cells,
@@ -55,68 +58,75 @@
 .fc__cell,
 .fc__foundation {
   width: 100%;
-  aspect-ratio: 5 / 7;
+  min-width: 0;
   min-height: 0;
+  aspect-ratio: 5 / 7;
   cursor: pointer;
-  border-radius: clamp(3px, 0.8vw, 6px);
+  border-radius: clamp(2px, 0.6vw, 5px);
+  box-sizing: border-box;
 }
 
 .fc__card {
   width: 100%;
   height: 100%;
+  min-width: 0;
+  min-height: 0;
   aspect-ratio: 5 / 7;
-  border-radius: clamp(3px, 0.8vw, 6px);
+  border-radius: clamp(2px, 0.6vw, 5px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: clamp(0.65rem, 2.2vw, 0.95rem);
+  font-size: clamp(0.6rem, 2vw, 0.9rem);
   font-weight: 700;
   padding: 1px;
   box-sizing: border-box;
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
 
 .fc__card--up {
   background: var(--panel, #1a1f1c);
-  border: 1.5px solid var(--line, #2a3530);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--line, #2a3530);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .fc__card--empty {
-  background: rgba(22, 27, 24, 0.6);
-  border: 1.5px dashed color-mix(in srgb, var(--muted) 35%, transparent);
+  background: rgba(22, 27, 24, 0.5);
+  border: 1px dashed color-mix(in srgb, var(--muted) 35%, transparent);
 }
 
 .fc__card--red { color: #f87171; }
 .fc__card--black { color: var(--text, #e8f0ec); }
 
 .fc__card.is-selected {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(18, 182, 106, 0.45);
+  transform: translateY(-3px);
+  box-shadow: 0 3px 10px rgba(18, 182, 106, 0.45);
   border-color: var(--fc-accent);
   background: #202b24;
 }
 
 .fc__rank { line-height: 1; }
-.fc__suit { font-size: 1.15em; line-height: 1; }
+.fc__suit { font-size: 1.1em; line-height: 1; }
 
 .fc__tableau {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: clamp(2px, 0.8vw, 6px);
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: clamp(1px, 0.5vw, 4px);
   width: 100%;
+  box-sizing: border-box;
 }
 
 .fc__column {
-  min-height: clamp(5rem, 20vw, 8rem);
+  min-height: clamp(4.5rem, 18vw, 7.5rem);
   position: relative;
   cursor: pointer;
   width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .fc__column .fc__card + .fc__card {
-  margin-top: -72%;
+  margin-top: clamp(-38px, -9vw, -50px);
 }
 
 .fc__overlay {

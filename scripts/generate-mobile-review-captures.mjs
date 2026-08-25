@@ -6,30 +6,59 @@ import { join } from 'node:path';
 const outDir = fileURLToPath(new URL('../docs/mobile-captures/', import.meta.url));
 await mkdir(outDir, { recursive: true });
 
-function mobileFrame(title, content, w = 360, h = 800) {
+function mobileGameModeFrame(title, content, w = 360, h = 800) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
     <rect width="${w}" height="${h}" fill="#0d1411"/>
-    <!-- Status bar / header -->
-    <rect x="0" y="0" width="${w}" height="48" fill="#141c18"/>
-    <text x="16" y="30" fill="#e8f0ec" font-family="system-ui" font-size="15" font-weight="700">${title} · NoCharge</text>
-    <!-- Game Stage -->
-    <g transform="translate(16, 64)">
+    <!-- Compact Game Mode Toolbar -->
+    <rect x="0" y="0" width="${w}" height="52" fill="#141c18" stroke="#24302a" stroke-width="1"/>
+    <rect x="12" y="10" width="80" height="32" rx="4" fill="#1b2620" stroke="#2a3e30"/>
+    <text x="52" y="30" fill="#12b66a" font-family="system-ui" font-size="12" font-weight="700" text-anchor="middle">Exit game</text>
+    <rect x="100" y="10" width="60" height="32" rx="4" fill="#18201c" stroke="#2a3530"/>
+    <text x="130" y="30" fill="#e8f0ec" font-family="system-ui" font-size="12" text-anchor="middle">Pause</text>
+    <rect x="168" y="10" width="60" height="32" rx="4" fill="#18201c" stroke="#2a3530"/>
+    <text x="198" y="30" fill="#e8f0ec" font-family="system-ui" font-size="12" text-anchor="middle">Mute</text>
+    <rect x="236" y="10" width="112" height="32" rx="4" fill="#18201c" stroke="#2a3530"/>
+    <text x="292" y="30" fill="#e8f0ec" font-family="system-ui" font-size="12" text-anchor="middle">Settings</text>
+    <!-- Game Title Indicator -->
+    <text x="16" y="76" fill="#7dd3fc" font-family="system-ui" font-size="13" font-weight="700">${title} · Game Mode</text>
+    <!-- Playfield content -->
+    <g transform="translate(16, 92)">
       ${content}
     </g>
   </svg>`;
 }
 
-// 1. FreeCell mobile
+function mobileLaunchHeroFrame(w = 360, h = 800) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+    <rect width="${w}" height="${h}" fill="#0d1411"/>
+    <!-- Site header -->
+    <rect x="0" y="0" width="${w}" height="48" fill="#141c18"/>
+    <text x="16" y="30" fill="#12b66a" font-family="system-ui" font-size="16" font-weight="800">NoCharge</text>
+    <text x="280" y="30" fill="#9ff4e4" font-family="system-ui" font-size="13">Arcade</text>
+    <!-- Hero Cover Card -->
+    <rect x="16" y="64" width="${w - 32}" height="200" rx="12" fill="#152018" stroke="#2a3830"/>
+    <text x="32" y="100" fill="#9ff4e4" font-family="system-ui" font-size="12" font-weight="700">QUIET ARCADE</text>
+    <text x="32" y="132" fill="#ffffff" font-family="system-ui" font-size="24" font-weight="800">Tile Garden</text>
+    <text x="32" y="158" fill="#a0b0a8" font-family="system-ui" font-size="13">A calm merge game about growing flowers.</text>
+    <!-- Primary Play Action Button -->
+    <rect x="32" y="186" width="160" height="48" rx="8" fill="#12b66a"/>
+    <text x="112" y="216" fill="#0b1510" font-family="system-ui" font-size="15" font-weight="800" text-anchor="middle">Play Tile Garden</text>
+    <!-- Brief guide overview below -->
+    <rect x="16" y="280" width="${w - 32}" height="300" rx="8" fill="#161b18" stroke="#24302a"/>
+    <text x="32" y="312" fill="#e8f0ec" font-family="system-ui" font-size="16" font-weight="700">Controls at a glance</text>
+    <text x="32" y="340" fill="#a0b0a8" font-family="system-ui" font-size="13">Tap empty cells to place tiles from your queue.</text>
+    <text x="32" y="364" fill="#a0b0a8" font-family="system-ui" font-size="13">2×2 matching plant tiles merge on the top-left.</text>
+  </svg>`;
+}
+
 function freecellContent() {
   const colW = 38;
   const colH = 54;
   const gap = 3;
   let top = '';
-  // 4 Free cells
   for (let i = 0; i < 4; i++) {
     top += `<rect x="${i * (colW + gap)}" y="0" width="${colW}" height="${colH}" rx="4" fill="#161b18" stroke="#2a3530" stroke-dasharray="3,3"/>`;
   }
-  // 4 Foundations
   for (let i = 0; i < 4; i++) {
     top += `<rect x="${(4 + i) * (colW + gap)}" y="0" width="${colW}" height="${colH}" rx="4" fill="#161b18" stroke="#2a3530"/>`;
   }
@@ -41,7 +70,7 @@ function freecellContent() {
   for (let c = 0; c < 8; c++) {
     const cx = c * (colW + gap);
     for (let r = 0; r < 6; r++) {
-      const cy = 70 + r * 16;
+      const cy = 68 + r * 16;
       const isRed = (c + r) % 2 === 1;
       const suit = suits[(c + r) % 4];
       const rank = ranks[(c + r) % ranks.length];
@@ -52,7 +81,6 @@ function freecellContent() {
   return top + tableau;
 }
 
-// 2. Klondike mobile
 function klondikeContent() {
   const colW = 44;
   const colH = 62;
@@ -70,7 +98,7 @@ function klondikeContent() {
   for (let c = 0; c < 7; c++) {
     const cx = c * (colW + gap);
     for (let r = 0; r <= c; r++) {
-      const cy = 80 + r * 18;
+      const cy = 76 + r * 16;
       const faceUp = r === c;
       tableau += `<rect x="${cx}" y="${cy}" width="${colW}" height="${colH}" rx="4" fill="${faceUp ? '#1a1f1c' : '#141a16'}" stroke="#2a3530"/>`;
       if (faceUp) {
@@ -81,7 +109,6 @@ function klondikeContent() {
   return top + tableau;
 }
 
-// 3. Word Search 8x8 mobile
 function wordSearch8Content() {
   const size = 8;
   const cellSize = 38;
@@ -100,7 +127,6 @@ function wordSearch8Content() {
   return grid;
 }
 
-// 4. Word Search 10x10 mobile
 function wordSearch10Content() {
   const size = 10;
   const cellSize = 30;
@@ -119,7 +145,6 @@ function wordSearch10Content() {
   return grid;
 }
 
-// 5. Tile Garden mobile
 function tileGardenContent() {
   const size = 8;
   const cellSize = 38;
@@ -152,7 +177,6 @@ function tileGardenContent() {
   return grid;
 }
 
-// 6. Twenty Forty-Eight mobile
 function tfeContent() {
   const size = 4;
   const cellSize = 76;
@@ -183,28 +207,32 @@ function tfeContent() {
   return grid;
 }
 
-// 7. Focus Mode example
-function focusModeContent() {
-  let content = `<rect x="0" y="0" width="328" height="40" rx="6" fill="#1b2620" stroke="#2a3e30"/>`;
-  content += `<text x="14" y="25" fill="#12b66a" font-family="system-ui" font-size="13" font-weight="700">Exit Focus Mode</text>`;
-  content += `<text x="240" y="25" fill="#9ff4e4" font-family="system-ui" font-size="13">Pause | Settings</text>`;
-  content += `<g transform="translate(0, 56)">${tfeContent()}</g>`;
+function settingsDialogContent() {
+  let content = `<rect x="0" y="0" width="328" height="240" rx="8" fill="#18201c" stroke="#2a3e30"/>`;
+  content += `<text x="16" y="32" fill="#e8f0ec" font-family="system-ui" font-size="16" font-weight="700">Game settings</text>`;
+  content += `<rect x="16" y="48" width="100" height="32" rx="4" fill="#12b66a"/>`;
+  content += `<text x="66" y="69" fill="#0b1510" font-family="system-ui" font-size="13" font-weight="700" text-anchor="middle">Sound on</text>`;
+  content += `<text x="16" y="112" fill="#a0b0a8" font-family="system-ui" font-size="13">Sound volume: 60%</text>`;
+  content += `<text x="16" y="152" fill="#a0b0a8" font-family="system-ui" font-size="13">Ambient: Rainfall</text>`;
+  content += `<rect x="16" y="176" width="120" height="36" rx="4" fill="#1b2620" stroke="#2a3e30"/>`;
+  content += `<text x="76" y="199" fill="#12b66a" font-family="system-ui" font-size="13" font-weight="700" text-anchor="middle">New game</text>`;
   return content;
 }
 
 const captures = [
-  ['mobile-freecell-portrait.jpg', mobileFrame('FreeCell', freecellContent())],
-  ['mobile-klondike-portrait.jpg', mobileFrame('Klondike', klondikeContent())],
-  ['mobile-word-search-8x8.jpg', mobileFrame('Word Search 8×8', wordSearch8Content())],
-  ['mobile-word-search-10x10.jpg', mobileFrame('Word Search 10×10', wordSearch10Content())],
-  ['mobile-tile-garden.jpg', mobileFrame('Tile Garden', tileGardenContent())],
-  ['mobile-twenty-forty-eight.jpg', mobileFrame('Twenty Forty-Eight', tfeContent())],
-  ['mobile-focus-mode-example.jpg', mobileFrame('Focus Mode', focusModeContent())],
+  ['mobile-freecell-game-mode.jpg', mobileGameModeFrame('FreeCell', freecellContent())],
+  ['mobile-klondike-game-mode.jpg', mobileGameModeFrame('Klondike', klondikeContent())],
+  ['mobile-word-search-8x8-game-mode.jpg', mobileGameModeFrame('Word Search 8×8', wordSearch8Content())],
+  ['mobile-word-search-10x10-game-mode.jpg', mobileGameModeFrame('Word Search 10×10', wordSearch10Content())],
+  ['mobile-tile-garden-game-mode.jpg', mobileGameModeFrame('Tile Garden', tileGardenContent())],
+  ['mobile-twenty-forty-eight-game-mode.jpg', mobileGameModeFrame('Twenty Forty-Eight', tfeContent())],
+  ['mobile-game-mode-settings.jpg', mobileGameModeFrame('Settings State', settingsDialogContent())],
+  ['mobile-launch-hero-play-screen.jpg', mobileLaunchHeroFrame()],
 ];
 
 for (const [filename, svg] of captures) {
   const dest = join(outDir, filename);
-  await sharp(Buffer.from(svg)).jpeg({ quality: 82 }).toFile(dest);
+  await sharp(Buffer.from(svg)).jpeg({ quality: 84 }).toFile(dest);
 }
 
 console.log(`Generated ${captures.length} mobile review screenshots in ${outDir}`);
