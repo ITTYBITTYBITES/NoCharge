@@ -33,6 +33,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
   const fullscreenButton = viewport.querySelector<HTMLButtonElement>('[data-game-toolbar="fullscreen"]');
   const focusInMenu = viewport.querySelector<HTMLButtonElement>('[data-game-toolbar="focus-in-menu"]');
   const restartButton = viewport.querySelector<HTMLButtonElement>('[data-game-toolbar="restart"]');
+  const restartInMenuButton = viewport.querySelector<HTMLButtonElement>('[data-game-toolbar="restart-in-menu"]');
   const settingsButton = viewport.querySelector<HTMLButtonElement>('[data-game-toolbar="settings"]');
   const settingsPanel = viewport.querySelector<HTMLElement>('[data-game-settings-panel]');
   const settingsCatch = viewport.querySelector<HTMLElement>('[data-game-settings-catch]');
@@ -89,9 +90,14 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     const activeNative = document.fullscreenElement === viewport;
     const labels = focusModeLabel(nativeFullscreenSupported, activeNative, immersive);
     if (fullscreenButton) {
-      fullscreenButton.textContent = labels.text;
-      fullscreenButton.setAttribute('aria-label', labels.aria);
-      fullscreenButton.setAttribute('aria-pressed', String(activeNative || immersive));
+      const active = activeNative || immersive;
+      // Desktop retains a direct focus shortcut. On compact toolbars and while
+      // settings are open, the menu is the one entry point; give the hidden
+      // shortcut a distinct name so role queries never see duplicate actions.
+      const directEntryVisible = !active && menu === 'closed' && !window.matchMedia('(max-width: 34rem)').matches;
+      fullscreenButton.textContent = active || directEntryVisible ? labels.text : 'Leave expanded game';
+      fullscreenButton.setAttribute('aria-label', active || directEntryVisible ? labels.aria : 'Leave expanded game');
+      fullscreenButton.setAttribute('aria-pressed', String(active));
     }
     if (focusInMenu) {
       focusInMenu.textContent = labels.text;
@@ -114,6 +120,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     if (settingsCatch) settingsCatch.hidden = !open;
     settingsButton?.setAttribute('aria-expanded', String(open));
     viewport.classList.toggle('is-settings-open', open);
+    applyFocusLabels();
     if (open) {
       settingsPanel?.querySelector<HTMLElement>('button, input, select')?.focus({ preventScroll: true });
     } else {
@@ -291,13 +298,16 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     setMenu('close');
     void requestFullscreen();
   });
-  restartButton?.addEventListener('click', () => {
+  const restartGame = () => {
     if (!controller.restart) return;
     unlockAudio();
     controller.restart();
-    setMenu('close');
+    // Keep settings open when restart came from the panel so the remaining
+    // shared controls stay reachable and focus never moves into hidden UI.
     announce('New game started.');
-  });
+  };
+  restartButton?.addEventListener('click', restartGame);
+  restartInMenuButton?.addEventListener('click', restartGame);
   settingsButton?.addEventListener('click', () => setMenu('toggle'));
   settingsCatch?.addEventListener('click', () => setMenu('close'));
 
@@ -310,11 +320,12 @@ export function mountGameShell(viewport: HTMLElement): () => void {
   document.addEventListener('fullscreenchange', onFullscreenChange);
   document.addEventListener('keydown', onKeyDown);
   window.addEventListener('pagehide', onPageHide);
-  window.addEventListener('orientationchange', () => {
-    if (immersive) updateFullscreen();
-  });
+  const onViewportResize = () => applyFocusLabels();
+  window.addEventListener('orientationchange', onViewportResize);
+  window.addEventListener('resize', onViewportResize);
 
   restartButton?.toggleAttribute('hidden', !controller.restart);
+  restartInMenuButton?.toggleAttribute('hidden', !controller.restart);
   updateMute();
   updatePaused();
   updateFullscreen();
@@ -330,6 +341,8 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     document.removeEventListener('fullscreenchange', onFullscreenChange);
     document.removeEventListener('keydown', onKeyDown);
     window.removeEventListener('pagehide', onPageHide);
+    window.removeEventListener('orientationchange', onViewportResize);
+    window.removeEventListener('resize', onViewportResize);
     root.removeEventListener('nocharge:meaningful-game-interaction', onMeaningfulInteraction);
     controller.destroy();
   };

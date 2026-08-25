@@ -17,5 +17,5 @@ export function focusModeLabel(nativeSupported: boolean, active: boolean, immers
   if (active && !immersive) return { text: 'Exit full screen', aria: 'Exit full screen' };
   if (immersive) return { text: 'Exit focus mode', aria: 'Exit focus mode' };
   if (nativeSupported) return { text: 'Enter full screen', aria: 'Enter full screen' };
-  return { text: 'Focus mode', aria: 'Expand game into focus mode' };
+  return { text: 'Focus mode', aria: 'Focus mode' };
 }
