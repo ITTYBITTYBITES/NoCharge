@@ -25,7 +25,8 @@ test('guide library connects guide articles, games, and sitemap URLs', async ({ 
   await denyOptionalServices(page);
   await page.goto('/guides/');
 
-  await expect(page.locator('.guides-grid .guide-card')).toHaveCount(11);
+  // All seventeen games have field guides (the six Pass & Play guides completed the library).
+  await expect(page.locator('.guides-grid .guide-card')).toHaveCount(17);
   await page.locator('.guides-grid .guide-card a').first().click();
   await expect(page).toHaveURL(/\/guides\/memory-match\/$/);
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Memory Match Guide');
