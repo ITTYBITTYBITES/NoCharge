@@ -78,10 +78,19 @@ test('focus mode shows an exit control and keeps the board visible', async ({ pa
   });
   await page.goto('/games/twenty-forty-eight/');
   await page.getByRole('button', { name: 'Game settings' }).click();
-  await page.getByRole('button', { name: 'Focus mode' }).click();
+  const enterFocus = page.getByRole('button', { name: 'Focus mode', exact: true });
+  await expect(enterFocus).toHaveCount(1);
+  await enterFocus.click();
   await expect(page.locator('[data-game-viewport]')).toHaveClass(/is-immersive/);
-  await expect(page.getByRole('button', { name: 'Exit focus mode' })).toBeVisible();
+  const exitFocus = page.getByRole('button', { name: 'Exit focus mode' });
+  await expect(exitFocus).toBeVisible();
   await expect(page.locator('.tfe__board')).toBeVisible();
+  await exitFocus.click();
+  await expect(page.locator('[data-game-viewport]')).not.toHaveClass(/is-immersive/);
+
+  // Re-enter to retain coverage for the keyboard escape path as well.
+  await page.getByRole('button', { name: 'Game settings' }).click();
+  await page.getByRole('button', { name: 'Focus mode' }).click();
   await page.keyboard.press('Escape');
   await expect(page.locator('[data-game-viewport]')).not.toHaveClass(/is-immersive/);
 });
