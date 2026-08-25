@@ -373,6 +373,115 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
     background: var(--bg);
   }
 
+  /*
+    Compact Game Mode chrome.
+
+    Live mobile QA measured four rows of full-width buttons above the board —
+    Pause, Mute, Game settings, Exit, plus a status line — which left too
+    little vertical room to actually play. Inside Game Mode the same controls
+    collapse into a single icon bar; restart, volume, ambient, and the status
+    text live in the settings dialog instead. Accessible names, focus order,
+    and the Escape exit path are unchanged, so nothing becomes unreachable.
+  */
+  .game-viewport:fullscreen .game-toolbar,
+  .game-viewport.is-immersive .game-toolbar {
+    flex-wrap: nowrap;
+    gap: 0.35rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .game-viewport:fullscreen .game-toolbar__primary,
+  .game-viewport.is-immersive .game-toolbar__primary {
+    flex: 0 1 auto;
+    flex-wrap: nowrap;
+    gap: 0.35rem;
+  }
+
+  /* Icon-only affordances: the text label is dropped visually but stays the
+     accessible name, so screen readers and role queries keep working. */
+  .game-viewport:fullscreen .game-toolbar > .btn,
+  .game-viewport.is-immersive .game-toolbar > .btn,
+  .game-viewport:fullscreen .game-toolbar__primary > .btn,
+  .game-viewport.is-immersive .game-toolbar__primary > .btn {
+    flex: 0 0 auto;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    font-size: 0;
+    line-height: 1;
+  }
+
+  .game-viewport:fullscreen .game-toolbar > .btn::after,
+  .game-viewport.is-immersive .game-toolbar > .btn::after,
+  .game-viewport:fullscreen .game-toolbar__primary > .btn::after,
+  .game-viewport.is-immersive .game-toolbar__primary > .btn::after {
+    font-size: 1.05rem;
+  }
+
+  .game-viewport:fullscreen [data-game-toolbar="pause"]::after,
+  .game-viewport.is-immersive [data-game-toolbar="pause"]::after { content: "⏸"; }
+  /* The label flips to "Resume game" when paused; the glyph follows the state
+     through the aria-pressed attribute rather than a second selector list. */
+  .game-viewport:fullscreen [data-game-toolbar="pause"][aria-pressed="true"]::after,
+  .game-viewport.is-immersive [data-game-toolbar="pause"][aria-pressed="true"]::after { content: "▶"; }
+  .game-viewport:fullscreen [data-game-toolbar="mute"]::after,
+  .game-viewport.is-immersive [data-game-toolbar="mute"]::after { content: "🔊"; }
+  .game-viewport:fullscreen [data-game-toolbar="mute"][aria-pressed="true"]::after,
+  .game-viewport.is-immersive [data-game-toolbar="mute"][aria-pressed="true"]::after { content: "🔇"; }
+  .game-viewport:fullscreen [data-game-toolbar="settings"]::after,
+  .game-viewport.is-immersive [data-game-toolbar="settings"]::after { content: "⚙"; }
+  .game-viewport:fullscreen [data-game-toolbar="fullscreen"]::after,
+  .game-viewport.is-immersive [data-game-toolbar="fullscreen"]::after { content: "⤡"; }
+  .game-viewport:fullscreen [data-game-toolbar="restart"]::after,
+  .game-viewport.is-immersive [data-game-toolbar="restart"]::after { content: "↻"; }
+
+  /* Exit leads the bar so it is the first thing a thumb reaches. */
+  .game-viewport:fullscreen .game-toolbar > [data-game-toolbar="fullscreen"],
+  .game-viewport.is-immersive .game-toolbar > [data-game-toolbar="fullscreen"] {
+    order: -1;
+  }
+
+  /* Status stays announced but stops consuming a stage row. */
+  .game-viewport:fullscreen .game-toolbar__status,
+  .game-viewport.is-immersive .game-toolbar__status {
+    position: absolute;
+    right: 0;
+    bottom: -1.35rem;
+    flex: 0 0 auto;
+    max-width: 100%;
+    margin: 0;
+    font-size: 0.72rem;
+    opacity: 0.85;
+    pointer-events: none;
+  }
+
+  /* Settings become a centred dialog over the stage instead of a row that
+     pushes the board down. */
+  .game-viewport:fullscreen .game-toolbar__panel,
+  .game-viewport.is-immersive .game-toolbar__panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 12;
+    width: min(20rem, calc(100dvw - 2rem));
+    max-height: min(28rem, calc(100dvh - 6rem));
+    overflow: auto;
+    padding: 1rem;
+  }
+
+  .game-viewport:fullscreen .game-toolbar__panel .btn,
+  .game-viewport.is-immersive .game-toolbar__panel .btn {
+    min-height: 44px;
+    font-size: 0.9rem;
+  }
+
+  .game-viewport:fullscreen .game-viewport__settings-catch,
+  .game-viewport.is-immersive .game-viewport__settings-catch {
+    z-index: 11;
+    background: rgba(8, 12, 10, 0.55);
+  }
+
   .game-viewport.is-immersive .game-toolbar__panel .game-toolbar__volume,
   .game-viewport.is-immersive .game-toolbar__panel .game-toolbar__ambient {
     display: grid;

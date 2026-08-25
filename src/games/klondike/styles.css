@@ -1,4 +1,9 @@
 .kl {
+  /* Set by the renderer from measured stage geometry. The defaults keep the
+     board sensible before the first measurement and on desktop, where there
+     is no fixed stage height to fit inside. */
+  --kl-column-gap: clamp(1px, 0.8vw, 5px);
+  --kl-card-h: auto;
   display: grid;
   gap: clamp(0.35rem, 1.2vw, 0.65rem);
   user-select: none;
@@ -37,9 +42,12 @@
   gap: 0.4rem;
 }
 
+/* Never scroll the primary board. The renderer solves the pile overlap from
+   the measured stage height, and a pile that cannot be shown readably opens
+   the in-stage detail fan instead. */
 .kl__board {
   display: grid;
-  gap: clamp(0.35rem, 1.2vw, 0.65rem);
+  gap: var(--kl-column-gap);
   width: 100%;
   padding-top: 0.2rem;
   overflow: visible;
@@ -49,7 +57,7 @@
 .kl__top {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: clamp(1px, 0.8vw, 5px);
+  gap: var(--kl-column-gap);
   align-items: start;
   width: 100%;
   box-sizing: border-box;
@@ -66,6 +74,8 @@
   min-width: 0;
   min-height: 0;
   aspect-ratio: 5 / 7;
+  /* On a phone the top row must stay short so the tableau keeps the stage. */
+  max-height: 44px;
   position: relative;
   cursor: pointer;
   border-radius: clamp(2px, 0.7vw, 5px);
@@ -77,6 +87,7 @@
   min-width: 0;
   min-height: 0;
   aspect-ratio: 5 / 7;
+  max-height: 44px;
 }
 
 .kl__card {
@@ -85,6 +96,7 @@
   min-width: 0;
   min-height: 0;
   aspect-ratio: 5 / 7;
+  max-height: inherit;
   border-radius: clamp(2px, 0.7vw, 5px);
   display: flex;
   flex-direction: column;
@@ -141,13 +153,18 @@
 .kl__tableau {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: clamp(1px, 0.8vw, 5px);
+  align-content: start;
+  gap: var(--kl-column-gap);
   width: 100%;
   box-sizing: border-box;
 }
 
+.kl__tableau[hidden] {
+  display: none;
+}
+
 .kl__column {
-  min-height: clamp(4.5rem, 18vw, 7.5rem);
+  min-height: 0;
   position: relative;
   cursor: pointer;
   width: 100%;
@@ -155,16 +172,92 @@
   box-sizing: border-box;
 }
 
-.kl__column .kl__card {
+/* The expand control floats over the pile so it never adds a row of height
+   that the measured stage budget has to absorb. */
+.kl__column-head {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.kl__expand {
+  min-width: 28px;
+  min-height: 24px;
+  padding: 0 4px;
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1;
+  background: transparent;
+  border: 1px solid var(--line, #2a3530);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.kl__expand:hover,
+.kl__expand:focus-visible {
+  color: var(--text, #e8f0ec);
+  border-color: var(--kl-accent);
+}
+
+.kl__pile {
   position: relative;
+  min-height: 0;
 }
 
-.kl__column .kl__card + .kl__card {
-  margin-top: clamp(-42px, -10vw, -58px);
+/* Pile overlap arrives as an inline margin-top solved against the measured
+   stage height, so no card is ever pushed outside the visible stage. */
+.kl__pile .kl__card {
+  position: relative;
+  height: var(--kl-card-h, auto);
+  aspect-ratio: 5 / 7;
+  max-height: none;
 }
 
-.kl__column .kl__card--up + .kl__card {
-  margin-top: clamp(-32px, -8vw, -44px);
+/* In-stage detail fan: replaces the tableau rather than extending the board. */
+.kl__fan {
+  display: grid;
+  gap: 0.4rem;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.kl__fan[hidden] {
+  display: none;
+}
+
+.kl__fan-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.kl__fan-count {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.kl__fan-pager {
+  display: inline-flex;
+  gap: 0.35rem;
+  margin-left: auto;
+}
+
+.kl__fan-cards {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 0;
+}
+
+.kl__fan-cards .kl__card {
+  width: auto;
+  height: var(--kl-card-h, auto);
+  aspect-ratio: 5 / 7;
+  max-height: none;
 }
 
 .kl__overlay {
