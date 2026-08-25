@@ -33,6 +33,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
   const fullscreenButton = viewport.querySelector<HTMLButtonElement>('[data-game-toolbar="fullscreen"]');
   const focusInMenu = viewport.querySelector<HTMLButtonElement>('[data-game-toolbar="focus-in-menu"]');
   const restartButton = viewport.querySelector<HTMLButtonElement>('[data-game-toolbar="restart"]');
+  const restartInMenuButton = viewport.querySelector<HTMLButtonElement>('[data-game-toolbar="restart-in-menu"]');
   const settingsButton = viewport.querySelector<HTMLButtonElement>('[data-game-toolbar="settings"]');
   const settingsPanel = viewport.querySelector<HTMLElement>('[data-game-settings-panel]');
   const settingsCatch = viewport.querySelector<HTMLElement>('[data-game-settings-catch]');
@@ -295,14 +296,16 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     setMenu('close');
     void requestFullscreen();
   });
-  restartButton?.addEventListener('click', () => {
+  const restartGame = () => {
     if (!controller.restart) return;
     unlockAudio();
     controller.restart();
-    // Keep settings open so the remaining shared controls are still reachable
-    // after starting over; this also avoids moving focus into a hidden panel.
+    // Keep settings open when restart came from the panel so the remaining
+    // shared controls stay reachable and focus never moves into hidden UI.
     announce('New game started.');
-  });
+  };
+  restartButton?.addEventListener('click', restartGame);
+  restartInMenuButton?.addEventListener('click', restartGame);
   settingsButton?.addEventListener('click', () => setMenu('toggle'));
   settingsCatch?.addEventListener('click', () => setMenu('close'));
 
@@ -320,6 +323,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
   });
 
   restartButton?.toggleAttribute('hidden', !controller.restart);
+  restartInMenuButton?.toggleAttribute('hidden', !controller.restart);
   updateMute();
   updatePaused();
   updateFullscreen();
