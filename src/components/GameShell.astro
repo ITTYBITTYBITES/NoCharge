@@ -47,27 +47,46 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
 
   <section class="game-viewport panel" data-game-viewport aria-label={`${title} game area`}>
     <div class="game-toolbar" role="toolbar" aria-label="Game controls">
-      <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="pause" aria-pressed="false">
-        Pause game
-      </button>
-      <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="mute" aria-pressed="false">
-        Mute sound
-      </button>
-      <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="sound" aria-pressed="true">Sound on</button>
-      <label class="game-toolbar__volume">Sound volume
-        <input data-game-toolbar="volume" type="range" min="0" max="100" value="60" aria-label="Sound volume" />
-      </label>
-      <label class="game-toolbar__ambient">Ambient
-        <select data-game-toolbar="ambient" aria-label="Ambient sound"><option value="none">None</option><option value="rainfall">Rainfall</option><option value="cafe">Cafe</option><option value="white-noise">White noise</option></select>
-      </label>
-      <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="fullscreen" aria-pressed="false">
-        Enter full screen
-      </button>
-      <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="restart">
-        New game
+      <div class="game-toolbar__primary">
+        <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="pause" aria-pressed="false">
+          Pause game
+        </button>
+        <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="mute" aria-pressed="false">
+          Mute sound
+        </button>
+        <button
+          type="button"
+          class="btn btn--ghost btn--sm"
+          data-game-toolbar="settings"
+          aria-expanded="false"
+          aria-haspopup="dialog"
+          aria-controls="game-settings"
+        >
+          Game settings
+        </button>
+      </div>
+      <div class="game-toolbar__panel" id="game-settings" data-game-settings-panel role="dialog" aria-label="Game settings" hidden>
+        <p class="game-toolbar__panel-title">Game settings</p>
+        <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="sound" aria-pressed="true">Sound on</button>
+        <label class="game-toolbar__volume">Sound volume
+          <input data-game-toolbar="volume" type="range" min="0" max="100" value="60" aria-label="Sound volume" />
+        </label>
+        <label class="game-toolbar__ambient">Ambient
+          <select data-game-toolbar="ambient" aria-label="Ambient sound"><option value="none">None</option><option value="rainfall">Rainfall</option><option value="cafe">Cafe</option><option value="white-noise">White noise</option></select>
+        </label>
+        <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="focus-in-menu" aria-pressed="false">
+          Focus mode
+        </button>
+        <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="restart">
+          New game
+        </button>
+      </div>
+      <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="fullscreen" aria-pressed="false" hidden>
+        Exit focus mode
       </button>
       <p class="game-toolbar__status" data-game-toolbar-status aria-live="polite" aria-atomic="true"></p>
     </div>
+    <div class="game-viewport__settings-catch" data-game-settings-catch hidden aria-hidden="true"></div>
     <div class="game-viewport__content">
       <slot name="game" />
     </div>
@@ -139,7 +158,8 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
 
   .game-toolbar {
     position: relative;
-    z-index: 3;
+    /* Keep the trigger and its panel above the outside-click catcher. */
+    z-index: 5;
     display: flex;
     flex-wrap: wrap;
     align-items: center;

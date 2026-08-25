@@ -104,6 +104,10 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     const active = activeNative || immersive;
     viewport.classList.toggle('is-immersive', immersive);
     viewport.classList.toggle('is-fullscreen-active', active);
+    // The compact exit control is only exposed while focus/fullscreen is active.
+    // Normal entry remains in Game settings, so phone toolbars have no duplicate
+    // sound, restart, or focus actions.
+    fullscreenButton?.toggleAttribute('hidden', !active);
     applyFocusLabels();
   };
 
@@ -295,7 +299,8 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     if (!controller.restart) return;
     unlockAudio();
     controller.restart();
-    setMenu('close');
+    // Keep settings open so the remaining shared controls are still reachable
+    // after starting over; this also avoids moving focus into a hidden panel.
     announce('New game started.');
   });
   settingsButton?.addEventListener('click', () => setMenu('toggle'));
