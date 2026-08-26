@@ -13,6 +13,8 @@ featured: true
 draft: false
 ---
 
+> **Bottom line:** How NoCharge's 2048 handles merging, what the corner-anchor pattern does, and why we never call any tile value optimal.
+
 Twenty Forty-Eight is a sliding tile puzzle that became widely known around 2014. The rules are simple: slide all tiles in one direction, equal tiles merge, and the goal is to create a tile showing the number 2048.
 
 ## How merging works on NoCharge
@@ -57,3 +59,4 @@ Tile animations respect `prefers-reduced-motion`. When reduced motion is enabled
 ## What the game tracks
 
 One metric: `nocharge:2048:best-tile`, the highest tile value you've achieved. Stored in local storage, clearable from the My Arcade page.
+

@@ -12,6 +12,9 @@ artwork: zoom-display
 featured: true
 draft: false
 ---
+
+> **Bottom line:** Decide whether browser zoom, full-screen layout, operating-system scaling, or a different display better addresses a readability problem. Adjust height, distance, and browser zoom first; check VESA and stability before buying.
+
 When page text or controls feel too small, a larger display is only one possible response. Browser zoom changes the size of page content on the display already in use and is the quickest no-purchase test. This guide explains the tradeoffs without giving medical or vision advice.
 
 ## Start with the browser
@@ -43,3 +46,4 @@ Open the exact page, increase zoom one step at a time, and check text, controls,
 ## Next action
 
 Keep browser zoom if it solves the task with acceptable scrolling. Consider a different display only when a clearly named requirement—such as simultaneous workspace at the required scale—cannot be met by settings or placement. Bring that requirement, available space, ports, and device output support to any later comparison.
+

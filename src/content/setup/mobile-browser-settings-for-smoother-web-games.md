@@ -12,6 +12,9 @@ artwork: zoom-display
 featured: false
 draft: false
 ---
+
+> **Bottom line:** Configuring Safari and Chrome viewport scaling, PWA standalone mode, and hardware acceleration for responsive web gameplay. Useful without buying; check existing equipment and state limits before browsing.
+
 Modern browser games run on standard web standards—HTML5 Canvas, CSS Grid, and Web Audio. Because NoCharge games contain zero tracking scripts, third-party libraries, or heavyweight frameworks, they load quickly on almost any mobile device.
 
 However, default mobile browser configurations can sometimes introduce accidental zoom gestures, address bar shifts, or aggressive battery throttling. Here is how to configure your browser for the best experience.
@@ -29,3 +32,4 @@ However, default mobile browser configurations can sometimes introduce accidenta
 **Hardware Acceleration.** Ensure hardware acceleration is enabled in Chrome settings (default on all modern Android builds) to keep canvas rendering crisp.
 
 **Private / Incognito Mode Storage.** Playing in Incognito mode means `localStorage` is cleared as soon as you close the tab. If you want your best scores in [Memory Match](/games/memory-match/) or solved counts in [Nonogram](/games/nonogram/) to persist, play in a normal browser tab.
+

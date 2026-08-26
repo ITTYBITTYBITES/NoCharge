@@ -13,6 +13,8 @@ featured: true
 draft: false
 ---
 
+> **Bottom line:** A plain-language map of NoCharge’s local scores, Beacon Lattice progress, shared mute preference, browser limits, and Clear Game Data control.
+
 NoCharge has no player accounts or score database. Current games remember a small set of results and preferences through **localStorage**, a browser feature that lets a site retain text values for later visits in the same browser profile.
 
 Local storage is not a NoCharge login, is not synchronized, and should not be described as encrypted or inherently secure.
@@ -65,3 +67,4 @@ The [Privacy page](/privacy/) offers **Clear Game Data**. It removes the score a
 Browser settings can clear all site data more broadly, but that may also remove privacy choices and other site storage. Use the narrower NoCharge button when the goal is only to reset local play history and preferences.
 
 The practical rule is: treat local results as a convenience on this browser, not as a durable backup. Open [Privacy](/privacy/) to review choices or clear the game-only values.
+

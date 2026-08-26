@@ -18,7 +18,19 @@ affiliateLinks:
     suitableFor: Readers whose current board is disruptive and who cannot try a suitable existing alternative.
     limitations: Quiet is not a standardized measurement, search labels may be inconsistent, and NoCharge conducted no acoustic testing.
 ---
+
+> **Bottom line:** A cautious guide to switch feel, sound sources, construction, and the limits of labels such as silent, linear, tactile, and clicky. Check layout, switch feel, and return policy before buying; test existing boards first.
+
 Keyboard sound does not come from a switch label alone. The key can make noise when pressed down, when it returns, through an intentional click mechanism, and through vibration in the keycap, plate, case, and desk. This guide is for readers who want to understand those sources without treating “silent” as a guarantee.
+
+## Switch characteristics at a glance
+
+| Switch type | Feel | Sound source | Note |
+|---|---|---|---|
+| Linear | Smooth, no bump | Bottom + return impact | Case still contributes |
+| Tactile | Bump in travel | Bump + impact | Feel ≠ quiet guarantee |
+| Clicky | Intentional click | Click mechanism + impact | Sharpest character |
+| Silent | Damped bottom/return | Reduced impact, case remains | Label not standardized |
 
 ## Broad switch characteristics
 
@@ -43,3 +55,4 @@ This is editorial research into switch categories and sound sources. NoCharge di
 ## Next action
 
 Listen to the current board during ordinary use and identify the dominant event: intentional click, bottom impact, return impact, case resonance, or another object rattling. Solve that source first. If shopping remains justified, seek a returnable board with the required layout and treat merchant noise labels as a starting claim, not a measurement.
+

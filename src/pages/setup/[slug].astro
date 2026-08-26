@@ -25,22 +25,48 @@ const fmt = (date: string) =>
     timeZone: 'UTC',
   });
 
+const articleImages = [
+  `https://nocharge.net/setup-art/${article.data.artwork}-800.jpg`,
+  `https://nocharge.net/setup-art/${article.data.artwork}-1200.jpg`,
+  `https://nocharge.net/setup-art/${article.data.artwork}-1600.jpg`,
+];
+const pinImageUrl = `https://nocharge.net/setup-art/${article.data.artwork}-pin-1000x1500.jpg`;
+
 const schema = [
   {
     '@context': 'https://schema.org',
     '@type': 'Article',
+    '@id': `${canonical}#article`,
     headline: article.data.title,
     description: article.data.description,
-    datePublished: article.data.publishedDate,
-    dateModified: article.data.reviewedDate,
-    mainEntityOfPage: canonical,
+    datePublished: `${article.data.publishedDate}T12:00:00Z`,
+    dateModified: `${article.data.reviewedDate}T12:00:00Z`,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
     url: canonical,
-    image: `https://nocharge.net/setup-art/${article.data.artwork}-1600.jpg`,
-    author: { '@type': 'Organization', name: 'NoCharge Editorial' },
-    publisher: { '@type': 'Organization', name: 'NoCharge', url: 'https://nocharge.net/' },
+    image: articleImages,
+    author: { '@type': 'Organization', name: 'NoCharge Editorial', url: 'https://nocharge.net/' },
+    publisher: {
+      '@type': 'Organization',
+      name: 'NoCharge',
+      url: 'https://nocharge.net/',
+      logo: { '@type': 'ImageObject', url: 'https://nocharge.net/icons/icon-512.png', width: 512, height: 512 },
+    },
     articleSection: SETUP_TOPIC_LABELS[article.data.topic],
     keywords: article.data.topics.map((t) => SETUP_TOPIC_LABELS[t]).join(', '),
     inLanguage: 'en',
+    isAccessibleForFree: true,
+    isPartOf: { '@type': 'WebSite', '@id': 'https://nocharge.net/#website', name: 'NoCharge' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ImageObject',
+    '@id': `${canonical}#primaryimage`,
+    contentUrl: `https://nocharge.net/setup-art/${article.data.artwork}-1600.jpg`,
+    url: `https://nocharge.net/setup-art/${article.data.artwork}-1600.jpg`,
+    caption: `${article.data.title} — ${SETUP_TOPIC_LABELS[article.data.topic]} editorial illustration, 16:9`,
+    representativeOfPage: true,
+    width: 1600,
+    height: 900,
   },
   {
     '@context': 'https://schema.org',
@@ -63,9 +89,13 @@ const schema = [
   modifiedTime={article.data.reviewedDate}
   showAds={false}
   socialImage={`/setup-art/${article.data.artwork}-1200.jpg`}
-  socialImageAlt="Abstract Quiet Setup editorial illustration"
+  socialImageAlt={`${article.data.title} — ${SETUP_TOPIC_LABELS[article.data.topic]} illustration`}
   socialImageWidth={1200}
   socialImageHeight={675}
+  additionalImages={[
+    { url: `/setup-art/${article.data.artwork}-1200.jpg`, width: 1200, height: 675, alt: `${article.data.title} illustration 16:9` },
+    { url: `/setup-art/${article.data.artwork}-pin-1000x1500.jpg`, width: 1000, height: 1500, alt: `Pinterest pin for ${article.data.title}` },
+  ]}
 >
   <article class="setup-article" data-setup-article data-has-affiliate-links={String(article.data.hasAffiliateLinks)}>
     <Breadcrumbs

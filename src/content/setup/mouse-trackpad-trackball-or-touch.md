@@ -23,11 +23,23 @@ affiliateLinks:
     suitableFor: Readers with enough movement space who prefer direct desk movement.
     limitations: Quiet is subjective, search results change, and NoCharge did not measure switch noise.
 ---
+
+> **Bottom line:** Compare four common pointing styles by movement, precision, space, gestures, maintenance, and the controls a browser game actually uses. Compare movement, space, and cleaning needs; try what you own for 5 minutes before shopping.
+
 The useful question is not which input method wins. It is which movement maps most clearly to the task, space, and controls in front of you. NoCharge browser games support the inputs documented on each game page; none requires a special pointer.
 
 ## Who this comparison is for
 
 This guide is for someone choosing among an available mouse, built-in trackpad, stationary trackball, or direct touch. It may also help isolate why a current input feels awkward. It cannot establish that one method will be accessible or comfortable for everyone.
+
+## Comparison at a glance
+
+| Input | Movement | Space | Best when | Limitation |
+|---|---|---|---|---|
+| Mouse | Hand moves surface | Medium | Clear surface available | Needs pad |
+| Trackpad | Finger on fixed pad | Minimal | Laptop built-in | Edge limits drags |
+| Trackball | Ball rotates, fixed | Minimal | Want zero travel | Learning curve |
+| Touch | Finger → target | None | Large taps | Covers small targets |
 
 ## Compare the movement
 
@@ -52,3 +64,4 @@ This article uses editorial research into control categories and their observabl
 ## Next action
 
 Use one representative task for five minutes with each input already available: select a small link, drag an object if the task requires it, scroll a page, and return to a known target. Note errors and setup friction. Only browse alternatives if a specific limitation remains.
+

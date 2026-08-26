@@ -8,6 +8,19 @@ const schema = [
     { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nocharge.net/' },
     { '@type': 'ListItem', position: 2, name: 'Help', item: 'https://nocharge.net/help/' },
   ] },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    '@id': 'https://nocharge.net/help/#faq',
+    mainEntity: [
+      { '@type': 'Question', name: 'Do I need an account to play?', acceptedAnswer: { '@type': 'Answer', text: 'No. All NoCharge games run locally in your browser without an account. Scores and preferences are saved in localStorage on this device only.' } },
+      { '@type': 'Question', name: 'How do I clear my game data?', acceptedAnswer: { '@type': 'Answer', text: 'Open Privacy page and use Clear game data. This removes keys like nocharge:freecell:games-won and nocharge:consent, but leaves analytics consent separate.' } },
+      { '@type': 'Question', name: 'Why does a game pause when I switch tabs?', acceptedAnswer: { '@type': 'Answer', text: 'NoCharge pauses timed activity when the document becomes hidden and resumes when visible, unless you manually paused. Ambient sound stops when hidden to avoid background static.' } },
+      { '@type': 'Question', name: 'Does NoCharge have ads or affiliate links?', acceptedAnswer: { '@type': 'Answer', text: 'Game pages show one responsive AdSense banner outside gameplay. Quiet Setup articles have no display ads but may contain clearly marked Amazon affiliate links with tag nocharge-20 that open in a new tab.' } },
+      { '@type': 'Question', name: 'How do I enter fullscreen or focus mode?', acceptedAnswer: { '@type': 'Answer', text: 'Use Play button to enter Game Mode (native fullscreen if supported, otherwise fixed immersive fallback). Exit with Escape or the Exit button. Focus returns to the button that entered.' } },
+      { '@type': 'Question', name: 'Are the games accessible by keyboard?', acceptedAnswer: { '@type': 'Answer', text: 'Many games document keyboard controls in their guides. Check each guide page for specific keys. Focus outlines remain visible and no board uses transform scale.' } },
+    ],
+  },
 ];
 ---
 <BaseLayout title="Help" description="Practical help for starting, controlling, and troubleshooting NoCharge games." path="/help/" schema={schema}>

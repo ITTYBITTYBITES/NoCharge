@@ -23,6 +23,9 @@ affiliateLinks:
     suitableFor: "Readers who have checked existing equipment and want to compare led desk lamp styles."
     limitations: "Search results change, labels vary, and NoCharge did no hands-on testing of listed items."
 ---
+
+> **Bottom line:** Practical editorial research on smart bulbs vs manual switches — tradeoffs, no-purchase checks, and limits, without health or performance promises. Try dimming, repositioning, and bias light first; check arm reach and glare.
+
 Smart bulbs vs manual switches is a practical question about lighting for quiet browser play. This guide explains observable tradeoffs without assuming a purchase is needed and without health, ergonomic, or productivity promises.
 
 ## Who this is for
@@ -54,4 +57,5 @@ This article is editorial research comparing category characteristics and observ
 ## Next action
 
 Write down the single task that feels awkward, list two existing alternatives you can test for five minutes, and note what changes. Only browse outward if a clear limitation remains after those checks.
+
 

@@ -18,6 +18,9 @@ affiliateLinks:
     suitableFor: Readers who use a desk lamp during both daytime work and evening play.
     limitations: Brightness range, color accuracy, and flicker vary by product; a search page is not a specific recommendation.
 ---
+
+> **Bottom line:** How color temperature affects evening comfort and what to adjust for quiet gaming sessions after dark. Move and clear existing items first; measure desk space and cable reach before browsing.
+
 Color temperature describes whether a light source appears warm (yellowish, like incandescent) or cool (bluish, like daylight). It is measured in Kelvin (K). For desk lighting during evening browser play, warmer light (2700–3000K) is generally more comfortable than cooler light (5000K+).
 
 ## Why it matters for evening play
@@ -49,3 +52,4 @@ Evening desk lighting should be bright enough to see the keyboard and desk surfa
 Editorial research into color temperature categories and documented effects on evening comfort. No spectral measurements, no sleep studies, no specific product recommendation.
 
 As an Amazon Associate I earn from qualifying purchases.
+

@@ -13,6 +13,8 @@ featured: true
 draft: false
 ---
 
+> **Bottom line:** A transparent guide to NoCharge’s rule tests, Chromium browser gate, axe scans, consent checks, validators, and still-manual release checks.
+
 A browser game can build successfully and still have a broken rule, inaccessible control, stale guide, or privacy regression. NoCharge tests those layers separately and keeps the remaining manual work visible.
 
 ## Rules before rendering
@@ -46,3 +48,4 @@ Chromium is the required pull-request and deployment browser gate. Firefox, WebK
 Manual device testing remains required after automation, especially for game input, assistive technology, zoom, reduced motion, consent layering, and visual ad separation. The repository’s [Accessibility Statement](/accessibility/) and manual checklist distinguish automated checks from completed and still-required owner checks.
 
 For a visitor, the useful next step is to report a reproducible barrier or rule mismatch to [hello@nocharge.net](mailto:hello@nocharge.net). For a release owner, it is to run the documented command set, record the manual matrix, and treat a green suite as evidence—not as a promise that no defect exists.
+

@@ -18,6 +18,9 @@ affiliateLinks:
     suitableFor: Readers whose chair height leaves feet unsupported or who want to vary leg position.
     limitations: Height and angle preferences are individual; some footrests are too large for small desk openings.
 ---
+
+> **Bottom line:** When a footrest or anti-fatigue mat helps at a desk, what to look for, and what to try first. Move and clear existing items first; measure desk space and cable reach before browsing.
+
 A footrest fills the gap between your feet and the floor when a chair is too high. An anti-fatigue mat softens standing on a hard floor. Both are simple tools that solve specific comfort problems — neither is universally necessary.
 
 ## When a footrest helps
@@ -48,3 +51,4 @@ For seated-only desk use, a mat is not useful. A standard chair mat (for rolling
 Editorial research into comfort accessories and their documented use cases. No pressure measurements, no material testing, no specific product recommendation.
 
 As an Amazon Associate I earn from qualifying purchases.
+

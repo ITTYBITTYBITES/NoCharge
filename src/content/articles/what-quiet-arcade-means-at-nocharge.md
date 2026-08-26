@@ -13,6 +13,8 @@ featured: true
 draft: false
 ---
 
+> **Bottom line:** A practical definition of NoCharge’s Quiet Arcade: direct browser play, clear documentation, local preferences, and advertising kept outside gameplay.
+
 NoCharge exists to make a small part of the web easier to enter and easier to leave. The [Arcade](/arcade/) offers seventeen browser games now: eleven solo titles (Memory Match, Word Tile Rush, Color Flip, Beacon Lattice, Klondike, FreeCell, Nonogram, 2048, Tile Garden, Word Search, and Mini Sudoku) and six Pass &amp; Play games for two players on one device. A visitor can open one, understand the controls, play a short session, and move on without creating an account.
 
 “Quiet Arcade” is a product standard, not a new game mode and not a promise that every challenge is slow.
@@ -46,3 +48,4 @@ Quiet does not mean ad-free, disconnected from third-party services, or free of 
 Quiet Arcade is not a claim that games improve health, memory, education, or performance. It is not a claim of perfect accessibility. It does not mean every browser or assistive-technology combination has completed manual testing. It also does not turn local storage into a cloud backup.
 
 For the broader project rationale and contact details, read [About NoCharge](/about/). Then choose a game in the [Arcade](/arcade/) with a clear understanding of what the site does—and what it deliberately leaves out.
+

@@ -18,6 +18,9 @@ affiliateLinks:
     suitableFor: Players in brightly lit rooms or near windows.
     limitations: Text clarity and surface texture vary by manufacturer; not personally tested.
 ---
+
+> **Bottom line:** How matte anti-glare screen films diffuse window reflections and improve finger glide during touch puzzle sessions. Adjust height, distance, and browser zoom first; check VESA and stability before buying.
+
 Glossy glass screens on phones and tablets reflect overhead lights, windows, and lamps like mirrors. When playing visual grid games like [Mini Sudoku](/games/mini-sudoku/) or [Beacon Lattice](/games/beacon-lattice/), reflections force your eyes to constantly adjust between the game board and the reflection.
 
 Applying a matte or anti-glare screen protector transforms the surface from mirror-like to soft, paper-like diffusion.
@@ -31,3 +34,4 @@ Applying a matte or anti-glare screen protector transforms the surface from mirr
 ## Alternatives already nearby
 
 Adjusting your chair angle, tilting your laptop screen forward by 5 degrees, or pulling window curtains closed can eliminate 90% of screen reflections for free.
+

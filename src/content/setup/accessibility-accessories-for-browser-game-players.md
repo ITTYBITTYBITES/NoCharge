@@ -18,6 +18,9 @@ affiliateLinks:
     suitableFor: Players needing precision pointer navigation without moving their forearm.
     limitations: Ball diameter and switch resistance differ; not medical assistive certification.
 ---
+
+> **Bottom line:** Adaptive trackballs, high-contrast large-print keyboards, and mounting arms that expand physical access to web games. Useful without buying; check existing equipment and state limits before browsing.
+
 Web accessibility is built into the foundation of NoCharge: native semantic HTML elements (`<button>`, `<a>`, `<input>`), visible focus indicators, screen reader live regions, and full keyboard operability.
 
 Because our games follow standard web specifications, they work seamlessly with specialized assistive hardware and adaptive peripherals.
@@ -37,3 +40,4 @@ NoCharge does not use closed canvas-only traps. Every button and interactive cel
 ## Alternatives already nearby
 
 Modern operating systems include powerful built-in accessibility software: VoiceOver (iOS/macOS), TalkBack (Android), Narrator/NVDA (Windows), and Sticky Keys. These tools are completely free and fully supported across all NoCharge routes.
+

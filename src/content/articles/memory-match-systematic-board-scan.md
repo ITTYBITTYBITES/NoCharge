@@ -13,6 +13,8 @@ featured: true
 draft: false
 ---
 
+> **Bottom line:** Use a repeatable four-by-four scan to turn each Memory Match reveal into useful location information.
+
 A Memory Match board looks simple until a few mismatches leave symbols scattered across sixteen positions. The useful response is not to hunt randomly for a familiar picture. It is to give every reveal a location and to revisit the board in the same order. That makes the board easier to read even when the symbols are shuffled for every new game.
 
 [Play Memory Match](/games/memory-match/) while you read, then keep the [definitive Memory Match guide](/guides/memory-match/) nearby for the exact rules and controls.
@@ -59,3 +61,4 @@ The move counter rises after the second card in each attempt, so a systematic se
 A board scan is not a promise of a perfect run. The layout is random and early information can still be forgotten. Its benefit is that every turn has a clear job: complete a known pair or learn two new locations. Over several boards, that gives you a reliable way to compare your own move counts without relying on luck or speed.
 
 Try one complete run with the fixed top-left-to-bottom-right sweep, then review the [Memory Match guide](/guides/memory-match/) for controls and score storage details. For a complementary skill, read [how move counting works in matching games](/articles/how-move-counting-works-in-matching-games/) or practice keyboard-only play with [Keyboard strategy for Memory Match](/articles/keyboard-strategy-for-memory-match/).
+

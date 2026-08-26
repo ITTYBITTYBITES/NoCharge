@@ -18,6 +18,9 @@ affiliateLinks:
     suitableFor: Readers whose workspace has unavoidable window or lamp reflections on the screen.
     limitations: Size must match exactly; matte finish slightly reduces perceived sharpness; application can trap bubbles.
 ---
+
+> **Bottom line:** When an anti-glare film helps with monitor reflections, when it doesn't, and what to try first for eye comfort during quiet play sessions. Adjust height, distance, and browser zoom first; check VESA and stability before buying.
+
 An anti-glare screen film is a thin matte overlay that diffuses reflections. It helps when a window or lamp produces a visible bright spot on your display that cannot be eliminated by moving the display, closing a blind, or redirecting the light. It does not help when the issue is brightness, contrast, or text size.
 
 ## When it helps
@@ -55,3 +58,4 @@ If a film is the right solution, check:
 Editorial research into product categories and documented design tradeoffs. No hands-on testing, no specific product recommendation, no optical measurements.
 
 As an Amazon Associate I earn from qualifying purchases.
+

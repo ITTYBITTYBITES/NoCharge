@@ -12,6 +12,8 @@ topics: ["accessibility", "input", "local data"]
 draft: false
 ---
 
+> **Bottom line:** How NoCharge's shared-screen games work: a handoff screen that says whose turn it is, session-only player names, keyboard play, and match records that stay local.
+
 The newest corner of the NoCharge arcade is built for a screen shared by two people. Pass &amp; Play games — Tic-Tac-Toe, Dots &amp; Boxes, Four in a Row, Reversi, Last Token, and Pass the Picture — are played by two humans on one device. There is no online play, no matchmaking, no account, and no computer opponent anywhere in the set.
 
 ## Why one device is a feature
@@ -37,3 +39,4 @@ At the end of a match, each game stores exactly one record — mode, result, mat
 ## The same quiet rules
 
 Pass &amp; Play keeps the arcade's ground rules: no timers, no penalties, no streaks, no forced progression, and no dark patterns. The device keeps the score so the two of you can keep the conversation.
+

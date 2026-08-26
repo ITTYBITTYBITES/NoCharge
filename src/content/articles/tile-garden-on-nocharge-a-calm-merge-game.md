@@ -13,6 +13,8 @@ featured: true
 draft: false
 ---
 
+> **Bottom line:** How Tile Garden avoids dark patterns common in match-3 and merge games — no lives, no timer, no energy, no buy-moves mechanics.
+
 Merge games are popular for a reason: combining elements into higher tiers is satisfying. But many merge games wrap that core mechanic in dark patterns — lives that limit play, energy timers that gate progress, "buy more moves" prompts that appear when you're stuck, and social pressure to compete on leaderboards.
 
 Tile Garden is a merge game that removes all of that.
@@ -60,3 +62,4 @@ The six plant species are represented by original emoji combinations and tier-sp
 ## What the game tracks
 
 One metric: `nocharge:tile-garden:best-tier`, the highest tier tile you've created (0=seed, 1=sprout, 2=bloom, 3=flower). Stored locally, clearable from My Arcade.
+

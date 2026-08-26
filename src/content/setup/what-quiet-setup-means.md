@@ -12,6 +12,9 @@ artwork: hero
 featured: true
 draft: false
 ---
+
+> **Bottom line:** A plain account of how Quiet Setup researches practical equipment choices, limits its claims, and starts with what you already own. Useful without buying; check existing equipment and state limits before browsing.
+
 Quiet Setup is for people who want to make browser play or a small desk routine simpler without turning that question into a shopping project. It covers controls, displays, stands, low-noise accessories, and paper puzzles. The starting assumption is that the keyboard, pointer, screen, or stack of books already nearby may be enough.
 
 ## The method
@@ -41,3 +44,4 @@ We also do not track prices, stock, discounts, ratings, or availability. Those f
 ## A practical next action
 
 Choose one friction point in your current setup and write it as a neutral requirement: “I need visible arrow keys,” “the charging cable collides with the stand,” or “browser text is too small at the current zoom.” Try the free adjustment first. If it does not solve the problem, use the relevant [Quiet Setup index](/setup/) guide to compare categories rather than collecting a long shopping list.
+

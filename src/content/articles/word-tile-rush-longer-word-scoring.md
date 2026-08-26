@@ -13,6 +13,8 @@ featured: true
 draft: false
 ---
 
+> **Bottom line:** Understand the length-squared scoring formula in Word Tile Rush and use it to compare valid paths without guessing.
+
 In Word Tile Rush, a valid word is worth its length multiplied by itself, then multiplied by ten. That means a longer valid path can be much more valuable than a quick short word. The rule is simple enough to calculate during a run, and it explains why one carefully planned path can change the score more than several small clears.
 
 Try the formula in [Word Tile Rush](/games/word-tile-rush/), then visit the [Word Tile Rush guide](/guides/word-tile-rush/) for the full rules, inputs, and rising-grid behavior.
@@ -28,7 +30,10 @@ A three-letter word scores 3 × 3 × 10, or 90 points. A four-letter word scores
 Here is the difference in a practical comparison:
 
 | Valid word length | Points |
-| --- | --- |
+| ---
+> **Answer:** Understand the length-squared scoring formula in Word Tile Rush and use it to compare valid paths without guessing.
+
+| --- |
 | 3 | 90 |
 | 4 | 160 |
 | 5 | 250 |
@@ -72,3 +77,5 @@ There is no single length to prefer on every board. The formula tells you the re
 You do not need to calculate every option perfectly. Remember the checkpoints: 90 for three letters, 160 for four, 250 for five, and 360 for six. If two routes are equally safe, choose the longer valid one. If a short route prevents the top row from filling, take the immediate clear.
 
 Next, read [How diagonal letter paths work](/articles/how-diagonal-letter-paths-work/) to find more extensions, or [Managing a rising word-game grid](/articles/managing-a-rising-word-game-grid/) for the timing side of the decision. Then [play Word Tile Rush](/games/word-tile-rush/) and test the formula on a live board.
+
+

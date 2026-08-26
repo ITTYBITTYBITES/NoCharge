@@ -18,7 +18,19 @@ affiliateLinks:
     suitableFor: Readers who want more pointer space and have checked arrow, navigation, and function-key placement.
     limitations: Layout labels are not perfectly standardized; inspect the actual key arrangement and operating-system support.
 ---
+
+> **Bottom line:** Understand full-size, tenkeyless, 75%, and smaller keyboard tradeoffs without assuming that NoCharge needs special hardware. Check layout, switch feel, and return policy before buying; test existing boards first.
+
 A compact keyboard can free desk space, but “compact” describes several arrangements with different compromises. NoCharge does not require a special keyboard. Use the board you have if its controls are clear and it fits the task.
+
+## Layout comparison at a glance
+
+| Layout | Keeps | Removes | Tradeoff |
+|---|---|---|---|
+| Full-size | Main + nav + arrows + F-row + numpad | Nothing | Widest, pushes mouse far |
+| Tenkeyless (TKL) | Main + nav + arrows + F-row | Numpad | Moderate save, few remaps |
+| 75% | Main + compressed nav/arrows + F-row | Spacing | Saves more width |
+| 65% / 60% | Main + some arrows | F-row, nav | Smallest, Fn layer |
 
 ## Start with the keys you use
 
@@ -49,3 +61,4 @@ NoCharge compared layout conventions through editorial research. We did not hand
 ## Next action
 
 Print or draw rectangles matching candidate widths, place them on the desk, and mark the keys you cannot lose. If your current keyboard passes that test, keep it. Otherwise compare actual key diagrams—not just layout percentages—before choosing.
+

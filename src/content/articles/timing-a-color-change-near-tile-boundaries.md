@@ -13,6 +13,8 @@ featured: false
 draft: false
 ---
 
+> **Bottom line:** Choose one labeled color before stepping through a calm Color Flip round.
+
 Visual Color Flip is a tap-to-step tile puzzle, not a reflex game. At the beginning of a round, choose Green, Blue, Amber, or Rose. That choice stays in place while you decide which adjacent tile to step onto.
 
 Open [Color Flip](/games/color-flip/) to play, or read the [Color Flip guide](/guides/color-flip/) for the complete controls.

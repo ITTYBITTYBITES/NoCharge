@@ -18,6 +18,9 @@ affiliateLinks:
     suitableFor: Players wanting larger card and tile targets than phone screens provide.
     limitations: Operating system versions and display refresh rates vary; listings are unendorsed.
 ---
+
+> **Bottom line:** Examining screen aspect ratios, 8-inch vs 11-inch form factors, and touch responsiveness for playing web puzzle and card games. Check paper weight, binding, font size, and answer key placement; pencil first.
+
 Tablets offer a compelling sweet spot for browser gaming: larger, more legible card stacks and word grids than a smartphone, combined with the relaxing touch interaction of a physical surface.
 
 Whether you enjoy daily rounds of [Klondike Solitaire](/games/klondike/), finding words in [Word Search](/games/word-search/), or drawing in [Pass the Picture](/games/pass-the-picture/), here is what to consider when choosing a tablet for casual web play.
@@ -37,3 +40,4 @@ Unlike resource-heavy 3D native games, NoCharge's static web games require very 
 ## Alternatives already nearby
 
 Before buying new hardware, check if you have an older iPad or Android tablet with an open browser. Because NoCharge requires no app store downloads or accounts, older tablets often make excellent dedicated puzzle boards.
+

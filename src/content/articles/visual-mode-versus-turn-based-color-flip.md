@@ -13,6 +13,8 @@ featured: false
 draft: false
 ---
 
+> **Bottom line:** Compare Color Flip’s calm tap-to-step board with its untimed Cycle color and Step forward mode.
+
 Color Flip has two unhurried ways to match four labeled colors. Visual mode is a 5×5 tap-to-step board. Turn-based mode presents the next tile as text and retains its fixed Cycle color plus Step forward flow.
 
 Try both on [Color Flip](/games/color-flip/), and see the [Color Flip guide](/guides/color-flip/) for the full controls.

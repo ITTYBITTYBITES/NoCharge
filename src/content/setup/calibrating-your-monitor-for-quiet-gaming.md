@@ -23,6 +23,9 @@ affiliateLinks:
     suitableFor: Readers who prefer a hardware approach over software night-mode settings.
     limitations: Effectiveness varies by product; color accuracy may be affected; a search page is not a specific recommendation.
 ---
+
+> **Bottom line:** Practical brightness, contrast, and blue-light adjustments for eye comfort during long quiet-arcade sessions — starting with what you already have. Adjust height, distance, and browser zoom first; check VESA and stability before buying.
+
 Monitor calibration for browser gaming is less about color accuracy and more about reducing eye strain during long sessions. NoCharge games use dark backgrounds with modest contrast, which already helps. The useful adjustments are the ones you can make with settings you already have.
 
 ## Start with brightness
@@ -62,3 +65,4 @@ Before adding hardware, try these free adjustments:
 This article uses editorial research into display settings categories and their documented effects on eye comfort. NoCharge did not personally test specific products, measure spectral output, or evaluate medical claims. The paid links are broad comparison starting points, not rankings.
 
 As an Amazon Associate I earn from qualifying purchases.
+

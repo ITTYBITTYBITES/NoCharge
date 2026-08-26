@@ -18,6 +18,9 @@ affiliateLinks:
     suitableFor: Players using keyboard shortcuts on tablets or laptops with limited desk depth.
     limitations: Bluetooth wake latency and key travel differ across models; listings are unendorsed.
 ---
+
+> **Bottom line:** Evaluate 60%, 65%, and scissor-switch wireless keyboards for playing keyboard-operable browser titles on tablets and laptops. Check layout, switch feel, and return policy before buying; test existing boards first.
+
 Many browser games on NoCharge offer full keyboard support. Titles like [Memory Match](/games/memory-match/) (arrow keys and Space), [Beacon Lattice](/games/beacon-lattice/) (number keys and grid navigation), and [Twenty Forty-Eight](/games/twenty-forty-eight/) (arrow keys) can be played faster and more comfortably with dedicated physical keys than with touch taps.
 
 When pairing an external keyboard with a tablet or mobile phone, a compact form factor saves desk space and makes quick play sessions seamless.
@@ -38,3 +41,4 @@ When pairing an external keyboard with a tablet or mobile phone, a compact form 
 ## Alternatives already nearby
 
 Any standard wired USB keyboard connected through a basic USB adapter works instantly on modern tablets and phones without Bluetooth configuration.
+

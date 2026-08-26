@@ -13,6 +13,8 @@ featured: true
 draft: false
 ---
 
+> **Bottom line:** Use edges, single-source cells, inventory limits, and restricted slots to place Beacon Lattice beacons without guessing.
+
 Most Beacon Lattice mistakes come from placing a convenient beacon before the board has told you where it must go. Forced cells shrink that guesswork.
 
 The live board is in [Beacon Lattice](/games/beacon-lattice/). Pattern details live in the [Beacon Lattice guide](/guides/beacon-lattice/).
@@ -44,3 +46,4 @@ An overlap is not a temporary scaffold. Because exact cover forbids a second sou
 Locked beacons are forced for you. On **Locked plus** and **Seven lock**, treat the locked pattern as already painted Exact and build only in the leftover gaps.
 
 When you want the same reasoning without a pointer, read [Keyboard and accessible play in Beacon Lattice](/articles/keyboard-and-accessible-play-in-beacon-lattice/).
+

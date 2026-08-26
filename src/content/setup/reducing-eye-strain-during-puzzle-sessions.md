@@ -18,6 +18,9 @@ affiliateLinks:
     suitableFor: Players experiencing screen fatigue in dim rooms.
     limitations: Color temperature and diffusion quality vary by model; not clinical advice.
 ---
+
+> **Bottom line:** Practical ambient lighting, monitor bias light positioning, and visual rest habits for extended logic puzzle and word search play. Check paper weight, binding, font size, and answer key placement; pencil first.
+
 Visual logic puzzles like [Nonogram](/games/nonogram/) and [Mini Sudoku](/games/mini-sudoku/) demand intense visual focus on detailed grids and clue numbers. Over time, staring at high-contrast digital displays in poorly lit rooms can cause dry eyes, blurred vision, and screen fatigue.
 
 A few deliberate adjustments to your environment and display settings can significantly improve eye comfort.
@@ -37,3 +40,4 @@ Every 20 minutes of gameplay, pause your game and look at an object at least 20 
 ## Alternatives already nearby
 
 Lower your monitor brightness to 40–50%, enable your operating system's built-in night light or warm color profile, and increase room ambient light with a regular household lamp.
+

@@ -18,6 +18,9 @@ affiliateLinks:
     suitableFor: Readers seeking a portable, offline activity with checkable solutions.
     limitations: Search results change; inspect edition, sample pages, dimensions, and answer-key format before deciding.
 ---
+
+> **Bottom line:** Compare puzzle families, difficulty progression, answer keys, print readability, and portability without cognition or health claims. Check paper weight, binding, font size, and answer key placement; pencil first.
+
 An offline puzzle book can be useful when you want a self-contained activity without a screen or connection. It should be chosen for the kind of reasoning and page experience you enjoy—not for promises about memory, cognition, learning, or health.
 
 ## Choose the rule family first
@@ -49,3 +52,4 @@ Use a library, swap books with another reader, print a lawful sample, or revisit
 ## Next action
 
 Pick one rule family and inspect two sample puzzles plus the answer-key format. Confirm page dimensions and edition. If the sample is enjoyable and readable, then decide whether portability, quantity, or worked explanations matter most.
+

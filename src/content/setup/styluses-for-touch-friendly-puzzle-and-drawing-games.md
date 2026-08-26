@@ -18,6 +18,9 @@ affiliateLinks:
     suitableFor: Players wanting unobstructed line of sight while tracing word paths or drawing.
     limitations: Screen protector friction and tip durability vary across listings.
 ---
+
+> **Bottom line:** Comparing passive conductive mesh, clear disc pens, and fine-tip capacitive styluses for drawing and word search grids. Compare movement, space, and cleaning needs; try what you own for 5 minutes before shopping.
+
 While fingers work well for tapping large cards in [Klondike](/games/klondike/), games with drawing inputs or detailed grids—such as [Pass the Picture](/games/pass-the-picture/), [Word Search](/games/word-search/), and [Nonogram](/games/nonogram/)—benefit significantly from the precision of a stylus.
 
 A stylus prevents your finger from blocking the line you are drawing and provides a natural pen-and-paper feel.
@@ -33,3 +36,4 @@ A stylus prevents your finger from blocking the line you are drawing and provide
 ## Alternatives already nearby
 
 If you prefer using your fingers, keeping your screen clean with a microfiber cloth drastically reduces friction when dragging word paths in Word Search.
+

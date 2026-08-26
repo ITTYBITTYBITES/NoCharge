@@ -13,6 +13,7 @@ interface Props {
   socialImageHeight?: number;
   feedHref?: string;
   feedTitle?: string;
+  additionalImages?: { url: string; width: number; height: number; alt?: string }[];
 }
 
 const {
@@ -29,6 +30,7 @@ const {
   socialImageHeight = 630,
   feedHref,
   feedTitle = 'NoCharge feed',
+  additionalImages = [],
 } = Astro.props;
 const site = Astro.site ?? new URL('https://nocharge.net');
 const canonical = new URL(path, site).toString();
@@ -40,30 +42,37 @@ const defaultStructuredData = isGame
   ? {
       '@context': 'https://schema.org',
       '@type': 'VideoGame',
+      '@id': `${canonical}#game`,
       name: title,
       description,
       url: canonical,
-      image: socialImage,
+      image: [socialImage],
+      genre: 'Puzzle Game',
       applicationCategory: 'GameApplication',
-      operatingSystem: 'Any',
+      operatingSystem: 'Web, Windows, macOS, Linux, Android, iOS',
+      gamePlatform: 'Web Browser',
       playMode: 'SinglePlayer',
       isAccessibleForFree: true,
-      inLanguage: 'en',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', availability: 'https://schema.org/InStock' },
       publisher: {
         '@type': 'Organization',
         name: 'NoCharge',
         url: new URL('/', site).toString(),
+        logo: { '@type': 'ImageObject', url: new URL('/icons/icon-512.png', site).toString(), width: 512, height: 512 },
       },
+      inLanguage: 'en',
     }
   : path === '/'
     ? {
         '@context': 'https://schema.org',
         '@type': 'WebSite',
+        '@id': 'https://nocharge.net/#website',
         name: 'NoCharge',
         description,
         url: canonical,
         image: socialImage,
         inLanguage: 'en',
+        publisher: { '@type': 'Organization', name: 'NoCharge', url: new URL('/', site).toString() },
       }
     : null;
 const structuredData = schema ?? defaultStructuredData;
@@ -84,6 +93,14 @@ const structuredData = schema ?? defaultStructuredData;
 <meta property="og:image:width" content={String(socialImageWidth)} />
 <meta property="og:image:height" content={String(socialImageHeight)} />
 <meta property="og:image:alt" content={socialImageAlt} />
+{additionalImages.map((img) => (
+  <>
+    <meta property="og:image" content={new URL(img.url, site).toString()} />
+    <meta property="og:image:width" content={String(img.width)} />
+    <meta property="og:image:height" content={String(img.height)} />
+    {img.alt && <meta property="og:image:alt" content={img.alt} />}
+  </>
+))}
 {ogType === 'article' && modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={fullTitle} />

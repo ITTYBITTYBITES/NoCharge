@@ -21,6 +21,7 @@ interface Props {
   socialImageWidth?: number;
   socialImageHeight?: number;
   feedHref?: string;
+  additionalImages?: { url: string; width: number; height: number; alt?: string }[];
 }
 
 const {
@@ -37,6 +38,7 @@ const {
   socialImageWidth,
   socialImageHeight,
   feedHref,
+  additionalImages = [],
 } = Astro.props;
 
 const isProd = import.meta.env.PROD;
@@ -64,6 +66,7 @@ const release = import.meta.env.PUBLIC_RELEASE ?? '1.0.0';
       socialImageWidth={socialImageWidth}
       socialImageHeight={socialImageHeight}
       feedHref={feedHref}
+      additionalImages={additionalImages}
     />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />

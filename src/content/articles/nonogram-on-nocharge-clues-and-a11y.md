@@ -13,6 +13,8 @@ featured: true
 draft: false
 ---
 
+> **Bottom line:** How NoCharge's Nonogram handles clue display, the accessibility text view, and why there is no fail state or timer.
+
 Nonogram — also called Picross, griddlers, or picture crosswords — is a logic puzzle where row and column clues describe a hidden picture. NoCharge's version offers 24 curated puzzles across two sizes with a built-in accessibility text view.
 
 ## How clues work
@@ -49,3 +51,4 @@ The 24 puzzles span two sizes (12 at 5×5, 12 at 10×10) and four themes: animal
 ## What the game tracks
 
 One metric: `nocharge:nonogram:puzzles-revealed`, a count of completed puzzles. This is a personal record stored in your browser's local storage.
+

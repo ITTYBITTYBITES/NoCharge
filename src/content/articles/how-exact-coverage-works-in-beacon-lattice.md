@@ -13,6 +13,8 @@ featured: false
 draft: false
 ---
 
+> **Bottom line:** See how Beacon Lattice treats coverage 0, 1, and 2+, and why a gap or overlap keeps a puzzle unsolved.
+
 Beacon Lattice does not score speed. It scores whether each required cell is covered **once**. That single rule is what the numbers on the board are for.
 
 Play [Beacon Lattice](/games/beacon-lattice/) and keep the [Beacon Lattice guide](/guides/beacon-lattice/) open if you want the full pattern list.
@@ -48,3 +50,4 @@ A solved board cares about coverage, not about emptying the inventory. If every 
 The beacon count is the number of beacons sitting on the solved board, including locked ones. Invalid clicks do not add to it. Removing a beacon lowers the current count. Only a completed exact cover is stored as a best.
 
 For the habit of finding the next forced cell, continue with [How to find forced beacon placements](/articles/how-to-find-forced-beacon-placements/).
+

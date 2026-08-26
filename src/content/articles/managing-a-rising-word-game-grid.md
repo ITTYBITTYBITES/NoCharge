@@ -13,6 +13,8 @@ featured: false
 draft: false
 ---
 
+> **Bottom line:** Balance Word Tile Rush word length, clear timing, and column shape once the first selection starts the rising grid.
+
 Word Tile Rush does not begin dropping rows until you make your first letter selection. That opening is a chance to read the board. Once you start, the grid rises at a regular pace, so every word decision balances points against space. Good grid management is less about rushing and more about recognizing when a long search is safe and when a quick clear protects the run.
 
 Use [Word Tile Rush](/games/word-tile-rush/) to see the board behavior, and keep the [Word Tile Rush guide](/guides/word-tile-rush/) open for the complete control and end-of-run details.
@@ -60,3 +62,4 @@ Sound is optional, and the current grid, score, and selected letters provide the
 A stable Word Tile Rush run alternates between two modes: a brief board scan while space is available, and decisive clearing when the top rows tighten. Start each new board with a planned first word, keep an eye on tall columns, and let the post-clear collapse inform the next path.
 
 For point comparisons, read [How Word Tile Rush scoring rewards longer words](/articles/word-tile-rush-longer-word-scoring/). For routes that can unlock unexpected clears, read [How diagonal letter paths work](/articles/how-diagonal-letter-paths-work/). Then [play Word Tile Rush](/games/word-tile-rush/) and give your next clear a clear board-management purpose.
+

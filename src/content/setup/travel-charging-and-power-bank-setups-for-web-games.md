@@ -18,6 +18,9 @@ affiliateLinks:
     suitableFor: Players traveling on transit without built-in seat power.
     limitations: Battery capacity, weight, and charging protocol compatibility vary.
 ---
+
+> **Bottom line:** Slim 5,000mAh and 10,000mAh power banks and right-angle cables for casual browser play on flights and commutes. Useful without buying; check existing equipment and state limits before browsing.
+
 One of the major benefits of static HTML5 browser games is energy efficiency. Unlike native mobile games that spin up 3D rendering engines and drain battery in under two hours, playing [FreeCell](/games/freecell/) or [Word Search](/games/word-search/) on NoCharge consumes minimal CPU power.
 
 Still, long travel days on flights or trains can deplete phone batteries. A compact charging setup keeps your arcade ready without adding bulk to your bag.
@@ -35,3 +38,4 @@ Standard straight USB cables poke into your palm when holding a phone in landsca
 ## Alternatives already nearby
 
 Modern passenger airplanes and commuter trains frequently offer 5V USB-A or USB-C power ports in the seatback, meaning a simple lightweight cable is often all you need.
+

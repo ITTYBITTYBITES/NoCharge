@@ -13,6 +13,8 @@ featured: true
 draft: false
 ---
 
+> **Bottom line:** Learn the labeled Color Flip colors and the fixed cycle used by turn-based mode.
+
 Color Flip uses four labeled colors: Green, Blue, Amber, and Rose. The visual board asks you to pick one before a round. The separate turn-based mode retains a fixed cycle for its **Cycle color** button.
 
 [Play Color Flip](/games/color-flip/) to try both modes, or see the [Color Flip guide](/guides/color-flip/).

@@ -31,14 +31,86 @@ const presentation = game.data.presentation;
 const stageStyle = presentation?.stageAspectDesktop
   ? `--game-stage-aspect:${presentation.stageAspectDesktop};--game-stage-aspect-mobile:${presentation.stageAspectMobile ?? presentation.stageAspectDesktop}`
   : undefined;
+
+const canonical = `https://nocharge.net/games/${game.id}/`;
+const gameImages = game.data.artwork ? [
+  `https://nocharge.net${game.data.artwork.coverSquare}`,
+  `https://nocharge.net${game.data.artwork.coverLandscape}`,
+  `https://nocharge.net${game.data.artwork.socialCard}`,
+  `https://nocharge.net${game.data.artwork.coverSquareFallback}`,
+] : [];
+
+const gameSchema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'VideoGame',
+    '@id': `${canonical}#game`,
+    name: game.data.title,
+    description: game.data.description,
+    url: canonical,
+    image: gameImages,
+    genre: game.data.genre,
+    applicationCategory: 'GameApplication',
+    operatingSystem: 'Web, Windows, macOS, Linux, Android, iOS',
+    gamePlatform: 'Web Browser',
+    playMode: 'SinglePlayer',
+    isAccessibleForFree: true,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', availability: 'https://schema.org/InStock' },
+    publisher: {
+      '@type': 'Organization',
+      name: 'NoCharge',
+      url: 'https://nocharge.net/',
+      logo: { '@type': 'ImageObject', url: 'https://nocharge.net/icons/icon-512.png', width: 512, height: 512 },
+    },
+    author: { '@type': 'Organization', name: 'NoCharge', url: 'https://nocharge.net/' },
+    inLanguage: 'en',
+    isPartOf: { '@type': 'WebSite', '@id': 'https://nocharge.net/#website', name: 'NoCharge' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nocharge.net/' },
+      { '@type': 'ListItem', position: 2, name: 'Arcade', item: 'https://nocharge.net/arcade/' },
+      { '@type': 'ListItem', position: 3, name: game.data.title, item: canonical },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    '@id': `${canonical}#faq`,
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: `How do you play ${game.data.title}?`,
+        acceptedAnswer: { '@type': 'Answer', text: `${game.data.tagline} ${game.data.description}` },
+      },
+      {
+        '@type': 'Question',
+        name: `Is ${game.data.title} free without an account?`,
+        acceptedAnswer: { '@type': 'Answer', text: 'Yes. NoCharge games are free, no account required, and scores are saved locally in this browser.' },
+      },
+      {
+        '@type': 'Question',
+        name: `What are the controls for ${game.data.title}?`,
+        acceptedAnswer: { '@type': 'Answer', text: presentation?.controls?.map(c=>`${c.label}: ${c.description}`).join('. ') || 'Check the controls section on the page for keyboard and pointer options.' },
+      },
+    ],
+  },
+];
 ---
 
 <BaseLayout
   title={game.data.title}
   description={game.data.description}
   path={`/games/${game.id}/`}
+  schema={gameSchema}
   socialImage={game.data.artwork?.socialCard}
   socialImageAlt={game.data.artwork ? `${game.data.title}: ${game.data.artwork.alt}` : undefined}
+  additionalImages={game.data.artwork ? [
+    { url: game.data.artwork.coverSquare, width: 800, height: 800, alt: `${game.data.title} square cover` },
+    { url: game.data.artwork.coverLandscape, width: 1280, height: 720, alt: `${game.data.title} landscape cover` },
+  ] : []}
 >
   <GameShell
     title={game.data.title}

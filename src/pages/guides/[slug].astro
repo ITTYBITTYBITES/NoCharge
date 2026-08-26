@@ -38,33 +38,71 @@ const updatedLabel = new Date(`${guide.data.updated}T12:00:00`).toLocaleDateStri
   year: 'numeric',
 });
 const canonical = `https://nocharge.net/guides/${guide.id}/`;
-const schema = {
-  '@context': 'https://schema.org',
-  '@type': 'Article',
-  headline: guide.data.title,
-  description: guide.data.description,
-  dateModified: guide.data.updated,
-  datePublished: guide.data.updated,
-  mainEntityOfPage: canonical,
-  url: canonical,
-  inLanguage: 'en',
-  author: {
-    '@type': 'Organization',
-    name: 'NoCharge',
-    url: 'https://nocharge.net/',
+const guideImages = game.data.artwork ? [
+  `https://nocharge.net${game.data.artwork.coverSquare}`,
+  `https://nocharge.net${game.data.artwork.coverLandscape}`,
+  `https://nocharge.net${game.data.artwork.socialCard}`,
+] : [];
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    '@id': `${canonical}#article`,
+    headline: guide.data.title,
+    description: guide.data.description,
+    datePublished: `${guide.data.updated}T12:00:00Z`,
+    dateModified: `${guide.data.updated}T12:00:00Z`,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
+    url: canonical,
+    image: guideImages.length ? guideImages : undefined,
+    author: { '@type': 'Organization', name: 'NoCharge Editorial', url: 'https://nocharge.net/' },
+    publisher: {
+      '@type': 'Organization',
+      name: 'NoCharge',
+      url: 'https://nocharge.net/',
+      logo: { '@type': 'ImageObject', url: 'https://nocharge.net/icons/icon-512.png', width: 512, height: 512 },
+    },
+    proficiencyLevel: 'Beginner',
+    dependencies: game.data.title,
+    articleSection: 'Game Guide',
+    keywords: `${game.data.title}, ${game.data.genre}, ${game.data.difficulty}, browser game guide`,
+    isAccessibleForFree: true,
+    inLanguage: 'en',
+    about: { '@type': 'VideoGame', '@id': `https://nocharge.net/games/${game.id}/#game`, name: game.data.title, url: `https://nocharge.net/games/${game.id}/` },
+    isPartOf: { '@type': 'WebSite', '@id': 'https://nocharge.net/#website', name: 'NoCharge' },
   },
-  publisher: {
-    '@type': 'Organization',
-    name: 'NoCharge',
-    url: 'https://nocharge.net/',
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nocharge.net/' },
+      { '@type': 'ListItem', position: 2, name: 'Guides', item: 'https://nocharge.net/guides/' },
+      { '@type': 'ListItem', position: 3, name: guide.data.title, item: canonical },
+    ],
   },
-  ...(game.data.artwork ? { image: `https://nocharge.net${game.data.artwork.socialCard}` } : {}),
-  about: {
-    '@type': 'VideoGame',
-    name: game.data.title,
-    url: `https://nocharge.net/games/${game.id}/`,
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    '@id': `${canonical}#faq`,
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: `How do I play ${game.data.title}?`,
+        acceptedAnswer: { '@type': 'Answer', text: `${guide.data.description} Open the game and use the documented controls.` },
+      },
+      {
+        '@type': 'Question',
+        name: `Does ${game.data.title} need an account?`,
+        acceptedAnswer: { '@type': 'Answer', text: 'No. All NoCharge games run locally without an account. Progress is saved in this browser only.' },
+      },
+      {
+        '@type': 'Question',
+        name: `Can I play ${game.data.title} with keyboard?`,
+        acceptedAnswer: { '@type': 'Answer', text: 'Check the guide controls section. Many games document keyboard alternatives to pointer input.' },
+      },
+    ],
   },
-};
+];
 ---
 
 <BaseLayout

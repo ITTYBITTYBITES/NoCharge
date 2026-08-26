@@ -13,6 +13,8 @@ featured: true
 draft: false
 ---
 
+> **Bottom line:** Klondike Solitaire, FreeCell, Nonogram, Twenty Forty-Eight, and Tile Garden join NoCharge's Quiet Arcade — all untimed, all local, all without accounts.
+
 Five new single-player games are now available on NoCharge: [Klondike Solitaire](/games/klondike/), [FreeCell Solitaire](/games/freecell/), [Nonogram](/games/nonogram/), [Twenty Forty-Eight](/games/twenty-forty-eight/), and [Tile Garden](/games/tile-garden/).
 
 Each one follows the same Quiet Arcade principles that shaped the existing four solo titles: no timer where none is needed, no account, no leaderboard, no streak, and no dark patterns.
@@ -56,3 +58,4 @@ Read: [Tile Garden calm design](/articles/tile-garden-on-nocharge-a-calm-merge-g
 The Quiet Arcade has grown since: eleven solo games and six pass-and-play games. The homepage grid features a selection of titles — Memory Match, Word Tile Rush, Color Flip, Beacon Lattice, Word Search, and Mini Sudoku — while the full catalog lives on the [Arcade page](/arcade/). The existing collections — keyboard-friendly, untimed, without accounts, and short-break games — have been updated to include the new titles where they fit.
 
 Nothing about the existing games has changed. Memory Match, Word Tile Rush, Color Flip, Beacon Lattice, and the six pass-and-play titles continue to work exactly as before.
+

@@ -11,4 +11,7 @@ kind: game
 game: mini-sudoku
 ---
 
+> **Bottom line:** Why a small Sudoku grid can make room for a calm, accessible puzzle session.
+
 Mini Sudoku uses six rows, six columns, and 3×2 boxes instead of a 9×9 grid. Its generator starts from a valid solution and removes cells only when the solver still finds one solution. There is no clock and no claim that one solving approach is best.
+

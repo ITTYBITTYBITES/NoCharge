@@ -13,6 +13,8 @@ featured: false
 draft: false
 ---
 
+> **Bottom line:** Use the browser’s focus order, clear location labels, and a deliberate reveal rhythm to play NoCharge Memory Match by keyboard.
+
 Memory Match is playable with a keyboard because each hidden card is a button. The practical challenge is not memorizing a new control scheme; it is keeping the board map clear while focus moves from card to card. A consistent keyboard rhythm makes that much easier.
 
 Start a round of [Memory Match](/games/memory-match/) and keep the [Memory Match guide](/guides/memory-match/) open for the full control reference.
@@ -54,3 +56,4 @@ When you return, take a second to restate the current known pairs before you mak
 A keyboard run does not require a different strategy from a pointer run. It benefits from more deliberate navigation. Pick a single goal for the next board: maintain the top-left-to-bottom-right sweep, convert every remembered pair immediately, or keep concise row-and-column labels. Then check the completed move total against your own prior runs.
 
 For more on that number, see [How move counting works in matching games](/articles/how-move-counting-works-in-matching-games/). For the broader board-reading plan, see [A systematic way to scan a Memory Match board](/articles/memory-match-systematic-board-scan/). Then [play Memory Match](/games/memory-match/) and use the control method that feels most comfortable.
+

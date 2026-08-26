@@ -13,6 +13,8 @@ featured: true
 draft: false
 ---
 
+> **Bottom line:** How NoCharge's Klondike Solitaire handles draw modes, undo, and the deliberate absence of timers and winnability claims.
+
 Klondike Solitaire is one of the most familiar card games in the world. Most people have played some version of it — on a computer, on a phone, with a physical deck. NoCharge's version keeps the rules standard and changes the frame around them.
 
 ## What stays the same
@@ -44,3 +46,4 @@ We treat every deal as a fresh layout and let the player decide when to restart.
 Klondike sessions on NoCharge tend to range from five to fifteen minutes. There is no rush to finish before a timer expires, no penalty for using undo, and no reward for speed. The game tracks moves as a personal record, not a score to optimize.
 
 This is the Quiet Arcade approach: clear rules, honest documentation, and no manufactured urgency.
+

@@ -49,10 +49,48 @@ const {
   name,
   sizes = '(max-width: 54rem) calc(100vw - 2rem), 52rem',
   eager = false,
-  alt = '',
+  alt,
   variant = 'panel',
   topic,
 } = Astro.props;
+
+const topicAltMap: Record<string, string> = {
+  'keyboards': `Keyboards topic: ${name} editorial illustration showing compact layout, key feel, and sound sources on a calm desk`,
+  'pointing-devices': `Pointing devices topic: ${name} illustration comparing mouse, trackpad, trackball, and touch tradeoffs`,
+  'screens-and-stands': `Screens and stands topic: ${name} illustration showing monitor zoom, orientation, and stand stability`,
+  'desk-and-comfort': `Desk and comfort topic: ${name} illustration of low-noise desk setup and comfort choices`,
+  'offline-puzzles': `Offline puzzles topic: ${name} illustration of paper puzzle formats, binding, and answer keys`,
+  'audio': `Audio topic: ${name} illustration showing headphones, speakers, and quiet-listening tradeoffs`,
+  'lighting': `Lighting topic: ${name} illustration showing color temperature, bias lighting, and evening comfort`,
+};
+
+const defaultAltMap: Record<string, string> = {
+  'hero': 'Quiet Setup hero: calm desk with keyboard, monitor, lamp, and puzzle book, 16:9 editorial illustration',
+  'keyboards': 'Compact keyboard layout on a calm desk, 16:9 editorial illustration',
+  'pointing': 'Pointing devices on a desk: mouse, trackpad, and trackball, 16:9',
+  'screens-stands': 'Screens and stands: monitor and tablet stands on a desk, 16:9',
+  'puzzles-desk': 'Offline puzzle book open on a desk with pencil, 16:9',
+  'switches': 'Keyboard switches close-up showing linear, tactile, clicky types, 16:9',
+  'zoom-display': 'Browser zoom versus larger display comparison, 16:9',
+  'desk-noise': 'Low-noise desk setup without gaming extras, 16:9',
+  'monitor': 'Monitor on a desk at eye level, 16:9 editorial illustration',
+  'speakers': 'Small desk speakers for quiet play, 16:9',
+  'posture': 'Desk posture illustration: upright seated figure at desk, 16:9',
+  'footrest': 'Foot rest under a desk, 16:9 editorial illustration',
+  'lamp': 'Desk lamp with adjustable arm on a calm desk, 16:9',
+  'bias-light': 'Bias lighting strip behind monitor with warm glow, 16:9',
+  'cables': 'Cable management tray under desk with organized cables, 16:9',
+  'room-lighting': 'Ambient room lighting with monitor bias glow, 16:9',
+  'screen-film': 'Anti-glare screen film with lifted corner on monitor, 16:9',
+  'monitor-calibration': 'Monitor calibration settings for quiet gaming, 16:9',
+  'chair-posture': 'Desk chair posture for long quiet sessions, 16:9',
+  'lamp-light': 'Desk lamp warm versus cool light comparison, 16:9',
+  'footrest-mat': 'Foot rest and floor mat comfort at desk, 16:9',
+  'headphones': 'Open-back versus closed-back headphones for long sessions, 16:9',
+  'large-dual-monitors': 'Large monitor versus dual monitors comparison, 16:9',
+};
+
+const computedAlt = alt ?? (topic ? topicAltMap[topic] : undefined) ?? defaultAltMap[name] ?? `Quiet Setup illustration: ${name} concept, 16:9 editorial art`;
 
 const webpSrcset = [800, 1200, 1600].map((w) => `/setup-art/${name}-${w}.webp ${w}w`).join(', ');
 const jpegSrcset = [800, 1200, 1600].map((w) => `/setup-art/${name}-${w}.jpg ${w}w`).join(', ');
@@ -64,7 +102,7 @@ const jpegSrcset = [800, 1200, 1600].map((w) => `/setup-art/${name}-${w}.jpg ${w
     src={`/setup-art/${name}-1200.jpg`}
     srcset={jpegSrcset}
     sizes={sizes}
-    alt={alt}
+    alt={computedAlt}
     width="1600"
     height="900"
     loading={eager ? 'eager' : 'lazy'}

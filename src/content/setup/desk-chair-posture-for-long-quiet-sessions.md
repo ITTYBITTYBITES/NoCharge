@@ -18,6 +18,9 @@ affiliateLinks:
     suitableFor: Readers whose current chair lacks lower-back support but is otherwise comfortable.
     limitations: Shape, firmness, and strap attachment vary; effectiveness depends on chair design and body proportions.
 ---
+
+> **Bottom line:** Ergonomic basics for comfortable browser gaming without an ergonomic marketing pitch — starting with what you already sit on. Move and clear existing items first; measure desk space and cable reach before browsing.
+
 Comfortable posture for browser gaming is not fundamentally different from comfortable posture for any desk work. The useful principles are well-documented and do not require expensive equipment. Most adjustments start with what you already have.
 
 ## The basics
@@ -56,3 +59,4 @@ No single posture is comfortable indefinitely. The most impactful habit for long
 Editorial research into documented ergonomic principles. No biomechanical measurements, no specific chair testing, no medical advice. Consult a healthcare professional for persistent discomfort.
 
 As an Amazon Associate I earn from qualifying purchases.
+

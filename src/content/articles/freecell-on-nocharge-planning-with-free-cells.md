@@ -13,6 +13,8 @@ featured: true
 draft: false
 ---
 
+> **Bottom line:** How NoCharge's FreeCell Solitaire uses visible information, multi-card moves, and the absence of timers to support deliberate planning.
+
 FreeCell is the solitaire game where you can see everything from the start. All 52 cards are dealt face-up into eight columns. Four free cells provide temporary storage. Four foundations wait for aces.
 
 The challenge is not hidden information — it is sequencing.
@@ -48,3 +50,4 @@ Because every card is visible, you can scan the entire layout before making a mo
 - **Empty columns:** these double your multi-card move capacity. Can you clear one early?
 
 The game does not evaluate your plan or tell you whether a move is good. It presents the layout and lets you decide.
+

@@ -13,6 +13,8 @@ featured: false
 draft: false
 ---
 
+> **Bottom line:** Navigate the Beacon Lattice grid from the keyboard, hear coverage changes, and play without relying on color, sound, or drag.
+
 Beacon Lattice is built as buttons and text, not a canvas-only toy. That makes the same exact-cover rule available with a keyboard, a screen reader, or a phone tap.
 
 Use [Beacon Lattice](/games/beacon-lattice/) with the [Beacon Lattice guide](/guides/beacon-lattice/) for the pattern diagrams.
@@ -49,3 +51,4 @@ Pause freezes the board and disables placement, removal, and undo. Hidden-tab an
 The same rules hold in fullscreen or immersive mode. The type buttons and grid stay with the playfield; the site banner does not.
 
 If you are still learning which cells are forced, [How to find forced beacon placements](/articles/how-to-find-forced-beacon-placements/) pairs well with keyboard cursor movement.
+

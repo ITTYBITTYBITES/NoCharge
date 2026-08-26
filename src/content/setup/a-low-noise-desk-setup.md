@@ -12,6 +12,9 @@ artwork: desk-noise
 featured: false
 draft: false
 ---
+
+> **Bottom line:** Reduce avoidable desk noise by finding the actual source, stabilizing what you own, and adding only what solves a measured problem. Move and clear existing items first; measure desk space and cable reach before browsing.
+
 A quieter desk does not require a themed collection of “gaming” accessories. Most useful changes begin by identifying one sound: key impact, pointer clicks, a hollow desktop, a cable tapping an edge, a loose stand, or audio escaping from speakers.
 
 ## Who this approach is for
@@ -41,3 +44,4 @@ NoCharge used editorial research into common sound paths and desk arrangements. 
 ## Next action
 
 Name the loudest repeatable source and run one reversible no-purchase change for a day. Keep it only if the actual routine improves. If a limitation remains, write the requirement narrowly—such as “prevent this cable from tapping”—and avoid turning it into a long shopping list.
+

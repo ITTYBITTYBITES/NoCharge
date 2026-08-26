@@ -18,6 +18,9 @@ affiliateLinks:
     suitableFor: Readers who play in dim rooms and find the contrast between a bright screen and dark room uncomfortable.
     limitations: Adhesive quality, color options, and USB power requirements vary; a search page is not a specific recommendation.
 ---
+
+> **Bottom line:** How bias lighting and ambient room light reduce eye strain during monitor use, and simple strategies that start with what you already have. Try dimming, repositioning, and bias light first; check arm reach and glare.
+
 A monitor in a dark room creates high contrast between the screen and the surrounding environment. Your pupils adjust to the average brightness of your visual field; when the screen is bright and everything else is dark, your eyes work harder to adapt when glancing away and back. Adding modest ambient light behind or around the monitor — called bias lighting — reduces this contrast.
 
 ## What bias lighting does
@@ -49,3 +52,4 @@ USB-powered LED strips that mount to the back of a monitor are a common dedicate
 Editorial research into bias lighting concepts and documented contrast-reduction principles. No luminance measurements, no clinical studies, no specific product recommendation.
 
 As an Amazon Associate I earn from qualifying purchases.
+

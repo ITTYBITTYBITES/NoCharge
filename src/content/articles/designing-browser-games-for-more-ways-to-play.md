@@ -13,6 +13,8 @@ featured: true
 draft: false
 ---
 
+> **Bottom line:** How NoCharge approaches keyboard, touch, pointer, focus, motion, sound-independent feedback, pause recovery, and manual accessibility testing.
+
 Accessibility is part of a game’s rules and controls, not a note added after the board is finished. NoCharge uses WCAG 2.2 level AA as a design and testing target. That target is not a certification, and an automated pass cannot establish complete support.
 
 ## More than one input path
@@ -46,3 +48,4 @@ None of those tools can tell us that every announcement is useful in context, th
 The [Accessibility Statement](/accessibility/) records the current target, supported patterns, limitations, and reporting details. If something prevents play or navigation, email [hello@nocharge.net](mailto:hello@nocharge.net) with the page, browser/device, input method or assistive technology, expected result, and observed barrier.
 
 A specific report is more useful than a broad accessibility claim. It can be connected to the shared shell, a game’s actual rule path, and a reproducible test—the same places where accessible design needs to live.
+

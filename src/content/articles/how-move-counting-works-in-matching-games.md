@@ -13,6 +13,8 @@ featured: false
 draft: false
 ---
 
+> **Bottom line:** See exactly when NoCharge Memory Match adds a move and how to use that number as a clear measure of a board run.
+
 A move counter can look like a score, but it measures something different. In NoCharge Memory Match, lower is better: a move is one two-card attempt. It is counted when you reveal the second card, whether those two cards match or turn back over. Understanding that simple rule helps you evaluate a run without guessing what the number means.
 
 Open [Memory Match](/games/memory-match/) for the live board, and use the [Memory Match guide](/guides/memory-match/) for the complete rules.
@@ -62,3 +64,4 @@ The number is intentionally a simple personal reference. There is no timer, acco
 The counter rewards two related habits: reveal new information efficiently, then use remembered partners promptly. You do not need to play faster. Give each attempt a purpose, whether it is completing a known pair or exposing new positions for the map.
 
 For the mapping method behind that approach, read [A systematic way to scan a Memory Match board](/articles/memory-match-systematic-board-scan/). If you play without a mouse, [Keyboard strategy for Memory Match](/articles/keyboard-strategy-for-memory-match/) explains how to keep the same deliberate rhythm with Tab, Enter, and Space. When you are ready, [play another board](/games/memory-match/).
+

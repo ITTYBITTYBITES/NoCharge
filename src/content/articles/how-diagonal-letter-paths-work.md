@@ -13,6 +13,8 @@ featured: false
 draft: false
 ---
 
+> **Bottom line:** Use all eight neighboring directions in Word Tile Rush while keeping each letter path connected, ordered, and free of repeats.
+
 Word Tile Rush paths are not limited to horizontal and vertical neighbors. A letter can connect to any occupied tile immediately around it, including the four diagonals. That gives each tile up to eight possible next steps and makes the grid much richer than a row-by-row word search.
 
 Open [Word Tile Rush](/games/word-tile-rush/) to trace a few paths, and refer to the [Word Tile Rush guide](/guides/word-tile-rush/) for the exact game rules.
@@ -54,3 +56,4 @@ After a word clears, letters collapse downward in their own columns. That can cr
 On the next run, make a simple goal: find one valid word that changes direction at least once. Then look for one that uses a diagonal intentionally. The goal is not to zigzag for its own sake; it is to make all eight neighboring directions part of your normal search.
 
 For the payoff of extending those paths, see [How Word Tile Rush scoring rewards longer words](/articles/word-tile-rush-longer-word-scoring/). For decisions under time pressure, see [Managing a rising word-game grid](/articles/managing-a-rising-word-game-grid/). When you are ready, [play Word Tile Rush](/games/word-tile-rush/) and trace the route deliberately.
+
