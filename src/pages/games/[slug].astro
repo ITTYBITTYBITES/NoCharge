@@ -83,17 +83,42 @@ const gameSchema = [
       {
         '@type': 'Question',
         name: `How do you play ${game.data.title}?`,
-        acceptedAnswer: { '@type': 'Answer', text: `${game.data.tagline} ${game.data.description}` },
+        acceptedAnswer: { '@type': 'Answer', text: `${game.data.tagline} ${game.data.description} Check controls table for keyboard and pointer options.` },
       },
       {
         '@type': 'Question',
         name: `Is ${game.data.title} free without an account?`,
-        acceptedAnswer: { '@type': 'Answer', text: 'Yes. NoCharge games are free, no account required, and scores are saved locally in this browser.' },
+        acceptedAnswer: { '@type': 'Answer', text: 'Yes. NoCharge games are free, no account required, and scores are saved locally in this browser via localStorage.' },
       },
       {
         '@type': 'Question',
         name: `What are the controls for ${game.data.title}?`,
-        acceptedAnswer: { '@type': 'Answer', text: presentation?.controls?.map(c=>`${c.label}: ${c.description}`).join('. ') || 'Check the controls section on the page for keyboard and pointer options.' },
+        acceptedAnswer: { '@type': 'Answer', text: presentation?.controls?.map(c=>`${c.label}: ${c.description}`).join('. ') || 'Check the controls section on the page for keyboard and pointer options, with visible focus outlines.' },
+      },
+      {
+        '@type': 'Question',
+        name: `Where is progress saved for ${game.data.title}?`,
+        acceptedAnswer: { '@type': 'Answer', text: 'In localStorage on this device, under keys like nocharge:game:* . No cloud sync. Clearing browser storage removes it. See Privacy and My Arcade.' },
+      },
+      {
+        '@type': 'Question',
+        name: `Does ${game.data.title} pause when tab hidden?`,
+        acceptedAnswer: { '@type': 'Answer', text: 'Yes, hidden tab adds pause reason and shows pause overlay. Ambient sound stops when hidden to avoid background static. Returning resumes unless manually paused.' },
+      },
+      {
+        '@type': 'Question',
+        name: `How do I restart ${game.data.title}?`,
+        acceptedAnswer: { '@type': 'Answer', text: 'Use New game in toolbar or settings dialog. Resets board and moves without affecting other games or analytics consent.' },
+      },
+      {
+        '@type': 'Question',
+        name: `Is ${game.data.title} timed or untimed?`,
+        acceptedAnswer: { '@type': 'Answer', text: 'Check genre and session facts on page. Some games are untimed or have turn-based reduced-pressure modes. Guides document timing.' },
+      },
+      {
+        '@type': 'Question',
+        name: `How do I mute ${game.data.title} and ambient?`,
+        acceptedAnswer: { '@type': 'Answer', text: 'Mute sound is persistent master mute for effects and ambient. Sound on/off is effects only. Volume slider updates ambient gain via Web Audio. Device mute can silence all.' },
       },
     ],
   },
@@ -211,6 +236,19 @@ const gameSchema = [
         </nav>
       )
     }
+    <section class="panel game-faq" id="faq" aria-labelledby="faq-heading">
+      <h2 id="faq-heading">FAQ — {game.data.title}</h2>
+      <dl>
+        <dt>How do you play {game.data.title}?</dt><dd>{game.data.tagline} {game.data.description}</dd>
+        <dt>Is it free without an account?</dt><dd>Yes, no account, localStorage only, no sync.</dd>
+        <dt>What are the controls?</dt><dd>Check controls table above for pointer and keyboard options with visible focus.</dd>
+        <dt>Where is progress saved?</dt><dd>localStorage keys like nocharge:game:*, see Privacy and My Arcade.</dd>
+        <dt>Does it pause when tab hidden?</dt><dd>Yes, hidden adds pause reason and ambient stops, resumes unless manually paused.</dd>
+        <dt>How to restart?</dt><dd>New game in toolbar or settings dialog resets board.</dd>
+        <dt>Is it timed?</dt><dd>Check genre/session facts, some untimed or turn-based modes.</dd>
+        <dt>How to mute and ambient?</dt><dd>Mute is master persistent, Sound on/off is effects only, volume updates ambient gain.</dd>
+      </dl>
+    </section>
   </GameShell>
 </BaseLayout>
 

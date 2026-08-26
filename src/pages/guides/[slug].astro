@@ -88,17 +88,42 @@ const schema = [
       {
         '@type': 'Question',
         name: `How do I play ${game.data.title}?`,
-        acceptedAnswer: { '@type': 'Answer', text: `${guide.data.description} Open the game and use the documented controls.` },
+        acceptedAnswer: { '@type': 'Answer', text: `${guide.data.description} Open the game and use the documented controls. Check controls table for keyboard alternatives.` },
       },
       {
         '@type': 'Question',
         name: `Does ${game.data.title} need an account?`,
-        acceptedAnswer: { '@type': 'Answer', text: 'No. All NoCharge games run locally without an account. Progress is saved in this browser only.' },
+        acceptedAnswer: { '@type': 'Answer', text: 'No. All NoCharge games run locally without an account. Progress is saved in this browser only via localStorage.' },
       },
       {
         '@type': 'Question',
         name: `Can I play ${game.data.title} with keyboard?`,
-        acceptedAnswer: { '@type': 'Answer', text: 'Check the guide controls section. Many games document keyboard alternatives to pointer input.' },
+        acceptedAnswer: { '@type': 'Answer', text: 'Check the guide controls section. Many games document keyboard alternatives to pointer input, with visible focus outlines and 44px targets.' },
+      },
+      {
+        '@type': 'Question',
+        name: `Where is my progress saved for ${game.data.title}?`,
+        acceptedAnswer: { '@type': 'Answer', text: 'In localStorage on this device, under keys like nocharge:game:* . No cloud sync, no encryption claim. Clearing browser storage removes it. See Privacy.' },
+      },
+      {
+        '@type': 'Question',
+        name: `Does ${game.data.title} pause when I switch tabs?`,
+        acceptedAnswer: { '@type': 'Answer', text: 'Yes, hidden tab adds a pause reason and shows pause overlay. Returning removes hidden reason unless manually paused. Ambient sound stops when hidden.' },
+      },
+      {
+        '@type': 'Question',
+        name: `How do I restart ${game.data.title}?`,
+        acceptedAnswer: { '@type': 'Answer', text: 'Use New game in shared toolbar or in Game settings dialog. It resets board, moves, and state without affecting other games or analytics consent.' },
+      },
+      {
+        '@type': 'Question',
+        name: `Is ${game.data.title} timed?`,
+        acceptedAnswer: { '@type': 'Answer', text: 'Check genre and session facts. Some games are untimed (Memory Match, Beacon Lattice) or have reduced-pressure turn-based modes (Color Flip). Guides document timing.' },
+      },
+      {
+        '@type': 'Question',
+        name: `How do I mute ${game.data.title}?`,
+        acceptedAnswer: { '@type': 'Answer', text: 'Use Mute sound in toolbar for persistent master mute (effects+ambient) or Sound on/off for effects only. Volume slider is independent and updates ambient via Web Audio.' },
       },
     ],
   },
@@ -221,6 +246,20 @@ const schema = [
       <div class="guide-prose prose">
         <Content />
       </div>
+
+      <section class="panel guide-faq" id="faq" aria-labelledby="faq-heading">
+        <h2 id="faq-heading">FAQ — {game.data.title}</h2>
+        <dl>
+          <dt>How do I play {game.data.title}?</dt><dd>{guide.data.description} Open the game and use documented controls.</dd>
+          <dt>Does it need an account?</dt><dd>No, local-only via localStorage, no sync.</dd>
+          <dt>Can I play with keyboard?</dt><dd>Check controls table, focus outlines visible, 44px targets.</dd>
+          <dt>Where is progress saved?</dt><dd>localStorage keys like nocharge:game:*, see Privacy.</dd>
+          <dt>Does it pause when tab hidden?</dt><dd>Yes, hidden adds pause reason, ambient stops, returns unless manually paused.</dd>
+          <dt>How to restart?</dt><dd>New game in toolbar or settings dialog resets board.</dd>
+          <dt>Is it timed?</dt><dd>Check genre/session facts, some untimed or turn-based modes.</dd>
+          <dt>How to mute?</dt><dd>Mute is master persistent, Sound on/off is effects only, volume independent.</dd>
+        </dl>
+      </section>
 
       <script>
         for (const table of document.querySelectorAll('.guide-prose table')) {
@@ -531,6 +570,18 @@ const schema = [
     font-size: 0.88rem;
     font-weight: 700;
   }
+
+  .guide-faq {
+    display: grid;
+    gap: 1rem;
+    padding: 1.25rem;
+    margin-top: 1.5rem;
+  }
+
+  .guide-faq h2 { font-size: 1.25rem; }
+  .guide-faq dl { display: grid; gap: 0.6rem; margin: 0; }
+  .guide-faq dt { color: var(--text); font-weight: 700; margin-top: 0.5rem; }
+  .guide-faq dd { color: var(--muted); margin: 0; }
 
   .related-guides {
     padding-bottom: 1rem;
