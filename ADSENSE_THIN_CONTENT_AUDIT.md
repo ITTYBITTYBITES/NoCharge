@@ -287,3 +287,4 @@ Result: All articles 370-941 words.
 
 **Files modified in this audit fix:**
 - `src/pages/my-arcade.astro`, `src/pages/changelog.astro`, `src/pages/feed.xml.ts`, `src/pages/setup/feed.xml.ts`, `src/pages/privacy-policy.astro` (new), `src/pages/contact.astro` (new), `src/components/Header.astro`, `src/components/Footer.astro`, `src/content/collections/*.md` (5), `src/content/games/*.md` (17), `src/content/setup/*.md` (124), `src/content/articles/*.md` (5), `src/content/guides/*.md` (2), `tests/e2e/*` (content-navigation, quiet-setup, quiet-setup-geometry, mobile-overflow, artwork, brand-media)
+<!-- trigger -->
