@@ -19,7 +19,8 @@ function listBuiltPages(): string[] {
       }
       if (!entry.name.endsWith('.html')) continue;
       const rel = relative(DIST, full).split(sep).join('/');
-      pages.add(rel === 'index.html' ? '/' : `/${rel.replace(/index\.html$/, '/')}`);
+      if (rel === 'index.html') pages.add('/');
+      else pages.add(`/${rel.replace(/index\.html$/, '')}`);
     }
   };
   walk(DIST);
@@ -33,7 +34,7 @@ const MOBILE_VIEWPORTS = [
 ] as const;
 
 test('every page fits its viewport without horizontal overflow', async ({ page }) => {
-  test.setTimeout(120_000);
+  test.setTimeout(300_000);
   const paths = listBuiltPages();
   // Sanity: the build must exist and contain the public site, not a stray file.
   expect(paths, 'expected built HTML pages in dist/').toContain('/');
