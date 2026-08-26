@@ -1,5 +1,5 @@
 import { mountGame } from '../registry';
-import { isMuted, toggleMuted, unlockAudio, isSoundEnabled, setSoundEnabled, getSoundVolume, setSoundVolume, getAmbient, startAmbient, stopAmbient } from './audio';
+import { isMuted, toggleMuted, unlockAudio, isSoundEnabled, setSoundEnabled, getSoundVolume, setSoundVolume, getAmbient, startAmbient, stopAmbient, updateAmbientVolume } from './audio';
 import {
   addVisibleRecoveryListeners,
   pauseReasonsAfterResumeRequest,
@@ -228,11 +228,18 @@ export function mountGameShell(viewport: HTMLElement): () => void {
   const recoverHiddenPauseWhenVisible = () => {
     if (document.visibilityState !== 'visible') return;
     removePauseReason('hidden', 'Game resumed after returning to this tab.');
+    // Restore ambient if the user had it enabled and sound is not muted.
+    if (getAmbient() !== 'none') {
+      try { startAmbient(); } catch { /* */ }
+    }
   };
 
   const onVisibilityChange = () => {
-    if (document.visibilityState === 'hidden') addPauseReason('hidden');
-    else recoverHiddenPauseWhenVisible();
+    if (document.visibilityState === 'hidden') {
+      addPauseReason('hidden');
+      // Stop ambient immediately when multitasking / tab hidden - prevents static continuing in background.
+      try { stopAmbient(); } catch { /* */ }
+    } else recoverHiddenPauseWhenVisible();
   };
 
   const onPlatformModal = (event: Event) => {
@@ -277,6 +284,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
 
   const onPageHide = () => {
     exitImmersive(false);
+    try { stopAmbient(); } catch { /* */ }
     if (document.fullscreenElement === viewport) void document.exitFullscreen().catch(() => {});
   };
 
@@ -304,7 +312,10 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     if (!isSoundEnabled()) stopAmbient();
     else if (getAmbient() !== 'none') startAmbient();
   });
-  volumeInput?.addEventListener('input', () => setSoundVolume(Number(volumeInput.value)));
+  volumeInput?.addEventListener('input', () => {
+    setSoundVolume(Number(volumeInput.value));
+    try { updateAmbientVolume(); } catch { /* */ }
+  });
   ambientInput?.addEventListener('change', () => {
     unlockAudio();
     const value = ambientInput.value as 'none' | 'rainfall' | 'cafe' | 'white-noise';
