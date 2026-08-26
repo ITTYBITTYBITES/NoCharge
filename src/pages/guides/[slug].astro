@@ -221,6 +221,16 @@ const schema = [
       <div class="guide-prose prose">
         <Content />
       </div>
+
+      <script>
+        for (const table of document.querySelectorAll('.guide-prose table')) {
+          if (table.scrollWidth > table.clientWidth) {
+            table.setAttribute('tabindex', '0');
+            table.setAttribute('role', 'region');
+            table.setAttribute('aria-label', 'Data table, scrollable');
+          }
+        }
+      </script>
     </article>
 
     <section class="guide-next panel" aria-labelledby="guide-next-heading">
@@ -392,6 +402,48 @@ const schema = [
 
   .guide-prose {
     max-width: 46rem;
+    min-width: 0;
+  }
+
+  .guide-prose :global(table) {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 1rem 0;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+
+  .guide-prose :global(table:focus-visible) {
+    outline: 2px solid var(--accent-strong);
+    outline-offset: 2px;
+  }
+
+  .guide-prose :global(th),
+  .guide-prose :global(td) {
+    border: 1px solid var(--line);
+    padding: 0.5rem 0.6rem;
+    text-align: left;
+    font-size: 0.84rem;
+    min-width: 8rem;
+  }
+
+  .guide-prose :global(th) {
+    background: var(--panel-2);
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .guide-prose :global(blockquote) {
+    margin: 0;
+    padding: 0.85rem 1rem;
+    border-left: 4px solid var(--accent);
+    background: color-mix(in srgb, var(--accent) 8%, var(--panel-2));
+    border-radius: 0.5rem;
+    color: var(--text);
   }
 
   .guide-next {
