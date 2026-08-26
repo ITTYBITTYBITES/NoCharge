@@ -48,5 +48,9 @@ test('guide library connects guide articles, games, and sitemap URLs', async ({ 
   expect(xml).toContain('<loc>https://nocharge.net/help/</loc>');
   expect(xml).toContain('<loc>https://nocharge.net/my-arcade/</loc>');
   expect(xml).toContain('<loc>https://nocharge.net/media/</loc>');
-  expect((xml.match(/<url>/g) ?? []).length).toBe(109);
+  const urlCount = (xml.match(/<url>/g) ?? []).length;
+  expect(urlCount).toBeGreaterThanOrEqual(109);
+  // With expanded Quiet Setup (20 per topic = 140 setup pages), sitemap grows accordingly.
+  const setupCount = (xml.match(/\/setup\//g) ?? []).length;
+  expect(setupCount).toBeGreaterThanOrEqual(30);
 });

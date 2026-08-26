@@ -1,5 +1,5 @@
 import { mountGame } from '../registry';
-import { isMuted, toggleMuted, unlockAudio, isSoundEnabled, setSoundEnabled, getSoundVolume, setSoundVolume, getAmbient, startAmbient, stopAmbient } from './audio';
+import { isMuted, toggleMuted, unlockAudio, isSoundEnabled, setSoundEnabled, getSoundVolume, setSoundVolume, getAmbient, startAmbient, stopAmbient, updateAmbientVolume } from './audio';
 import {
   addVisibleRecoveryListeners,
   pauseReasonsAfterResumeRequest,
@@ -48,6 +48,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
   let previousBodyStyle = '';
   let destroyed = false;
   let menu: ShellMenuState = 'closed';
+  let lastEnterTrigger: HTMLElement | null = null;
 
   const nativeFullscreenSupported =
     typeof document !== 'undefined' &&
@@ -174,11 +175,15 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     window.scrollTo(0, scrollY);
     updateFullscreen();
     announce('Focus mode exited.');
-    if (returnFocus) window.setTimeout(() => (playButton || fullscreenButton)?.focus({ preventScroll: true }), 0);
+    if (returnFocus) {
+      const target = lastEnterTrigger || playButton || fullscreenButton;
+      window.setTimeout(() => target?.focus({ preventScroll: true }), 0);
+    }
   };
 
-  const enterImmersive = () => {
+  const enterImmersive = (trigger: HTMLElement | null = null) => {
     if (immersive) return;
+    if (trigger) lastEnterTrigger = trigger;
     scrollY = window.scrollY;
     previousBodyStyle = document.body.style.cssText;
     document.body.style.position = 'fixed';
@@ -190,7 +195,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     announce('Focus mode entered. The playable board is expanded.');
   };
 
-  const requestFullscreen = async () => {
+  const requestFullscreen = async (trigger: HTMLElement | null = null) => {
     if (immersive) {
       exitImmersive();
       return;
@@ -205,8 +210,10 @@ export function mountGameShell(viewport: HTMLElement): () => void {
       return;
     }
 
+    if (trigger) lastEnterTrigger = trigger;
+
     if (!nativeFullscreenSupported) {
-      enterImmersive();
+      enterImmersive(trigger);
       return;
     }
 
@@ -214,18 +221,25 @@ export function mountGameShell(viewport: HTMLElement): () => void {
       const request = viewport.requestFullscreen as (options?: { navigationUI?: string }) => Promise<void>;
       await request.call(viewport, { navigationUI: 'hide' });
     } catch {
-      enterImmersive();
+      enterImmersive(trigger);
     }
   };
 
   const recoverHiddenPauseWhenVisible = () => {
     if (document.visibilityState !== 'visible') return;
     removePauseReason('hidden', 'Game resumed after returning to this tab.');
+    // Restore ambient if the user had it enabled and sound is not muted.
+    if (getAmbient() !== 'none') {
+      try { startAmbient(); } catch { /* */ }
+    }
   };
 
   const onVisibilityChange = () => {
-    if (document.visibilityState === 'hidden') addPauseReason('hidden');
-    else recoverHiddenPauseWhenVisible();
+    if (document.visibilityState === 'hidden') {
+      addPauseReason('hidden');
+      // Stop ambient immediately when multitasking / tab hidden - prevents static continuing in background.
+      try { stopAmbient(); } catch { /* */ }
+    } else recoverHiddenPauseWhenVisible();
   };
 
   const onPlatformModal = (event: Event) => {
@@ -241,7 +255,8 @@ export function mountGameShell(viewport: HTMLElement): () => void {
       announce('Full screen entered. Pause, sound, and exit controls remain available.');
     } else if (!immersive) {
       announce('Full screen exited.');
-      window.setTimeout(() => fullscreenButton?.focus({ preventScroll: true }), 0);
+      const target = lastEnterTrigger || fullscreenButton || playButton;
+      window.setTimeout(() => target?.focus({ preventScroll: true }), 0);
     }
   };
 
@@ -249,6 +264,16 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     if (event.key === 'Escape' && menu === 'open') {
       event.preventDefault();
       setMenu('close');
+      return;
+    }
+    // If a solitaire fan is open, let its own Escape handler close it without exiting Game Mode.
+    if (event.key === 'Escape') {
+      const openFan = document.querySelector('[data-fc="fan"]:not([hidden]), [data-kl="fan"]:not([hidden])');
+      if (openFan) return;
+    }
+    if (event.key === 'Escape' && document.fullscreenElement === viewport) {
+      event.preventDefault();
+      void document.exitFullscreen().catch(() => {});
       return;
     }
     if (event.key === 'Escape' && immersive) {
@@ -259,6 +284,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
 
   const onPageHide = () => {
     exitImmersive(false);
+    try { stopAmbient(); } catch { /* */ }
     if (document.fullscreenElement === viewport) void document.exitFullscreen().catch(() => {});
   };
 
@@ -286,7 +312,10 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     if (!isSoundEnabled()) stopAmbient();
     else if (getAmbient() !== 'none') startAmbient();
   });
-  volumeInput?.addEventListener('input', () => setSoundVolume(Number(volumeInput.value)));
+  volumeInput?.addEventListener('input', () => {
+    setSoundVolume(Number(volumeInput.value));
+    try { updateAmbientVolume(); } catch { /* */ }
+  });
   ambientInput?.addEventListener('change', () => {
     unlockAudio();
     const value = ambientInput.value as 'none' | 'rainfall' | 'cafe' | 'white-noise';
@@ -296,12 +325,12 @@ export function mountGameShell(viewport: HTMLElement): () => void {
   });
   playButton?.addEventListener('click', () => {
     unlockAudio();
-    void requestFullscreen();
+    void requestFullscreen(playButton);
   });
-  fullscreenButton?.addEventListener('click', () => void requestFullscreen());
+  fullscreenButton?.addEventListener('click', () => void requestFullscreen(fullscreenButton));
   focusInMenu?.addEventListener('click', () => {
     setMenu('close');
-    void requestFullscreen();
+    void requestFullscreen(focusInMenu);
   });
   const restartGame = () => {
     if (!controller.restart) return;

@@ -598,3 +598,65 @@ test('captures brand review screens and asset comparisons', async ({ page, baseU
   console.log(`Brand captures written to ${brandCaptures} (${metrics.length} measurements).`);
   expect(metrics.length).toBe(16);
 });
+
+/**
+ * PR #34 evidence: mobile Game Mode screens at the two viewports the live QA
+ * report measured. Captured into the same artifact as the other review shots.
+ */
+test('captures mobile Game Mode screens for solitaire and grid games', async ({ page }) => {
+  test.setTimeout(5 * 60_000);
+  await mkdir(captures, { recursive: true });
+  await denyOptionalServices(page);
+
+  const shot = async (name: string) => {
+    await page.screenshot({ path: join(captures, `${name}.jpg`), type: 'jpeg', quality: 80 });
+  };
+
+  const enterGameMode = async () => {
+    await page.locator('[data-game-play-btn]').click();
+    await expect(page.locator('[data-game-viewport]')).toHaveClass(/is-immersive|is-fullscreen-active/);
+  };
+
+  const sizes = [
+    { label: '320x568', width: 320, height: 568 },
+    { label: '360x800', width: 360, height: 800 },
+  ] as const;
+
+  for (const size of sizes) {
+    await page.setViewportSize({ width: size.width, height: size.height });
+
+    // FreeCell Game Mode, then the in-stage column fan that replaces the tableau.
+    await page.goto('/games/freecell/');
+    await enterGameMode();
+    await shot(`pr34-freecell-game-mode-${size.label}`);
+    await page.locator('[data-fc-col="0"] [data-fc-expand]').click();
+    await expect(page.locator('[data-fc="fan"]')).toBeVisible();
+    await shot(`pr34-freecell-column-fan-${size.label}`);
+    await page.keyboard.press('Escape');
+
+    // Klondike Game Mode, then the settings dialog that overlays the stage.
+    await page.goto('/games/klondike/');
+    await enterGameMode();
+    await shot(`pr34-klondike-game-mode-${size.label}`);
+    await page.locator('[data-game-toolbar="settings"]').click();
+    await expect(page.locator('[data-game-settings-panel]')).toBeVisible();
+    await shot(`pr34-game-mode-settings-${size.label}`);
+    await page.keyboard.press('Escape');
+
+    // Tile Garden Game Mode.
+    await page.goto('/games/tile-garden/');
+    await enterGameMode();
+    await shot(`pr34-tile-garden-game-mode-${size.label}`);
+
+    // Word Search 10x10 Game Mode, then exit with focus restoration.
+    await page.goto('/games/word-search/');
+    await page.locator('[data-ws-size]').selectOption('10');
+    await expect(page.locator('.ws__cell')).toHaveCount(100);
+    await enterGameMode();
+    await shot(`pr34-word-search-10x10-game-mode-${size.label}`);
+    await page.keyboard.press('Escape');
+    await expect(page.locator('[data-game-viewport]')).not.toHaveClass(/is-immersive|is-fullscreen-active/);
+    await expect(page.locator('[data-game-play-btn]')).toBeFocused();
+    await shot(`pr34-game-mode-exit-focus-${size.label}`);
+  }
+});

@@ -1,4 +1,12 @@
 .fc {
+  /* Set by the renderer from measured stage geometry. The defaults keep the
+     board sensible before the first measurement and on desktop, where there
+     is no fixed stage height to fit inside. */
+  --fc-columns: 8;
+  --fc-column-gap: clamp(1px, 0.5vw, 4px);
+  --fc-row-gap: 8px;
+  --fc-card-h: auto;
+  --fc-row-h: auto;
   display: grid;
   gap: clamp(0.35rem, 1.2vw, 0.65rem);
   user-select: none;
@@ -32,19 +40,22 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Never scroll the primary board. The renderer fits the pile inside the stage
+   instead, and a pile that cannot be shown readably opens the detail fan. */
 .fc__board {
   display: grid;
-  gap: clamp(0.35rem, 1.2vw, 0.65rem);
+  gap: var(--fc-row-gap);
   width: 100%;
+  max-height: 100%;
   padding-top: 0.2rem;
-  overflow: visible;
+  overflow: hidden;
   box-sizing: border-box;
 }
 
 .fc__top {
   display: grid;
   grid-template-columns: repeat(8, minmax(0, 1fr));
-  gap: clamp(1px, 0.5vw, 4px);
+  gap: var(--fc-column-gap);
   align-items: start;
   width: 100%;
   box-sizing: border-box;
@@ -61,6 +72,9 @@
   min-width: 0;
   min-height: 0;
   aspect-ratio: 5 / 7;
+  /* On a phone the top row must stay short so the tableau keeps the stage.
+     44px still shows rank and suit clearly. */
+  max-height: 44px;
   cursor: pointer;
   border-radius: clamp(2px, 0.6vw, 5px);
   box-sizing: border-box;
@@ -72,6 +86,7 @@
   min-width: 0;
   min-height: 0;
   aspect-ratio: 5 / 7;
+  max-height: inherit;
   border-radius: clamp(2px, 0.6vw, 5px);
   display: flex;
   flex-direction: column;
@@ -88,6 +103,12 @@
   background: var(--panel, #1a1f1c);
   border: 1px solid var(--line, #2a3530);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.fc__card--back {
+  background: linear-gradient(135deg, #1c2820, #0f1510);
+  border: 1px solid #2a3e30;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
 }
 
 .fc__card--empty {
@@ -110,14 +131,20 @@
 
 .fc__tableau {
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
-  gap: clamp(1px, 0.5vw, 4px);
+  grid-template-columns: repeat(var(--fc-columns), minmax(0, 1fr));
+  grid-auto-rows: var(--fc-row-h);
+  align-content: start;
+  gap: var(--fc-row-gap) var(--fc-column-gap);
   width: 100%;
   box-sizing: border-box;
 }
 
+.fc__tableau[hidden] {
+  display: none;
+}
+
 .fc__column {
-  min-height: clamp(4.5rem, 18vw, 7.5rem);
+  min-height: 0;
   position: relative;
   cursor: pointer;
   width: 100%;
@@ -125,8 +152,91 @@
   box-sizing: border-box;
 }
 
-.fc__column .fc__card + .fc__card {
-  margin-top: clamp(-38px, -9vw, -50px);
+/* The expand control floats over the pile so it never adds a row of height
+   that the measured stage budget has to absorb. */
+.fc__column-head {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.fc__expand {
+  min-width: 28px;
+  min-height: 24px;
+  padding: 0 4px;
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1;
+  background: transparent;
+  border: 1px solid var(--line, #2a3530);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.fc__expand:hover,
+.fc__expand:focus-visible {
+  color: var(--text, #e8f0ec);
+  border-color: var(--fc-accent);
+}
+
+.fc__pile {
+  position: relative;
+  min-height: 0;
+}
+
+/* The pile overlap comes from the renderer as an inline margin-top solved
+   against the measured stage height, so a card is never pushed out of view. */
+.fc__pile .fc__card {
+  height: var(--fc-card-h, auto);
+  aspect-ratio: 5 / 7;
+  max-height: none;
+}
+
+/* In-stage detail fan: replaces the tableau rather than extending the board. */
+.fc__fan {
+  display: grid;
+  gap: 0.4rem;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.fc__fan[hidden] {
+  display: none;
+}
+
+.fc__fan-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.fc__fan-count {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.fc__fan-pager {
+  display: inline-flex;
+  gap: 0.35rem;
+  margin-left: auto;
+}
+
+.fc__fan-cards {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 0;
+}
+
+.fc__fan-cards .fc__card {
+  width: auto;
+  height: var(--fc-card-h, auto);
+  aspect-ratio: 5 / 7;
+  max-height: none;
 }
 
 .fc__overlay {
