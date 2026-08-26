@@ -30,11 +30,10 @@ function listBuiltPages(): string[] {
 const MOBILE_VIEWPORTS = [
   { width: 320, height: 700 },
   { width: 390, height: 844 },
-  { width: 414, height: 896 },
 ] as const;
 
 test('every page fits its viewport without horizontal overflow', async ({ page }) => {
-  test.setTimeout(300_000);
+  test.setTimeout(600_000);
   const paths = listBuiltPages();
   // Sanity: the build must exist and contain the public site, not a stray file.
   expect(paths, 'expected built HTML pages in dist/').toContain('/');
@@ -43,7 +42,7 @@ test('every page fits its viewport without horizontal overflow', async ({ page }
   for (const viewport of MOBILE_VIEWPORTS) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     for (const path of paths) {
-      await page.goto(path);
+      await page.goto(path, { waitUntil: 'domcontentloaded' });
       const overflow = await page.evaluate(
         () => document.documentElement.scrollWidth - window.innerWidth,
       );

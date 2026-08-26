@@ -517,8 +517,9 @@ test.describe('Quiet Setup responsive image selection', () => {
       expect(frame.display, 'setup artwork must be a block box').not.toBe('inline');
       expect(frame.ratio).toBeCloseTo(16 / 9, 1);
       expect(frame.attrRatio).toBeCloseTo(16 / 9, 2);
-      // Decorative: the adjacent heading and description carry the meaning.
-      expect(frame.alt).toBe('');
+      // Visual search: alt should be descriptive for image indexing, not empty.
+      expect(frame.alt, 'setup artwork alt should be descriptive for visual search').toBeTruthy();
+      expect(frame.alt.length).toBeGreaterThan(10);
     }
   });
 });

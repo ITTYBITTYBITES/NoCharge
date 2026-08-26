@@ -45,7 +45,7 @@ test('Memory Match game header uses responsive, intrinsic LCP artwork and social
   await expect(image).toHaveAttribute('height', '720');
   await expect(image).toHaveAttribute('loading', 'eager');
   await expect(image).toHaveAttribute('fetchpriority', 'high');
-  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
+  await expect(page.locator('meta[property="og:image"]').first()).toHaveAttribute(
     'content',
     'https://nocharge.net/game-art/memory-match/social-card.jpg',
   );
@@ -114,7 +114,7 @@ for (const slug of ['word-tile-rush', 'color-flip', 'beacon-lattice']) {
       'src',
       new RegExp(`/game-art/${slug}/cover-landscape.jpg`),
     );
-    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
+    await expect(page.locator('meta[property="og:image"]').first()).toHaveAttribute(
       'content',
       new RegExp(`/game-art/${slug}/social-card.jpg$`),
     );

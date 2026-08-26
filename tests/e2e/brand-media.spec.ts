@@ -194,7 +194,7 @@ test.describe('social metadata, manifest, favicons, and feeds', () => {
   test('game pages keep their specific social cards', async ({ page }) => {
     for (const slug of ['memory-match', 'word-tile-rush', 'color-flip', 'beacon-lattice']) {
       await page.goto(`/games/${slug}/`);
-      await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
+      await expect(page.locator('meta[property="og:image"]').first()).toHaveAttribute(
         'content',
         `https://nocharge.net/game-art/${slug}/social-card.jpg`,
       );

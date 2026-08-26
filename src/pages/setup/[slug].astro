@@ -129,6 +129,17 @@ const schema = [
 
     <div class="setup-prose prose"><Content /></div>
 
+    <script>
+      // Make scrollable tables keyboard accessible for axe: scrollable-region-focusable
+      for (const table of document.querySelectorAll('.setup-prose table')) {
+        if (table.scrollWidth > table.clientWidth) {
+          table.setAttribute('tabindex', '0');
+          table.setAttribute('role', 'region');
+          table.setAttribute('aria-label', 'Data table, scrollable');
+        }
+      }
+    </script>
+
     {
       article.data.hasAffiliateLinks && (
         <section class="paid-links" aria-labelledby="paid-links-heading">
@@ -224,6 +235,48 @@ const schema = [
     color: var(--accent-strong);
     text-decoration: underline;
     text-underline-offset: 3px;
+  }
+
+  .setup-prose :global(table) {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 1rem 0;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+
+  .setup-prose :global(table:focus-visible) {
+    outline: 2px solid var(--accent-strong);
+    outline-offset: 2px;
+  }
+
+  .setup-prose :global(th),
+  .setup-prose :global(td) {
+    border: 1px solid var(--line);
+    padding: 0.5rem 0.6rem;
+    text-align: left;
+    font-size: 0.84rem;
+    white-space: normal;
+    min-width: 8rem;
+  }
+
+  .setup-prose :global(th) {
+    background: var(--panel-2);
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .setup-prose :global(blockquote) {
+    margin: 0;
+    padding: 0.85rem 1rem;
+    border-left: 4px solid var(--accent);
+    background: color-mix(in srgb, var(--accent) 8%, var(--panel-2));
+    border-radius: 0.5rem;
+    color: var(--text);
   }
 
   .paid-links {
