@@ -519,7 +519,7 @@ test.describe('Quiet Setup responsive image selection', () => {
       expect(frame.attrRatio).toBeCloseTo(16 / 9, 2);
       // Visual search: alt should be descriptive for image indexing, not empty.
       expect(frame.alt, 'setup artwork alt should be descriptive for visual search').toBeTruthy();
-      expect(frame.alt.length).toBeGreaterThan(10);
+      expect((frame.alt ?? '').length).toBeGreaterThan(10);
     }
   });
 });
