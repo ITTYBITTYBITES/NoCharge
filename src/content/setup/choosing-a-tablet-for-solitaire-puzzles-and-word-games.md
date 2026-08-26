@@ -41,3 +41,8 @@ Unlike resource-heavy 3D native games, NoCharge's static web games require very 
 
 Before buying new hardware, check if you have an older iPad or Android tablet with an open browser. Because NoCharge requires no app store downloads or accounts, older tablets often make excellent dedicated puzzle boards.
 
+
+
+## Comparative notes
+
+Compare size, weight, material, and connection with other options in the same topic. For example, a compact keyboard saves width but may put keys behind a layer, while a full-size keeps dedicated keys. Check return policy and try existing equipment first.

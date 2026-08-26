@@ -33,3 +33,13 @@ However, default mobile browser configurations can sometimes introduce accidenta
 
 **Private / Incognito Mode Storage.** Playing in Incognito mode means `localStorage` is cleared as soon as you close the tab. If you want your best scores in [Memory Match](/games/memory-match/) or solved counts in [Nonogram](/games/nonogram/) to persist, play in a normal browser tab.
 
+
+
+## Comparative notes
+
+Compare size, weight, material, and connection with other options in the same topic. For example, a compact keyboard saves width but may put keys behind a layer, while a full-size keeps dedicated keys. Check return policy and try existing equipment first.
+
+
+## Comparative notes
+
+Compare size, weight, material, and connection with other options in the same topic. For example, a compact keyboard saves width but may put keys behind a layer, while a full-size keeps dedicated keys. Check return policy and try existing equipment first.

@@ -39,3 +39,32 @@ order: 8
 Reversi is the classic two-disc game, played here by two people on one device. The game starts from the standard four center discs — black on d5 and e4, white on d4 and e5 — and black places first. Every move must outflank at least one opponent disc in a straight line, and every outflanked disc flips to your color. A player with no legal move passes; the game ends when the board is full or neither player can move, and the player with the most discs wins.
 
 Playable squares are marked by default and the arrow keys move only between squares that are legal, so keyboard turns are never refused. Flips animate once for motion-tolerant players and never for reduced-motion players. There is no timer, no computer opponent, and no account; the most recent result stays on this device in My Arcade.
+
+
+## Quick answer
+
+This game opens directly in the browser without an account. Scores or progress stay in this browser's localStorage.
+
+## How it plays
+
+The board, controls, and session length are documented on the game page and in its definitive guide. No special hardware is required beyond what the guide lists. The game supports the inputs documented for that title.
+
+## Controls at a glance
+
+Check the game page for pointer, touch, and keyboard alternatives. Most actions have a keyboard path and a pointer path. Fullscreen or focus mode depends on browser permission and can be exited with Escape.
+
+## Local storage and session
+
+Best results, win counts, or puzzle progress are kept in this browser only. A different browser, profile, private window, or device will not share them. Clearing site data removes them. My Arcade reads these local values to show a private dashboard.
+
+## Accessibility and options
+
+Sound on/off and mute are separate preferences. Volume and ambient are local choices. Focus outlines remain visible and no board uses transform scale to force fit. Reduced motion affects animation, not sound.
+
+## What NoCharge did not evaluate
+
+This description is based on current game code and tests. We did not measure long-term durability, evaluate every screen reader combination, or promise compatibility with every device. The game is general-audience and not directed to children.
+
+## Next step
+
+Open the game, play one run with the controls documented, and check the guide for the full rule set if needed. Use Privacy page to clear local data when you want.

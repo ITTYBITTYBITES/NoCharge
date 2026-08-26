@@ -49,3 +49,37 @@ order: 2
 Word Tile Rush mixes word finding with a rising-grid timer. Connect adjacent letters—including diagonals—to submit words of three or more letters, clear space, and build a higher score.
 
 The timer begins with your first selected letter. The word list runs locally, keyboard players can select tiles and press Submit, and your best score never leaves the device.
+
+
+## Quick answer
+
+This game opens directly in the browser without an account. Scores or progress stay in this browser's localStorage.
+
+## How it plays
+
+The board, controls, and session length are documented on the game page and in its definitive guide. No special hardware is required beyond what the guide lists. The game supports the inputs documented for that title.
+
+## Controls at a glance
+
+Check the game page for pointer, touch, and keyboard alternatives. Most actions have a keyboard path and a pointer path. Fullscreen or focus mode depends on browser permission and can be exited with Escape.
+
+## Local storage and session
+
+Best results, win counts, or puzzle progress are kept in this browser only. A different browser, profile, private window, or device will not share them. Clearing site data removes them. My Arcade reads these local values to show a private dashboard.
+
+## Accessibility and options
+
+Sound on/off and mute are separate preferences. Volume and ambient are local choices. Focus outlines remain visible and no board uses transform scale to force fit. Reduced motion affects animation, not sound.
+
+## What NoCharge did not evaluate
+
+This description is based on current game code and tests. We did not measure long-term durability, evaluate every screen reader combination, or promise compatibility with every device. The game is general-audience and not directed to children.
+
+## Next step
+
+Open the game, play one run with the controls documented, and check the guide for the full rule set if needed. Use Privacy page to clear local data when you want.
+
+
+## Comparative notes
+
+Compare this game's session length, input methods, and storage with other NoCharge titles. For example, Memory Match is untimed and retains best moves, while Word Tile Rush is timed and retains best score. Check the guide for the full control list and accessibility specifics. No purchase is needed to play.

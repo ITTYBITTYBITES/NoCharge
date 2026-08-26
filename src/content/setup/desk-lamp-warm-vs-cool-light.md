@@ -53,3 +53,8 @@ Editorial research into color temperature categories and documented effects on e
 
 As an Amazon Associate I earn from qualifying purchases.
 
+
+
+## Comparative notes
+
+Compare size, weight, material, and connection with other options in the same topic. For example, a compact keyboard saves width but may put keys behind a layer, while a full-size keeps dedicated keys. Check return policy and try existing equipment first.

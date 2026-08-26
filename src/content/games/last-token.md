@@ -39,3 +39,32 @@ order: 9
 Last Token is a small take-away game for two people sharing one device. On your turn, remove one, two, or three tokens from a single pile. The catch is in the name: the player who takes the very last token loses the round.
 
 Rounds are quick. Choose the three-pile 3-4-5 preset, the longer four-pile 1-3-5-7, or the quick two-pile 3-5, and the opening player alternates every round. Every take is a labeled button, so turns work identically with touch, pointer, or keyboard. There is no timer, no computer opponent, and no account; the most recent result stays on this device in My Arcade.
+
+
+## Quick answer
+
+This game opens directly in the browser without an account. Scores or progress stay in this browser's localStorage.
+
+## How it plays
+
+The board, controls, and session length are documented on the game page and in its definitive guide. No special hardware is required beyond what the guide lists. The game supports the inputs documented for that title.
+
+## Controls at a glance
+
+Check the game page for pointer, touch, and keyboard alternatives. Most actions have a keyboard path and a pointer path. Fullscreen or focus mode depends on browser permission and can be exited with Escape.
+
+## Local storage and session
+
+Best results, win counts, or puzzle progress are kept in this browser only. A different browser, profile, private window, or device will not share them. Clearing site data removes them. My Arcade reads these local values to show a private dashboard.
+
+## Accessibility and options
+
+Sound on/off and mute are separate preferences. Volume and ambient are local choices. Focus outlines remain visible and no board uses transform scale to force fit. Reduced motion affects animation, not sound.
+
+## What NoCharge did not evaluate
+
+This description is based on current game code and tests. We did not measure long-term durability, evaluate every screen reader combination, or promise compatibility with every device. The game is general-audience and not directed to children.
+
+## Next step
+
+Open the game, play one run with the controls documented, and check the guide for the full rule set if needed. Use Privacy page to clear local data when you want.

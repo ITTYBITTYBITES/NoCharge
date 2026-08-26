@@ -59,3 +59,8 @@ This article is editorial research comparing category characteristics and observ
 Write down the single task that feels awkward, list two existing alternatives you can test for five minutes, and note what changes. Only browse outward if a clear limitation remains after those checks.
 
 
+
+
+## Comparative notes
+
+Compare size, weight, material, and connection with other options in the same topic. For example, a compact keyboard saves width but may put keys behind a layer, while a full-size keeps dedicated keys. Check return policy and try existing equipment first.

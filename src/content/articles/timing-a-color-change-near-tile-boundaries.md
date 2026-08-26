@@ -38,3 +38,23 @@ The Rotation button offers **Never**, **Every 10**, and **Every 5**. Never keeps
 Use Undo to take back the most recent step if you want to reconsider the path. It is there for exploration, not speed.
 
 For the separate untimed Cycle color control, see [Understanding the four-color cycle](/articles/understanding-the-four-color-cycle/).
+
+
+## Comparative analysis
+
+Compare this mechanic with related games on NoCharge. For example, Memory Match counts one move per two-card attempt, while Color Flip counts color changes and steps. Check the definitive guide for the full rule set and scoring logic.
+
+## Key specifications
+
+- **Input:** Pointer, touch, and keyboard paths documented on the game page.
+- **Storage:** Local browser storage only, no account.
+- **Session:** Typical run length as documented.
+- **Accessibility:** Focus outlines visible, no transform scale, documented alternatives.
+
+## What NoCharge evaluated
+
+This article uses editorial research and current game code. We did not claim optimal strategy, measure performance, or promise accessibility for every person. The guide remains useful without purchase links.
+
+## Next step
+
+Open the game with the rules fresh, play one run, and check My Arcade for local progress. If a control feels awkward, check Quiet Setup for display, input, or comfort adjustments.

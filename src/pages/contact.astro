@@ -1,0 +1,61 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ContactPage',
+    name: 'Contact NoCharge',
+    description: 'Contact NoCharge for support, accessibility reports, privacy questions, or advertising issues.',
+    url: 'https://nocharge.net/contact/',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nocharge.net/' },
+      { '@type': 'ListItem', position: 2, name: 'Contact', item: 'https://nocharge.net/contact/' },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      { '@type': 'Question', name: 'How do I contact NoCharge?', acceptedAnswer: { '@type': 'Answer', text: 'Email hello@nocharge.net. Please do not send passwords or sensitive personal information.' } },
+      { '@type': 'Question', name: 'What should I include in a bug report?', acceptedAnswer: { '@type': 'Answer', text: 'Include the page URL, browser and version, device type, and what happened. Screenshots of the mounted DOM are helpful.' } },
+    ],
+  },
+];
+---
+<BaseLayout title="Contact" description="Contact NoCharge for support, accessibility reports, privacy questions, or advertising issues." path="/contact/" schema={schema}>
+  <div class="contact-page">
+    <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Contact' }]} />
+    <p class="eyebrow">Get in touch</p>
+    <h1 class="page-title">Contact NoCharge</h1>
+    <p class="lede">For broken games, accessibility problems, privacy questions, or problematic ads.</p>
+    <div class="panel contact-card">
+      <h2>Email</h2>
+      <p><a href="mailto:hello@nocharge.net">hello@nocharge.net</a></p>
+      <p>Please do not send passwords or sensitive personal information. For privacy choices, use the footer controls: Analytics choices and Privacy and cookie settings.</p>
+    </div>
+    <section class="contact-links">
+      <h2>Quick links</h2>
+      <ul>
+        <li><a href="/privacy/">Privacy — local storage and data controls</a></li>
+        <li><a href="/terms/">Terms — general-audience, no-account play</a></li>
+        <li><a href="/about/">About — what NoCharge is and is not</a></li>
+        <li><a href="/help/">Help — controls, My Arcade, Pass & Play</a></li>
+        <li><a href="/advertising/">Advertising — how display ads work</a></li>
+      </ul>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .contact-page { max-width: 48rem; margin-inline: auto; display: grid; gap: 1.5rem; }
+  .contact-card { padding: 1.2rem; display: grid; gap: 0.6rem; }
+  .contact-card h2 { font-size: 1.1rem; }
+  .contact-links ul { display: grid; gap: 0.5rem; padding-left: 1.2rem; }
+  .contact-links a { color: var(--accent-strong); text-decoration: underline; }
+</style>

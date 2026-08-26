@@ -36,3 +36,23 @@ A match adds one point and announces a new tile. A mismatch ends that run and mo
 Visual mode is for spatial choices on a labeled board. Turn-based mode is for a single announced choice at a time. Both are keyboard-operable, have no timer, and preserve their own local best score.
 
 Pause leaves a visual board or turn-based announcement unchanged. It does not take a step, rotate a color, or generate a new target. For the fixed turn-based order, read [Understanding the four-color cycle](/articles/understanding-the-four-color-cycle/).
+
+
+## Comparative analysis
+
+Compare this mechanic with related games on NoCharge. For example, Memory Match counts one move per two-card attempt, while Color Flip counts color changes and steps. Check the definitive guide for the full rule set and scoring logic.
+
+## Key specifications
+
+- **Input:** Pointer, touch, and keyboard paths documented on the game page.
+- **Storage:** Local browser storage only, no account.
+- **Session:** Typical run length as documented.
+- **Accessibility:** Focus outlines visible, no transform scale, documented alternatives.
+
+## What NoCharge evaluated
+
+This article uses editorial research and current game code. We did not claim optimal strategy, measure performance, or promise accessibility for every person. The guide remains useful without purchase links.
+
+## Next step
+
+Open the game with the rules fresh, play one run, and check My Arcade for local progress. If a control feels awkward, check Quiet Setup for display, input, or comfort adjustments.

@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: 'Privacy Policy',
+    description: 'NoCharge privacy policy: local storage, optional analytics, advertising, and data controls.',
+    url: 'https://nocharge.net/privacy-policy/',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nocharge.net/' },
+      { '@type': 'ListItem', position: 2, name: 'Privacy Policy', item: 'https://nocharge.net/privacy-policy/' },
+    ],
+  },
+];
+---
+<BaseLayout title="Privacy Policy" description="NoCharge privacy policy: local storage, optional analytics, advertising, and data controls." path="/privacy-policy/" schema={schema} showAds={false}>
+  <div class="policy-page">
+    <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Privacy Policy' }]} />
+    <p class="eyebrow">Policy</p>
+    <h1 class="page-title">Privacy Policy</h1>
+    <p class="lede">This page redirects to the canonical Privacy page.</p>
+    <p>If you are not redirected, <a href="/privacy/">open Privacy</a>.</p>
+  </div>
+  <meta http-equiv="refresh" content="0; url=/privacy/" />
+  <link rel="canonical" href="https://nocharge.net/privacy/" />
+</BaseLayout>
+
+<style>
+  .policy-page { max-width: 42rem; margin-inline: auto; display: grid; gap: 1rem; padding: 1rem 0; }
+</style>

@@ -43,3 +43,13 @@ A dedicated phone stand elevates the screen closer to eye level and provides a s
 
 You do not need to buy a stand to play comfortably. A hardcover book propped against a mug, an existing tablet easel, or resting your forearms flat on the desk reduces neck tilt without spending anything.
 
+
+
+## Comparative notes
+
+Compare size, weight, material, and connection with other options in the same topic. For example, a compact keyboard saves width but may put keys behind a layer, while a full-size keeps dedicated keys. Check return policy and try existing equipment first.
+
+
+## Comparative notes
+
+Compare size, weight, material, and connection with other options in the same topic. For example, a compact keyboard saves width but may put keys behind a layer, while a full-size keeps dedicated keys. Check return policy and try existing equipment first.

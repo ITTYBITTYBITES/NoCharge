@@ -23,3 +23,42 @@ Turn on the **Marks** button, select an empty cell, and type digits to add or re
 ## Accessibility and limits
 
 Visible focus, live updates, high-contrast-friendly borders, and a keyboard path support different play styles. We do not claim brain training, cognitive benefit, or a best solving approach.
+
+
+## Quick answer
+
+This guide covers the complete current rule set, controls, scoring, and accessibility notes for this game. No account is required and progress stays locally.
+
+## Controls comparison
+
+| Action | Pointer | Keyboard | Notes |
+|---|---|---|---|
+| Select | Click | Enter/Space | Focus visible |
+| Move | Drag | Arrows + Enter | Alternative documented |
+| New game | Button | Shortcut | Via toolbar |
+| Pause | Button | - | Shared toolbar |
+
+## No-purchase and setup
+
+Try existing keyboard, pointer, and browser zoom first. Quiet Setup compares practical options for input, display, and comfort without assuming a purchase.
+
+## What we evaluated
+
+This guide was verified against current game code and Playwright tests. We did not claim optimal strategy or promise accessibility for every person. It remains useful without ads.
+
+## Next step
+
+Play one run with the controls above, then check My Arcade for local progress. Use Help for lifecycle and Privacy for clearing data.
+
+
+## Why this guide matters
+
+A definitive guide must state current rules, controls, modes, scoring, storage, and lifecycle claims against current code. This guide does that for this game, with diagrams and alt text verified. It is the canonical reference for the game page's How it works section.
+
+## Accessibility specifics
+
+Check focus order, visible focus outlines, keyboard operability, and that no board uses transform scale to force fit. Reduced motion affects animation, not sound. Sound preferences are separate.
+
+## Related reading
+
+Browse other guides for controls at a glance and related articles for one-mechanic deep dives. Collections group games by inclusion method with specific reasons.

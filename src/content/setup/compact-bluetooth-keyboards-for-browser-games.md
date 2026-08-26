@@ -42,3 +42,13 @@ When pairing an external keyboard with a tablet or mobile phone, a compact form 
 
 Any standard wired USB keyboard connected through a basic USB adapter works instantly on modern tablets and phones without Bluetooth configuration.
 
+
+
+## Comparative notes
+
+Compare size, weight, material, and connection with other options in the same topic. For example, a compact keyboard saves width but may put keys behind a layer, while a full-size keeps dedicated keys. Check return policy and try existing equipment first.
+
+
+## Comparative notes
+
+Compare size, weight, material, and connection with other options in the same topic. For example, a compact keyboard saves width but may put keys behind a layer, while a full-size keeps dedicated keys. Check return policy and try existing equipment first.

@@ -41,3 +41,43 @@ games:
 ---
 
 These games offer a documented keyboard route through current play. “Keyboard-friendly” does not claim completed testing with every keyboard layout or assistive technology; consult the [Accessibility Statement](/accessibility/) for current manual-testing status. Pass the Picture is deliberately excluded because drawing strokes requires a pointer — its color, undo, and restart controls are keyboard-operable, but its core action is not.
+
+
+## Why this collection exists
+
+NoCharge games are designed to open directly without registration. This collection groups titles that share that property so readers can find them without guessing. It is not a ranking and does not imply endorsement of one game over another.
+
+## How we decide inclusion
+
+A game is included when its complete play loop requires no account and any retained result stays in local browser storage. We verify this against current code and against the privacy page that documents local keys. Games that require a server profile are excluded.
+
+## What you will find in the grid
+
+Each card shows genre, typical session length, and a specific reason tied to its rules. For example, Memory Match retains best moves and best time locally, while Pass & Play titles retain only the most recent match result. No single score spans different games.
+
+## No-purchase and setup notes
+
+You already have what you need: a current browser. No special hardware, keyboard, or pointer is required beyond what each game page documents. If a control feels awkward, check its guide for keyboard alternatives, pointer speed, or touch options. Adjusting an existing device often solves the friction without shopping.
+
+## Limitations and next step
+
+Local storage is device-specific. A different browser, private window, or another device will not have the same saves. This collection does not promise accessibility or comfort for every person. Open the Arcade, pick a game with the session length you have, and play one run. My Arcade will show local progress after meaningful play.
+
+## Related reading
+
+- How NoCharge saves scores without an account
+- How NoCharge tests browser games
+- What Quiet Arcade means at NoCharge
+
+
+## How to use this collection
+
+Open the collection page, scan the grid for genre and session length, and open a game that matches the time you have. Each game page documents its controls and links to its definitive guide. No account or purchase is needed.
+
+## Privacy and local data
+
+All games in this collection work without an account and keep results in this browser only. My Arcade shows what this browser already saved. Clearing game data via Privacy removes these local keys without affecting analytics consent.
+
+## Related collections
+
+Browse other curated collections for short breaks, keyboard-friendly play, or untimed modes. Each collection states its inclusion method and explains every member.

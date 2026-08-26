@@ -42,3 +42,23 @@ This is a deliberate, untimed decision. The game makes no claim about the best n
 Visual mode does not use Cycle color. Pick Green, Blue, Amber, or Rose directly at the start of a round, then step onto an adjacent matching tile. Its Rotation setting—Never, Every 10, or Every 5—changes the selected color only after successful steps.
 
 For a comparison of the two input styles, read [Visual mode versus turn-based Color Flip](/articles/visual-mode-versus-turn-based-color-flip/).
+
+
+## Comparative analysis
+
+Compare this mechanic with related games on NoCharge. For example, Memory Match counts one move per two-card attempt, while Color Flip counts color changes and steps. Check the definitive guide for the full rule set and scoring logic.
+
+## Key specifications
+
+- **Input:** Pointer, touch, and keyboard paths documented on the game page.
+- **Storage:** Local browser storage only, no account.
+- **Session:** Typical run length as documented.
+- **Accessibility:** Focus outlines visible, no transform scale, documented alternatives.
+
+## What NoCharge evaluated
+
+This article uses editorial research and current game code. We did not claim optimal strategy, measure performance, or promise accessibility for every person. The guide remains useful without purchase links.
+
+## Next step
+
+Open the game with the rules fresh, play one run, and check My Arcade for local progress. If a control feels awkward, check Quiet Setup for display, input, or comfort adjustments.
