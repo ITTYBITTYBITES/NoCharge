@@ -215,9 +215,13 @@ const schema = [
   .setup-prose {
     display: grid;
     gap: 1rem;
-    /* A comfortable reading measure; the 52rem article column is wider than
-       is comfortable for body copy on a large display. */
     max-width: 42rem;
+    min-width: 0;
+    overflow-wrap: break-word;
+  }
+
+  .setup-article {
+    min-width: 0;
   }
 
   .setup-prose :global(h2) {
@@ -261,7 +265,17 @@ const schema = [
     text-align: left;
     font-size: 0.84rem;
     white-space: normal;
-    min-width: 8rem;
+    min-width: 0;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 30rem) {
+    .setup-prose :global(th),
+    .setup-prose :global(td) {
+      font-size: 0.78rem;
+      padding: 0.4rem;
+    }
   }
 
   .setup-prose :global(th) {

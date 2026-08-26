@@ -205,6 +205,11 @@ p {
 
 .site-main {
   padding: 1.25rem 0 2.5rem;
+  min-width: 0;
+}
+
+.site-main > * {
+  min-width: 0;
 }
 
 .site-footer {

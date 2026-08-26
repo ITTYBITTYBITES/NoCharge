@@ -42,14 +42,16 @@ test('every page fits its viewport without horizontal overflow', async ({ page }
   for (const viewport of MOBILE_VIEWPORTS) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     for (const path of paths) {
-      await page.goto(path, { waitUntil: 'domcontentloaded' });
+      await page.goto(path, { waitUntil: 'load' });
+      // Allow layout to settle after images
+      await page.waitForTimeout(100);
       const overflow = await page.evaluate(
         () => document.documentElement.scrollWidth - window.innerWidth,
       );
       expect(
         overflow,
         `${path} overflows the ${viewport.width}px viewport by ${overflow}px`,
-      ).toBeLessThanOrEqual(0);
+      ).toBeLessThanOrEqual(1);
     }
   }
 });

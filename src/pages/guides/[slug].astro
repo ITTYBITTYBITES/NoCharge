@@ -403,6 +403,11 @@ const schema = [
   .guide-prose {
     max-width: 46rem;
     min-width: 0;
+    overflow-wrap: break-word;
+  }
+
+  .guide-page {
+    min-width: 0;
   }
 
   .guide-prose :global(table) {
@@ -415,6 +420,7 @@ const schema = [
     margin: 1rem 0;
     border: 1px solid var(--line);
     border-radius: var(--radius);
+    table-layout: fixed;
   }
 
   .guide-prose :global(table:focus-visible) {
@@ -428,7 +434,18 @@ const schema = [
     padding: 0.5rem 0.6rem;
     text-align: left;
     font-size: 0.84rem;
-    min-width: 8rem;
+    min-width: 0;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 30rem) {
+    .guide-prose :global(th),
+    .guide-prose :global(td) {
+      min-width: 0;
+      font-size: 0.78rem;
+      padding: 0.4rem;
+    }
   }
 
   .guide-prose :global(th) {
