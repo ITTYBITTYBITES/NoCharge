@@ -1,0 +1,167 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    '@id': 'https://nocharge.net/tools/ambient-mixer/#app',
+    name: 'NoCharge Ambient Mixer — 10 procedural textures',
+    description: 'Free ambient sound mixer with 10 procedural textures: white-noise, rainfall, forest, fireplace, ocean, night, cafe, library, lofi, drone. All Web Audio API, no MP3, stops when tab hidden, respects mute/volume.',
+    url: 'https://nocharge.net/tools/ambient-mixer/',
+    applicationCategory: 'MultimediaApplication',
+    operatingSystem: 'Web, Windows, macOS, Linux, Android, iOS',
+    isAccessibleForFree: true,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    publisher: { '@type': 'Organization', name: 'NoCharge', url: 'https://nocharge.net/' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    '@id': 'https://nocharge.net/tools/ambient-mixer/#faq',
+    mainEntity: [
+      { '@type': 'Question', name: 'Does ambient work offline?', acceptedAnswer: { '@type': 'Answer', text: 'Yes, procedural Web Audio buffers generated locally, no MP3 download, works offline after load. Needs user gesture on iOS Safari to unlock.' } },
+      { '@type': 'Question', name: 'Does ambient stop when multitasking?', acceptedAnswer: { '@type': 'Answer', text: 'Yes, visibilitychange hidden stops ambient immediately to avoid background static. Returning restores if preference not none.' } },
+      { '@type': 'Question', name: 'What is the difference between lofi and drone?', acceptedAnswer: { '@type': 'Answer', text: 'Lofi is generative melody in C pentatonic 52 BPM with reverb via Convolver. Drone is two oscillators C2+G2 detuned pad with 8s swell, ultra calm.' } },
+      { '@type': 'Question', name: 'Can I use ambient with no charge games?', acceptedAnswer: { '@type': 'Answer', text: 'Yes, NoCharge games have ambient select in settings panel. Suggested pairings: Tile Garden→forest, Klondike/FreeCell→fireplace, 2048→ocean, Word Search→library.' } },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nocharge.net/' },
+      { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://nocharge.net/tools/' },
+      { '@type': 'ListItem', position: 3, name: 'Ambient Mixer', item: 'https://nocharge.net/tools/ambient-mixer/' },
+    ],
+  },
+];
+---
+
+<BaseLayout title="Ambient Mixer — 10 procedural textures for no charge games" description="Free ambient mixer: white-noise, rainfall, forest, fireplace, ocean, night crickets, cafe, library, lofi, drone. Procedural Web Audio, no MP3, stops when tab hidden. For no charge games." path="/tools/ambient-mixer/" schema={schema} showAds={false} additionalImages={[{ url: '/setup-art/bias-light-pin-1000x1500.jpg', width:1000, height:1500, alt:'Ambient mixer pin' }]}>
+  <div class="tool-page">
+    <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Tools', href: '/tools/' }, { label: 'Ambient Mixer' }]} />
+    <header>
+      <p class="eyebrow">No charge games — ambient sound, no static</p>
+      <h1>Ambient Mixer — 10 procedural textures</h1>
+      <p class="lede">Free, local, no MP3. 10 quiet textures for NoCharge (No Charge) games with no charge. Stops when you switch tabs, respects mute/volume, works offline.</p>
+    </header>
+
+    <blockquote><p><strong>Bottom line:</strong> Pick white-noise, rainfall, forest, fireplace, ocean, night, cafe, library, lofi (generative melody), or drone pad. All procedural via Web Audio API, loopable, quiet, stops on hidden to avoid background static when multitasking.</p></blockquote>
+
+    <section class="panel mixer-controls" aria-labelledby="mixer-heading">
+      <h2 id="mixer-heading">Choose ambient</h2>
+      <div class="mixer-grid">
+        <label>Ambient <select id="ambient-select">
+          <option value="none">None</option>
+          <option value="white-noise">White noise</option>
+          <option value="rainfall">Rainfall</option>
+          <option value="forest">Forest — birds + rustle</option>
+          <option value="fireplace">Fireplace — crackle</option>
+          <option value="ocean">Ocean — waves</option>
+          <option value="night">Night — crickets</option>
+          <option value="cafe">Cafe — low hum</option>
+          <option value="library">Library — page turns</option>
+          <option value="lofi">Lofi — Quiet Arcade melody</option>
+          <option value="drone">Drone pad — C2+G2</option>
+        </select></label>
+        <label>Volume <input id="volume" type="range" min="0" max="100" value="30" /></label>
+        <button id="play" class="btn">Play ambient</button>
+        <button id="stop" class="btn btn--ghost">Stop</button>
+      </div>
+      <p id="status" aria-live="polite">Status: stopped, no ambient music yet.</p>
+    </section>
+
+    <section class="prose">
+      <h2>Comparison at a glance</h2>
+      <table>
+        <thead><tr><th>Name</th><th>Type</th><th>Generation</th><th>Filter</th><th>Best for</th></tr></thead>
+        <tbody>
+          <tr><td>White-noise</td><td>Noise</td><td>White buffer 3s loop</td><td>Lowpass 1800</td><td>Masking</td></tr>
+          <tr><td>Rainfall</td><td>Wash+drops</td><td>5s + 18 drops/sec sine 1.2-4kHz exp 28</td><td>Bandpass 1700 + highpass 380</td><td>Calm focus</td></tr>
+          <tr><td>Forest</td><td>Brown+chirps</td><td>Brown 0.992 + chirps 2-4kHz 80ms</td><td>Highpass 800 + bandpass 2400</td><td>Tile Garden</td></tr>
+          <tr><td>Fireplace</td><td>Crackle</td><td>White lowpass 600 + 12 crackles/sec</td><td>Lowpass 600 + hum 60Hz</td><td>Klondike/FreeCell</td></tr>
+          <tr><td>Ocean</td><td>Pink swell</td><td>Pink 0.05Hz swell 0.02→0.035</td><td>Bandpass 400</td><td>2048</td></tr>
+          <tr><td>Night</td><td>Crickets</td><td>3.5kHz 120ms + 4.2kHz 90ms every 0.4s</td><td>Highpass 2000</td><td>Word Search</td></tr>
+          <tr><td>Cafe</td><td>Brown+clinks</td><td>Brown + 0.6 clinks/sec 600-900Hz</td><td>Lowpass 950 + peaking 320</td><td>Shared space</td></tr>
+          <tr><td>Library</td><td>Page turns</td><td>Brown + page turn every 6-10s</td><td>Lowpass 700</td><td>Nonogram</td></tr>
+          <tr><td>Lofi</td><td>Musical</td><td>C pentatonic 52 BPM sine/triangle 1.2s</td><td>Lowpass 1100 + Convolver 1.2s</td><td>Memory Match</td></tr>
+          <tr><td>Drone</td><td>Pad</td><td>C2 65.4Hz + G2 98Hz detune ±4c, 8s swell</td><td>Lowpass 600</td><td>Color Flip</td></tr>
+        </tbody>
+      </table>
+
+      <h2>No-purchase checks</h2>
+      <ul>
+        <li>Test existing headphones/speakers at low volume first.</li>
+        <li>Try repositioning lamp and screen before adding sound.</li>
+        <li>Use Quiet Setup audio guides (20 guides) for headphone/speaker tradeoffs.</li>
+      </ul>
+
+      <h2>FAQ — Ambient Mixer</h2>
+      <dl>
+        <dt>Does ambient work offline?</dt><dd>Yes, procedural buffers, no MP3 download, works offline after load.</dd>
+        <dt>Does it stop when multitasking?</dt><dd>Yes, hidden stops immediately, visible restores if pref not none.</dd>
+        <dt>What is lofi vs drone?</dt><dd>Lofi = generative melody pentatonic 52 BPM with reverb. Drone = C2+G2 detuned pad swell.</dd>
+        <dt>Can I use with no charge games?</dt><dd>Yes, games have ambient select in settings. Suggested: Tile Garden→forest, Klondike→fireplace.</dd>
+      </dl>
+
+      <h2>Embed this tool</h2>
+      <pre><code>&lt;iframe src="https://nocharge.net/tools/ambient-mixer/" width="400" height="600" title="Ambient Mixer"&gt;&lt;/iframe&gt;
+&lt;p&gt;Powered by &lt;a href="https://nocharge.net"&gt;NoCharge — No Charge Games&lt;/a&gt;&lt;/p&gt;</code></pre>
+
+      <h2>Next action</h2>
+      <p>Pick forest for Tile Garden or fireplace for solitaire, play 5 min, note focus. Browse <a href="/setup/">Quiet Setup</a> audio (20 guides) and lighting (20 guides) for more.</p>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  import { startAmbient, stopAmbient, getActiveAmbient } from '../../games/shared/audio/ambient';
+  import { unlockAudio, setSoundVolume } from '../../games/shared/audio/play';
+
+  const select = document.getElementById('ambient-select');
+  const vol = document.getElementById('volume');
+  const status = document.getElementById('status');
+  const playBtn = document.getElementById('play');
+  const stopBtn = document.getElementById('stop');
+
+  function updateStatus() {
+    status.textContent = `Status: ${getActiveAmbient()} active, volume ${vol.value}. Procedural Web Audio, no MP3, stops when tab hidden.`;
+  }
+
+  playBtn.addEventListener('click', () => {
+    unlockAudio();
+    setSoundVolume(Number(vol.value));
+    const name = select.value;
+    const result = startAmbient(name);
+    updateStatus();
+  });
+  stopBtn.addEventListener('click', () => {
+    stopAmbient();
+    updateStatus();
+  });
+  vol.addEventListener('input', () => {
+    setSoundVolume(Number(vol.value));
+    import('../../games/shared/audio/ambient').then(m=>m.updateAmbientVolume?.());
+    updateStatus();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      stopAmbient();
+      status.textContent = 'Status: stopped because tab hidden (multitasking fix)';
+    }
+  });
+</script>
+
+<style>
+  .tool-page { max-width: 52rem; margin-inline: auto; display: grid; gap: 1.5rem; min-width: 0; }
+  .mixer-controls { padding: 1.25rem; display: grid; gap: 1rem; }
+  .mixer-grid { display: grid; gap: 0.8rem; grid-template-columns: repeat(auto-fit, minmax(12rem,1fr)); align-items: end; }
+  .mixer-grid label { display: grid; gap: 0.3rem; color: var(--muted); font-size: 0.85rem; }
+  .mixer-grid select, .mixer-grid input { padding: 0.5rem; border-radius: 6px; background: var(--panel-2); border: 1px solid var(--line); }
+  .prose { display: grid; gap: 1rem; max-width: 46rem; }
+  .prose table { width: 100%; display: block; overflow-x: auto; border: 1px solid var(--line); border-collapse: collapse; }
+  .prose th, .prose td { border: 1px solid var(--line); padding: 0.5rem; font-size: 0.84rem; min-width: 0; word-break: break-word; }
+  .prose blockquote { border-left: 4px solid var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--panel-2)); padding: 0.8rem 1rem; border-radius: 6px; }
+</style>

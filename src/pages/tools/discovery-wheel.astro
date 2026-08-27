@@ -1,0 +1,181 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { getCollection } from 'astro:content';
+
+const allGames = (await getCollection('games')).filter(g=>!g.data.draft).sort((a,b)=>a.data.order-b.data.order);
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    '@id': 'https://nocharge.net/tools/discovery-wheel/#app',
+    name: 'NoCharge Game Discovery Wheel',
+    description: 'Free client-side tool: pick time, input, pressure, players to get 1-3 curated NoCharge games with reasons. 17 free browser games with no charge.',
+    url: 'https://nocharge.net/tools/discovery-wheel/',
+    applicationCategory: 'GameApplication',
+    operatingSystem: 'Web',
+    isAccessibleForFree: true,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    publisher: { '@type': 'Organization', name: 'NoCharge', url: 'https://nocharge.net/' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    '@id': 'https://nocharge.net/tools/discovery-wheel/#faq',
+    mainEntity: [
+      { '@type': 'Question', name: 'What game should I play with 2 minutes?', acceptedAnswer: { '@type': 'Answer', text: 'Pick 2 min + untimed + keyboard: Memory Match, Nonogram 5x5, or Tic-Tac-Toe. All free with no charge, no account.' } },
+      { '@type': 'Question', name: 'What is no charge games discovery?', acceptedAnswer: { '@type': 'Answer', text: 'NoCharge is No Charge Games — 17 free browser games with no charge, also searchable as nocharge. This wheel filters by time, input, pressure, and players.' } },
+      { '@type': 'Question', name: 'How does the wheel choose?', acceptedAnswer: { '@type': 'Answer', text: 'It filters the 17-game registry by genre, session, input, and Pass & Play flag, then picks in registry order, not ranking. Each result links to Play and Guide.' } },
+      { '@type': 'Question', name: 'Can I embed this wheel?', acceptedAnswer: { '@type': 'Answer', text: 'Yes, copy iframe code below. It includes attribution backlink to nocharge.net, earning organic backlinks when shared.' } },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nocharge.net/' },
+      { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://nocharge.net/tools/' },
+      { '@type': 'ListItem', position: 3, name: 'Game Discovery Wheel', item: 'https://nocharge.net/tools/discovery-wheel/' },
+    ],
+  },
+];
+---
+
+<BaseLayout title="Game Discovery Wheel — No Charge Games" description="Free tool: pick time, input, pressure, players to get curated NoCharge games. 17 free browser games with no charge, no account. Also searchable as nocharge." path="/tools/discovery-wheel/" schema={schema} showAds={false} additionalImages={[{ url: '/social/nocharge-default.jpg', width: 1200, height: 630, alt: 'NoCharge discovery wheel' }]}>
+  <div class="tool-page">
+    <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Tools', href: '/tools/' }, { label: 'Discovery Wheel' }]} />
+    <header>
+      <p class="eyebrow">No charge games — what should I play?</p>
+      <h1>Game Discovery Wheel — No Charge Games</h1>
+      <p class="lede">17 free browser games with no charge (also "nocharge" one word). Pick your time, input, and mood → get 1-3 curated games with reasons, not rankings.</p>
+    </header>
+
+    <blockquote>
+      <p><strong>Bottom line:</strong> Choose time (2min/5min/15min), input (keyboard/pointer/touch), pressure (timed/untimed), players (solo/Pass & Play). The wheel filters the 17-game registry and shows Play + Guide links within 2 clicks from home.</p>
+    </blockquote>
+
+    <section class="panel tool-controls" aria-labelledby="controls-heading">
+      <h2 id="controls-heading">Pick your filters</h2>
+      <div class="controls-grid">
+        <label>Time <select id="time"><option value="2">2 min</option><option value="5" selected>5 min</option><option value="15">15 min</option></select></label>
+        <label>Input <select id="input"><option value="any" selected>Any</option><option value="keyboard">Keyboard-friendly</option><option value="pointer">Pointer</option><option value="touch">Touch</option></select></label>
+        <label>Pressure <select id="pressure"><option value="any" selected>Any</option><option value="untimed">Untimed / reduced pressure</option><option value="timed">Timed</option></select></label>
+        <label>Players <select id="players"><option value="any" selected>Any</option><option value="solo">Solo</option><option value="passplay">Pass & Play (2 players)</option></select></label>
+        <button id="spin" class="btn">Spin the wheel</button>
+      </div>
+      <div id="results" class="results-grid" aria-live="polite"></div>
+    </section>
+
+    <section class="prose">
+      <h2>How it works</h2>
+      <p>NoCharge has 11 solo games (Memory Match, Word Tile Rush, Color Flip, Beacon Lattice, Klondike, FreeCell, Nonogram, 2048, Tile Garden, Word Search, Mini Sudoku) and 6 Pass & Play (Tic-Tac-Toe, Dots & Boxes, Four in a Row, Reversi, Last Token, Pass the Picture). All are free with no charge, no account, localStorage only.</p>
+      <p>The wheel does not rank. It filters by:</p>
+      <ul>
+        <li><strong>Session:</strong> 2 min = quick, 5 min = standard, 15 min = longer puzzle</li>
+        <li><strong>Input:</strong> keyboard-friendly vs pointer vs touch</li>
+        <li><strong>Pressure:</strong> untimed (Memory Match, Beacon Lattice) vs timed (Word Tile Rush) vs turn-based reduced pressure (Color Flip)</li>
+        <li><strong>Players:</strong> solo vs Pass & Play shared device with handoff screen</li>
+      </ul>
+
+      <h2>Comparison at a glance</h2>
+      <table>
+        <thead><tr><th>Game</th><th>Genre</th><th>Session</th><th>Input</th><th>Why it fits</th></tr></thead>
+        <tbody>
+          <tr><td>Memory Match</td><td>Matching</td><td>2-4 min</td><td>Keyboard+pointer</td><td>Untimed, local best moves</td></tr>
+          <tr><td>Word Tile Rush</td><td>Word</td><td>3-5 min</td><td>Pointer+keyboard</td><td>Timed but pauses when hidden</td></tr>
+          <tr><td>Color Flip</td><td>Strategy</td><td>3-8 min</td><td>Keyboard+pointer</td><td>Visual + turn-based untimed</td></tr>
+          <tr><td>Beacon Lattice</td><td>Logic</td><td>5-15 min</td><td>Keyboard+pointer</td><td>24 puzzles, exact coverage</td></tr>
+          <tr><td>Klondike</td><td>Solitaire</td><td>5-20 min</td><td>Pointer+keyboard</td><td>Draw 1/3, undo, win count local</td></tr>
+          <tr><td>FreeCell</td><td>Solitaire</td><td>5-20 min</td><td>Pointer+keyboard</td><td>All 52 face-up, free cells</td></tr>
+        </tbody>
+      </table>
+
+      <h2>No-purchase checks</h2>
+      <ul>
+        <li>Try existing keyboard/mouse/touch before buying — many games document alternatives.</li>
+        <li>Adjust browser zoom 110% vs larger display — see zoom visualizer tool.</li>
+        <li>Use Game Mode (Play button) to fill viewport with no scroll, toolbar single row.</li>
+      </ul>
+
+      <h2>FAQ — Discovery Wheel</h2>
+      <dl>
+        <dt>What game for 2 minutes?</dt><dd>Memory Match, Nonogram 5×5, Tic-Tac-Toe — all free with no charge, no account, untimed or quick.</dd>
+        <dt>What is no charge games?</dt><dd>NoCharge is No Charge Games — same 17 free games, brand one word nocharge, searchable as no charge games with space via alternateName schema.</dd>
+        <dt>How to embed?</dt><dd>Copy iframe code below, includes attribution backlink to nocharge.net for organic backlinks.</dd>
+      </dl>
+
+      <h2>Embed this tool</h2>
+      <pre><code>&lt;iframe src="https://nocharge.net/tools/discovery-wheel/" width="400" height="600" title="NoCharge Discovery Wheel"&gt;&lt;/iframe&gt;
+&lt;p&gt;Powered by &lt;a href="https://nocharge.net"&gt;NoCharge — No Charge Games&lt;/a&gt;&lt;/p&gt;</code></pre>
+
+      <h2>Next action</h2>
+      <p>Pick 5 min + keyboard-friendly + untimed, spin, play one run, check My Arcade for local progress. Browse <a href="/setup/">Quiet Setup</a> for input and desk guides (20 per topic).</p>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  const games = [
+    { id:'memory-match', title:'Memory Match', genre:'Matching', session:3, input:['keyboard','pointer','touch'], pressure:'untimed', players:'solo', tagline:'Flip cards, find pairs' },
+    { id:'word-tile-rush', title:'Word Tile Rush', genre:'Word', session:4, input:['pointer','keyboard'], pressure:'timed', players:'solo', tagline:'Drag adjacent letters to spell words' },
+    { id:'color-flip', title:'Color Flip', genre:'Strategy', session:6, input:['keyboard','pointer'], pressure:'any', players:'solo', tagline:'Tap to change color, stay on matching tiles' },
+    { id:'beacon-lattice', title:'Beacon Lattice', genre:'Logic', session:10, input:['keyboard','pointer'], pressure:'untimed', players:'solo', tagline:'Place beacons for exact coverage' },
+    { id:'klondike', title:'Klondike Solitaire', genre:'Solitaire', session:12, input:['pointer','keyboard'], pressure:'untimed', players:'solo', tagline:'Classic 7-column solitaire with draw 1/3' },
+    { id:'freecell', title:'FreeCell Solitaire', genre:'Solitaire', session:12, input:['pointer','keyboard'], pressure:'untimed', players:'solo', tagline:'All 52 cards face-up, 4 free cells' },
+    { id:'nonogram', title:'Nonogram', genre:'Logic', session:8, input:['pointer','keyboard'], pressure:'untimed', players:'solo', tagline:'Fill grid from number clues' },
+    { id:'twenty-forty-eight', title:'Twenty Forty-Eight', genre:'Puzzle', session:6, input:['keyboard','pointer','touch'], pressure:'untimed', players:'solo', tagline:'Merge tiles to reach 2048' },
+    { id:'tile-garden', title:'Tile Garden', genre:'Puzzle', session:7, input:['pointer','keyboard'], pressure:'untimed', players:'solo', tagline:'Calm 8x8 merge, center bloom win' },
+    { id:'word-search', title:'Word Search', genre:'Word', session:5, input:['pointer','keyboard','touch'], pressure:'untimed', players:'solo', tagline:'Find words 8x8 or 10x10, 8 themes' },
+    { id:'mini-sudoku', title:'Mini Sudoku', genre:'Logic', session:6, input:['pointer','keyboard'], pressure:'untimed', players:'solo', tagline:'6x6 grid with 2x3 blocks' },
+    { id:'tic-tac-toe', title:'Tic-Tac-Toe', genre:'Pass&Play', session:2, input:['pointer','keyboard'], pressure:'untimed', players:'passplay', tagline:'3x3 and 4x4, first to 3 wins' },
+    { id:'dots-and-boxes', title:'Dots & Boxes', genre:'Pass&Play', session:4, input:['pointer','keyboard'], pressure:'untimed', players:'passplay', tagline:'Draw edges, claim boxes' },
+    { id:'four-in-a-row', title:'Four in a Row', genre:'Pass&Play', session:3, input:['pointer','keyboard'], pressure:'untimed', players:'passplay', tagline:'Drop discs with gravity' },
+    { id:'reversi', title:'Reversi', genre:'Pass&Play', session:5, input:['pointer','keyboard'], pressure:'untimed', players:'passplay', tagline:'Outflank and flip discs' },
+    { id:'last-token', title:'Last Token', genre:'Pass&Play', session:3, input:['pointer','keyboard'], pressure:'untimed', players:'passplay', tagline:'Misère take-away 1-3 tokens' },
+    { id:'pass-the-picture', title:'Pass the Picture', genre:'Pass&Play', session:6, input:['pointer'], pressure:'untimed', players:'passplay', tagline:'Draw and pass, 4:3 canvas' },
+  ];
+  const resultsEl = document.getElementById('results');
+  function filterGames() {
+    const time = document.getElementById('time').value;
+    const input = document.getElementById('input').value;
+    const pressure = document.getElementById('pressure').value;
+    const players = document.getElementById('players').value;
+    let filtered = games.filter(g=>{
+      if (players!=='any' && g.players!==players) return false;
+      if (input!=='any' && !g.input.includes(input)) return false;
+      if (pressure!=='any' && g.pressure!=='any' && g.pressure!==pressure) return false;
+      if (time==='2' && g.session>4) return false;
+      if (time==='5' && g.session>8) return false;
+      return true;
+    });
+    if (filtered.length===0) filtered = games.slice(0,3);
+    const picked = filtered.slice(0,3);
+    resultsEl.innerHTML = picked.map(g=>`
+      <article class="panel result-card">
+        <h3>${g.title}</h3>
+        <p>${g.genre} · ${g.session} min · ${g.players}</p>
+        <p>${g.tagline}</p>
+        <p><a href="/games/${g.id}/">Play ${g.title}</a> · <a href="/guides/${g.id}/">Guide</a></p>
+      </article>
+    `).join('');
+  }
+  document.getElementById('spin').addEventListener('click', filterGames);
+  filterGames();
+</script>
+
+<style>
+  .tool-page { max-width: 52rem; margin-inline: auto; display: grid; gap: 1.5rem; min-width: 0; }
+  .tool-controls { padding: 1.25rem; display: grid; gap: 1rem; }
+  .controls-grid { display: grid; gap: 0.8rem; grid-template-columns: repeat(auto-fit, minmax(10rem,1fr)); align-items: end; }
+  .controls-grid label { display: grid; gap: 0.3rem; color: var(--muted); font-size: 0.85rem; }
+  .controls-grid select { padding: 0.5rem; border-radius: 6px; background: var(--panel-2); border: 1px solid var(--line); }
+  .results-grid { display: grid; gap: 0.8rem; grid-template-columns: repeat(auto-fit, minmax(14rem,1fr)); }
+  .result-card { padding: 1rem; display: grid; gap: 0.4rem; }
+  .result-card h3 { font-size: 1.05rem; }
+  .result-card p { color: var(--muted); font-size: 0.85rem; }
+  .prose { display: grid; gap: 1rem; max-width: 46rem; }
+  .prose table { width: 100%; display: block; overflow-x: auto; border: 1px solid var(--line); border-collapse: collapse; }
+  .prose th, .prose td { border: 1px solid var(--line); padding: 0.5rem; font-size: 0.84rem; min-width: 0; word-break: break-word; }
+  .prose blockquote { border-left: 4px solid var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--panel-2)); padding: 0.8rem 1rem; border-radius: 6px; }
+</style>

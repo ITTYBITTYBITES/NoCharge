@@ -1,0 +1,74 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'NoCharge Tools',
+    description: 'Free, client-side tools for browser games: discovery wheel, ambient mixer, and zoom visualizer. No account, no tracking, runs locally.',
+    url: 'https://nocharge.net/tools/',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nocharge.net/' },
+      { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://nocharge.net/tools/' },
+    ],
+  },
+];
+---
+
+<BaseLayout title="Tools — Free browser game utilities" description="Free client-side tools for NoCharge: game discovery wheel, ambient sound mixer with 10 procedural textures, and monitor zoom vs distance visualizer. No account, runs locally." path="/tools/" schema={schema} showAds={false}>
+  <div class="tools-page">
+    <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Tools' }]} />
+    <header>
+      <p class="eyebrow">No charge tools — local only</p>
+      <h1 class="page-title">Free tools for quiet play</h1>
+      <p class="lede">Client-side utilities that run in this browser only. No account, no upload, no tracking. Built for NoCharge games but useful without buying anything.</p>
+    </header>
+
+    <section class="tool-grid">
+      <article class="panel tool-card">
+        <h2><a href="/tools/discovery-wheel/">Game Discovery Wheel</a></h2>
+        <p>Pick time, input, pressure, players → get 1-3 curated games with reasons. 17 games, no ranking, registry order.</p>
+        <p><strong>Use for:</strong> "What game should I play with 3 minutes?"</p>
+      </article>
+      <article class="panel tool-card">
+        <h2><a href="/tools/ambient-mixer/">Ambient Mixer — 10 procedural textures</a></h2>
+        <p>Mix white-noise, rainfall, forest, fireplace, ocean, night, cafe, library, lofi, drone. All procedural Web Audio, no MP3, stops when tab hidden.</p>
+        <p><strong>Use for:</strong> "white noise generator, rain sounds, cafe ambience" — ad-free.</p>
+      </article>
+      <article class="panel tool-card">
+        <h2><a href="/tools/zoom-visualizer/">Monitor Zoom vs Distance Visualizer</a></h2>
+        <p>See how 320px, 390px, 200% and 400% zoom map to 1280×1024 reference. Adjust height, distance, and browser zoom before buying.</p>
+        <p><strong>Use for:</strong> Accessibility and low-noise desk setup.</p>
+      </article>
+    </section>
+
+    <section class="panel tools-faq" id="faq">
+      <h2>FAQ — Tools</h2>
+      <dl>
+        <dt>Do tools need an account?</dt><dd>No. All run locally via vanilla JS and Web Audio API, no upload.</dd>
+        <dt>Do tools work offline?</dt><dd>Yes, after page load. Ambient needs user gesture on iOS Safari to unlock AudioContext.</dd>
+        <dt>How do tools help with no charge games search?</dt><dd>Tools are SEO landing pages with 500+ words, tables, and FAQPage schema that link to 17 games and 140 setup guides within 2 clicks, helping rank for both "nocharge" and "no charge games".</dd>
+        <dt>Can I embed a tool?</dt><dd>Yes, each tool has an Embed section with iframe code including attribution backlink to nocharge.net, earning organic backlinks.</dd>
+      </dl>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .tools-page { display: grid; gap: 2rem; max-width: 52rem; margin-inline: auto; min-width: 0; }
+  .tool-grid { display: grid; gap: 1rem; }
+  .tool-card { padding: 1.25rem; display: grid; gap: 0.5rem; }
+  .tool-card h2 a { color: var(--accent-strong); text-decoration: underline; }
+  .tool-card p { color: var(--muted); }
+  .tools-faq { padding: 1.25rem; display: grid; gap: 1rem; }
+  .tools-faq dl { display: grid; gap: 0.6rem; }
+  .tools-faq dt { color: var(--text); font-weight: 700; }
+  .tools-faq dd { color: var(--muted); margin: 0; }
+  @media (min-width: 48rem) { .tool-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+</style>
