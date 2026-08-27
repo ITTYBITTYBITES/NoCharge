@@ -383,7 +383,7 @@ test('trust pages publish one H1, canonical metadata, footer links, and public r
 test('publishes the article index and game-specific routes with links, breadcrumbs, and Article structured data', async ({ page, request }) => {
   await denyOptionalServices(page);
   await page.goto('/articles/');
-  await expect(page.locator('.articles-grid .article-card')).toHaveCount(25);
+  await expect(page.locator('.articles-grid .article-card')).toHaveCount(26);
 
   for (const slug of articleSlugs) {
     const path = `/articles/${slug}/`;
