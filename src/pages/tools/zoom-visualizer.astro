@@ -149,8 +149,9 @@ const schema = [
   .tool-page { max-width: 52rem; margin-inline: auto; display: grid; gap: 1.5rem; min-width: 0; }
   .tool-controls { padding: 1.25rem; display: grid; gap: 1rem; }
   .controls-grid { display: grid; gap: 0.8rem; grid-template-columns: repeat(auto-fit, minmax(min(10rem, 100%), 1fr)); align-items: end; }
+  .controls-grid > * { min-width: 0; max-width: 100%; }
   .controls-grid label { display: grid; gap: 0.3rem; color: var(--muted); font-size: 0.85rem; }
-  .controls-grid input, .controls-grid select { min-height: 44px; padding: 0.5rem; border-radius: 6px; color: var(--text); background: var(--panel-2); border: 1px solid var(--line); }
+  .controls-grid input, .controls-grid select { width: 100%; min-width: 0; max-width: 100%; min-height: 44px; padding: 0.5rem; border-radius: 6px; color: var(--text); background: var(--panel-2); border: 1px solid var(--line); }
   .preview-track { width: 100%; min-height: 6rem; border: 1px solid var(--line); border-radius: 8px; background: var(--panel-2); }
   .preview-box { display: grid; place-items: center; min-height: 6rem; padding: 0.75rem; border-right: 2px solid var(--accent); border-radius: 8px; color: var(--muted); background: color-mix(in srgb, var(--accent) 8%, var(--panel-2)); text-align: center; }
   .prose { display: grid; gap: 1rem; max-width: 46rem; min-width: 0; }

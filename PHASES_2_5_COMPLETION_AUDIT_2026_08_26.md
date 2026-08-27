@@ -144,7 +144,7 @@ The integration pass repaired the reproducible defects, updated source-of-truth 
 | Setup/general feeds | 210 + 12 items pass |
 | Brand and social metadata | 298 pages pass |
 | Playwright collection | 481 tests in 34 files |
-| Full Chrome execution | Fourth run: 473 passed, 7 skipped, 1 failed. The remaining narrow overflow was repaired; final rerun pending. Local browser download failed with CDN `ECONNRESET`. |
+| Full Chrome execution | Fifth run: 473 passed, 7 skipped, 1 failed. The remaining 320px form-control overflow was repaired; final rerun pending. Local browser download failed with CDN `ECONNRESET`. |
 
 ## Browser regression follow-up
 
@@ -157,7 +157,7 @@ The second unskipped Chrome run completed 465 tests and identified eight integra
 
 The count and alt assertions now match the published collections, article prose tables have a bounded keyboard-scrollable region, and setup-card geometry is collected in one browser evaluation rather than thousands of repeated queries. That reduced the next full run from 20.0 to 9.6 minutes and cleared all six geometry cases.
 
-The third run passed 472 tests and left two narrow findings: the new collection table needed the same bounded mobile table treatment, and one updated alt-text assertion used a different word order from the rendered title. Both were fixed. The fourth run passed 473 tests and isolated one final overflow: long iframe sample code on the Ambient Mixer preserved an intrinsic preformatted width at 320 CSS pixels. Global prose code blocks now wrap long embed lines within their content column. The final full run remains the gate.
+The third run passed 472 tests and left two narrow findings: the new collection table needed the same bounded mobile table treatment, and one updated alt-text assertion used a different word order from the rendered title. Both were fixed. The fourth run passed 473 tests and isolated one final overflow: long iframe sample code on the Ambient Mixer preserved an intrinsic preformatted width at 320 CSS pixels. Global prose code blocks now wrap long embed lines within their content column. The fifth run reduced that overflow from 856px to 28px and identified the remaining intrinsic width on the Ambient select. All Tool form-grid children and controls now explicitly use bounded widths. The final full run remains the gate.
 
 ## Work that remains outside phases 2–5
 

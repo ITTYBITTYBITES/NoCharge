@@ -248,8 +248,9 @@ const schema = [
   .tool-page { max-width: 52rem; margin-inline: auto; display: grid; gap: 1.5rem; min-width: 0; }
   .tool-controls { padding: 1.25rem; display: grid; gap: 1rem; }
   .controls-grid { display: grid; gap: 0.8rem; grid-template-columns: repeat(auto-fit, minmax(min(10rem, 100%), 1fr)); align-items: end; }
+  .controls-grid > * { min-width: 0; max-width: 100%; }
   .controls-grid label { display: grid; gap: 0.3rem; color: var(--muted); font-size: 0.85rem; }
-  .controls-grid select { min-height: 44px; padding: 0.5rem; border-radius: 6px; color: var(--text); background: var(--panel-2); border: 1px solid var(--line); }
+  .controls-grid select { width: 100%; min-width: 0; max-width: 100%; min-height: 44px; padding: 0.5rem; border-radius: 6px; color: var(--text); background: var(--panel-2); border: 1px solid var(--line); }
   .results-grid { display: grid; gap: 0.8rem; grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr)); }
   .results-grid :global(.result-card) { padding: 1rem; display: grid; gap: 0.4rem; }
   .results-grid :global(.result-card h3) { font-size: 1.05rem; }

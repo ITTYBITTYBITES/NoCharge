@@ -208,8 +208,9 @@ const schema = [
   .tool-page { max-width: 52rem; margin-inline: auto; display: grid; gap: 1.5rem; min-width: 0; }
   .mixer-controls { padding: 1.25rem; display: grid; gap: 1rem; }
   .mixer-grid { display: grid; gap: 0.8rem; grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr)); align-items: end; }
+  .mixer-grid > * { min-width: 0; max-width: 100%; }
   .mixer-grid label { display: grid; gap: 0.3rem; color: var(--muted); font-size: 0.85rem; }
-  .mixer-grid select, .mixer-grid input { min-height: 44px; padding: 0.5rem; border-radius: 6px; color: var(--text); background: var(--panel-2); border: 1px solid var(--line); }
+  .mixer-grid select, .mixer-grid input { width: 100%; min-width: 0; max-width: 100%; min-height: 44px; padding: 0.5rem; border-radius: 6px; color: var(--text); background: var(--panel-2); border: 1px solid var(--line); }
   .prose { display: grid; gap: 1rem; max-width: 46rem; min-width: 0; }
   .prose table { width: 100%; display: block; overflow-x: auto; border: 1px solid var(--line); border-collapse: collapse; }
   .prose th, .prose td { border: 1px solid var(--line); padding: 0.5rem; font-size: 0.84rem; min-width: 0; word-break: break-word; }
