@@ -1,8 +1,8 @@
 ---
 title: "Keyboard backlight and evening use"
 description: "A practical editorial guide to keyboard backlight and evening use: what to measure, compare, and test before considering a purchase."
-publishedDate: "2026-08-26"
-reviewedDate: "2026-08-26"
+publishedDate: "2026-08-27"
+reviewedDate: "2026-08-27"
 topic: keyboards
 topics: [keyboards, desk-and-comfort]
 evidenceLevel: editorial-research

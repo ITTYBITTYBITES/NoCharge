@@ -1,8 +1,8 @@
 ---
 title: "Monitor cable length and routing"
 description: "A practical editorial guide to monitor cable length and routing: what to measure, compare, and test before considering a purchase."
-publishedDate: "2026-08-26"
-reviewedDate: "2026-08-26"
+publishedDate: "2026-08-27"
+reviewedDate: "2026-08-27"
 topic: screens-and-stands
 topics: [screens-and-stands, desk-and-comfort]
 evidenceLevel: editorial-research

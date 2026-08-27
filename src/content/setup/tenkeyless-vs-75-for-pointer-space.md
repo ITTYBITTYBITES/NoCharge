@@ -1,8 +1,8 @@
 ---
 title: "Tenkeyless vs 75% for pointer space"
 description: "A practical editorial guide to tenkeyless vs 75% for pointer space: what to measure, compare, and test before considering a purchase."
-publishedDate: "2026-08-26"
-reviewedDate: "2026-08-26"
+publishedDate: "2026-08-27"
+reviewedDate: "2026-08-27"
 topic: keyboards
 topics: [keyboards, desk-and-comfort]
 evidenceLevel: editorial-research

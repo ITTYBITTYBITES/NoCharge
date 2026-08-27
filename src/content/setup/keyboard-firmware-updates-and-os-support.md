@@ -1,8 +1,8 @@
 ---
 title: "Keyboard firmware updates and OS support"
 description: "A practical editorial guide to keyboard firmware updates and os support: what to measure, compare, and test before considering a purchase."
-publishedDate: "2026-08-26"
-reviewedDate: "2026-08-26"
+publishedDate: "2026-08-27"
+reviewedDate: "2026-08-27"
 topic: keyboards
 topics: [keyboards, desk-and-comfort]
 evidenceLevel: editorial-research

@@ -1,8 +1,8 @@
 ---
 title: "Wireless mouse receiver storage"
 description: "A practical editorial guide to wireless mouse receiver storage: what to measure, compare, and test before considering a purchase."
-publishedDate: "2026-08-26"
-reviewedDate: "2026-08-26"
+publishedDate: "2026-08-27"
+reviewedDate: "2026-08-27"
 topic: pointing-devices
 topics: [pointing-devices, desk-and-comfort]
 evidenceLevel: editorial-research

@@ -1,8 +1,8 @@
 ---
 title: "Puzzle book difficulty progression explained"
 description: "A practical editorial guide to puzzle book difficulty progression explained: what to measure, compare, and test before considering a purchase."
-publishedDate: "2026-08-26"
-reviewedDate: "2026-08-26"
+publishedDate: "2026-08-27"
+reviewedDate: "2026-08-27"
 topic: offline-puzzles
 topics: [offline-puzzles, desk-and-comfort]
 evidenceLevel: editorial-research

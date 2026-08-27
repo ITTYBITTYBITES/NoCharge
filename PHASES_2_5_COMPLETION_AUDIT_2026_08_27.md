@@ -1,6 +1,6 @@
 # Phases 2–5 Completion Audit
 
-**Audit date:** 2026-08-26 (America/New_York)  
+**Audit date:** 2026-08-27 (America/New_York)  
 **Audited branch:** `arena/01a040a4-nocharge`  
 **Scope:** Phase 2 FAQ rollout, Phase 3 tools and ambient audio, Phase 4 vertical game artwork, Phase 5 Quiet Setup expansion, and the deferred tests/documentation/CI integration pass.
 
@@ -8,7 +8,7 @@
 
 The phase commits contained the intended feature surfaces, but the work was not complete when this audit began. The latest three main-branch deploy runs had failed in `astro check`, browser tests were conditionally bypassed, validators still expected 30 or 140 setup articles, and several feature claims did not match the implementation.
 
-The integration pass repaired the reproducible defects, updated source-of-truth validation, and restored the normal unskipped browser gate. Local non-browser verification is green. The final GitHub Chrome run is the remaining automated confirmation because the sandbox could not download Chromium from Playwright's CDN.
+The integration pass repaired the reproducible defects, updated source-of-truth validation, and restored the normal unskipped browser gate. Local validation and GitHub's full Chrome, accessibility, and PR-capture gates are green. The successful final run is [GitHub Actions 33071423486](https://github.com/ITTYBITTYBITES/NoCharge/actions/runs/33071423486).
 
 ## Verified current inventory
 
@@ -144,8 +144,8 @@ The integration pass repaired the reproducible defects, updated source-of-truth 
 | Setup/general feeds | 210 + 12 items pass |
 | Brand and social metadata | 298 pages pass |
 | Playwright collection | 481 tests in 34 files |
-| Full Chrome execution | 474 passed, 7 intentionally skipped; the full browser/accessibility gate is green |
-| PR visual-capture gate | 3 passed, 1 failed on the pre-existing 100px mobile-header ceiling; compact-header fix applied and final capture rerun pending |
+| Full Chrome execution | 474 passed, 7 intentionally skipped capture-only cases; green in 13.0 minutes |
+| PR visual-capture gate | 5 passed; screenshots uploaded; green in 4.3 minutes |
 
 ## Browser regression follow-up
 
@@ -160,13 +160,15 @@ The count and alt assertions now match the published collections, article prose 
 
 The third run passed 472 tests and left two narrow findings: the new collection table needed the same bounded mobile table treatment, and one updated alt-text assertion used a different word order from the rendered title. Both were fixed. The fourth run passed 473 tests and isolated one final overflow: long iframe sample code on the Ambient Mixer preserved an intrinsic preformatted width at 320 CSS pixels. Global prose code blocks now wrap long embed lines within their content column. The fifth run reduced that overflow from 856px to 28px and identified the remaining intrinsic width on the Ambient select. All Tool form-grid children and controls now explicitly use bounded widths.
 
-The sixth run passed the complete browser/accessibility gate: 474 passed and 7 intentionally skipped capture-only cases. Its separate PR-capture step passed three capture groups, then found that the four-link mobile header was 130.4px tall at 390px against the established 100px maximum. At 480px and below, the visible wordmark now yields to the still-labeled brand symbol, while the four 44px navigation targets remain on one row. A final capture rerun remains the gate.
+The sixth run passed the complete browser/accessibility gate: 474 passed and 7 intentionally skipped capture-only cases. Its separate PR-capture step passed three capture groups, then found that the four-link mobile header was 130.4px tall at 390px against the established 100px maximum. At 480px and below, the visible wordmark now yields to the still-labeled brand symbol, while the four 44px navigation targets remain on one row.
+
+The final run passed every job: 474 browser/accessibility tests passed with 7 intentional capture-only skips, all 5 PR capture tests passed, and the visual artifacts uploaded successfully. No test or check bypass token was used for that final implementation run.
 
 ## Work that remains outside phases 2–5
 
 These are owner/environment checks, not incomplete implementation in this phase:
 
-1. Confirm the final GitHub Chrome run is green and review its PR screenshots.
+1. Review the uploaded PR screenshots before merge.
 2. Perform physical iOS Safari and Android Chrome testing.
 3. Perform VoiceOver, TalkBack, NVDA, or JAWS manual testing from the maintained checklist.
 4. Apply and verify the documented HTTP response headers at the hosting edge.

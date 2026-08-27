@@ -1,8 +1,8 @@
 ---
 title: "Audio settings for browser games checklist"
 description: "A practical editorial guide to audio settings for browser games checklist: what to measure, compare, and test before considering a purchase."
-publishedDate: "2026-08-26"
-reviewedDate: "2026-08-26"
+publishedDate: "2026-08-27"
+reviewedDate: "2026-08-27"
 topic: audio
 topics: [audio, desk-and-comfort]
 evidenceLevel: editorial-research

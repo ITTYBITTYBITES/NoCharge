@@ -1,8 +1,8 @@
 ---
 title: "Cable clip and desk edge routing"
 description: "A practical editorial guide to cable clip and desk edge routing: what to measure, compare, and test before considering a purchase."
-publishedDate: "2026-08-26"
-reviewedDate: "2026-08-26"
+publishedDate: "2026-08-27"
+reviewedDate: "2026-08-27"
 topic: desk-and-comfort
 topics: [desk-and-comfort]
 evidenceLevel: editorial-research

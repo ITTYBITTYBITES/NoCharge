@@ -1,8 +1,8 @@
 ---
 title: "Bluetooth headphones for multipoint pairing"
 description: "A practical editorial guide to bluetooth headphones for multipoint pairing: what to measure, compare, and test before considering a purchase."
-publishedDate: "2026-08-26"
-reviewedDate: "2026-08-26"
+publishedDate: "2026-08-27"
+reviewedDate: "2026-08-27"
 topic: audio
 topics: [audio, desk-and-comfort]
 evidenceLevel: editorial-research

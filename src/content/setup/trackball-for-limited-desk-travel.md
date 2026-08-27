@@ -1,8 +1,8 @@
 ---
 title: "Trackball for limited desk travel"
 description: "A practical editorial guide to trackball for limited desk travel: what to measure, compare, and test before considering a purchase."
-publishedDate: "2026-08-26"
-reviewedDate: "2026-08-26"
+publishedDate: "2026-08-27"
+reviewedDate: "2026-08-27"
 topic: pointing-devices
 topics: [pointing-devices, desk-and-comfort]
 evidenceLevel: editorial-research

@@ -1,8 +1,8 @@
 ---
 title: "Monitor stand height and tilt range"
 description: "A practical editorial guide to monitor stand height and tilt range: what to measure, compare, and test before considering a purchase."
-publishedDate: "2026-08-26"
-reviewedDate: "2026-08-26"
+publishedDate: "2026-08-27"
+reviewedDate: "2026-08-27"
 topic: screens-and-stands
 topics: [screens-and-stands, desk-and-comfort]
 evidenceLevel: editorial-research

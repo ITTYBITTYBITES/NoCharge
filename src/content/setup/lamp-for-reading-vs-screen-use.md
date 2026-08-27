@@ -1,8 +1,8 @@
 ---
 title: "Lamp for reading vs screen use"
 description: "A practical editorial guide to lamp for reading vs screen use: what to measure, compare, and test before considering a purchase."
-publishedDate: "2026-08-26"
-reviewedDate: "2026-08-26"
+publishedDate: "2026-08-27"
+reviewedDate: "2026-08-27"
 topic: lighting
 topics: [lighting, desk-and-comfort]
 evidenceLevel: editorial-research

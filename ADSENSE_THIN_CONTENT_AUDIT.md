@@ -1,6 +1,6 @@
 # AdSense Approval & Thin Content Audit — NoCharge Astro
 
-> **Superseded snapshot:** This report predates phases 2–5 and retains its historical 140-guide measurements. Current phase completion, content-quality repairs, counts, and validation are recorded in `PHASES_2_5_COMPLETION_AUDIT_2026_08_26.md`.
+> **Superseded snapshot:** This report predates phases 2–5 and retains its historical 140-guide measurements. Current phase completion, content-quality repairs, counts, and validation are recorded in `PHASES_2_5_COMPLETION_AUDIT_2026_08_27.md`.
 
 **Date:** 2026-08-26 | **Scope:** `src/pages`, `src/content`, `src/layouts` | **Total content files:** 216 (17 games, 17 guides, 25 articles, 5 collections, 12 changelog, 140 setup) | **After enrichment:** 12 under 350 (all changelog anchors, not separate URLs)
 

@@ -1,8 +1,8 @@
 ---
 title: "USB lamp for laptop use and power"
 description: "A practical editorial guide to usb lamp for laptop use and power: what to measure, compare, and test before considering a purchase."
-publishedDate: "2026-08-26"
-reviewedDate: "2026-08-26"
+publishedDate: "2026-08-27"
+reviewedDate: "2026-08-27"
 topic: lighting
 topics: [lighting, desk-and-comfort]
 evidenceLevel: editorial-research
