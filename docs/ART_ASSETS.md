@@ -124,17 +124,17 @@ The per-asset hard ceiling is 180 KB; all committed game assets remain below it.
 
 ## Editorial illustration family (2026-08-19)
 
-These original editorial illustrations are concept art, not gameplay captures. Each illustration preserves a 16:9 ratio and has three responsive widths. WebP is primary and JPEG is the fallback. Alt text is empty on all seven because the adjacent title and copy carry the meaning; none adds information that requires a screen-reader description of abstract shapes.
+These original editorial illustrations are concept art, not gameplay captures. Each illustration preserves a 16:9 ratio and has three responsive widths. WebP is primary and JPEG is the fallback. Published placements now use short descriptive alt text so the editorial concept is available to nonvisual users and image discovery. The text names the concept without presenting the illustration as a gameplay screenshot.
 
 | Asset | Routes | 800 WebP / JPEG | 1200 WebP / JPEG | 1600 WebP / JPEG | Alt decision |
 | --- | --- | ---: | ---: | ---: | --- |
-| `quiet-arcade` | Quiet Arcade platform article card/header | 9,978 / 15,765 B | 17,080 / 30,313 B | 24,536 / 46,820 B | `alt=""`; decorative reinforcement of title and description |
-| `local-scores` | Local scores platform article card/header | 8,690 / 19,474 B | 14,064 / 35,091 B | 20,424 / 51,514 B | `alt=""`; adjacent copy explains local browser storage |
-| `more-ways` | More ways to play platform article card/header | 19,376 / 33,911 B | 32,752 / 64,773 B | 49,944 / 101,805 B | `alt=""`; adjacent copy names the input methods |
-| `testing` | Browser-game testing platform article card/header | 15,862 / 28,330 B | 25,850 / 54,884 B | 40,278 / 88,915 B | `alt=""`; adjacent copy explains the checks |
-| `collections` | Collections index | 43,050 / 56,025 B | 68,006 / 99,829 B | 97,612 / 145,650 B | `alt=""`; heading and inclusion-method copy explain discovery |
-| `help` | Help page | 20,368 / 34,715 B | 32,680 / 63,801 B | 47,322 / 97,276 B | `alt=""`; support headings and instructions carry the information |
-| `pass-play` | Pass &amp; Play platform article card/header (2026-08-22) | 36,094 / 10,782 B | 72,344 / 18,132 B | 118,038 / 24,310 B | `alt=""`; the article's handoff and local-storage copy carries the meaning |
+| `quiet-arcade` | Quiet Arcade platform article card/header | 9,978 / 15,765 B | 17,080 / 30,313 B | 24,536 / 46,820 B | Describes the Quiet Arcade editorial concept |
+| `local-scores` | Local scores platform article card/header | 8,690 / 19,474 B | 14,064 / 35,091 B | 20,424 / 51,514 B | Describes the local browser-storage concept |
+| `more-ways` | More ways to play platform article card/header | 19,376 / 33,911 B | 32,752 / 64,773 B | 49,944 / 101,805 B | Describes varied input methods |
+| `testing` | Browser-game testing platform article card/header | 15,862 / 28,330 B | 25,850 / 54,884 B | 40,278 / 88,915 B | Describes browser-game testing |
+| `collections` | Collections index | 43,050 / 56,025 B | 68,006 / 99,829 B | 97,612 / 145,650 B | Describes the curated collection library |
+| `help` | Help page | 20,368 / 34,715 B | 32,680 / 63,801 B | 47,322 / 97,276 B | Describes NoCharge player support |
+| `pass-play` | Pass &amp; Play platform article card/header (2026-08-22) | 36,094 / 10,782 B | 72,344 / 18,132 B | 118,038 / 24,310 B | Describes two people sharing one device |
 
 All published files are under `public/editorial-art/` with names `{asset}-{800|1200|1600}.{webp|jpg}`. The asset validator checks dimensions, ratio, existence, file budgets, and rejects unexpected published editorial files. No rejected variants or temporary PNG review files are committed. Generated with the Arena image-generation tool and resized/encoded with Sharp. Existing mounted-DOM gameplay screenshots were not changed.
 

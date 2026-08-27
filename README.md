@@ -18,12 +18,12 @@ A growing collection of browser games and practical player guides built with **A
 | Analytics    | GA4 (`G-GYQ8TEM6DS`), consent-gated          |
 | Ads          | One manual, responsive Google AdSense banner; consent via Google Privacy & messaging |
 
-## Games (v1)
+## Games
 
-1. **Memory Match** — flip cards, find pairs  
-2. **Word Tile Rush** — drag adjacent tiles to spell words  
-3. **Color Flip** — tap to change color, stay on matching tiles  
-4. **Beacon Lattice** — place beacons for exact coverage
+NoCharge currently publishes 17 games:
+
+- **Solo:** Memory Match, Word Tile Rush, Color Flip, Beacon Lattice, Klondike, FreeCell, Nonogram, Twenty Forty-Eight, Tile Garden, Word Search, and Mini Sudoku.
+- **Pass & Play:** Tic-Tac-Toe, Dots & Boxes, Four in a Row, Reversi, Last Token, and Pass the Picture.
 
 ## Guides and articles
 
@@ -39,8 +39,10 @@ npm run dev
 ```
 
 ```bash
+npm run audit:content
 npm run check
 npm run build
+npm run verify:build
 npm run test:e2e
 npm run test:e2e:matrix
 npm run lighthouse

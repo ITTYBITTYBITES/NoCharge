@@ -38,7 +38,23 @@ const gameImages = game.data.artwork ? [
   `https://nocharge.net${game.data.artwork.coverLandscape}`,
   `https://nocharge.net${game.data.artwork.socialCard}`,
   `https://nocharge.net${game.data.artwork.coverSquareFallback}`,
+  `https://nocharge.net/game-art/${game.id}/pin-1000x1500.jpg`,
 ] : [];
+
+
+const controlSummary = presentation?.controls.length
+  ? presentation.controls.map(({ label, description }) => `${label}: ${description}`).join(' ')
+  : 'Use the controls described on this page and in the complete guide.';
+const faqQuestions = [
+  { q: `How do you play ${game.data.title}?`, a: `${game.data.tagline} ${game.data.description}` },
+  { q: `Is ${game.data.title} free to play without an account?`, a: 'Yes. The game opens without an account, subscription, or cloud profile.' },
+  { q: `What controls does ${game.data.title} support?`, a: controlSummary },
+  { q: `Where does ${game.data.title} keep saved results?`, a: 'Any result or preference the game retains is stored in local storage in this browser. It does not synchronize between devices and can be removed with Clear game data.' },
+  { q: `What happens if I switch tabs while playing ${game.data.title}?`, a: 'The shared game shell pauses while the page is hidden and stops ambient audio. Returning removes the hidden-page pause, but a manual pause remains in place.' },
+  { q: `How do I restart ${game.data.title}?`, a: 'Use New game in the shared toolbar or settings panel. Restarting this game does not clear saved results from other games.' },
+  { q: `Is ${game.data.title} timed?`, a: `The listed session is ${game.data.session}. Check the complete guide for mode-specific timing, scoring, and end conditions.` },
+  { q: `How do sound and ambient controls work in ${game.data.title}?`, a: 'Master mute silences effects and ambient audio. Effects on/off changes game effects only, and the volume control also adjusts an active ambient texture.' },
+];
 
 const gameSchema = [
   {
@@ -53,7 +69,7 @@ const gameSchema = [
     applicationCategory: 'GameApplication',
     operatingSystem: 'Web, Windows, macOS, Linux, Android, iOS',
     gamePlatform: 'Web Browser',
-    playMode: 'SinglePlayer',
+    playMode: passPlay ? 'MultiPlayer' : 'SinglePlayer',
     isAccessibleForFree: true,
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', availability: 'https://schema.org/InStock' },
     publisher: {
@@ -68,6 +84,17 @@ const gameSchema = [
   },
   {
     '@context': 'https://schema.org',
+    '@type': 'ImageObject',
+    '@id': `${canonical}#primaryimage`,
+    contentUrl: `https://nocharge.net/game-art/${game.id}/pin-1000x1500.jpg`,
+    url: `https://nocharge.net/game-art/${game.id}/pin-1000x1500.jpg`,
+    caption: `${game.data.title} vertical game artwork`,
+    representativeOfPage: true,
+    width: 1000,
+    height: 1500,
+  },
+  {
+    '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nocharge.net/' },
@@ -79,48 +106,11 @@ const gameSchema = [
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
     '@id': `${canonical}#faq`,
-    mainEntity: [
-      {
-        '@type': 'Question',
-        name: `How do you play ${game.data.title}?`,
-        acceptedAnswer: { '@type': 'Answer', text: `${game.data.tagline} ${game.data.description} Check controls table for keyboard and pointer options.` },
-      },
-      {
-        '@type': 'Question',
-        name: `Is ${game.data.title} free without an account?`,
-        acceptedAnswer: { '@type': 'Answer', text: 'Yes. NoCharge games are free, no account required, and scores are saved locally in this browser via localStorage.' },
-      },
-      {
-        '@type': 'Question',
-        name: `What are the controls for ${game.data.title}?`,
-        acceptedAnswer: { '@type': 'Answer', text: presentation?.controls?.map(c=>`${c.label}: ${c.description}`).join('. ') || 'Check the controls section on the page for keyboard and pointer options, with visible focus outlines.' },
-      },
-      {
-        '@type': 'Question',
-        name: `Where is progress saved for ${game.data.title}?`,
-        acceptedAnswer: { '@type': 'Answer', text: 'In localStorage on this device, under keys like nocharge:game:* . No cloud sync. Clearing browser storage removes it. See Privacy and My Arcade.' },
-      },
-      {
-        '@type': 'Question',
-        name: `Does ${game.data.title} pause when tab hidden?`,
-        acceptedAnswer: { '@type': 'Answer', text: 'Yes, hidden tab adds pause reason and shows pause overlay. Ambient sound stops when hidden to avoid background static. Returning resumes unless manually paused.' },
-      },
-      {
-        '@type': 'Question',
-        name: `How do I restart ${game.data.title}?`,
-        acceptedAnswer: { '@type': 'Answer', text: 'Use New game in toolbar or settings dialog. Resets board and moves without affecting other games or analytics consent.' },
-      },
-      {
-        '@type': 'Question',
-        name: `Is ${game.data.title} timed or untimed?`,
-        acceptedAnswer: { '@type': 'Answer', text: 'Check genre and session facts on page. Some games are untimed or have turn-based reduced-pressure modes. Guides document timing.' },
-      },
-      {
-        '@type': 'Question',
-        name: `How do I mute ${game.data.title} and ambient?`,
-        acceptedAnswer: { '@type': 'Answer', text: 'Mute sound is persistent master mute for effects and ambient. Sound on/off is effects only. Volume slider updates ambient gain via Web Audio. Device mute can silence all.' },
-      },
-    ],
+    mainEntity: faqQuestions.map(({ q, a }) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
   },
 ];
 ---
@@ -238,17 +228,8 @@ const gameSchema = [
       )
     }
     <section class="panel game-faq" id="faq" aria-labelledby="faq-heading">
-      <h2 id="faq-heading">FAQ — {game.data.title}</h2>
-      <dl>
-        <dt>How do you play {game.data.title}?</dt><dd>{game.data.tagline} {game.data.description}</dd>
-        <dt>Is it free without an account?</dt><dd>Yes, no account, localStorage only, no sync.</dd>
-        <dt>What are the controls?</dt><dd>Check controls table above for pointer and keyboard options with visible focus.</dd>
-        <dt>Where is progress saved?</dt><dd>localStorage keys like nocharge:game:*, see Privacy and My Arcade.</dd>
-        <dt>Does it pause when tab hidden?</dt><dd>Yes, hidden adds pause reason and ambient stops, resumes unless manually paused.</dd>
-        <dt>How to restart?</dt><dd>New game in toolbar or settings dialog resets board.</dd>
-        <dt>Is it timed?</dt><dd>Check genre/session facts, some untimed or turn-based modes.</dd>
-        <dt>How to mute and ambient?</dt><dd>Mute is master persistent, Sound on/off is effects only, volume updates ambient gain.</dd>
-      </dl>
+      <h2 id="faq-heading">Frequently asked questions about {game.data.title}</h2>
+      <dl>{faqQuestions.map(({ q, a }) => <><dt>{q}</dt><dd>{a}</dd></>)}</dl>
     </section>
   </GameShell>
 </BaseLayout>

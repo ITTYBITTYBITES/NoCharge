@@ -31,11 +31,32 @@ const articleImages = [
   `https://nocharge.net/setup-art/${article.data.artwork}-1600.jpg`,
 ];
 
+const topicCriteria: Record<(typeof article.data)['topic'], string> = {
+  keyboards: 'layout, key access, connection, dimensions, sound sources, and operating-system support',
+  'pointing-devices': 'shape, movement space, connection, button behavior, surface compatibility, and cleaning',
+  'screens-and-stands': 'screen dimensions, adjustment range, mounting compatibility, cable reach, stability, and browser zoom',
+  'desk-and-comfort': 'available space, dimensions, stability, surface contact, cable route, and cleaning',
+  'offline-puzzles': 'grid and type size, paper, binding, clue format, answer placement, and difficulty labeling',
+  audio: 'connection, fit, isolation, volume behavior, cable reach, controls, and cleaning',
+  lighting: 'placement, brightness range, color temperature, glare, power, controls, and stability',
+};
 const faqQuestions = [
-  { q: `Do I need to buy ${article.data.title.toLowerCase()}?`, a: `No. Try no-purchase checks first: move, clean, adjust settings, and test existing ${SETUP_TOPIC_LABELS[article.data.topic].toLowerCase()} before browsing. This guide is useful without buying.` },
-  { q: `What spec matters most for ${article.data.title.toLowerCase()}?`, a: `Size, connection type, material, adjustability, cleaning, cable routing, and return policy. Check compatibility with your desk, OS, and existing keyboard or pointing device.` },
-  { q: `Does ${article.data.title.toLowerCase()} work without an account?`, a: `Yes. Quiet Setup guides are editorial research, no account needed. Any Amazon links are optional search starting points with tag nocharge-20 opening in a new tab.` },
-  { q: `How does ${article.data.title.toLowerCase()} help with quiet play?`, a: `It compares observable tradeoffs like sound sources, space, and stability so you can reduce friction during browser game sessions without health or productivity promises.` },
+  {
+    q: `Can I use the advice in ${article.data.title} without buying anything?`,
+    a: 'Yes. Start with the no-purchase checks in the article and test one change at a time with equipment you already have.',
+  },
+  {
+    q: `What should I verify first for ${article.data.title}?`,
+    a: `Check ${topicCriteria[article.data.topic]}. Measure or test the relevant constraint before comparing products.`,
+  },
+  {
+    q: 'Does this Quiet Setup guide require a NoCharge account?',
+    a: 'No. The guide is public and works without an account. Any marked Amazon links are optional comparison starting points, not a requirement to use the advice.',
+  },
+  {
+    q: `How was ${article.data.title} evaluated?`,
+    a: 'Its evidence level is editorial research. NoCharge compares observable category characteristics and states limitations; it does not claim hands-on testing unless the evidence label says so.',
+  },
 ];
 
 const schema = [

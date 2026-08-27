@@ -96,24 +96,24 @@ function richerTone(c: AudioContext, spec: (typeof SOUND_BANK)[SoundName], maste
   });
 }
 
-export function play(name: SoundName, options: { volume?: number } = {}): Promise<number> {
+export async function play(name: SoundName, options: { volume?: number } = {}): Promise<number> {
   if (typeof window !== 'undefined' && Array.isArray((window as Window & { __nochargeSounds?: string[] }).__nochargeSounds)) {
     (window as Window & { __nochargeSounds?: string[] }).__nochargeSounds!.push(name);
   }
-  if (isMuted() || !isSoundEnabled() || !unlocked) return Promise.resolve(0);
+  if (isMuted() || !isSoundEnabled() || !unlocked) return 0;
   const spec = SOUND_BANK[name];
-  if (!spec) return Promise.resolve(0);
+  if (!spec) return 0;
 
   const nowMs = typeof performance !== 'undefined' ? performance.now() : Date.now();
   if (NOISY.has(name)) {
     const last = lastPlayed.get(name) ?? 0;
-    if (nowMs - last < COALESCE_MS) return Promise.resolve(0);
+    if (nowMs - last < COALESCE_MS) return 0;
   }
   lastPlayed.set(name, nowMs);
-  if (inFlight >= MAX_VOICES && NOISY.has(name)) return Promise.resolve(0);
+  if (inFlight >= MAX_VOICES && NOISY.has(name)) return 0;
 
   const c = getContext();
-  if (!c) return Promise.resolve(0);
+  if (!c) return 0;
   inFlight += 1;
   const start = async () => {
     if (c.state === 'suspended') await c.resume().catch(() => {});

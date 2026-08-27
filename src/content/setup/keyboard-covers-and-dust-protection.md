@@ -17,11 +17,6 @@ affiliateLinks:
     purpose: "Compare mechanical keyboard low profile options after identifying task, space, and compatibility needs."
     suitableFor: "Readers who have checked existing equipment and want to compare mechanical keyboard low profile styles."
     limitations: "Search results change, labels vary, and NoCharge did no hands-on testing of listed items."
-  - label: "Browse low-profile keyboards on Amazon (paid link)"
-    url: "https://www.amazon.com/s?k=mechanical+keyboard+low+profile&tag=nocharge-20"
-    purpose: "Compare mechanical keyboard low profile options after identifying task, space, and compatibility needs."
-    suitableFor: "Readers who have checked existing equipment and want to compare mechanical keyboard low profile styles."
-    limitations: "Search results change, labels vary, and NoCharge did no hands-on testing of listed items."
 ---
 
 > **Bottom line:** Practical editorial research on keyboard covers and dust protection — tradeoffs, no-purchase checks, and limits, without health or performance promises. Check layout, switch feel, and return policy before buying; test existing boards first.

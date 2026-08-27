@@ -43,6 +43,21 @@ const guideImages = game.data.artwork ? [
   `https://nocharge.net${game.data.artwork.coverLandscape}`,
   `https://nocharge.net${game.data.artwork.socialCard}`,
 ] : [];
+
+const controlSummary = presentation?.controls.length
+  ? presentation.controls.map(({ label, description }) => `${label}: ${description}`).join(' ')
+  : 'Use the controls described in the guide and on the game page.';
+const faqQuestions = [
+  { q: `How do I play ${game.data.title}?`, a: guide.data.description },
+  { q: `Does ${game.data.title} need an account?`, a: 'No. The game opens without an account, and NoCharge does not provide cloud profiles or synchronized saves.' },
+  { q: `What controls does ${game.data.title} support?`, a: controlSummary },
+  { q: `Where does ${game.data.title} keep saved results?`, a: 'Any result or preference the game retains is stored in local storage in this browser. The exact value differs by game, does not synchronize, and can be removed with Clear game data.' },
+  { q: `What happens if I switch tabs while playing ${game.data.title}?`, a: 'The shared game shell pauses while the page is hidden and stops ambient audio. Returning removes the hidden-page pause, but a manual pause remains in place.' },
+  { q: `How do I restart ${game.data.title}?`, a: 'Use New game in the shared toolbar or settings panel. Restarting this game does not clear saved results from other games.' },
+  { q: `Is ${game.data.title} timed?`, a: `The listed session is ${game.data.session}. Read the timing and scoring sections in this guide because modes within a game can behave differently.` },
+  { q: `How do sound and ambient controls work in ${game.data.title}?`, a: 'Master mute silences effects and ambient audio. Effects on/off changes game effects only, and the volume control also adjusts an active ambient texture.' },
+];
+
 const schema = [
   {
     '@context': 'https://schema.org',
@@ -84,48 +99,11 @@ const schema = [
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
     '@id': `${canonical}#faq`,
-    mainEntity: [
-      {
-        '@type': 'Question',
-        name: `How do I play ${game.data.title}?`,
-        acceptedAnswer: { '@type': 'Answer', text: `${guide.data.description} Open the game and use the documented controls. Check controls table for keyboard alternatives.` },
-      },
-      {
-        '@type': 'Question',
-        name: `Does ${game.data.title} need an account?`,
-        acceptedAnswer: { '@type': 'Answer', text: 'No. All NoCharge games run locally without an account. Progress is saved in this browser only via localStorage.' },
-      },
-      {
-        '@type': 'Question',
-        name: `Can I play ${game.data.title} with keyboard?`,
-        acceptedAnswer: { '@type': 'Answer', text: 'Check the guide controls section. Many games document keyboard alternatives to pointer input, with visible focus outlines and 44px targets.' },
-      },
-      {
-        '@type': 'Question',
-        name: `Where is my progress saved for ${game.data.title}?`,
-        acceptedAnswer: { '@type': 'Answer', text: 'In localStorage on this device, under keys like nocharge:game:* . No cloud sync, no encryption claim. Clearing browser storage removes it. See Privacy.' },
-      },
-      {
-        '@type': 'Question',
-        name: `Does ${game.data.title} pause when I switch tabs?`,
-        acceptedAnswer: { '@type': 'Answer', text: 'Yes, hidden tab adds a pause reason and shows pause overlay. Returning removes hidden reason unless manually paused. Ambient sound stops when hidden.' },
-      },
-      {
-        '@type': 'Question',
-        name: `How do I restart ${game.data.title}?`,
-        acceptedAnswer: { '@type': 'Answer', text: 'Use New game in shared toolbar or in Game settings dialog. It resets board, moves, and state without affecting other games or analytics consent.' },
-      },
-      {
-        '@type': 'Question',
-        name: `Is ${game.data.title} timed?`,
-        acceptedAnswer: { '@type': 'Answer', text: 'Check genre and session facts. Some games are untimed (Memory Match, Beacon Lattice) or have reduced-pressure turn-based modes (Color Flip). Guides document timing.' },
-      },
-      {
-        '@type': 'Question',
-        name: `How do I mute ${game.data.title}?`,
-        acceptedAnswer: { '@type': 'Answer', text: 'Use Mute sound in toolbar for persistent master mute (effects+ambient) or Sound on/off for effects only. Volume slider is independent and updates ambient via Web Audio.' },
-      },
-    ],
+    mainEntity: faqQuestions.map(({ q, a }) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
   },
 ];
 ---
@@ -247,18 +225,9 @@ const schema = [
         <Content />
       </div>
 
-      <section class="panel guide-faq" id="faq" aria-labelledby="faq-heading">
-        <h2 id="faq-heading">FAQ — {game.data.title}</h2>
-        <dl>
-          <dt>How do I play {game.data.title}?</dt><dd>{guide.data.description} Open the game and use documented controls.</dd>
-          <dt>Does it need an account?</dt><dd>No, local-only via localStorage, no sync.</dd>
-          <dt>Can I play with keyboard?</dt><dd>Check controls table, focus outlines visible, 44px targets.</dd>
-          <dt>Where is progress saved?</dt><dd>localStorage keys like nocharge:game:*, see Privacy.</dd>
-          <dt>Does it pause when tab hidden?</dt><dd>Yes, hidden adds pause reason, ambient stops, returns unless manually paused.</dd>
-          <dt>How to restart?</dt><dd>New game in toolbar or settings dialog resets board.</dd>
-          <dt>Is it timed?</dt><dd>Check genre/session facts, some untimed or turn-based modes.</dd>
-          <dt>How to mute?</dt><dd>Mute is master persistent, Sound on/off is effects only, volume independent.</dd>
-        </dl>
+      <section class="panel guide-faq" id="common-questions" aria-labelledby="faq-heading">
+        <h2 id="faq-heading">Frequently asked questions about {game.data.title}</h2>
+        <dl>{faqQuestions.map(({ q, a }) => <><dt>{q}</dt><dd>{a}</dd></>)}</dl>
       </section>
 
       <script>

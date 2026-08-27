@@ -1,11 +1,18 @@
-import { loadPref } from '../storage';
-import { getSoundVolume, isSoundEnabled, isMuted } from './play';
+import { loadPref, savePref } from '../storage';
+import { getSoundVolume, isMuted } from './play';
 
-export type AmbientName = 'none' | 'white-noise' | 'rainfall' | 'forest' | 'fireplace' | 'ocean' | 'night' | 'cafe' | 'library' | 'lofi' | 'drone';
+export const AMBIENT_NAMES = ['none', 'white-noise', 'rainfall', 'forest', 'fireplace', 'ocean', 'night', 'cafe', 'library', 'lofi', 'drone'] as const;
+
+export type AmbientName = (typeof AMBIENT_NAMES)[number];
+
+export function isAmbientName(value: string): value is AmbientName {
+  return (AMBIENT_NAMES as readonly string[]).includes(value);
+}
 
 let audioContext: AudioContext | null = null;
 let source: AudioBufferSourceNode | null = null;
 let gain: GainNode | null = null;
+let gainScale = 1;
 let filter: BiquadFilterNode | null = null;
 let filter2: BiquadFilterNode | null = null;
 let convolver: ConvolverNode | null = null;
@@ -29,19 +36,6 @@ function createWhiteNoiseBuffer(ctx: AudioContext, seconds: number): AudioBuffer
   const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
   const data = buffer.getChannelData(0);
   for (let i = 0; i < length; i++) data[i] = Math.random() * 2 - 1;
-  return buffer;
-}
-
-function createBrownNoiseBuffer(ctx: AudioContext, seconds: number): AudioBuffer {
-  const length = Math.floor(ctx.sampleRate * seconds);
-  const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
-  const data = buffer.getChannelData(0);
-  let last = 0;
-  for (let i = 0; i < length; i++) {
-    const white = Math.random() * 2 - 1;
-    last = last * 0.985 + white * 0.02;
-    data[i] = last * 3.5;
-  }
   return buffer;
 }
 
@@ -239,6 +233,7 @@ export function stopAmbient(): void {
   lofiTimers = [];
   source = null;
   gain = null;
+  gainScale = 1;
   filter = null;
   filter2 = null;
   convolver = null;
@@ -248,8 +243,11 @@ export function stopAmbient(): void {
 
 export function getAmbient(): AmbientName {
   const v = loadPref<string>('ambient-sound', 'none');
-  const allowed: AmbientName[] = ['none','white-noise','rainfall','forest','fireplace','ocean','night','cafe','library','lofi','drone'];
-  return (allowed as string[]).includes(v) ? (v as AmbientName) : 'none';
+  return isAmbientName(v) ? v : 'none';
+}
+
+export function setAmbient(name: AmbientName): void {
+  savePref('ambient-sound', name);
 }
 
 export function getActiveAmbient(): AmbientName {
@@ -278,7 +276,7 @@ function baseGainFor(name: AmbientName): number {
 
 export function startAmbient(name: AmbientName = getAmbient()): AmbientName {
   stopAmbient();
-  if (name === 'none' || isMuted() || !isSoundEnabled()) return 'none';
+  if (name === 'none' || isMuted()) return 'none';
   if (typeof window === 'undefined') return 'none';
   const ctx = ensureContext();
   if (!ctx) return 'none';
@@ -322,7 +320,8 @@ export function startAmbient(name: AmbientName = getAmbient()): AmbientName {
   source.loop = true;
 
   gain = ctx.createGain();
-  gain.gain.value = currentVolume() * baseGainFor(name);
+  gainScale = baseGainFor(name);
+  gain.gain.value = currentVolume() * gainScale;
 
   // Filtering per type
   if (name === 'white-noise') {
@@ -363,9 +362,9 @@ export function startAmbient(name: AmbientName = getAmbient()): AmbientName {
 
 function startMusicalAmbient(name: 'lofi' | 'drone', ctx: AudioContext): AmbientName {
   gain = ctx.createGain();
-  gain.gain.value = currentVolume() * baseGainFor(name);
+  gainScale = 1;
+  gain.gain.value = currentVolume();
 
-  // Reverb
   convolver = ctx.createConvolver();
   convolver.buffer = createReverbImpulse(ctx, 1.2);
   reverbGain = ctx.createGain();
@@ -373,59 +372,81 @@ function startMusicalAmbient(name: 'lofi' | 'drone', ctx: AudioContext): Ambient
 
   gain.connect(ctx.destination);
   convolver.connect(reverbGain);
-  reverbGain.connect(ctx.destination);
+  reverbGain.connect(gain);
+  active = name;
 
   if (name === 'drone') {
-    const osc1 = ctx.createOscillator(); osc1.frequency.value = 65.41; osc1.type = 'sine'; osc1.detune.value = -4;
-    const osc2 = ctx.createOscillator(); osc2.frequency.value = 98.00; osc2.type = 'sine'; osc2.detune.value = 4;
-    const oscGain = ctx.createGain(); oscGain.gain.value = 0;
-    oscGain.gain.linearRampToValueAtTime(currentVolume()*0.028, ctx.currentTime+2);
-    // Slow swell 0.01->0.028 over 8s loop via interval
+    const osc1 = ctx.createOscillator();
+    const osc2 = ctx.createOscillator();
+    osc1.frequency.value = 65.41;
+    osc1.type = 'sine';
+    osc1.detune.value = -4;
+    osc2.frequency.value = 98;
+    osc2.type = 'sine';
+    osc2.detune.value = 4;
+
+    const oscGain = ctx.createGain();
+    oscGain.gain.setValueAtTime(0.001, ctx.currentTime);
+    oscGain.gain.linearRampToValueAtTime(baseGainFor(name), ctx.currentTime + 2);
+    filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 600;
+
     const swell = () => {
       if (active !== 'drone') return;
       try {
-        oscGain.gain.linearRampToValueAtTime(currentVolume()*0.01, ctx.currentTime+4);
-        oscGain.gain.linearRampToValueAtTime(currentVolume()*0.028, ctx.currentTime+8);
-      } catch { /* */ }
-      const t = window.setTimeout(swell, 8000);
-      lofiTimers.push(t);
+        oscGain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 4);
+        oscGain.gain.linearRampToValueAtTime(baseGainFor(name), ctx.currentTime + 8);
+      } catch { /* The context may have closed while the page was leaving. */ }
+      lofiTimers.push(window.setTimeout(swell, 8000));
     };
-    osc1.connect(oscGain); osc2.connect(oscGain);
-    oscGain.connect(gain); oscGain.connect(convolver);
-    osc1.start(); osc2.start();
+
+    osc1.connect(oscGain);
+    osc2.connect(oscGain);
+    oscGain.connect(filter);
+    filter.connect(gain);
+    filter.connect(convolver);
+    osc1.start();
+    osc2.start();
     oscNodes.push(osc1, osc2);
     swell();
   } else {
-    // lofi - generative pentatonic melody
-    const notes = [261.63, 293.66, 329.63, 392.0, 440.0]; // C4,D4,E4,G4,A4
+    const notes = [261.63, 293.66, 329.63, 392, 440]; // C-major pentatonic
+    const beatMs = 60_000 / 52;
     const schedule = () => {
       if (active !== 'lofi') return;
       const osc = ctx.createOscillator();
-      const g = ctx.createGain();
-      osc.frequency.value = notes[Math.floor(Math.random()*notes.length)];
+      const noteGain = ctx.createGain();
+      const noteFilter = ctx.createBiquadFilter();
+      osc.frequency.value = notes[Math.floor(Math.random() * notes.length)];
       osc.type = Math.random() > 0.5 ? 'sine' : 'triangle';
+      noteFilter.type = 'lowpass';
+      noteFilter.frequency.value = 1100;
+
       const now = ctx.currentTime;
-      g.gain.setValueAtTime(0, now);
-      g.gain.linearRampToValueAtTime(currentVolume()*0.025, now+0.15);
-      g.gain.exponentialRampToValueAtTime(0.0001, now+1.2);
-      const filt = ctx.createBiquadFilter(); filt.type='lowpass'; filt.frequency.value=1100;
-      osc.connect(filt); filt.connect(g);
-      g.connect(gain!); g.connect(convolver!);
-      osc.start(now); osc.stop(now+1.25);
+      noteGain.gain.setValueAtTime(0.0001, now);
+      noteGain.gain.linearRampToValueAtTime(baseGainFor(name), now + 0.15);
+      noteGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
+      osc.connect(noteFilter);
+      noteFilter.connect(noteGain);
+      noteGain.connect(gain!);
+      noteGain.connect(convolver!);
+      osc.addEventListener('ended', () => {
+        osc.disconnect();
+        noteFilter.disconnect();
+        noteGain.disconnect();
+        oscNodes = oscNodes.filter((node) => node !== osc);
+      }, { once: true });
+      osc.start(now);
+      osc.stop(now + 1.25);
       oscNodes.push(osc);
-      // Cleanup old osc nodes after they stop to avoid memory leak
-      const cleanupTimer = window.setTimeout(() => {
-        oscNodes = oscNodes.filter(o=>o!==osc);
-      }, 2000);
-      lofiTimers.push(cleanupTimer);
-      const nextDelay = 1500 + Math.random()*1300;
-      const timer = window.setTimeout(schedule, nextDelay);
-      lofiTimers.push(timer);
+
+      const delay = Math.random() > 0.72 ? beatMs * 2 : beatMs;
+      lofiTimers.push(window.setTimeout(schedule, delay));
     };
     schedule();
   }
 
-  active = name;
   return name;
 }
 
@@ -437,14 +458,14 @@ export function duckAmbient(ducked = true): void {
   if (!gain) return;
   const vol = currentVolume();
   if (ducked) {
-    try { gain.gain.linearRampToValueAtTime(0.008, (audioContext?.currentTime ?? 0)+0.12); } catch { gain.gain.value = 0.008; }
+    try { gain.gain.linearRampToValueAtTime(Math.min(0.008, vol * gainScale), (audioContext?.currentTime ?? 0)+0.12); } catch { gain.gain.value = Math.min(0.008, vol * gainScale); }
   } else {
-    try { gain.gain.linearRampToValueAtTime(vol*baseGainFor(active), (audioContext?.currentTime ?? 0)+0.2); } catch { gain.gain.value = vol*baseGainFor(active); }
+    try { gain.gain.linearRampToValueAtTime(vol * gainScale, (audioContext?.currentTime ?? 0)+0.2); } catch { gain.gain.value = vol * gainScale; }
   }
 }
 
 export function updateAmbientVolume(): void {
   if (!gain) return;
   const vol = currentVolume();
-  try { gain.gain.linearRampToValueAtTime(vol*baseGainFor(active), (audioContext?.currentTime ?? 0)+0.08); } catch { gain.gain.value = vol*baseGainFor(active); }
+  try { gain.gain.linearRampToValueAtTime(vol * gainScale, (audioContext?.currentTime ?? 0)+0.08); } catch { gain.gain.value = vol * gainScale; }
 }

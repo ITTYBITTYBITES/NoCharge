@@ -17,11 +17,6 @@ affiliateLinks:
     purpose: "Compare puzzle book variety options after identifying task, space, and compatibility needs."
     suitableFor: "Readers who have checked existing equipment and want to compare puzzle book variety styles."
     limitations: "Search results change, labels vary, and NoCharge did no hands-on testing of listed items."
-  - label: "Browse variety puzzle books on Amazon (paid link)"
-    url: "https://www.amazon.com/s?k=puzzle+book+variety&tag=nocharge-20"
-    purpose: "Compare puzzle book variety options after identifying task, space, and compatibility needs."
-    suitableFor: "Readers who have checked existing equipment and want to compare puzzle book variety styles."
-    limitations: "Search results change, labels vary, and NoCharge did no hands-on testing of listed items."
 ---
 
 > **Bottom line:** Practical editorial research on scaling printed grids for readability — tradeoffs, no-purchase checks, and limits, without health or performance promises. Useful without buying; check existing equipment and state limits before browsing.

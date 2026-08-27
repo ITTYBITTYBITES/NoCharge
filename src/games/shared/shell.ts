@@ -1,5 +1,5 @@
 import { mountGame } from '../registry';
-import { isMuted, toggleMuted, unlockAudio, isSoundEnabled, setSoundEnabled, getSoundVolume, setSoundVolume, getAmbient, startAmbient, stopAmbient, updateAmbientVolume } from './audio';
+import { isMuted, toggleMuted, unlockAudio, isSoundEnabled, setSoundEnabled, getSoundVolume, setSoundVolume, getAmbient, setAmbient, isAmbientName, startAmbient, stopAmbient, updateAmbientVolume } from './audio';
 import {
   addVisibleRecoveryListeners,
   pauseReasonsAfterResumeRequest,
@@ -309,8 +309,6 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     setSoundEnabled(!isSoundEnabled());
     updateMute();
     announce(isSoundEnabled() ? 'Sound enabled.' : 'Sound disabled.');
-    if (!isSoundEnabled()) stopAmbient();
-    else if (getAmbient() !== 'none') startAmbient();
   });
   volumeInput?.addEventListener('input', () => {
     setSoundVolume(Number(volumeInput.value));
@@ -318,7 +316,9 @@ export function mountGameShell(viewport: HTMLElement): () => void {
   });
   ambientInput?.addEventListener('change', () => {
     unlockAudio();
-    const value = ambientInput.value as 'none' | 'rainfall' | 'cafe' | 'white-noise';
+    const value = ambientInput.value;
+    if (!isAmbientName(value)) return;
+    setAmbient(value);
     if (value === 'none') stopAmbient();
     else startAmbient(value);
     updateMute();

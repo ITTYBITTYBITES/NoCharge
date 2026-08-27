@@ -2,13 +2,28 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 
+const faqs = [
+  {
+    q: 'What is an equivalent CSS viewport?',
+    a: 'It is the approximate layout viewport after browser page zoom. For example, a 1,280-pixel-wide viewport at 200% page zoom provides about 640 CSS pixels of layout width.',
+  },
+  {
+    q: 'Is the CSS zoom property the same as browser page zoom?',
+    a: 'No. The CSS zoom property scales an element inside a page but does not reproduce every effect of browser page zoom. Responsive testing should use browser zoom or an equivalent viewport size.',
+  },
+  {
+    q: 'Why is 320 CSS pixels included?',
+    a: 'WCAG reflow evaluation commonly uses 1,280 CSS pixels at 400% zoom, which is equivalent to 320 CSS pixels of width. A page still needs manual checks because a calculator cannot detect clipping or lost controls.',
+  },
+];
+
 const schema = [
   {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
     '@id': 'https://nocharge.net/tools/zoom-visualizer/#app',
-    name: 'Monitor Zoom vs Distance Visualizer',
-    description: 'Free tool showing how 320px, 390px, 200% and 400% zoom map to 1280×1024 reference. For accessibility and no charge games setup.',
+    name: 'Browser Zoom Viewport Calculator',
+    description: 'A free calculator for estimating CSS viewport dimensions after browser page zoom.',
     url: 'https://nocharge.net/tools/zoom-visualizer/',
     applicationCategory: 'UtilitiesApplication',
     operatingSystem: 'Web',
@@ -20,10 +35,11 @@ const schema = [
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
     '@id': 'https://nocharge.net/tools/zoom-visualizer/#faq',
-    mainEntity: [
-      { '@type': 'Question', name: 'What is 200% zoom equivalent viewport?', acceptedAnswer: { '@type': 'Answer', text: '1280×1024 at 200% = 640×512 CSS pixels. At 400% = 320×256, the WCAG 1.4.10 reference. Media queries ignore CSS zoom property, so we test equivalent viewport.' } },
-      { '@type': 'Question', name: 'Does this help with no charge games?', acceptedAnswer: { '@type': 'Answer', text: 'Yes, NoCharge games are tested at 320×568, 360×800, 375×812, 390×844, 412×915 to ensure no horizontal overflow and no internal scrolling in Game Mode.' } },
-    ],
+    mainEntity: faqs.map(({ q, a }) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
   },
   {
     '@context': 'https://schema.org',
@@ -31,99 +47,114 @@ const schema = [
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nocharge.net/' },
       { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://nocharge.net/tools/' },
-      { '@type': 'ListItem', position: 3, name: 'Zoom Visualizer', item: 'https://nocharge.net/tools/zoom-visualizer/' },
+      { '@type': 'ListItem', position: 3, name: 'Zoom Viewport Calculator', item: 'https://nocharge.net/tools/zoom-visualizer/' },
     ],
   },
 ];
 ---
 
-<BaseLayout title="Zoom Visualizer — Monitor zoom vs distance for no charge games" description="Free tool: see 320px, 390px, 200%, 400% zoom as equivalent viewport. For accessibility, quiet setup, and no charge games." path="/tools/zoom-visualizer/" schema={schema} showAds={false}>
+<BaseLayout
+  title="Browser Zoom Viewport Calculator"
+  description="Estimate the CSS viewport available at 100%, 200%, or 400% browser page zoom and use the result as a starting point for responsive testing."
+  path="/tools/zoom-visualizer/"
+  schema={schema}
+  showAds={false}
+>
   <div class="tool-page">
-    <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Tools', href: '/tools/' }, { label: 'Zoom Visualizer' }]} />
+    <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Tools', href: '/tools/' }, { label: 'Zoom Viewport Calculator' }]} />
     <header>
       <p class="eyebrow">Accessibility — zoom and reflow</p>
-      <h1>Monitor Zoom vs Distance Visualizer</h1>
-      <p class="lede">Free tool for NoCharge (No Charge) games. Understand how browser zoom and monitor distance affect 320px, 390px, 200%, 400% reflow without horizontal overflow.</p>
+      <h1>Browser Zoom Viewport Calculator</h1>
+      <p class="lede">Estimate how much CSS layout space remains after browser page zoom. Use the result to choose a test viewport, then inspect the real page for clipping, overlap, and missing controls.</p>
     </header>
 
-    <blockquote><p><strong>Bottom line:</strong> 1280×1024 at 200% = 640×512 CSS px, at 400% = 320×256 (WCAG 1.4.10). CSS zoom property does NOT trigger media queries, so test equivalent viewport. NoCharge games are tested at 320/360/375/390/412 to ensure no overflow.</p></blockquote>
+    <blockquote><p><strong>Bottom line:</strong> Divide each viewport dimension by the zoom factor. A 1,280 × 1,024 viewport at 200% is approximately 640 × 512 CSS pixels; at 400% it is approximately 320 × 256.</p></blockquote>
 
-    <section class="panel tool-controls">
-      <h2>Visualize zoom</h2>
+    <section class="panel tool-controls" aria-labelledby="calculator-heading">
+      <h2 id="calculator-heading">Calculate an equivalent viewport</h2>
       <div class="controls-grid">
-        <label>Screen width <input id="screenW" type="number" value="1280" /></label>
-        <label>Screen height <input id="screenH" type="number" value="1024" /></label>
-        <label>Zoom % <select id="zoom"><option value="100">100%</option><option value="200" selected>200%</option><option value="400">400%</option></select></label>
-        <button id="calc" class="btn">Calculate equivalent</button>
+        <label>Viewport width <input id="screenW" type="number" min="1" max="10000" value="1280" inputmode="numeric" /></label>
+        <label>Viewport height <input id="screenH" type="number" min="1" max="10000" value="1024" inputmode="numeric" /></label>
+        <label>Browser zoom <select id="zoom"><option value="100">100%</option><option value="200" selected>200%</option><option value="400">400%</option></select></label>
+        <button id="calc" class="btn" type="button">Calculate equivalent</button>
       </div>
-      <p id="result">Equivalent: 640×512 CSS px at 200% zoom. No horizontal overflow expected if layout uses min-width 0.</p>
-      <div id="preview" class="preview-box" style="width:100%; height:200px; border:1px solid var(--line); display:grid; place-items:center;">Preview of 640px viewport</div>
+      <p id="result" role="status">Equivalent viewport: 640 × 512 CSS pixels at 200% zoom.</p>
+      <div class="preview-track" aria-hidden="true"><div id="preview" class="preview-box">50% of the original width</div></div>
     </section>
 
     <section class="prose">
-      <h2>Why this matters for no charge games</h2>
-      <p>NoCharge games are designed to fit 320px portrait without scrolling in Game Mode. The toolbar collapses to single row, fan replaces tall piles inside stage. This visualizer helps you understand why we test equivalent viewport, not CSS zoom.</p>
+      <h2>How to use the result</h2>
+      <p>The calculation is a test setup, not a pass result. Resize developer tools to the equivalent width or use real browser page zoom. Then check that text remains readable, controls are operable, focus is visible, and the document does not require two-dimensional scrolling.</p>
 
-      <h2>Table — zoom to CSS pixels</h2>
+      <h2>Common reference points</h2>
       <table>
-        <thead><tr><th>Screen</th><th>Zoom</th><th>Equivalent CSS px</th><th>WCAG reference</th></tr></thead>
+        <thead><tr><th>Starting viewport</th><th>Page zoom</th><th>Approximate CSS viewport</th><th>Useful check</th></tr></thead>
         <tbody>
-          <tr><td>1280×1024</td><td>100%</td><td>1280×1024</td><td>Desktop</td></tr>
-          <tr><td>1280×1024</td><td>200%</td><td>640×512</td><td>Zoom</td></tr>
-          <tr><td>1280×1024</td><td>400%</td><td>320×256</td><td>WCAG 1.4.10 reflow</td></tr>
-          <tr><td>390×844 (iPhone)</td><td>100%</td><td>390×844</td><td>Mobile no-scroll</td></tr>
-          <tr><td>320×568 (SE)</td><td>100%</td><td>320×568</td><td>Smallest tested</td></tr>
+          <tr><td>1,280 × 1,024</td><td>100%</td><td>1,280 × 1,024</td><td>Desktop baseline</td></tr>
+          <tr><td>1,280 × 1,024</td><td>200%</td><td>640 × 512</td><td>Large text and responsive wrapping</td></tr>
+          <tr><td>1,280 × 1,024</td><td>400%</td><td>320 × 256</td><td>WCAG reflow reference width</td></tr>
+          <tr><td>390 × 844</td><td>100%</td><td>390 × 844</td><td>Common narrow mobile layout</td></tr>
+          <tr><td>320 × 568</td><td>100%</td><td>320 × 568</td><td>Small mobile layout</td></tr>
         </tbody>
       </table>
 
-      <h2>No-purchase checks</h2>
+      <h2>Checks the calculator cannot perform</h2>
       <ul>
-        <li>Try browser zoom 110% vs larger display — see guide Browser zoom versus a larger display.</li>
-        <li>Move monitor 5cm further, adjust height to eye level.</li>
-        <li>Check Quiet Setup screens-and-stands (20 guides) for stand stability and VESA.</li>
+        <li>It cannot detect horizontal overflow, clipped dialogs, sticky controls, or content hidden by a game canvas.</li>
+        <li>It does not account for browser chrome, operating-system scaling, or a mobile browser’s dynamic address bar.</li>
+        <li>It does not replace keyboard, screen-reader, orientation, or physical-device testing.</li>
       </ul>
 
-      <h2>FAQ — Zoom Visualizer</h2>
+      <h2 id="faq">FAQ — Zoom Viewport Calculator</h2>
       <dl>
-        <dt>What is equivalent viewport?</dt><dd>Screen size divided by zoom factor, e.g., 1280/2=640. Media queries use this, not CSS zoom property.</dd>
-        <dt>Does it help with no charge games?</dt><dd>Yes, games tested at 320/360/375/390/412 to ensure no horizontal overflow and no internal scrolling.</dd>
+        {faqs.map(({ q, a }) => <><dt>{q}</dt><dd>{a}</dd></>)}
       </dl>
 
-      <h2>Embed</h2>
-      <pre><code>&lt;iframe src="https://nocharge.net/tools/zoom-visualizer/" width="400" height="500"&gt;&lt;/iframe&gt;
-&lt;p&gt;Powered by &lt;a href="https://nocharge.net"&gt;NoCharge&lt;/a&gt;&lt;/p&gt;</code></pre>
+      <h2>Embed this tool</h2>
+      <pre><code>&lt;iframe src="https://nocharge.net/tools/zoom-visualizer/" width="400" height="560" title="Browser zoom viewport calculator"&gt;&lt;/iframe&gt;
+&lt;p&gt;Source: &lt;a href="https://nocharge.net/tools/zoom-visualizer/"&gt;NoCharge zoom viewport calculator&lt;/a&gt;&lt;/p&gt;</code></pre>
 
       <h2>Next action</h2>
-      <p>Set viewport to 320×700, open /setup/ and /games/memory-match/, check documentElement.scrollWidth ≤ clientWidth. Browse Quiet Setup for more.</p>
+      <p>Calculate the target size, test the actual page at that width, and record any control or content that becomes clipped or unreachable.</p>
     </section>
   </div>
 </BaseLayout>
 
 <script>
-  const result = document.getElementById('result');
-  const preview = document.getElementById('preview');
-  function calc() {
-    const sw = Number(document.getElementById('screenW').value) || 1280;
-    const sh = Number(document.getElementById('screenH').value) || 1024;
-    const zoom = Number(document.getElementById('zoom').value) || 200;
-    const ew = Math.round(sw * 100 / zoom);
-    const eh = Math.round(sh * 100 / zoom);
-    result.textContent = `Equivalent: ${ew}×${eh} CSS px at ${zoom}% zoom. No horizontal overflow expected if layout uses min-width 0 and max-width 100%.`;
-    preview.textContent = `Preview of ${ew}px viewport — ${ew<=400 ? 'single column' : 'multi column'} expected`;
-    preview.style.width = `${Math.min(100, ew/4)}%`;
+  const result = document.querySelector<HTMLElement>('#result');
+  const preview = document.querySelector<HTMLElement>('#preview');
+  const widthInput = document.querySelector<HTMLInputElement>('#screenW');
+  const heightInput = document.querySelector<HTMLInputElement>('#screenH');
+  const zoomInput = document.querySelector<HTMLSelectElement>('#zoom');
+  const calculateButton = document.querySelector<HTMLButtonElement>('#calc');
+
+  if (result && preview && widthInput && heightInput && zoomInput && calculateButton) {
+    const calculate = () => {
+      const width = Math.max(1, Number(widthInput.value) || 1280);
+      const height = Math.max(1, Number(heightInput.value) || 1024);
+      const zoom = Math.max(1, Number(zoomInput.value) || 200);
+      const equivalentWidth = Math.round(width * 100 / zoom);
+      const equivalentHeight = Math.round(height * 100 / zoom);
+      const widthPercent = Math.max(10, Math.min(100, 10000 / zoom));
+      result.textContent = `Equivalent viewport: ${equivalentWidth} × ${equivalentHeight} CSS pixels at ${zoom}% zoom.`;
+      preview.textContent = `${Math.round(widthPercent)}% of the original width`;
+      preview.style.width = `${widthPercent}%`;
+    };
+    calculateButton.addEventListener('click', calculate);
+    calculate();
   }
-  document.getElementById('calc').addEventListener('click', calc);
-  calc();
 </script>
 
 <style>
   .tool-page { max-width: 52rem; margin-inline: auto; display: grid; gap: 1.5rem; min-width: 0; }
   .tool-controls { padding: 1.25rem; display: grid; gap: 1rem; }
-  .controls-grid { display: grid; gap: 0.8rem; grid-template-columns: repeat(auto-fit, minmax(10rem,1fr)); align-items: end; }
+  .controls-grid { display: grid; gap: 0.8rem; grid-template-columns: repeat(auto-fit, minmax(min(10rem, 100%), 1fr)); align-items: end; }
+  .controls-grid > * { min-width: 0; max-width: 100%; }
   .controls-grid label { display: grid; gap: 0.3rem; color: var(--muted); font-size: 0.85rem; }
-  .controls-grid input, .controls-grid select { padding: 0.5rem; border-radius: 6px; background: var(--panel-2); border: 1px solid var(--line); }
-  .preview-box { background: var(--panel-2); border-radius: 8px; color: var(--muted); }
-  .prose { display: grid; gap: 1rem; max-width: 46rem; }
+  .controls-grid input, .controls-grid select { width: 100%; min-width: 0; max-width: 100%; min-height: 44px; padding: 0.5rem; border-radius: 6px; color: var(--text); background: var(--panel-2); border: 1px solid var(--line); }
+  .preview-track { width: 100%; min-height: 6rem; border: 1px solid var(--line); border-radius: 8px; background: var(--panel-2); }
+  .preview-box { display: grid; place-items: center; min-height: 6rem; padding: 0.75rem; border-right: 2px solid var(--accent); border-radius: 8px; color: var(--muted); background: color-mix(in srgb, var(--accent) 8%, var(--panel-2)); text-align: center; }
+  .prose { display: grid; gap: 1rem; max-width: 46rem; min-width: 0; }
   .prose table { width: 100%; display: block; overflow-x: auto; border: 1px solid var(--line); border-collapse: collapse; }
   .prose th, .prose td { border: 1px solid var(--line); padding: 0.5rem; font-size: 0.84rem; min-width: 0; word-break: break-word; }
   .prose blockquote { border-left: 4px solid var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--panel-2)); padding: 0.8rem 1rem; border-radius: 6px; }

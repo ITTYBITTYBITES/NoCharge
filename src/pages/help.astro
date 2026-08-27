@@ -2,6 +2,26 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 
+
+const faqs = [
+  { q: 'Do I need an account to play?', a: 'No. NoCharge games run without an account. Any retained scores and preferences stay in local storage in this browser.' },
+  { q: 'How do I clear my game data?', a: 'Use Clear game data on Privacy or My Arcade. It removes the documented game scores, progress, preferences, Recently Played list, and Pass & Play records; it does not remove the separate analytics choice or Google consent data.' },
+  { q: 'Why does a game pause when I switch tabs?', a: 'When the page becomes hidden, the shared game shell adds a hidden-page pause and stops ambient audio. Returning removes that pause, but a game you paused manually remains paused.' },
+  { q: 'Does NoCharge have ads or affiliate links?', a: 'Eligible pages can show one labeled AdSense banner outside gameplay. Quiet Setup has no display ads, but some articles contain clearly marked optional Amazon affiliate links.' },
+  { q: 'How do I enter or leave Game Mode?', a: 'Use Play to request native fullscreen when available or the focus-mode fallback otherwise. Leave with Escape or the visible Exit control; focus returns to the control that opened the mode.' },
+  { q: 'Can I play with a keyboard?', a: 'Many games provide documented keyboard controls, but the exact path differs by game. Check the controls section and guide for the title you want to play; Pass the Picture drawing requires a pointer.' },
+  { q: 'How does ambient sound work?', a: 'The ten ambient choices are synthesized with Web Audio rather than streamed as recordings. They follow the shared volume and master mute controls and stop while the page is hidden.' },
+  { q: 'Does ambient sound work without a network connection?', a: 'Once a loaded page has its scripts, the audio itself needs no media download. NoCharge does not currently install a service worker, so a fresh page load is not promised to work offline.' },
+  { q: 'How do I report a broken or problematic ad?', a: 'Email hello@nocharge.net with the page URL, browser, device type, and what appeared. Do not include passwords or sensitive personal information.' },
+  { q: 'What is Game Mode on mobile?', a: 'Game Mode gives the stage the available viewport and reduces the shared toolbar to essential controls. Solitaire can open an in-stage fan when a pile cannot remain readable at the available height.' },
+  { q: 'How does Recently Played work?', a: 'A game is added after a meaningful interaction, such as a move. Merely opening My Arcade does not record play or change the order.' },
+  { q: 'How does Pass & Play handoff work?', a: 'A handoff screen identifies whose turn comes next. Names last only for the current session, while one bounded most-recent match record per game can be stored locally for My Arcade.' },
+  { q: 'What is Quiet Setup?', a: 'Quiet Setup is first-party editorial about keyboards, pointing devices, displays, desks, offline puzzles, audio, and lighting. Articles begin with no-purchase checks; some, but not all, include marked affiliate links.' },
+  { q: 'How are scores saved without an account?', a: 'Each game writes only its documented local-storage values, such as a best result or puzzle progress. There is no cloud synchronization, and clearing browser site data can remove them.' },
+  { q: 'How do I change analytics or advertising choices?', a: 'Use Analytics choices and Privacy and cookie settings in the footer. NoCharge analytics is separate from Google advertising consent, and both controls remain available after the first visit.' },
+  { q: 'What is the difference between master mute and effects off?', a: 'Master mute silences game effects and ambient audio. Effects on/off changes game effects only, while the volume control also adjusts an active ambient texture.' },
+];
+
 const schema = [
   { '@context': 'https://schema.org', '@type': 'WebPage', name: 'NoCharge Help', description: 'Practical help for starting, controlling, and troubleshooting NoCharge games.', url: 'https://nocharge.net/help/' },
   { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
@@ -12,24 +32,11 @@ const schema = [
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
     '@id': 'https://nocharge.net/help/#faq',
-    mainEntity: [
-      { '@type': 'Question', name: 'Do I need an account to play?', acceptedAnswer: { '@type': 'Answer', text: 'No. All NoCharge games run locally in your browser without an account. Scores and preferences are saved in localStorage on this device only.' } },
-      { '@type': 'Question', name: 'How do I clear my game data?', acceptedAnswer: { '@type': 'Answer', text: 'Open Privacy page and use Clear game data. This removes keys like nocharge:freecell:games-won and nocharge:consent, but leaves analytics consent separate. My Arcade has the same control.' } },
-      { '@type': 'Question', name: 'Why does a game pause when I switch tabs?', acceptedAnswer: { '@type': 'Answer', text: 'NoCharge pauses timed activity when the document becomes hidden and resumes when visible, unless you manually paused. Ambient sound stops when hidden to avoid background static during multitasking.' } },
-      { '@type': 'Question', name: 'Does NoCharge have ads or affiliate links?', acceptedAnswer: { '@type': 'Answer', text: 'Game pages show one responsive AdSense banner outside gameplay. Quiet Setup articles have no display ads but may contain clearly marked Amazon affiliate links with tag nocharge-20 that open in a new tab.' } },
-      { '@type': 'Question', name: 'How do I enter fullscreen or focus mode?', acceptedAnswer: { '@type': 'Answer', text: 'Use Play button to enter Game Mode (native fullscreen if supported, otherwise fixed immersive fallback). Exit with Escape or the Exit button. Focus returns to the button that entered. The toolbar collapses to a single row in Game Mode.' } },
-      { '@type': 'Question', name: 'Are the games accessible by keyboard?', acceptedAnswer: { '@type': 'Answer', text: 'Many games document keyboard controls in their guides. Check each guide page for specific keys. Focus outlines remain visible and no board uses transform scale. Cards keep 44px touch target.' } },
-      { '@type': 'Question', name: 'How does ambient sound work?', acceptedAnswer: { '@type': 'Answer', text: 'Ambient options like white-noise, rainfall, forest, fireplace, ocean, night, cafe, library, lofi, and drone are procedural via Web Audio API, no MP3 download. They are quiet loops, respect mute and volume, and stop when tab is hidden.' } },
-      { '@type': 'Question', name: 'Does ambient work offline?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. Ambient is generated locally with AudioContext and AudioBuffer, no network request. It works offline after page load, but needs a user gesture to unlock audio on iOS Safari.' } },
-      { '@type': 'Question', name: 'How do I report a broken ad?', acceptedAnswer: { '@type': 'Answer', text: 'Email hello@nocharge.net with page URL, browser, device, and what you saw. Use Privacy and cookie settings in footer to manage Google ad choices via Funding Choices.' } },
-      { '@type': 'Question', name: 'What is Game Mode on mobile?', acceptedAnswer: { '@type': 'Answer', text: 'Game Mode expands the board to fill the viewport with fixed height, no scrolling. The toolbar becomes a single icon row. The fan replaces tableau when a pile is too tall, staying inside stage.' } },
-      { '@type': 'Question', name: 'How does Recently Played work?', acceptedAnswer: { '@type': 'Answer', text: 'Recently Played records a small local list after meaningful game interaction (e.g., a move). Opening My Arcade does not count as playing, so it never changes order.' } },
-      { '@type': 'Question', name: 'How does Pass & Play handoff work?', acceptedAnswer: { '@type': 'Answer', text: 'After each turn a handoff screen names the next player. Press Continue when device has changed hands. Player names last only for current session and are never saved. One most recent match per game is shown in My Arcade.' } },
-      { '@type': 'Question', name: 'What is Quiet Setup?', acceptedAnswer: { '@type': 'Answer', text: 'Quiet Setup at /setup/ is first-party editorial comparing keyboards, pointing devices, screens, stands, desk comfort, offline puzzles, audio, and lighting. Each guide starts with no-purchase checks and has clearly marked Amazon affiliate links.' } },
-      { '@type': 'Question', name: 'How are scores saved without an account?', acceptedAnswer: { '@type': 'Answer', text: 'Scores use localStorage keys like nocharge:memory-match:best-moves. No cloud sync, no encryption claim. Clearing browser storage removes them. See how NoCharge saves scores article.' } },
-      { '@type': 'Question', name: 'How do I change analytics choices?', acceptedAnswer: { '@type': 'Answer', text: 'Footer has Analytics choices button and Privacy and cookie settings for Google. Analytics stays off unless you allow it. You can withdraw without reload.' } },
-      { '@type': 'Question', name: 'What is the difference between mute and sound off?', acceptedAnswer: { '@type': 'Answer', text: 'Mute is persistent master mute for effects and ambient. Sound on/off controls effects only. Volume is independent. Device mute can silence everything.' } },
-    ],
+    mainEntity: faqs.map(({ q, a }) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
   },
 ];
 ---
@@ -47,25 +54,9 @@ const schema = [
       <section class="panel help-section"><h2>Setup and input choices</h2><p>If zoom, a keyboard layout, pointer, stand, or low-noise desk question is getting in the way, <a href="/setup/">Quiet Setup</a> compares practical options and begins with no-purchase adjustments. It is editorial guidance, separate from game controls and gameplay.</p></section>
       <section class="panel help-section"><h2>Need to report a problem?</h2><p>For a broken game, accessibility problem, privacy question, or problematic advertisement, contact <a href="mailto:hello@nocharge.net">hello@nocharge.net</a>. Please do not send passwords or sensitive personal information.</p><p>Advertising and analytics are separate choices. Games remain playable when optional analytics is declined. See <a href="/advertising/">Advertising</a> and <a href="/privacy/">Privacy</a> for the relevant explanations.</p></section>
     </div>
-    <section class="panel help-section" id="faq"><h2>FAQ — Quick answers for AI and players</h2>
-      <dl>
-        <dt>Do I need an account to play?</dt><dd>No. All games run locally without an account. Scores stay in localStorage on this device only.</dd>
-        <dt>How do I clear my game data?</dt><dd>Use Privacy → Clear game data or My Arcade → Clear game data. Removes nocharge:* keys, leaves analytics consent.</dd>
-        <dt>Why does a game pause when I switch tabs?</dt><dd>Hidden tab adds pause reason. Ambient stops when hidden to avoid background static. Returning removes hidden reason unless manually paused.</dd>
-        <dt>Does NoCharge have ads or affiliate links?</dt><dd>Game pages have one AdSense banner outside gameplay. Setup has no display ads but has marked Amazon links tag nocharge-20 opening in new tab.</dd>
-        <dt>How do I enter fullscreen or focus mode?</dt><dd>Play button enters Game Mode (native fullscreen if supported, else fixed immersive). Exit with Escape or Exit button. Toolbar collapses to one row.</dd>
-        <dt>Are the games accessible by keyboard?</dt><dd>Many document keyboard controls in guides. Focus outlines visible, 44px targets, no transform scale.</dd>
-        <dt>How does ambient sound work?</dt><dd>Procedural Web Audio, no MP3. 10 options: white-noise, rainfall, forest, fireplace, ocean, night, cafe, library, lofi, drone. Respects mute/volume, stops when hidden.</dd>
-        <dt>Does ambient work offline?</dt><dd>Yes, generated locally after load, no network. Needs user gesture on iOS Safari to unlock.</dd>
-        <dt>How do I report a broken ad?</dt><dd>Email hello@nocharge.net with URL, browser, device. Use footer Privacy and cookie settings for Google choices.</dd>
-        <dt>What is Game Mode on mobile?</dt><dd>Expands board to fill viewport, no scroll, fan replaces tall piles inside stage, toolbar single row.</dd>
-        <dt>How does Recently Played work?</dt><dd>Records after meaningful interaction only. Opening My Arcade does not change order.</dd>
-        <dt>How does Pass &amp; Play handoff work?</dt><dd>Handoff screen names next player, press Continue when passed. Names session-only, one most recent match per game in My Arcade.</dd>
-        <dt>What is Quiet Setup?</dt><dd>First-party editorial at /setup/ comparing keyboards, pointing, screens, desk, puzzles, audio, lighting. Starts with no-purchase checks.</dd>
-        <dt>How are scores saved without an account?</dt><dd>localStorage keys like nocharge:memory-match:best-moves. No sync, no encryption claim.</dd>
-        <dt>How do I change analytics choices?</dt><dd>Footer Analytics choices + Privacy and cookie settings. Off by default, withdraw without reload.</dd>
-        <dt>What is mute vs sound off?</dt><dd>Mute is master for effects+ambient, persistent. Sound on/off is effects only. Volume independent.</dd>
-      </dl>
+    <section class="panel help-section" id="faq" aria-labelledby="help-faq-heading">
+      <h2 id="help-faq-heading">Frequently asked questions</h2>
+      <dl>{faqs.map(({ q, a }) => <><dt>{q}</dt><dd>{a}</dd></>)}</dl>
     </section>
   </div>
 </BaseLayout>

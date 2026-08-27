@@ -42,7 +42,7 @@ test('help is linked, crawlable, and distinguishes local data from analytics', a
   expect(sitemap).toContain('https://nocharge.net/help/');
 });
 
-test('editorial images use responsive width descriptors and decorative alt text', async ({ page }) => {
+test('editorial images use responsive width descriptors and descriptive alt text', async ({ page }) => {
   for (const path of ['/articles/', '/articles/how-nocharge-tests-browser-games/', '/collections/', '/help/']) {
     await page.goto(path);
     const pictures = page.locator('picture:has(source[srcset*="editorial-art"])');
@@ -57,7 +57,7 @@ test('editorial images use responsive width descriptors and decorative alt text'
       await expect(source).toHaveAttribute('srcset', /1200w/);
       await expect(source).toHaveAttribute('srcset', /1600w/);
       await expect(source).toHaveAttribute('sizes', /vw|rem/);
-      await expect(picture.locator('img')).toHaveAttribute('alt', '');
+      await expect(picture.locator('img')).toHaveAttribute('alt', /\S+/);
     }
   }
 });
@@ -77,7 +77,7 @@ test('platform article heroes art-direct a square crop on mobile and a landscape
     'srcset',
     /testing-800\.webp 800w/,
   );
-  await expect(picture.locator('img')).toHaveAttribute('alt', '');
+  await expect(picture.locator('img')).toHaveAttribute('alt', /NoCharge tests browser games/i);
 });
 
 test('browser selects smaller editorial sources on narrow screens and header sources at desktop width', async ({ page }) => {

@@ -83,7 +83,7 @@ const collectionsContent = defineCollection({
 const setupTopics = z.enum(['keyboards', 'pointing-devices', 'screens-and-stands', 'desk-and-comfort', 'offline-puzzles', 'audio', 'lighting']);
 const evidenceLevels = z.enum(['editorial-research', 'personally-used', 'hands-on-tested']);
 const affiliateLink = z.object({
-  label: z.string().min(1), url: z.string().url().startsWith('https://'), purpose: z.string().min(1),
+  label: z.string().min(1), url: z.url().startsWith('https://'), purpose: z.string().min(1),
   suitableFor: z.string().min(1), limitations: z.string().min(1),
 });
 const setup = defineCollection({

@@ -43,14 +43,19 @@ test('guide library connects guide articles, games, and sitemap URLs', async ({ 
   expect(xml).toContain('<loc>https://nocharge.net/about/</loc>');
   expect(xml).toContain('<loc>https://nocharge.net/terms/</loc>');
   expect(xml).toContain('<loc>https://nocharge.net/advertising/</loc>');
-  expect(xml).toContain('<loc>https://nocharge.net/changelog/</loc>');
   expect(xml).toContain('<loc>https://nocharge.net/accessibility/</loc>');
   expect(xml).toContain('<loc>https://nocharge.net/help/</loc>');
-  expect(xml).toContain('<loc>https://nocharge.net/my-arcade/</loc>');
   expect(xml).toContain('<loc>https://nocharge.net/media/</loc>');
-  const urlCount = (xml.match(/<url>/g) ?? []).length;
-  expect(urlCount).toBeGreaterThanOrEqual(109);
-  // With expanded Quiet Setup (20 per topic = 140 setup pages), sitemap grows accordingly.
-  const setupCount = (xml.match(/\/setup\//g) ?? []).length;
-  expect(setupCount).toBeGreaterThanOrEqual(30);
+  expect(xml).toContain('<loc>https://nocharge.net/contact/</loc>');
+  expect(xml).toContain('<loc>https://nocharge.net/tools/</loc>');
+  expect(xml).toContain('<loc>https://nocharge.net/tools/discovery-wheel/</loc>');
+  expect(xml).not.toContain('<loc>https://nocharge.net/changelog/</loc>');
+  expect(xml).not.toContain('<loc>https://nocharge.net/my-arcade/</loc>');
+  expect(xml).not.toContain('<loc>https://nocharge.net/privacy-policy/</loc>');
+
+  const setupSitemap = await (await request.get('/sitemap-setup.xml')).text();
+  const setupPaths = [...setupSitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => new URL(match[1]).pathname);
+  expect(setupPaths).toHaveLength(211);
+  expect(setupPaths.every((path) => path.startsWith('/setup/'))).toBe(true);
+  for (const path of setupPaths) expect(xml).toContain(`<loc>https://nocharge.net${path}</loc>`);
 });

@@ -2,6 +2,7 @@
 
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { publishedSetupSlugs } from './setup-content-utils.mjs';
 
 const dist = join(process.cwd(), 'dist');
 const sitemapPath = join(dist, 'sitemap.xml');
@@ -18,7 +19,6 @@ const required = [
   '/setup/',
   '/setup/what-quiet-setup-means/',
   '/arcade/',
-  '/my-arcade/',
   '/guides/',
   '/articles/',
   '/articles/what-quiet-arcade-means-at-nocharge/',
@@ -32,9 +32,13 @@ const required = [
   '/collections/games-for-a-short-break/',
   '/about/',
   '/media/',
+  '/contact/',
+  '/tools/',
+  '/tools/discovery-wheel/',
+  '/tools/ambient-mixer/',
+  '/tools/zoom-visualizer/',
   '/terms/',
   '/advertising/',
-  '/changelog/',
   '/privacy/',
   '/accessibility/',
   '/games/memory-match/',
@@ -53,7 +57,19 @@ for (const location of locations) {
   if (!existsSync(output)) throw new Error(`Sitemap route has no generated page: ${pathname}`);
 }
 
+for (const excluded of ['/my-arcade/', '/changelog/', '/privacy-policy/', '/404.html']) {
+  if (locations.some((location) => new URL(location).pathname === excluded)) {
+    throw new Error(`No-index or alias route must not appear in sitemap: ${excluded}`);
+  }
+}
+if (new Set(locations).size !== locations.length) throw new Error('Sitemap contains duplicate locations.');
+
+const expectedSetupSlugs = await publishedSetupSlugs();
 const setupSitemap = readFileSync(setupSitemapPath, 'utf8');
 const setupLocations = [...setupSitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
-if (setupLocations.length !== 31 || setupLocations.some((location) => !new URL(location).pathname.startsWith('/setup/'))) throw new Error('Dedicated setup sitemap must contain only the index and 30 articles.');
-console.log(`Sitemap validation passed with ${locations.length} public routes.`);
+const expectedSetupPaths = ['/setup/', ...expectedSetupSlugs.map((slug) => `/setup/${slug}/`)];
+const setupPaths = setupLocations.map((location) => new URL(location).pathname).sort();
+if (JSON.stringify(setupPaths) !== JSON.stringify(expectedSetupPaths.sort())) {
+  throw new Error(`Dedicated setup sitemap must contain the index and all ${expectedSetupSlugs.length} published articles.`);
+}
+console.log(`Sitemap validation passed with ${locations.length} public routes and ${expectedSetupSlugs.length} setup articles.`);

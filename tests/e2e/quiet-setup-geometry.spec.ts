@@ -66,6 +66,39 @@ async function boxes(page: Page, selector: string, root = ':root'): Promise<Box[
   );
 }
 
+async function setupCardGeometry(page: Page): Promise<Array<{
+  card: Box;
+  chips: Box[];
+  dates: Box[];
+  blocks: Box[];
+  art: Box[];
+}>> {
+  return page.evaluate(() => {
+    const toBox = (element: Element): Box => {
+      const rect = element.getBoundingClientRect();
+      return {
+        label: `${element.tagName.toLowerCase()}.${(element as HTMLElement).className || '-'}: ${(element.textContent ?? '').trim().slice(0, 42)}`,
+        x: rect.x,
+        y: rect.y,
+        width: rect.width,
+        height: rect.height,
+      };
+    };
+    const visible = (element: Element) => {
+      const style = getComputedStyle(element);
+      return style.display !== 'none' && style.visibility !== 'hidden';
+    };
+    const matches = (root: Element, selector: string) => [...root.querySelectorAll(selector)].filter(visible).map(toBox);
+    return [...document.querySelectorAll('[data-setup-card]')].map((card) => ({
+      card: toBox(card),
+      chips: matches(card, '.setup-card__labels > *'),
+      dates: matches(card, '.setup-card__dates > span'),
+      blocks: matches(card, '.setup-card__topic, .setup-card__title, .setup-card__description, .setup-card__labels, .setup-card__dates'),
+      art: matches(card, '.setup-artwork'),
+    }));
+  });
+}
+
 function overlapArea(a: Box, b: Box): number {
   const w = Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x);
   const h = Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y);
@@ -134,36 +167,27 @@ test.beforeEach(async ({ page }) => denyOptionalServices(page));
 test.describe('Quiet Setup card geometry', () => {
   for (const width of [1440, 1024, 768, 390, 360, 320]) {
     test(`setup cards keep metadata, badges and dates apart at ${width}px`, async ({ page }) => {
+      test.setTimeout(180_000);
       await page.setViewportSize({ width, height: 900 });
       await page.goto('/setup/');
       await loadAllImages(page);
 
-      const cardCount = await page.locator('[data-setup-card]').count();
-      expect(cardCount).toBeGreaterThanOrEqual(30);
+      const geometry = await setupCardGeometry(page);
+      expect(geometry).toHaveLength(210);
 
-      for (let index = 0; index < cardCount; index += 1) {
-        const root = `[data-setup-card]:nth-of-type(${index + 1})`;
+      for (let index = 0; index < geometry.length; index += 1) {
         const context = `${width}px card ${index + 1}`;
-        const card = (await boxes(page, '[data-setup-card]'))[index];
+        const { card, chips, dates, blocks, art } = geometry[index];
 
         // Evidence label vs. "Contains paid links", and both vs. the dates.
-        const chips = await boxes(page, '.setup-card__labels > *', root);
         expectNoPairwiseOverlap(chips, `${context} badges`);
-
-        const dates = await boxes(page, '.setup-card__dates > span', root);
         expectNoPairwiseOverlap(dates, `${context} dates`);
         expectNoPairwiseOverlap([...chips, ...dates], `${context} badges vs dates`);
 
         // Topic label vs. heading vs. description vs. badge row vs. date row.
-        const blocks = await boxes(
-          page,
-          '.setup-card__topic, .setup-card__title, .setup-card__description, .setup-card__labels, .setup-card__dates',
-          root,
-        );
         expectNoPairwiseOverlap(blocks, `${context} stacked blocks`);
 
         // Heading must not sit on top of the artwork.
-        const art = await boxes(page, '.setup-artwork', root);
         expectNoPairwiseOverlap([...art, ...blocks], `${context} artwork vs text`);
 
         // Every visible text block stays inside its own card.

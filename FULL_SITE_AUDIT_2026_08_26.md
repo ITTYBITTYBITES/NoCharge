@@ -1,4 +1,7 @@
 # Full Site Audit — NoCharge Astro
+
+> **Superseded snapshot:** This document records the site at commit `620be60`, before phases 2–5. Counts and open findings below are historical. See `PHASES_2_5_COMPLETION_AUDIT_2026_08_27.md` for the current 210-guide, 298-page verification.
+
 **Date:** 2026-08-26 | **Branch:** main @ 620be60 (build success + deploy success) | **Live:** https://nocharge.net | **Pages built:** 222 (140 setup + 17 games + 17 guides + 25 articles + 5 collections + 12 changelog anchors + utility)
 
 ---
