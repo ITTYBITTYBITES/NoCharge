@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "astro dev --host 0.0.0.0",
     "start": "astro dev --host 0.0.0.0",
-    "check": "npm run audit:content && npm run check:game-pins && npm run test:unit && astro check",
+    "check": "npm run check:ci-policy && npm run audit:content && npm run check:game-pins && npm run test:unit && astro check",
     "build": "astro build && npm run verify:build",
     "test:e2e": "npm run build && playwright test",
     "test:e2e:matrix": "cross-env FULL_BROWSER_MATRIX=1 playwright test",
@@ -35,6 +35,7 @@
     "check:links": "node scripts/check-internal-links.mjs",
     "audit:content": "node scripts/audit-content-quality.mjs",
     "check:game-pins": "node scripts/generate-game-pins.mjs && git diff --exit-code -- 'public/game-art/*/pin-1000x1500.jpg' 'public/game-art/*/pin-1000x1500.webp'",
+    "check:ci-policy": "node scripts/reject-ci-bypass.mjs",
     "validate:sitemap": "node scripts/validate-sitemap.mjs",
     "inspect:structured-data": "node scripts/inspect-structured-data.mjs",
     "validate:faq": "node scripts/validate-faq-schema.mjs",

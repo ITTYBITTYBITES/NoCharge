@@ -121,7 +121,7 @@ The integration pass repaired the reproducible defects, updated source-of-truth 
 - Updated Playwright assertions for 26 articles, 6 collections, 210 setup articles, and 211 setup sitemap URLs.
 - Added compatible transitive overrides for the stale LHCI dependency tree; `npm audit` reports zero vulnerabilities and `lhci --version` still runs.
 - Updated README and content-accuracy ownership records. Historical audits are explicitly marked as superseded snapshots.
-- The final commits contain no `[skip e2e]` or `[skip checks]` token, so the existing workflow executes the browser gate.
+- `scripts/reject-ci-bypass.mjs` makes `[skip e2e]` and `[skip checks]` a CI failure now that integration is complete. The final implementation commit contains no bypass token, so the existing workflow executes the full browser gate.
 
 ## Validation evidence
 
