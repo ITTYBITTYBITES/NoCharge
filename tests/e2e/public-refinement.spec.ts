@@ -77,7 +77,7 @@ test('platform article heroes art-direct a square crop on mobile and a landscape
     'srcset',
     /testing-800\.webp 800w/,
   );
-  await expect(picture.locator('img')).toHaveAttribute('alt', /browser game testing/i);
+  await expect(picture.locator('img')).toHaveAttribute('alt', /NoCharge tests browser games/i);
 });
 
 test('browser selects smaller editorial sources on narrow screens and header sources at desktop width', async ({ page }) => {
