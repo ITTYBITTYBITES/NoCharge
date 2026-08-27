@@ -69,7 +69,12 @@ const expectedEditorial = new Set(editorialFiles);
 for (const file of referencedEditorial) {
   if (!expectedEditorial.has(file)) throw new Error(`Unexpected editorial asset published: ${file}.`);
 }
-const setupNames = ['hero', 'keyboards', 'pointing', 'screens-stands', 'puzzles-desk', 'switches', 'zoom-display', 'desk-noise', 'room-lighting', 'screen-film', 'cables', 'monitor-calibration', 'chair-posture', 'lamp-light', 'footrest-mat', 'headphones', 'speakers', 'large-dual-monitors'];
+const setupNames = [
+  'hero', 'keyboards', 'pointing', 'screens-stands', 'puzzles-desk', 'switches', 'zoom-display',
+  'desk-noise', 'monitor', 'speakers', 'posture', 'footrest', 'lamp', 'bias-light', 'cables',
+  'room-lighting', 'screen-film', 'monitor-calibration', 'chair-posture', 'lamp-light', 'footrest-mat',
+  'headphones', 'large-dual-monitors',
+];
 const setupFiles = [];
 for (const name of setupNames) {
   for (const width of editorialWidths) {
@@ -82,6 +87,14 @@ for (const name of setupNames) {
       setupFiles.push(relative(dist, path));
     }
   }
+  for (const extension of ['webp', 'jpg']) {
+    const path = join(dist, 'setup-art', `${name}-pin-1000x1500.${extension}`);
+    if (!existsSync(path)) throw new Error(`Missing Quiet Setup pin: ${relative(dist, path)}.`);
+    const metadata = await sharp(path).metadata();
+    if (metadata.width !== 1000 || metadata.height !== 1500) throw new Error(`Invalid Quiet Setup pin dimensions: ${relative(dist, path)}.`);
+    if (statSync(path).size > (extension === 'webp' ? 200 * 1024 : 350 * 1024)) throw new Error(`Quiet Setup pin budget exceeded: ${relative(dist, path)}.`);
+    setupFiles.push(relative(dist, path));
+  }
 }
 // Reject rejected variants, temporary review PNGs, or stale concepts left behind.
 const publishedSetup = files
@@ -90,6 +103,20 @@ const publishedSetup = files
 const expectedSetup = new Set(setupFiles);
 for (const file of publishedSetup) {
   if (!expectedSetup.has(file)) throw new Error(`Unexpected Quiet Setup asset published: ${file}.`);
+}
+
+const gameSlugs = readdirSync(join(dist, 'games'), { withFileTypes: true })
+  .filter((entry) => entry.isDirectory())
+  .map((entry) => entry.name)
+  .sort();
+for (const slug of gameSlugs) {
+  for (const extension of ['webp', 'jpg']) {
+    const path = join(dist, 'game-art', slug, `pin-1000x1500.${extension}`);
+    if (!existsSync(path)) throw new Error(`Missing game pin: ${relative(dist, path)}.`);
+    const metadata = await sharp(path).metadata();
+    if (metadata.width !== 1000 || metadata.height !== 1500) throw new Error(`Invalid game pin dimensions: ${relative(dist, path)}.`);
+    if (statSync(path).size > (extension === 'webp' ? 200 * 1024 : 350 * 1024)) throw new Error(`Game pin budget exceeded: ${relative(dist, path)}.`);
+  }
 }
 console.log(
   `Asset budget passed: ${scripts.length} scripts total ${scriptBytes} bytes; largest image ${largestImage ? `${relative(dist, largestImage.path)} (${largestImage.size} bytes)` : 'none'}; ${editorialFiles.length} responsive editorial assets validated.`,

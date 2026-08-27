@@ -17,11 +17,6 @@ affiliateLinks:
     purpose: "Compare cable management tray options after identifying task, space, and compatibility needs."
     suitableFor: "Readers who have checked existing equipment and want to compare cable management tray styles."
     limitations: "Search results change, labels vary, and NoCharge did no hands-on testing of listed items."
-  - label: "Browse cable management trays on Amazon (paid link)"
-    url: "https://www.amazon.com/s?k=cable+management+tray&tag=nocharge-20"
-    purpose: "Compare cable management tray options after identifying task, space, and compatibility needs."
-    suitableFor: "Readers who have checked existing equipment and want to compare cable management tray styles."
-    limitations: "Search results change, labels vary, and NoCharge did no hands-on testing of listed items."
 ---
 
 > **Bottom line:** Practical editorial research on cable trays and under-desk routing — tradeoffs, no-purchase checks, and limits, without health or performance promises. Move and clear existing items first; measure desk space and cable reach before browsing.

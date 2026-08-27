@@ -17,11 +17,6 @@ affiliateLinks:
     purpose: "Compare nonogram book options after identifying task, space, and compatibility needs."
     suitableFor: "Readers who have checked existing equipment and want to compare nonogram book styles."
     limitations: "Search results change, labels vary, and NoCharge did no hands-on testing of listed items."
-  - label: "Browse nonogram puzzle books on Amazon (paid link)"
-    url: "https://www.amazon.com/s?k=nonogram+book&tag=nocharge-20"
-    purpose: "Compare nonogram book options after identifying task, space, and compatibility needs."
-    suitableFor: "Readers who have checked existing equipment and want to compare nonogram book styles."
-    limitations: "Search results change, labels vary, and NoCharge did no hands-on testing of listed items."
 ---
 
 > **Bottom line:** Practical editorial research on word search book: font size and grid density — tradeoffs, no-purchase checks, and limits, without health or performance promises. Check paper weight, binding, font size, and answer key placement; pencil first.

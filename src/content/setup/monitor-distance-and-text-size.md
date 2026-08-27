@@ -17,11 +17,6 @@ affiliateLinks:
     purpose: "Compare monitor arm options after identifying task, space, and compatibility needs."
     suitableFor: "Readers who have checked existing equipment and want to compare monitor arm styles."
     limitations: "Search results change, labels vary, and NoCharge did no hands-on testing of listed items."
-  - label: "Browse monitor arms on Amazon (paid link)"
-    url: "https://www.amazon.com/s?k=monitor+arm&tag=nocharge-20"
-    purpose: "Compare monitor arm options after identifying task, space, and compatibility needs."
-    suitableFor: "Readers who have checked existing equipment and want to compare monitor arm styles."
-    limitations: "Search results change, labels vary, and NoCharge did no hands-on testing of listed items."
 ---
 
 > **Bottom line:** Practical editorial research on monitor distance and text size — tradeoffs, no-purchase checks, and limits, without health or performance promises. Adjust height, distance, and browser zoom first; check VESA and stability before buying.

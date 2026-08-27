@@ -2,6 +2,12 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 
+
+const faqs = [
+  { q: 'How do I contact NoCharge?', a: 'Email hello@nocharge.net. Please do not send passwords or sensitive personal information.' },
+  { q: 'What should I include in a bug report?', a: 'Include the page URL, browser and version, device type, what you expected, and what happened. A screenshot is helpful when it does not contain private information.' },
+];
+
 const schema = [
   {
     '@context': 'https://schema.org',
@@ -21,10 +27,7 @@ const schema = [
   {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: [
-      { '@type': 'Question', name: 'How do I contact NoCharge?', acceptedAnswer: { '@type': 'Answer', text: 'Email hello@nocharge.net. Please do not send passwords or sensitive personal information.' } },
-      { '@type': 'Question', name: 'What should I include in a bug report?', acceptedAnswer: { '@type': 'Answer', text: 'Include the page URL, browser and version, device type, and what happened. Screenshots of the mounted DOM are helpful.' } },
-    ],
+    mainEntity: faqs.map(({ q, a }) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })),
   },
 ];
 ---
@@ -39,13 +42,17 @@ const schema = [
       <p><a href="mailto:hello@nocharge.net">hello@nocharge.net</a></p>
       <p>Please do not send passwords or sensitive personal information. For privacy choices, use the footer controls: Analytics choices and Privacy and cookie settings.</p>
     </div>
+    <section class="panel contact-faq" aria-labelledby="contact-faq-heading">
+      <h2 id="contact-faq-heading">Frequently asked questions</h2>
+      <dl>{faqs.map(({ q, a }) => <><dt>{q}</dt><dd>{a}</dd></>)}</dl>
+    </section>
     <section class="contact-links">
       <h2>Quick links</h2>
       <ul>
         <li><a href="/privacy/">Privacy — local storage and data controls</a></li>
         <li><a href="/terms/">Terms — general-audience, no-account play</a></li>
         <li><a href="/about/">About — what NoCharge is and is not</a></li>
-        <li><a href="/help/">Help — controls, My Arcade, Pass & Play</a></li>
+        <li><a href="/help/">Help — controls, My Arcade, Pass &amp; Play</a></li>
         <li><a href="/advertising/">Advertising — how display ads work</a></li>
       </ul>
     </section>
@@ -56,6 +63,10 @@ const schema = [
   .contact-page { max-width: 48rem; margin-inline: auto; display: grid; gap: 1.5rem; }
   .contact-card { padding: 1.2rem; display: grid; gap: 0.6rem; }
   .contact-card h2 { font-size: 1.1rem; }
+  .contact-faq { padding: 1.2rem; display: grid; gap: 0.75rem; }
+  .contact-faq dl { display: grid; gap: 0.5rem; margin: 0; }
+  .contact-faq dt { font-weight: 700; }
+  .contact-faq dd { margin: 0; color: var(--muted); }
   .contact-links ul { display: grid; gap: 0.5rem; padding-left: 1.2rem; }
   .contact-links a { color: var(--accent-strong); text-decoration: underline; }
 </style>

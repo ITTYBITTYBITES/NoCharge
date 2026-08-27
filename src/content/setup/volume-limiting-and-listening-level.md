@@ -17,11 +17,6 @@ affiliateLinks:
     purpose: "Compare small desk speakers options after identifying task, space, and compatibility needs."
     suitableFor: "Readers who have checked existing equipment and want to compare small desk speakers styles."
     limitations: "Search results change, labels vary, and NoCharge did no hands-on testing of listed items."
-  - label: "Browse small desk speakers on Amazon (paid link)"
-    url: "https://www.amazon.com/s?k=small+desk+speakers&tag=nocharge-20"
-    purpose: "Compare small desk speakers options after identifying task, space, and compatibility needs."
-    suitableFor: "Readers who have checked existing equipment and want to compare small desk speakers styles."
-    limitations: "Search results change, labels vary, and NoCharge did no hands-on testing of listed items."
 ---
 
 > **Bottom line:** Practical editorial research on volume limiting and listening level — tradeoffs, no-purchase checks, and limits, without health or performance promises. Test existing audio at low volume; compare closed vs open, wired vs Bluetooth, and fit.

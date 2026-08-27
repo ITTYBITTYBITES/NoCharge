@@ -19,7 +19,6 @@ export const GET: APIRoute = async ({ site }) => {
   const paths = [
     '/',
     '/arcade/',
-    '/my-arcade/',
     ...games.map((game) => `/games/${game.id}/`),
     '/guides/',
     ...guides.map((guide) => `/guides/${guide.id}/`),
@@ -32,9 +31,13 @@ export const GET: APIRoute = async ({ site }) => {
     '/about/',
     '/media/',
     '/help/',
+    '/contact/',
+    '/tools/',
+    '/tools/discovery-wheel/',
+    '/tools/ambient-mixer/',
+    '/tools/zoom-visualizer/',
     '/terms/',
     '/advertising/',
-    '/changelog/',
     '/privacy/',
     '/accessibility/',
   ];

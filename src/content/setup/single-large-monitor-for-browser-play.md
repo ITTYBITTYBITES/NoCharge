@@ -17,11 +17,6 @@ affiliateLinks:
     purpose: "Compare monitor stand options after identifying task, space, and compatibility needs."
     suitableFor: "Readers who have checked existing equipment and want to compare monitor stand styles."
     limitations: "Search results change, labels vary, and NoCharge did no hands-on testing of listed items."
-  - label: "Browse monitor stands on Amazon (paid link)"
-    url: "https://www.amazon.com/s?k=monitor+stand&tag=nocharge-20"
-    purpose: "Compare monitor stand options after identifying task, space, and compatibility needs."
-    suitableFor: "Readers who have checked existing equipment and want to compare monitor stand styles."
-    limitations: "Search results change, labels vary, and NoCharge did no hands-on testing of listed items."
 ---
 
 > **Bottom line:** Practical editorial research on single large monitor for browser play — tradeoffs, no-purchase checks, and limits, without health or performance promises. Adjust height, distance, and browser zoom first; check VESA and stability before buying.

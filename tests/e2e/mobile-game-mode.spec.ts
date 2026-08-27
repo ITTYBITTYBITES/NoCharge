@@ -83,7 +83,7 @@ interface Geometry {
 /** Measure the stage, its primary boards, and every essential game element. */
 async function measure(page: Page, gameId: string): Promise<Geometry> {
   return page.evaluate(
-    ({ gameId, primary, essential }) => {
+    ({ primary, essential }) => {
       const viewport = document.querySelector('[data-game-viewport]') as HTMLElement;
       const stage = viewport.getBoundingClientRect();
 

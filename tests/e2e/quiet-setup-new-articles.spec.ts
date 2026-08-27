@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { denyOptionalServices } from './helpers/consent';
 
 /**
- * Tests for the 10 new Quiet Setup articles added in PR #26 Phase 10.
+ * Regression coverage for the ten Quiet Setup articles added in PR #26.
  * Asserts: rendering, affiliate link markup, disclosure, no Amazon network requests.
  */
 
@@ -94,13 +94,13 @@ for (const slug of NEW_SETUP_ARTICLES) {
   });
 }
 
-test.describe('Setup index shows 18 articles', () => {
+test.describe('Setup index includes the complete current collection', () => {
   test('lists all articles including new ones', async ({ page }) => {
     await page.goto('/setup/');
     // Count article cards/links
     const articleLinks = page.locator('a[href^="/setup/"]');
     const count = await articleLinks.count();
-    expect(count).toBeGreaterThanOrEqual(18);
+    expect(count).toBeGreaterThanOrEqual(210);
   });
 });
 

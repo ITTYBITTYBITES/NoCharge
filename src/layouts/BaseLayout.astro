@@ -11,6 +11,7 @@ interface Props {
   title?: string;
   description?: string;
   path?: string;
+  canonicalPath?: string;
   noIndex?: boolean;
   showAds?: boolean;
   schema?: Record<string, unknown> | Record<string, unknown>[];
@@ -28,6 +29,7 @@ const {
   title = 'NoCharge',
   description = 'Quick browser games, clear player guides, and no account required.',
   path = '/',
+  canonicalPath,
   noIndex = false,
   showAds = true,
   schema,
@@ -57,6 +59,7 @@ const release = import.meta.env.PUBLIC_RELEASE ?? '1.0.0';
       title={title}
       description={description}
       path={path}
+      canonicalPath={canonicalPath}
       noIndex={noIndex}
       schema={schema}
       ogType={ogType}

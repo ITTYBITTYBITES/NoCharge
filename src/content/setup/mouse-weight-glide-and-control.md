@@ -17,11 +17,6 @@ affiliateLinks:
     purpose: "Compare mouse pad options after identifying task, space, and compatibility needs."
     suitableFor: "Readers who have checked existing equipment and want to compare mouse pad styles."
     limitations: "Search results change, labels vary, and NoCharge did no hands-on testing of listed items."
-  - label: "Browse mouse pads on Amazon (paid link)"
-    url: "https://www.amazon.com/s?k=mouse+pad&tag=nocharge-20"
-    purpose: "Compare mouse pad options after identifying task, space, and compatibility needs."
-    suitableFor: "Readers who have checked existing equipment and want to compare mouse pad styles."
-    limitations: "Search results change, labels vary, and NoCharge did no hands-on testing of listed items."
 ---
 
 > **Bottom line:** Practical editorial research on mouse weight, glide, and control — tradeoffs, no-purchase checks, and limits, without health or performance promises. Compare movement, space, and cleaning needs; try what you own for 5 minutes before shopping.

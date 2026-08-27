@@ -3,6 +3,7 @@ interface Props {
   title: string;
   description: string;
   path?: string;
+  canonicalPath?: string;
   noIndex?: boolean;
   schema?: Record<string, unknown> | Record<string, unknown>[];
   ogType?: 'website' | 'article';
@@ -20,6 +21,7 @@ const {
   title,
   description,
   path = '/',
+  canonicalPath,
   noIndex = false,
   schema,
   ogType = 'website',
@@ -33,7 +35,7 @@ const {
   additionalImages = [],
 } = Astro.props;
 const site = Astro.site ?? new URL('https://nocharge.net');
-const canonical = new URL(path, site).toString();
+const canonical = new URL(canonicalPath ?? path, site).toString();
 const socialImage = new URL(socialImagePath, site).toString();
 const titled = `${title} · NoCharge`;
 const fullTitle = title === 'NoCharge' ? 'NoCharge — Browser games and player guides' : titled.length > 70 ? title : titled;

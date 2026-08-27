@@ -17,11 +17,6 @@ affiliateLinks:
     purpose: "Compare closed back headphones options after identifying task, space, and compatibility needs."
     suitableFor: "Readers who have checked existing equipment and want to compare closed back headphones styles."
     limitations: "Search results change, labels vary, and NoCharge did no hands-on testing of listed items."
-  - label: "Browse closed-back headphones on Amazon (paid link)"
-    url: "https://www.amazon.com/s?k=closed+back+headphones&tag=nocharge-20"
-    purpose: "Compare closed back headphones options after identifying task, space, and compatibility needs."
-    suitableFor: "Readers who have checked existing equipment and want to compare closed back headphones styles."
-    limitations: "Search results change, labels vary, and NoCharge did no hands-on testing of listed items."
 ---
 
 > **Bottom line:** Practical editorial research on earbud fit and tip sizes — tradeoffs, no-purchase checks, and limits, without health or performance promises. Test existing audio at low volume; compare closed vs open, wired vs Bluetooth, and fit.

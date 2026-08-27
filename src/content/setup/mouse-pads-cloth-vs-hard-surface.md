@@ -17,11 +17,6 @@ affiliateLinks:
     purpose: "Compare vertical mouse options after identifying task, space, and compatibility needs."
     suitableFor: "Readers who have checked existing equipment and want to compare vertical mouse styles."
     limitations: "Search results change, labels vary, and NoCharge did no hands-on testing of listed items."
-  - label: "Browse vertical mice on Amazon (paid link)"
-    url: "https://www.amazon.com/s?k=vertical+mouse&tag=nocharge-20"
-    purpose: "Compare vertical mouse options after identifying task, space, and compatibility needs."
-    suitableFor: "Readers who have checked existing equipment and want to compare vertical mouse styles."
-    limitations: "Search results change, labels vary, and NoCharge did no hands-on testing of listed items."
 ---
 
 > **Bottom line:** Practical editorial research on mouse pads: cloth vs hard surface — tradeoffs, no-purchase checks, and limits, without health or performance promises. Compare movement, space, and cleaning needs; try what you own for 5 minutes before shopping.

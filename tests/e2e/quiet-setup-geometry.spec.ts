@@ -139,7 +139,7 @@ test.describe('Quiet Setup card geometry', () => {
       await loadAllImages(page);
 
       const cardCount = await page.locator('[data-setup-card]').count();
-      expect(cardCount).toBeGreaterThanOrEqual(30);
+      expect(cardCount).toBe(210);
 
       for (let index = 0; index < cardCount; index += 1) {
         const root = `[data-setup-card]:nth-of-type(${index + 1})`;

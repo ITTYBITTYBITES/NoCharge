@@ -1,96 +1,75 @@
 ---
-title: "No Charge Games"
-description: "Free browser games with no charge — 17 NoCharge titles that are free to play with no charge, no account, and local-only saves."
-inclusionMethod: "Include a current NoCharge game when it is free to play with no charge, requires no account, and keeps any retained score or progress in local browser storage rather than a cloud profile. The phrase no charge games is included as alternate name for nocharge."
+title: "Games available at no charge"
+description: "All 17 current NoCharge browser games, grouped by the same verifiable rule: no account, subscription, or purchase is required to complete the play loop."
+inclusionMethod: "Include every currently published NoCharge game whose full play loop opens without an account, subscription, or purchase. Retained results must use the documented browser-local storage model rather than a cloud profile. Review membership whenever the registry, access model, or storage behavior changes."
 reviewed: "2026-08-26"
 order: 1
 draft: false
 games:
   - game: memory-match
-    reason: "Free with no charge, no account, local best moves and best score in this browser only."
+    reason: "The complete matching game opens without an account; best score and best moves can remain only in this browser."
   - game: word-tile-rush
-    reason: "Free with no charge, no login, best score retained locally only."
+    reason: "The complete word game needs no sign-in, and its retained best score stays in local browser storage."
   - game: color-flip
-    reason: "Free with no charge, Visual and Turn-based modes need no sign-in, local best results."
+    reason: "Both Visual and Turn-based modes open without registration, with any best result kept locally."
   - game: beacon-lattice
-    reason: "Free with no charge, 24 puzzles without account, progress stays in this browser."
+    reason: "All 24 authored puzzles are available without an account, and puzzle progress is browser-local."
   - game: klondike
-    reason: "Free with no charge, no account, win count and best moves local."
+    reason: "The full solitaire deal, draw options, and undo path need no account; wins and best moves are local."
   - game: freecell
-    reason: "Free with no charge, all 52 cards face-up, win count local."
+    reason: "The complete 52-card solitaire game opens directly, with its win count retained only in this browser."
   - game: nonogram
-    reason: "Free with no charge, 24 puzzles, a11y text view, local progress."
+    reason: "The puzzle set and text alternative are available without sign-in, with documented local progress."
   - game: twenty-forty-eight
-    reason: "Free with no charge, 4x4 merge, best tile local."
+    reason: "The complete merge loop needs no account, and the best tile can remain in local browser storage."
   - game: tile-garden
-    reason: "Free with no charge, calm 8x8 merge, 3 modes, local best."
+    reason: "All three board modes open directly; its retained best tier is specific to the current browser."
   - game: word-search
-    reason: "Free with no charge, 8x8 and 10x10 grids, no timer, local."
+    reason: "Both grid sizes and all themes are available without registration, with local solve history where documented."
   - game: mini-sudoku
-    reason: "Free with no charge, 6x6 grid, keyboard-friendly, local."
+    reason: "The complete 6×6 puzzle and keyboard controls need no account; current puzzle data is stored locally."
   - game: tic-tac-toe
-    reason: "Free with no charge, Pass & Play two players one device, most recent match local."
+    reason: "Two people can complete a shared-device match without profiles; one bounded recent match can remain locally."
   - game: dots-and-boxes
-    reason: "Free with no charge, shared board without account, last result local."
+    reason: "The shared board and scoring loop need no registration, with only the latest documented match record retained."
   - game: four-in-a-row
-    reason: "Free with no charge, gravity drop without registration, last result local."
+    reason: "Two players can complete the gravity-drop game without accounts; the recent result is browser-local."
   - game: reversi
-    reason: "Free with no charge, 8x8 board no account, last disc count local."
+    reason: "The full 8×8 shared-device game opens without sign-in, with a bounded local match record."
   - game: last-token
-    reason: "Free with no charge, misère take-away without sign-in, last result local."
+    reason: "The complete misère take-away game needs no profile, and only its latest match record can remain locally."
   - game: pass-the-picture
-    reason: "Free with no charge, shared canvas no profile, picture downloads locally."
+    reason: "The shared drawing loop needs no account; downloaded pictures stay with the player and names are session-only."
 ---
 
-> **Bottom line:** No Charge Games — 17 free browser games with no charge, no account required. Also written as one word nocharge, searchable as no charge games with a space.
+> **Bottom line:** Every currently published NoCharge game is included because its complete play loop is available without an account, subscription, or required purchase. The collection is a catalog, not a ranking.
 
-NoCharge is No Charge Games. All 17 games are free with no charge and keep results only in this browser.
+The NoCharge name is sometimes read as “no charge games.” This collection gives that phrase a concrete inclusion rule: the game must open directly, allow a complete session, and avoid account-only progression. Advertising or optional affiliate links elsewhere on the site do not alter a game’s rules, score, or access.
 
-## Why no charge games matters for search
+## How the rule is applied
 
-Players search both "nocharge" (one word, brand) and "no charge games" (with space, intent). This collection explicitly targets the spaced phrase while keeping brand intact.
-
-## Inclusion method in practice
-
-- **Free with no charge:** Price 0, no subscription.
-- **No account:** Full loop without sign-in.
-- **Local-only:** Scores stay in localStorage, never uploaded.
-- **Verifiable:** Game pages document storage and controls.
-
-## What you will find
-
-| Game | Session | Why it fits no charge games |
+| Requirement | Included behavior | Excluded behavior |
 |---|---|---|
-| Memory Match | 2-4 min | Free, no account, local best |
-| Word Tile Rush | 3-5 min | Free, best score local |
-| Color Flip | 3-8 min | Free, turn-based untimed mode |
-| Beacon Lattice | 5-15 min | Free, 24 puzzles, local progress |
-| Klondike | 5-20 min | Free, solitaire with undo |
-| FreeCell | 5-20 min | Free, all cards face-up |
-| Nonogram | 5-15 min | Free, a11y text view |
-| 2048 | 3-10 min | Free, best tile local |
-| Tile Garden | 5-12 min | Free, calm merge |
-| Word Search | 3-8 min | Free, 8x8 and 10x10 |
-| Mini Sudoku | 5-10 min | Free, 6x6 keyboard-friendly |
-| Tic-Tac-Toe etc. | 2-5 min | Free, Pass & Play shared device |
+| Access | Open the complete game from its public route | Sign-in or payment required before the play loop |
+| Progress | Optional documented values in local browser storage | Account-only saves or a required cloud profile |
+| Players | Solo play or two people sharing one device | A claim of online multiplayer when none exists |
+| Commercial material | A labeled banner outside gameplay can appear on an eligible page | A purchase required to start, continue, or finish |
+| Review | Membership follows the current published registry | Draft, removed, or inaccessible routes |
 
-## No-purchase and privacy notes
+NoCharge currently has eleven solo games and six Pass & Play games. The cards below explain each inclusion separately and link to the current game route. Session estimates differ, and free access is not a promise that every game has the same controls, timing, accessibility path, or kind of saved result.
 
-You already have what you need: a current browser. No special hardware or purchase needed. Scores are device-specific. See Privacy and Help for controls. Ambient sound is procedural and stops when tab hidden.
+## Solo and shared-device choices
 
-## Next action
+The solo catalog ranges from short matching and word sessions to card and logic games. Memory Match, Beacon Lattice, Nonogram, Word Search, and Mini Sudoku can be useful when an untimed puzzle is preferred. Word Tile Rush has a timed rising-grid loop. Color Flip includes both a visual mode and a turn-based mode. Klondike, FreeCell, Twenty Forty-Eight, and Tile Garden each use their own rules and storage values.
 
-Open Arcade and play one run with no charge. Check My Arcade for local progress after meaningful play.
+Pass & Play means two people take turns on the same device. Tic-Tac-Toe, Dots & Boxes, Four in a Row, Reversi, Last Token, and Pass the Picture use a handoff flow; they are not online multiplayer games and do not create player accounts. Names are session-only, while one bounded most-recent match record per game can be shown in My Arcade.
 
-## Additional context for AdSense and SEO depth
+## Local results and their limits
 
-This collection now exceeds 350 words with original editorial after BLUF, satisfying substance threshold. It provides a comparison table, inclusion method, and limitations so the page is useful even without affiliate links. For search engines, the phrase no charge games appears naturally alongside alternate name nocharge, helping connect one-word brand searches and spaced intent searches.
+A retained score or progress value stays in the current browser and does not synchronize. A private window may discard it, a different device will not have it, and clearing site storage can remove it. NoCharge cannot recover local results because it has no profile service. Use [Privacy](/privacy/) for the exact clearing boundary and [My Arcade](/my-arcade/) to inspect supported values already present in this browser.
 
-| Check | Detail |
-|---|---|
-| Word count | Now >350 unique words |
-| Paragraphs | At least 4 original paragraphs |
-| Navigation | Reachable within 2 clicks from homepage via footer Collections |
-| Legal | Privacy, Terms, About, Contact linked |
+“At no charge” applies to access to NoCharge’s own game loop. It does not mean internet service, hardware, electricity, or an optional third-party purchase has no cost. Quiet Setup affiliate links are separate from the arcade and never unlock game content.
 
-No price, discount, or review claims are made. The page remains useful without affiliate links and makes no health or performance promises.
+## Choosing a next game
+
+Use the cards below to compare genre and estimated session length, then open the complete guide for the exact controls, scoring, timing, and storage behavior. If you want a narrower grouping, the other collections cover short breaks, keyboard-friendly play, reduced-pressure play, games without accounts, and Pass & Play.

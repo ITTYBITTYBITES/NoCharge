@@ -17,11 +17,6 @@ affiliateLinks:
     purpose: "Compare quiet keyboard options after identifying task, space, and compatibility needs."
     suitableFor: "Readers who have checked existing equipment and want to compare quiet keyboard styles."
     limitations: "Search results change, labels vary, and NoCharge did no hands-on testing of listed items."
-  - label: "Browse quiet keyboards on Amazon (paid link)"
-    url: "https://www.amazon.com/s?k=quiet+keyboard&tag=nocharge-20"
-    purpose: "Compare quiet keyboard options after identifying task, space, and compatibility needs."
-    suitableFor: "Readers who have checked existing equipment and want to compare quiet keyboard styles."
-    limitations: "Search results change, labels vary, and NoCharge did no hands-on testing of listed items."
 ---
 
 > **Bottom line:** Practical editorial research on keyboard case resonance and desk coupling — tradeoffs, no-purchase checks, and limits, without health or performance promises. Check layout, switch feel, and return policy before buying; test existing boards first.

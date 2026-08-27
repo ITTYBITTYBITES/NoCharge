@@ -20,7 +20,7 @@ const schema = [
   },
 ];
 ---
-<BaseLayout title="Privacy Policy" description="NoCharge privacy policy: local storage, optional analytics, advertising, and data controls." path="/privacy-policy/" schema={schema} showAds={false}>
+<BaseLayout title="Privacy Policy" description="NoCharge privacy policy: local storage, optional analytics, advertising, and data controls." path="/privacy-policy/" canonicalPath="/privacy/" schema={schema} showAds={false} noIndex={true}>
   <div class="policy-page">
     <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Privacy Policy' }]} />
     <p class="eyebrow">Policy</p>
@@ -29,7 +29,6 @@ const schema = [
     <p>If you are not redirected, <a href="/privacy/">open Privacy</a>.</p>
   </div>
   <meta http-equiv="refresh" content="0; url=/privacy/" />
-  <link rel="canonical" href="https://nocharge.net/privacy/" />
 </BaseLayout>
 
 <style>

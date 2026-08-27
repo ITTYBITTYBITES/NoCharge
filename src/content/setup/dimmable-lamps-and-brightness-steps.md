@@ -17,11 +17,6 @@ affiliateLinks:
     purpose: "Compare desk lamp dimmable options after identifying task, space, and compatibility needs."
     suitableFor: "Readers who have checked existing equipment and want to compare desk lamp dimmable styles."
     limitations: "Search results change, labels vary, and NoCharge did no hands-on testing of listed items."
-  - label: "Browse dimmable desk lamps on Amazon (paid link)"
-    url: "https://www.amazon.com/s?k=desk+lamp+dimmable&tag=nocharge-20"
-    purpose: "Compare desk lamp dimmable options after identifying task, space, and compatibility needs."
-    suitableFor: "Readers who have checked existing equipment and want to compare desk lamp dimmable styles."
-    limitations: "Search results change, labels vary, and NoCharge did no hands-on testing of listed items."
 ---
 
 > **Bottom line:** Practical editorial research on dimmable lamps and brightness steps — tradeoffs, no-purchase checks, and limits, without health or performance promises. Try dimming, repositioning, and bias light first; check arm reach and glare.

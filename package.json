@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "astro dev --host 0.0.0.0",
     "start": "astro dev --host 0.0.0.0",
-    "check": "npm run test:unit && astro check",
-    "build": "astro build",
+    "check": "npm run audit:content && npm run check:game-pins && npm run test:unit && astro check",
+    "build": "astro build && npm run verify:build",
     "test:e2e": "npm run build && playwright test",
     "test:e2e:matrix": "cross-env FULL_BROWSER_MATRIX=1 playwright test",
     "test:consent-network": "npm run build && playwright test tests/e2e/consent.spec.ts --project=chromium",
@@ -27,13 +27,17 @@
     "art:word-search": "node scripts/generate-new-game-art.mjs word-search",
     "art:mini-sudoku": "node scripts/generate-new-game-art.mjs mini-sudoku",
     "art:solo-new": "npm run art:klondike && npm run art:freecell && npm run art:nonogram && npm run art:2048 && npm run art:tile-garden",
+    "art:game-pins": "node scripts/generate-game-pins.mjs",
     "art:brand": "node scripts/generate-brand-assets.mjs",
     "capture:beacon": "node scripts/capture-beacon-screenshots.mjs",
     "lighthouse": "lhci autorun",
     "validate:html": "html-validate \"dist/**/*.html\"",
     "check:links": "node scripts/check-internal-links.mjs",
+    "audit:content": "node scripts/audit-content-quality.mjs",
+    "check:game-pins": "node scripts/generate-game-pins.mjs && git diff --exit-code -- 'public/game-art/*/pin-1000x1500.jpg' 'public/game-art/*/pin-1000x1500.webp'",
     "validate:sitemap": "node scripts/validate-sitemap.mjs",
     "inspect:structured-data": "node scripts/inspect-structured-data.mjs",
+    "validate:faq": "node scripts/validate-faq-schema.mjs",
     "check:assets": "node scripts/check-asset-budget.mjs",
     "validate:setup": "node scripts/validate-quiet-setup.mjs",
     "validate:feed": "node scripts/validate-setup-feed.mjs && node scripts/validate-general-feed.mjs",
@@ -41,7 +45,8 @@
     "validate:media-kit": "node scripts/validate-media-kit.mjs",
     "validate:brand-media": "node scripts/validate-brand-media.mjs",
     "kit:media": "node scripts/generate-media-kit.mjs",
-    "inspect:favicons": "node scripts/inspect-favicons.mjs"
+    "inspect:favicons": "node scripts/inspect-favicons.mjs",
+    "verify:build": "npm run validate:html && npm run check:links && npm run validate:sitemap && npm run inspect:structured-data && npm run validate:faq && npm run check:assets && npm run validate:setup && npm run validate:feed && npm run validate:brand && npm run validate:brand-media && npm run inspect:favicons"
   },
   "engines": {
     "node": ">=22.12.0"
@@ -75,5 +80,14 @@
     "sharp": "^0.35.3",
     "typescript": "^6.0.3",
     "vitest": "^4.1.10"
+  },
+  "overrides": {
+    "extract-zip": "2.0.1",
+    "tmp": "0.2.7",
+    "uuid": "11.1.1",
+    "inquirer": "9.3.8",
+    "lighthouse": "13.4.1",
+    "puppeteer-core": "25.9.0",
+    "@puppeteer/browsers": "3.2.1"
   }
 }
