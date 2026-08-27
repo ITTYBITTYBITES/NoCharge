@@ -2,10 +2,21 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { buildGameFacts } from '../lib/game-catalog';
 
 const entries = (await getCollection('changelog'))
   .filter((entry) => !entry.data.draft)
   .sort((a, b) => b.data.date.localeCompare(a.data.date) || a.data.title.localeCompare(b.data.title));
+
+const games = (await getCollection('games')).filter((game) => !game.data.draft).sort((a, b) => a.data.order - b.data.order);
+const registry = buildGameFacts(games).map((fact) => ({
+  title: fact.title,
+  releasedAt: fact.releasedAt,
+  updatedAt: fact.updatedAt,
+  players: fact.players,
+  href: `/games/${fact.slug}/`,
+}));
+const registryReviewed = [...new Set(registry.map((fact) => fact.updatedAt))].sort().at(-1) ?? entries[0]?.data.date;
 
 const typeLabel: Record<(typeof entries)[number]['data']['type'], string> = {
   launch: 'Launch',
@@ -78,6 +89,32 @@ const schema = [
         Entries describe changes that are available on the site, not future plans.
       </p>
     </header>
+
+    <section class="registry-log panel" aria-labelledby="registry-log-heading">
+      <div>
+        <p class="section-kicker">Public game registry</p>
+        <h2 id="registry-log-heading">Game release log</h2>
+        <p>
+          Every current game with its catalog release and update dates. The registry is generated from the same
+          catalog as the Arcade; review date <time datetime={registryReviewed}>{registryReviewed}</time>.
+        </p>
+      </div>
+      <div class="registry-log__scroll" aria-label="Game registry log table" tabindex="0">
+        <table>
+          <thead><tr><th>Game</th><th>Players</th><th>Released</th><th>Updated</th></tr></thead>
+          <tbody>
+            {registry.map((fact) => (
+              <tr>
+                <td><a href={fact.href}>{fact.title}</a></td>
+                <td>{fact.players === 'pass-and-play' ? 'Pass &amp; Play' : 'Solo'}</td>
+                <td><time datetime={fact.releasedAt}>{fact.releasedAt}</time></td>
+                <td><time datetime={fact.updatedAt}>{fact.updatedAt}</time></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
 
     <section class="changelog-list" aria-labelledby="changelog-list-heading">
       <h2 id="changelog-list-heading" class="sr-only">Changelog entries</h2>
@@ -164,4 +201,39 @@ const schema = [
       grid-template-columns: 9rem minmax(0, 1fr);
     }
   }
+.registry-log {
+    display: grid;
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+
+  .registry-log > div:first-child {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .registry-log__scroll {
+    max-width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 0.6rem;
+  }
+
+  .registry-log table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.84rem;
+    text-align: left;
+  }
+
+  .registry-log th,
+  .registry-log td {
+    padding: 0.45rem 0.6rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .registry-log a {
+    color: var(--accent-strong);
+  }
+
 </style>

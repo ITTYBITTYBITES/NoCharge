@@ -1,0 +1,398 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { DAILY_DATE_MODEL, DAILY_SLOTS, DAILY_HUB_STORAGE_KEYS } from '../config/dailies';
+import { REGISTRY_REVIEW_DATE } from '../lib/game-catalog';
+
+const liveCount = DAILY_SLOTS.filter((slot) => slot.status === 'live').length;
+const plannedCount = DAILY_SLOTS.length - liveCount;
+
+const faqs = [
+  {
+    q: 'What makes a NoCharge daily different from a normal game?',
+    a: 'Nothing about the rules changes. The puzzle is chosen by the date, so everyone sees the same layout that day, and a small streak counter records how many days in a row you solved it on this device.',
+  },
+  {
+    q: 'Do I need an account for daily streaks?',
+    a: 'No. The streak is stored in this browser only and never synchronizes. Clearing site data or using Clear game data removes it.',
+  },
+  {
+    q: 'Which timezone decides the daily?',
+    a: 'The device’s local date at the moment the puzzle is generated. Late-evening play in one timezone is not the same puzzle as the same clock time in another.',
+  },
+  {
+    q: 'How are difficulty and “solved” judged?',
+    a: 'A daily is solved when its end condition is met by the rules of that game. Guides explain each end condition. Practice modes use the same rules without the date seed or streak.',
+  },
+  {
+    q: 'Can I practice instead of playing the daily?',
+    a: 'Yes. Every daily game keeps an untimed practice mode that never touches the streak. Dailies are optional; NoCharge does not pressure a return visit.',
+  },
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': 'https://nocharge.net/daily/#page',
+    name: 'NoCharge Daily',
+    description: 'Date-seeded local daily puzzles with on-device streaks, practice modes, and no account.',
+    url: 'https://nocharge.net/daily/',
+    dateModified: REGISTRY_REVIEW_DATE,
+    isAccessibleForFree: true,
+    publisher: { '@type': 'Organization', name: 'NoCharge', url: 'https://nocharge.net/' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    '@id': 'https://nocharge.net/daily/#faq',
+    mainEntity: faqs.map(({ q, a }) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nocharge.net/' },
+      { '@type': 'ListItem', position: 2, name: 'Daily', item: 'https://nocharge.net/daily/' },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="Daily — local puzzles, one per date"
+  description="Date-seeded daily puzzles that stay on this device: streak only in this browser, practice modes, no account."
+  path="/daily/"
+  schema={schema}
+  showAds={false}
+>
+  <div class="daily-page">
+    <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Daily' }]} />
+    <header>
+      <p class="eyebrow">One puzzle per date, only in this browser</p>
+      <h1 class="page-title">The daily hub.</h1>
+      <p class="lede">
+        Each slot is the same puzzle generator with a date-seeded layout. Your streak and solved state live only in this browser — no account, no cloud, no cross-device sync. Practice is always available and never touches the streak.
+      </p>
+      <p class="daily-date" data-daily-date>Today: <time></time></p>
+      <dl class="daily-facts">
+        <div><dt>{DAILY_SLOTS.length}</dt><dd>slots</dd></div>
+        <div><dt>{liveCount}</dt><dd>live now</dd></div>
+        <div><dt>{plannedCount}</dt><dd>planned</dd></div>
+        <div><dt>0</dt><dd>accounts needed</dd></div>
+      </dl>
+    </header>
+
+    <section class="daily-slots panel" aria-labelledby="daily-slots-heading">
+      <div class="daily-slots__heading">
+        <p class="section-kicker">Date-seeded slots</p>
+        <h2 id="daily-slots-heading">Today’s dailies</h2>
+        <p>Slots become playable as their games ship. Each one links to practice mode too, because you should always be able to play without a date or a streak.</p>
+      </div>
+      <div class="daily-grid">
+        {
+          DAILY_SLOTS.map((slot) => {
+            const href = slot.status === 'live' ? `/games/${slot.slug}/?daily=1` : '';
+            return (
+              <article class:list={['daily-card', { 'daily-card--planned': slot.status === 'planned' }]}>
+                <div class="daily-card__top">
+                  <h3>{slot.title}</h3>
+                  <span class:list={['daily-card__status', `daily-card__status--${slot.status}`]}>
+                    {slot.status === 'live' ? 'Live' : 'Planned'}
+                  </span>
+                </div>
+                <p>{slot.blurb}</p>
+                <p class="daily-card__keys">
+                  Local keys: <code>{slot.storageKeys.join(', ')}</code>
+                </p>
+                {slot.status === 'live' ? (
+                  <p class="daily-card__actions">
+                    <a class="btn" href={href}>Play today’s {slot.title.toLowerCase()}</a>
+                    <a href={`/games/${slot.slug}/`}>Open the game</a>
+                  </p>
+                ) : (
+                  <p class="daily-card__note">Comes with the {slot.slug === 'word-loom' ? 'daily word game' : slot.title.toLowerCase()} release.</p>
+                )}
+              </article>
+            );
+          })
+        }
+      </div>
+      <p class="daily-slots__model"><strong>Date model:</strong> {DAILY_DATE_MODEL}</p>
+    </section>
+
+    <section class="prose" aria-labelledby="how-it-works-heading">
+      <h2 id="how-it-works-heading">How a local daily works</h2>
+      <ol>
+        <li>The page reads the device’s local date and seeds the puzzle with <code>YYYY-MM-DD</code>.</li>
+        <li>Solving writes only to this browser’s <code>nocharge:daily:*</code> keys: solved date set, streak count, and the day each was solved.</li>
+        <li>Practice mode runs the same rules with a random puzzle; it reads or writes no streak keys.</li>
+        <li>The hub never knows that you played. There is no server request for the streak, no login, and no ranking.</li>
+      </ol>
+      <h3>What “streak” means here</h3>
+      <p>A streak is a count of consecutive device-local dates on which you solved that slot. If you miss a day, the streak restarts at one the next time you solve. It is not a reward, a score, or a claim about skill; it exists only to help you see your own rhythm.</p>
+    </section>
+
+    <section class="prose" aria-labelledby="limits-heading">
+      <h2 id="limits-heading">What the daily is not</h2>
+      <ul>
+        <li>Not a subscription, notification, or habit-coaching system. NoCharge sends no reminders.</li>
+        <li>Not a cross-device feature: a streak on your phone is not visible on your laptop.</li>
+        <li>Not a ranking: there are no leaderboards or “streak of the day” comparisons.</li>
+        <li>Not a claim about memory, focus, or cognitive benefit.</li>
+      </ul>
+    </section>
+
+    <section class="prose" aria-labelledby="faq">
+      <h2 id="faq">FAQ</h2>
+      <dl class="daily-faq">
+        {faqs.map(({ q, a }) => (
+          <>
+            <dt>{q}</dt>
+            <dd>{a}</dd>
+          </>
+        ))}
+      </dl>
+    </section>
+
+    <section class="daily-next panel" aria-labelledby="daily-next-heading">
+      <div>
+        <p class="section-kicker">Next action</p>
+        <h2 id="daily-next-heading">Play something today</h2>
+      </div>
+      <ul>
+        <li><a href="/arcade/">Browse the arcade →</a><p>Every game is available without a date or a streak.</p></li>
+        <li><a href="/tools/discovery-wheel/">Use the Discovery Wheel →</a><p>Find a game for the time you have right now.</p></li>
+        <li><a href="/articles/registry-facts/">Read the registry facts →</a><p>Current counts and review dates, updated with each catalog change.</p></li>
+      </ul>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  // The date shown is the device-local date — the same value that seeds a
+  // daily. The page itself is static; nothing is sent anywhere.
+  const element = document.querySelector('[data-daily-date] time');
+  if (element) {
+    const now = new Date();
+    element.textContent = new Intl.DateTimeFormat('en', { dateStyle: 'full', timeZoneName: 'short' }).format(now);
+  }
+</script>
+
+<style>
+  .daily-page {
+    display: grid;
+    gap: clamp(2rem, 6vw, 4rem);
+    min-width: 0;
+  }
+
+  .daily-date {
+    margin-top: 0.8rem;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  .daily-facts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.65rem;
+    max-width: 34rem;
+    margin: 1.3rem 0 0;
+  }
+
+  .daily-facts div {
+    padding: 0.8rem;
+    border: 1px solid var(--line);
+    border-radius: 0.75rem;
+    background: var(--panel);
+  }
+
+  .daily-facts dt {
+    color: var(--accent-strong);
+    font-size: 1.3rem;
+    font-weight: 800;
+  }
+
+  .daily-facts dd {
+    margin: 0.1rem 0 0;
+    color: var(--muted);
+    font-size: 0.72rem;
+  }
+
+  .daily-slots {
+    display: grid;
+    gap: 1.25rem;
+    padding: clamp(1.2rem, 4vw, 2rem);
+  }
+
+  .daily-slots__heading {
+    display: grid;
+    gap: 0.4rem;
+    max-width: 46rem;
+  }
+
+  .daily-grid {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .daily-card {
+    display: grid;
+    gap: 0.6rem;
+    padding: 1.1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--panel-2);
+  }
+
+  .daily-card--planned {
+    opacity: 0.85;
+  }
+
+  .daily-card__top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .daily-card__top h3 {
+    font-size: 1.15rem;
+  }
+
+  .daily-card__status {
+    padding: 0.15rem 0.55rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .daily-card__status--live {
+    border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+    color: var(--accent-strong);
+  }
+
+  .daily-card p {
+    color: var(--muted);
+    font-size: 0.87rem;
+  }
+
+  .daily-card__keys code {
+    color: var(--text);
+    font-size: 0.72rem;
+    overflow-wrap: anywhere;
+  }
+
+  .daily-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.9rem;
+  }
+
+  .daily-card__actions a:not(.btn) {
+    color: var(--accent-strong);
+    font-weight: 700;
+  }
+
+  .daily-card__note {
+    font-size: 0.8rem;
+  }
+
+  .daily-slots__model {
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+
+  .prose {
+    display: grid;
+    gap: 1rem;
+    max-width: 46rem;
+  }
+
+  .prose ol,
+  .prose ul {
+    display: grid;
+    gap: 0.5rem;
+    padding-left: 1.3rem;
+  }
+
+  .daily-faq {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .daily-faq dt {
+    font-weight: 700;
+  }
+
+  .daily-faq dd {
+    margin: 0.25rem 0 0;
+    color: var(--muted);
+  }
+
+  .daily-next {
+    display: grid;
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+
+  .daily-next > div {
+    display: grid;
+    gap: 0.3rem;
+  }
+
+  .daily-next ul {
+    display: grid;
+    gap: 0.9rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .daily-next li {
+    display: grid;
+    gap: 0.2rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .daily-next a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--accent-strong);
+    font-weight: 700;
+  }
+
+  .daily-next p {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  @media (min-width: 52rem) {
+    .daily-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .daily-next {
+      grid-template-columns: minmax(16rem, 0.8fr) minmax(20rem, 1.2fr);
+      align-items: start;
+    }
+  }
+
+  @media (max-width: 34rem) {
+    .daily-facts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

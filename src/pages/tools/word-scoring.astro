@@ -1,0 +1,197 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+
+const faqs = [
+  {
+    q: 'What is the Word Tile Rush formula?',
+    a: 'NoCharge Word Tile Rush scores a word by the sum of its letter length terms: each tile contributes a base plus a length bonus, so longer words score more per tile. The exact constants are in the guide.',
+  },
+  {
+    q: 'Why is the calculator "generic length-squared"?',
+    a: 'It illustrates the principle with a simple function — points grow with word length (and length squared in one view) — so you can see why a 5-letter word is worth more than two 3-letter words. It is education about the formula family, not a claim about NoCharge\'s exact numbers.',
+  },
+  {
+    q: 'Does it affect my game score?',
+    a: 'No. The calculator runs in this page and stores nothing. The game itself uses its own scoring function from the running code.',
+  },
+  {
+    q: 'Why show two formulas?',
+    a: 'Length bonus (linear: +2 per extra letter) and length-squared (polynomial) behave differently at the top end. Comparing them is the point of the tool.',
+  },
+];
+---
+
+<ToolPage
+  title="Word length & scoring explainer"
+  eyebrow="Why longer words pay off"
+  description="Compare linear and length-squared scoring curves for word tiles, see the Word Tile Rush rule in plain terms, and test your own word lengths."
+  path="/tools/word-scoring/"
+  category="Learning"
+  bottomLine="The explainer shows how points grow with word length using two common formulas — a +2 per-letter bonus and a length-squared curve. It explains the family behind Word Tile Rush's scoring, links to the exact guide formula, and never claims the calculator changes any game."
+  faqs={faqs}
+  embedCode={`<iframe src="https://nocharge.net/tools/word-scoring/" width="400" height="620" title="NoCharge word scoring explainer"></iframe>`}
+  nextActions={[
+    { href: '/games/word-tile-rush/', label: 'Play Word Tile Rush', note: 'The timed word chain this explainer describes.' },
+    { href: '/articles/word-tile-rush-longer-word-scoring/', label: 'Longer-word scoring article', note: 'How the live scoring formula rewards length.' },
+    { href: '/guides/word-tile-rush/', label: 'Word Tile Rush guide', note: 'Exact scoring constants and controls.' },
+  ]}
+>
+  <section class="panel word-scorer" aria-labelledby="scorer-heading">
+    <div>
+      <p class="section-kicker">Compare curves</p>
+      <h2 id="scorer-heading">Points per word length</h2>
+      <p>Choose a word length and read the two formulas. The bars stay proportional; the table gives exact values.</p>
+    </div>
+    <div class="scorer-controls">
+      <label>Word length
+        <input type="number" min="2" max="10" value="4" data-scorer-length aria-label="Word length" />
+      </label>
+    </div>
+    <div class="scorer-bars" data-scorer-bars aria-hidden="true">
+      <div class="scorer-bar"><span>Linear (+2 per letter)</span><div class="bar-track"><div class="bar" data-bar-linear></div></div><code data-value-linear></code></div>
+      <div class="scorer-bar"><span>Length squared</span><div class="bar-track"><div class="bar is-squared" data-bar-squared></div></div><code data-value-squared></code></div>
+    </div>
+    <section class="scorer-table" aria-label="Scoring formula comparison for common word lengths" tabindex="0">
+      <table>
+        <thead><tr><th>Word length</th><th>Linear (+2/letter)</th><th>Length squared</th></tr></thead>
+        <tbody data-scorer-rows></tbody>
+      </table>
+    </section>
+    <p class="scorer-note">Both formulas assume a base of 1 point per tile. They are models for understanding why long words dominate — NoCharge Word Tile Rush uses its own documented formula, which the guide states exactly.</p>
+  </section>
+</ToolPage>
+
+<script>
+  const lengthInput = document.querySelector<HTMLInputElement>('[data-scorer-length]');
+  const barLinear = document.querySelector<HTMLElement>('[data-bar-linear]');
+  const barSquared = document.querySelector<HTMLElement>('[data-bar-squared]');
+  const valueLinear = document.querySelector<HTMLElement>('[data-value-linear]');
+  const valueSquared = document.querySelector<HTMLElement>('[data-value-squared]');
+  const rows = document.querySelector<HTMLElement>('[data-scorer-rows]');
+
+  const linear = (length: number) => length * 1 + (length - 1) * 2;
+  const squared = (length: number) => Math.round(length * length * 1.5);
+
+  const render = () => {
+    if (!lengthInput || !barLinear || !barSquared || !valueLinear || !valueSquared) return;
+    const length = Math.max(2, Math.min(10, Number(lengthInput.value) || 4));
+    const l = linear(length);
+    const s = squared(length);
+    const max = squared(10);
+    barLinear.style.width = `${Math.round((l / max) * 100)}%`;
+    barSquared.style.width = `${Math.round((s / max) * 100)}%`;
+    valueLinear.textContent = `${l} points`;
+    valueSquared.textContent = `${s} points`;
+    if (rows) {
+      rows.replaceChildren();
+      for (let n = 2; n <= 10; n += 1) {
+        const row = document.createElement('tr');
+        const cells = [String(n), String(linear(n)), String(squared(n))];
+        for (const text of cells) {
+          const cell = document.createElement('td');
+          cell.textContent = text;
+          row.append(cell);
+        }
+        rows.append(row);
+      }
+    }
+  };
+
+  lengthInput?.addEventListener('input', render);
+  render();
+</script>
+
+<style>
+  .word-scorer {
+    display: grid;
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+
+  .word-scorer > div:first-child {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .word-scorer > div:first-child p:last-child {
+    color: var(--muted);
+  }
+
+  .scorer-controls label {
+    display: grid;
+    gap: 0.35rem;
+    max-width: 10rem;
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-weight: 650;
+  }
+
+  .scorer-controls input {
+    min-height: 44px;
+    padding: 0.5rem;
+    border: 1px solid var(--line);
+    border-radius: 0.5rem;
+    background: var(--panel-2);
+    color: var(--text);
+  }
+
+  .scorer-bars {
+    display: grid;
+    gap: 0.8rem;
+  }
+
+  .scorer-bar {
+    display: grid;
+    grid-template-columns: minmax(7rem, 1fr) 3fr auto;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  .bar-track {
+    height: 1.2rem;
+    border-radius: 0.4rem;
+    background: var(--panel-2);
+    overflow: hidden;
+  }
+
+  .bar {
+    height: 100%;
+    background: var(--accent);
+    transition: width 160ms ease;
+  }
+
+  .bar.is-squared {
+    background: var(--accent-strong);
+  }
+
+  .scorer-bar code {
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  .scorer-table {
+    max-width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 0.6rem;
+  }
+
+  .scorer-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.84rem;
+    text-align: left;
+  }
+
+  .scorer-table th,
+  .scorer-table td {
+    padding: 0.45rem 0.6rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .scorer-note {
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+</style>

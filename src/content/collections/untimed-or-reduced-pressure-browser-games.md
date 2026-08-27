@@ -38,6 +38,24 @@ games:
     reason: "A calm grid with direct keyboard selection and no timer, account, or competitive pressure."
   - game: mini-sudoku
     reason: "A small keyboard-friendly logic puzzle with no timer, account, or competitive pressure."
+  - game: minesweeper
+    reason: "There is no timer during play; elapsed time is recorded only after a clear and never shown as pressure."
+  - game: hangman
+    reason: "There is no timer during a round; only the six-miss figure sets the end."
+  - game: lights-out
+    reason: "Presses are unlimited and there is no countdown; the board ends only when every light is off."
+  - game: simon
+    reason: "Deciding the next pad takes as long as needed; only the sequence length limits the run."
+  - game: sudoku-9x9
+    reason: "There is no countdown or turn timer; a puzzle ends only when the grid is solved."
+  - game: gomoku
+    reason: "Stones may be considered for as long as the players want; only five in a row ends the board."
+  - game: nine-mens-morris
+    reason: "Placement, movement, and removal have no countdown; only mills and blocked players end the game."
+  - game: word-loom
+    reason: "There is no countdown; six guesses and the word are the only limits."
+  - game: checkers
+    reason: "Positional play has no clock; the game ends on captures or a block."
 ---
 
 This collection is about actual timing behavior, not a claim that every game is easy. Word Tile Rush is deliberately excluded because its rising-grid timer starts after the first selected letter and it has no untimed mode.

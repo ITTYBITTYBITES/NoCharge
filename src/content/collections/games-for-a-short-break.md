@@ -34,6 +34,16 @@ games:
     reason: "A calm grid with direct keyboard selection and no timer, account, or competitive pressure."
   - game: mini-sudoku
     reason: "A small keyboard-friendly logic puzzle with no timer, account, or competitive pressure."
+  - game: hangman
+    reason: "Rounds finish in a few guesses or six misses, so a single round is a two-to-six-minute break by design."
+  - game: lights-out
+    reason: "A 5×5 board clears in a handful of presses, making it a two-to-six-minute logic break."
+  - game: simon
+    reason: "A run reaches its 12-pad target or breaks in about two to five minutes."
+  - game: gomoku
+    reason: "A game can be a deliberate five-minute round or a longer match; session length is player-controlled."
+  - game: word-loom
+    reason: "A single loom resolves in two to five minutes including the daily."
 ---
 
 Session ranges are descriptive, not limits or performance targets. A visitor can stop after one run, replay, or continue through another puzzle.

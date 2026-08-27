@@ -9,7 +9,7 @@
 
 export type PassPlayPlayer = 1 | 2;
 
-/** The six Pass &amp; Play games, in registry order. */
+/** The Pass &amp; Play games, in registry order. */
 export const PASS_PLAY_GAME_IDS = [
   'tic-tac-toe',
   'dots-and-boxes',
@@ -17,6 +17,9 @@ export const PASS_PLAY_GAME_IDS = [
   'reversi',
   'last-token',
   'pass-the-picture',
+  'gomoku',
+  'nine-mens-morris',
+  'checkers',
 ] as const;
 
 export type PassPlayGameId = (typeof PASS_PLAY_GAME_IDS)[number];

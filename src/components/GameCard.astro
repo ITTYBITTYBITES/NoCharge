@@ -13,15 +13,48 @@ interface Props {
   session?: string;
   /** Renders the "2 players" pill for Pass & Play games where a section heading does not already say it. */
   players?: number;
+  /** Structured catalog facets for Arcade filtering (A6). */
+  sessionMax?: number;
+  inputs?: string[];
+  pressure?: string;
+  playersMode?: 'solo' | 'pass-and-play';
+  releasedAt?: string;
+  updatedAt?: string;
+  /** Registry-date chips ("New" / "Updated"), computed by the caller. */
+  chips?: { label: string; kind: 'new' | 'updated' }[];
 }
 
-const { slug, title, tagline, emoji, accent = '#0f9d58', artwork, genre, session, players } = Astro.props;
+const {
+  slug,
+  title,
+  tagline,
+  emoji,
+  accent = '#0f9d58',
+  artwork,
+  genre,
+  session,
+  players,
+  sessionMax,
+  inputs,
+  pressure,
+  playersMode,
+  releasedAt,
+  updatedAt,
+  chips = [],
+} = Astro.props;
 ---
 
 <a
   class:list={['game-card', { 'game-card--artwork': artwork }]}
   href={`/games/${slug}/`}
   style={`--card-accent: ${accent}`}
+  data-game-card
+  data-session-max={sessionMax}
+  data-inputs={(inputs ?? []).join(' ')}
+  data-pressure={pressure}
+  data-players={playersMode}
+  data-released={releasedAt}
+  data-updated={updatedAt}
 >
   {
     artwork ? (
@@ -43,12 +76,15 @@ const { slug, title, tagline, emoji, accent = '#0f9d58', artwork, genre, session
     <h3 class="game-card__title">{title}</h3>
     <p class="game-card__tagline">{tagline}</p>
     {
-      (genre || session || players === 2) && (
+      (genre || session || players === 2 || chips.length > 0) && (
         <p class="game-card__meta">
           {genre && <span>{genre}</span>}
           {genre && session && <span aria-hidden="true">·</span>}
           {session && <span>{session}</span>}
           {players === 2 && <span class="game-card__pill">2 players</span>}
+          {chips.map((chip) => (
+            <span class:list={['game-card__chip', `game-card__chip--${chip.kind}`]}>{chip.label}</span>
+          ))}
         </p>
       )
     }
@@ -139,6 +175,25 @@ const { slug, title, tagline, emoji, accent = '#0f9d58', artwork, genre, session
     font-size: 0.68rem;
     font-weight: 700;
     letter-spacing: 0.03em;
+  }
+
+  .game-card__chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.4rem;
+    padding: 0.12rem 0.5rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .game-card__chip--new {
+    border-color: color-mix(in srgb, var(--card-accent) 55%, transparent);
+    color: color-mix(in srgb, var(--card-accent) 85%, var(--text));
   }
 
   .game-card__cta {

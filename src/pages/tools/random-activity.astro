@@ -1,0 +1,122 @@
+---
+import { getCollection } from 'astro:content';
+import ToolPage from '../../components/ToolPage.astro';
+import { buildGameFacts } from '../../lib/game-catalog';
+
+const games = (await getCollection('games')).filter((game) => !game.data.draft);
+const facts = buildGameFacts(games);
+const gameItems = facts.map((fact) => ({
+  kind: 'game' as const,
+  title: fact.title,
+  href: `/games/${fact.slug}/`,
+  note: fact.blurb,
+}));
+const articleItems = [
+  { kind: 'article' as const, title: 'What Quiet Arcade means at NoCharge', href: '/learn/what-is-quiet-arcade/', note: 'A definition with receipts' },
+  { kind: 'article' as const, title: 'Registry facts', href: '/articles/registry-facts/', note: 'Current counts and the last review date' },
+  { kind: 'article' as const, title: 'Where high scores go with no login', href: '/articles/where-high-scores-go/', note: 'Local storage, explained' },
+  { kind: 'guide' as const, title: 'Untimed play explainer', href: '/learn/untimed-play/', note: 'What "untimed" does and does not mean' },
+];
+const toolItems = [
+  { kind: 'tool' as const, title: 'Discovery Wheel', href: '/tools/discovery-wheel/', note: 'Filter by time, input, pace, players' },
+  { kind: 'tool' as const, title: 'Ambient Mixer', href: '/tools/ambient-mixer/', note: 'Synthesize a quiet texture' },
+  { kind: 'tool' as const, title: 'Contrast checker', href: '/tools/contrast-checker/', note: 'Verify a palette pair' },
+];
+const items = [...gameItems, ...articleItems, ...toolItems];
+
+const faqs = [
+  {
+    q: 'Is this a health recommendation?',
+    a: 'No. It chooses at random among NoCharge games, articles, and tools. There is no claim about stress, focus, or any health outcome.',
+  },
+  {
+    q: 'Is the shuffle fair?',
+    a: 'Every item has equal probability on each press, with no weighting by genre or session. The result is a random pick, not a curation.',
+  },
+  {
+    q: 'Does it write anything?',
+    a: 'No. The tool stores nothing and sends nothing. Reloading the page resets the seed.',
+  },
+];
+---
+
+<ToolPage
+  title="Random calm activity"
+  eyebrow="A quiet pick"
+  description="Press once for a random NoCharge game, article, or tool. No weighting, no claims, no algorithm telling you what to do next."
+  path="/tools/random-activity/"
+  category="Play"
+  bottomLine="One press returns one random item — a game to open, an article to read, or a tool to try. Equal probability for every item, no health claims, and nothing stored. If you do not like the pick, press again (or don't)."
+  faqs={faqs}
+  embedCode={`<iframe src="https://nocharge.net/tools/random-activity/" width="400" height="360" title="NoCharge random calm activity"></iframe>`}
+  nextActions={[
+    { href: '/arcade/', label: 'Browse the full Arcade', note: 'Every game, with filters and dates.' },
+    { href: '/tools/discovery-wheel/', label: 'Discovery Wheel', note: 'A deliberate filter instead of a random pick.' },
+    { href: '/articles/registry-facts/', label: 'Registry facts', note: 'What the catalog contains today.' },
+  ]}
+>
+  <section class="panel random-controls" aria-labelledby="random-heading">
+    <div>
+      <p class="section-kicker">One press</p>
+      <h2 id="random-heading">A quiet pick</h2>
+    </div>
+    <button type="button" class="btn" data-random-pick>Pick something calm</button>
+    <div id="random-result" class="random-result" data-items={JSON.stringify(items.map(({ kind, title, href, note }) => ({ kind, title, href, note })))} aria-live="polite">
+      <p>Press the button. If the result is not what you want, that is fine — there is no score for picking again.</p>
+    </div>
+  </section>
+</ToolPage>
+
+<script>
+  interface Item { kind: string; title: string; href: string; note: string; }
+  const pickButton = document.querySelector<HTMLButtonElement>('[data-random-pick]');
+  const result = document.querySelector<HTMLElement>('#random-result');
+  if (pickButton && result) {
+    const items = JSON.parse(result.dataset.items ?? '[]') as Item[];
+    pickButton.addEventListener('click', () => {
+      const item = items[Math.floor(Math.random() * items.length)]!;
+      result.replaceChildren();
+      const heading = document.createElement('h3');
+      const link = document.createElement('a');
+      link.href = item.href;
+      link.textContent = item.title;
+      heading.append(link);
+      const meta = document.createElement('p');
+      meta.textContent = `${item.kind} · ${item.note}`;
+      result.append(heading, meta);
+    });
+  }
+</script>
+
+<style>
+  .random-controls {
+    display: grid;
+    gap: 1rem;
+    padding: 1.25rem;
+    justify-items: start;
+  }
+
+  .random-controls > div:first-child {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .random-result {
+    display: grid;
+    gap: 0.4rem;
+    min-height: 4rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: 0.6rem;
+    background: var(--panel-2);
+  }
+
+  .random-result h3 a {
+    color: var(--accent-strong);
+  }
+
+  .random-result p {
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+</style>

@@ -5,6 +5,9 @@ import { join } from 'node:path';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import GameArtwork from '../components/GameArtwork.astro';
+import { TOOLS } from '../config/tools';
+import { buildGameFacts } from '../lib/game-catalog';
+import { BRAND_BLURB } from '../lib/brand-blurb';
 
 const games = (await getCollection('games'))
   .filter((game) => !game.data.draft)
@@ -13,6 +16,9 @@ const guides = (await getCollection('guides')).filter((guide) => !guide.data.dra
 const articles = (await getCollection('articles')).filter((article) => !article.data.draft);
 const setup = (await getCollection('setup')).filter((entry) => !entry.data.draft);
 const collections = (await getCollection('collections')).filter((entry) => !entry.data.draft);
+const gameFacts = buildGameFacts(games);
+const keyboardComplete = gameFacts.filter((fact) => fact.hasKeyboardComplete).length;
+const untimedOrBoth = gameFacts.filter((fact) => fact.pressure !== 'timed').length;
 
 const publicRoot = join(process.cwd(), 'public');
 const humanSize = (path: string) => {
@@ -85,14 +91,7 @@ const schema = [
 
     <section class="media-section prose" aria-labelledby="media-boilerplate">
       <h2 id="media-boilerplate">Boilerplate description</h2>
-      <p>
-        NoCharge is a small browser arcade that publishes original games, clear player guides, and practical articles
-        about playing well in the browser. The current library has seventeen original games: the eleven solo titles
-        Memory Match, Word Tile Rush, Color Flip, Beacon Lattice, Klondike, FreeCell, Nonogram, 2048, Tile Garden,
-        Word Search, and Mini Sudoku, plus the Pass &amp; Play family — Tic-Tac-Toe, Dots &amp; Boxes, Four in a Row,
-        Reversi, Last Token, and Pass the Picture — for two players sharing one device, each playable immediately without
-        an account, download, or installation.
-      </p>
+      <p>{BRAND_BLURB} The current catalog is {games.length} games — {gameFacts.filter((fact) => fact.players === 'solo').length} solo and {gameFacts.filter((fact) => fact.players === 'pass-and-play').length} Pass &amp; Play — with {guides.length} guides, {collections.length} reviewed collections, {setup.length} Quiet Setup guides, and {TOOLS.length} client-side tools.</p>
       <p>
         The site pairs the arcade with a reference shelf: a definitive guide for every game, focused articles on
         specific mechanics and platform topics, and Quiet Setup, a collection of practical desk-and-device guides.
@@ -116,7 +115,7 @@ const schema = [
         <div><dt>My Arcade</dt><dd>A browser-local dashboard. It is not an account; it reads results already saved in this browser.</dd></div>
         <div><dt>Account</dt><dd>None required. There is no account system, no cloud save, and no synchronization.</dd></div>
         <div><dt>Storage</dt><dd>Scores, progress, and preferences stay in the local browser storage of the device you use.</dd></div>
-        <div><dt>Input</dt><dd>Each game supports phone and desktop input. Memory Match, Word Tile Rush, and Beacon Lattice have native keyboard controls, and Color Flip includes keyboard play and an untimed turn-based mode.</dd></div>
+        <div><dt>Input</dt><dd>{keyboardComplete} of {games.length} games document a complete keyboard path; all but Pass the Picture also accept pointer and touch. {untimedOrBoth} games are untimed by default or offer an untimed mode.</dd></div>
         <div><dt>Audience</dt><dd>General-audience site; not directed to children.</dd></div>
       </dl>
     </section>
@@ -203,6 +202,31 @@ const schema = [
         Memory Match, Word Tile Rush, and Color Flip do not yet have a genuine mounted-DOM gameplay capture on file, so
         no screenshot is offered for them. This gap is documented in the repository review notes.
       </p>
+    </section>
+
+    <section class="media-section prose" aria-labelledby="media-embeds">
+      <h2 id="media-embeds">Embed examples</h2>
+      <p>
+        Tools are designed to be embedded: they run fully in the browser and never upload input. Use a descriptive
+        <code>title</code>, link the source, and review the embed for your own privacy, security, and accessibility
+        requirements. Game pages embed the same way, but the game shell is the primary experience, so NoCharge links to
+        the game page rather than promoting deep embeds of active play.
+      </p>
+      <h3>Tools</h3>
+      <ul class="media-embed-list">
+        {
+          TOOLS.map((tool) => (
+            <li>
+              <h4>{tool.title}</h4>
+              <pre><code>{`<iframe src="https://nocharge.net/tools/${tool.slug}/" width="400" height="600" title="${tool.title}"></iframe>
+<p>Source: <a href="https://nocharge.net/tools/${tool.slug}/">${tool.title}</a></p>`}</code></pre>
+            </li>
+          ))
+        }
+      </ul>
+      <h3>Game page</h3>
+      <pre><code>{`<iframe src="https://nocharge.net/games/memory-match/" width="720" height="900" title="Memory Match — free browser game, no account"></iframe>
+<p>Source: <a href="https://nocharge.net/games/memory-match/">Memory Match at NoCharge</a></p>`}</code></pre>
     </section>
 
     <section class="media-section prose" aria-labelledby="media-contact">
@@ -385,6 +409,28 @@ const schema = [
     height: auto;
     border: 1px solid var(--line);
     border-radius: 1rem;
+  }
+
+  .media-embed-list {
+    display: grid;
+    gap: 1rem;
+    list-style: none;
+    padding: 0;
+  }
+
+  .media-embed-list h4 {
+    margin-bottom: 0.35rem;
+    font-size: 0.95rem;
+  }
+
+  .media-embed-list pre,
+  .media-section pre {
+    overflow-x: auto;
+    padding: 0.85rem;
+    border: 1px solid var(--line);
+    border-radius: 0.5rem;
+    background: var(--panel-2);
+    font-size: 0.78rem;
   }
 
   .media-updated {

@@ -113,6 +113,27 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
         Manual assistive-technology testing remains ongoing. NoCharge does not claim completed testing with NVDA,
         JAWS, VoiceOver, TalkBack, or specific devices until that testing has been performed and recorded.
       </p>
+      <section class="accessibility-matrix" aria-label="Accessibility test matrix" tabindex="0">
+        <table>
+          <thead><tr><th>Check</th><th>Automated</th><th>Manual</th><th>Where it lives</th></tr></thead>
+          <tbody>
+            <tr><td>Semantic structure and headings</td><td>Yes — html-validate on every build</td><td>Reviewer pass on new pages</td><td>CI <code>verify:build</code></td></tr>
+            <tr><td>Duplicate IDs and aria misuse</td><td>Yes — html-validate</td><td>—</td><td>CI <code>verify:build</code></td></tr>
+            <tr><td>axe-core scan on core pages</td><td>Yes — Playwright + @axe-core/playwright</td><td>—</td><td>E2E suite</td></tr>
+            <tr><td>FAQ schema matches visible text</td><td>Yes — validator</td><td>—</td><td>CI <code>verify:build</code></td></tr>
+            <tr><td>Keyboard loop per game</td><td>Game unit tests + E2E smoke</td><td>Tab-through on each new game</td><td><code>tests/e2e/expansion-games.spec.ts</code></td></tr>
+            <tr><td>Visible focus on grids</td><td>CSS review + roving tabindex tests</td><td>Keyboard walk</td><td>Game components</td></tr>
+            <tr><td>Non-color-only states</td><td>—</td><td>Color-blind simulation review</td><td>Game guides state labels</td></tr>
+            <tr><td>Reduced motion</td><td>CSS <code>@media</code> review</td><td><a href="/tools/reduced-motion-tester/">Tester tool</a></td><td>Global styles</td></tr>
+            <tr><td>Screen readers (NVDA, JAWS, VoiceOver, TalkBack)</td><td>—</td><td>Not yet recorded — stated honestly</td><td>This page</td></tr>
+          </tbody>
+        </table>
+      </section>
+      <p>
+        Games also ship a guide section that states their controls and any pointer/touch requirement, so a keyboard
+        player never has to discover a blocker mid-game. Any manual test that finds a barrier becomes a changelog
+        entry and a regression test where feasible.
+      </p>
     </section>
 
     <section aria-labelledby="accessibility-report">
@@ -162,4 +183,29 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
   .trust-page section + section {
     border-top: 1px solid var(--line);
   }
+.accessibility-matrix {
+    max-width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 0.6rem;
+  }
+
+  .accessibility-matrix:focus-visible {
+    outline: 2px solid var(--accent-strong);
+  }
+
+  .accessibility-matrix table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.84rem;
+    text-align: left;
+  }
+
+  .accessibility-matrix th,
+  .accessibility-matrix td {
+    padding: 0.5rem 0.6rem;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+
 </style>

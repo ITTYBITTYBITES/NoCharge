@@ -20,10 +20,10 @@ A growing collection of browser games and practical player guides built with **A
 
 ## Games
 
-NoCharge currently publishes 17 games:
+NoCharge currently publishes 26 games:
 
-- **Solo:** Memory Match, Word Tile Rush, Color Flip, Beacon Lattice, Klondike, FreeCell, Nonogram, Twenty Forty-Eight, Tile Garden, Word Search, and Mini Sudoku.
-- **Pass & Play:** Tic-Tac-Toe, Dots & Boxes, Four in a Row, Reversi, Last Token, and Pass the Picture.
+- **Solo:** Memory Match, Word Tile Rush, Color Flip, Beacon Lattice, Klondike, FreeCell, Nonogram, Twenty Forty-Eight, Tile Garden, Word Search, Mini Sudoku, Minesweeper, Hangman, Lights Out, Simon, Sudoku 9×9, and Word Loom.
+- **Pass & Play:** Tic-Tac-Toe, Dots & Boxes, Four in a Row, Reversi, Last Token, Pass the Picture, Gomoku, Nine Men's Morris, and Checkers.
 
 ## Guides and articles
 

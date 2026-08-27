@@ -40,6 +40,24 @@ games:
     reason: "The complete misère take-away game needs no profile, and only its latest match record can remain locally."
   - game: pass-the-picture
     reason: "The shared drawing loop needs no account; downloaded pictures stay with the player and names are session-only."
+  - game: minesweeper
+    reason: "Reveal-safe classic minesweeper with flags, chording, a guaranteed-safe first click, and no countdown."
+  - game: hangman
+    reason: "Opens without an account, uses six-miss rounds with themed word lists, and keeps solved count locally."
+  - game: lights-out
+    reason: "Five-by-five toggle logic with solvable-by-construction puzzles and no account required."
+  - game: simon
+    reason: "Sequence memory with a calm-pattern presentation and local best-length tracking, no account."
+  - game: sudoku-9x9
+    reason: "Classic 9×9 rules, unique-solution verification, and local progress — no account anywhere in the loop."
+  - game: gomoku
+    reason: "Two players place stones on a 15×15 board and the match result stays local — no account anywhere."
+  - game: nine-mens-morris
+    reason: "Classic mill rules with documented variants, local match records, and no account required."
+  - game: word-loom
+    reason: "Original five-letter word game with daily and practice modes, local streak only, and no account required."
+  - game: checkers
+    reason: "English draughts with mandatory captures and a local match record — no account required."
 ---
 
 > **Bottom line:** Every currently published NoCharge game is included because its complete play loop is available without an account, subscription, or required purchase. The collection is a catalog, not a ranking.

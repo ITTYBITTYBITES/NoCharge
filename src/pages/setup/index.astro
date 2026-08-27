@@ -123,6 +123,28 @@ const schema = [
       <div class="feed-grid">{articles.map((a) => <SetupArticleCard slug={a.id} {...a.data} />)}</div>
     </section>
 
+    <section class="method panel" aria-labelledby="setup-tools-heading">
+      <div>
+        <p class="section-kicker">With NoCharge</p>
+        <h2 id="setup-tools-heading">Every topic pairs with a tool and games.</h2>
+      </div>
+      <div class="setup-pairs">
+        <table>
+          <thead><tr><th>Topic</th><th>Tool</th><th>Games to try</th></tr></thead>
+          <tbody>
+            <tr><td>Keyboards</td><td><a href="/tools/focus-order-demo/">Focus order demo</a></td><td><a href="/games/minesweeper/">Minesweeper</a> · <a href="/games/nonogram/">Nonogram</a> · <a href="/games/beacon-lattice/">Beacon Lattice</a></td></tr>
+            <tr><td>Pointing devices</td><td><a href="/tools/touch-target-checker/">Touch target checker</a></td><td><a href="/games/memory-match/">Memory Match</a> · <a href="/games/word-search/">Word Search</a> · <a href="/games/klondike/">Klondike</a></td></tr>
+            <tr><td>Screens &amp; stands</td><td><a href="/tools/zoom-visualizer/">Zoom Visualizer</a></td><td><a href="/games/sudoku-9x9/">Sudoku 9×9</a> · <a href="/games/word-tile-rush/">Word Tile Rush</a> · <a href="/games/color-flip/">Color Flip</a></td></tr>
+            <tr><td>Desk &amp; comfort</td><td><a href="/tools/contrast-checker/">Contrast checker</a></td><td><a href="/games/freecell/">FreeCell</a> · <a href="/games/twenty-forty-eight/">Twenty Forty-Eight</a> · <a href="/games/tile-garden/">Tile Garden</a></td></tr>
+            <tr><td>Offline puzzles</td><td><a href="/tools/nonogram-clue-calculator/">Nonogram calculator</a></td><td><a href="/games/beacon-lattice/">Beacon Lattice</a> · <a href="/games/lights-out/">Lights Out</a> · <a href="/games/nonogram/">Nonogram</a></td></tr>
+            <tr><td>Audio</td><td><a href="/tools/ambient-mixer/">Ambient Mixer</a></td><td><a href="/games/simon/">Simon</a> · <a href="/games/memory-match/">Memory Match</a> · <a href="/games/hangman/">Hangman</a></td></tr>
+            <tr><td>Lighting</td><td><a href="/tools/contrast-checker/">Contrast checker</a> · <a href="/tools/reduced-motion-tester/">Reduced-motion tester</a></td><td><a href="/games/word-search/">Word Search</a> · <a href="/games/mini-sudoku/">Mini Sudoku</a></td></tr>
+          </tbody>
+        </table>
+        <p>These pairings are editorial starting points, not claims that a purchase improves play. Every tool runs in the browser; every game is playable with what you already have.</p>
+      </div>
+    </section>
+
     <section class="method panel" aria-labelledby="method-heading">
       <div>
         <p class="section-kicker">How recommendations are researched</p>
@@ -275,6 +297,38 @@ const schema = [
   .method > div {
     display: grid;
     gap: 0.65rem;
+  }
+
+  .setup-pairs {
+    min-width: 0;
+  }
+
+  .setup-pairs table {
+    width: 100%;
+    display: block;
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-collapse: collapse;
+    font-size: 0.84rem;
+  }
+
+  .setup-pairs th,
+  .setup-pairs td {
+    padding: 0.5rem 0.6rem;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+  }
+
+  .setup-pairs a {
+    color: var(--accent-strong);
+  }
+
+  .setup-pairs p {
+    margin-top: 0.7rem;
+    color: var(--muted);
+    font-size: 0.8rem;
   }
 
   .method a {

@@ -1,8 +1,8 @@
 ---
 title: "Keyboard-friendly browser games"
 description: "NoCharge games with complete documented keyboard operation for their current controls and game actions."
-inclusionMethod: "Include a current game only when its complete play loop is documented and operable from a keyboard without requiring touch or pointer input."
-reviewed: "2026-08-22"
+inclusionMethod: "Include a current game only when its complete play loop is documented and operable from a keyboard without requiring touch or pointer input, and the game catalog's hasKeyboardComplete flag is true (verified against game code, not guide prose alone)."
+reviewed: "2026-08-27"
 order: 1
 draft: false
 games:
@@ -38,6 +38,24 @@ games:
     reason: "Arrow keys move a focus cursor across a calm, untimed grid and Enter selects cells — complete play without a pointer."
   - game: mini-sudoku
     reason: "A labeled 6×6 grid supports keyboard entry, movement, checking, and undo without a pointer."
+  - game: minesweeper
+    reason: "Arrow keys move the cursor, Enter reveals or chords, and F flags — the full clear loop needs no pointer."
+  - game: hangman
+    reason: "Type any letter to guess, Tab to the on-screen alphabet, and Enter to start a new round — no pointer needed."
+  - game: lights-out
+    reason: "Arrow keys move and Enter or Space presses; the full 5×5 loop runs without a pointer."
+  - game: simon
+    reason: "Tab to the pads and press Enter or Space; the pattern is announced by name in calm mode."
+  - game: sudoku-9x9
+    reason: "Arrow keys move, 1–9 fill, U undoes, C checks, and R reveals — the full 9×9 loop is keyboard-only."
+  - game: gomoku
+    reason: "Arrow keys move the cursor and Enter or Space places — a complete game never needs a pointer."
+  - game: nine-mens-morris
+    reason: "Enter selects, moves, and removes on the 24-point board using the drawn layout for navigation."
+  - game: word-loom
+    reason: "Type five letters, press Enter, and read feedback with symbols and announcements — no pointer required."
+  - game: checkers
+    reason: "Arrow keys navigate the 8×8 grid and Enter selects or moves — no pointer needed."
 ---
 
 These games offer a documented keyboard route through current play. “Keyboard-friendly” does not claim completed testing with every keyboard layout or assistive technology; consult the [Accessibility Statement](/accessibility/) for current manual-testing status. Pass the Picture is deliberately excluded because drawing strokes requires a pointer — its color, undo, and restart controls are keyboard-operable, but its core action is not.

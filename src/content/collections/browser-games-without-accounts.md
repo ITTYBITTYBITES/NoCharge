@@ -40,6 +40,24 @@ games:
     reason: "A calm grid with direct keyboard selection and no timer, account, or competitive pressure."
   - game: mini-sudoku
     reason: "A small keyboard-friendly logic puzzle with no timer, account, or competitive pressure."
+  - game: minesweeper
+    reason: "Opens without an account and keeps board wins plus best completion time in this browser only."
+  - game: hangman
+    reason: "No signup or profile; rounds solved and theme preference stay in this browser."
+  - game: lights-out
+    reason: "Keeps cleared-board count and best presses in this browser only; no login anywhere."
+  - game: simon
+    reason: "Best remembered length and calm preference never leave the browser."
+  - game: sudoku-9x9
+    reason: "The current board, solved count, and pencil-mark preference stay in this browser only."
+  - game: gomoku
+    reason: "No signup or profile; the most recent match record is bounded and device-only."
+  - game: nine-mens-morris
+    reason: "One bounded match record per game stays on this device; nothing leaves the browser."
+  - game: word-loom
+    reason: "The daily streak and solved date live in this browser only; nothing is shared or synced."
+  - game: checkers
+    reason: "One bounded match record per game stays on this device; nothing leaves the browser."
 ---
 
 Without an account also means without synchronization or server recovery. Read [how NoCharge saves scores](/articles/how-nocharge-saves-scores-without-an-account/) before treating a local result as permanent.

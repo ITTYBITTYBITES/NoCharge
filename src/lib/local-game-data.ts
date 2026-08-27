@@ -31,6 +31,9 @@ export const GAME_PREFERENCE_KEYS = [
   'sound-volume',
   'ambient-sound',
   'sudoku-pencil-marks',
+  'minesweeper-last-size',
+  'hangman-last-theme',
+  'simon-calm',
 ] as const;
 
 export const MEMORY_MATCH_BEST_MOVES_KEY = 'nocharge:memory-match:best-moves';
@@ -43,8 +46,18 @@ export const TWENTY_FORTY_EIGHT_BEST_TILE_KEY = 'nocharge:2048:best-tile';
 export const TILE_GARDEN_BEST_TIER_KEY = 'nocharge:tile-garden:best-tier';
 export const WORD_SEARCH_PUZZLES_SOLVED_KEY = 'nocharge:word-search:puzzles-solved';
 export const WORD_SEARCH_LAST_LIST_KEY = 'nocharge:word-search:last-list';
+export const WORD_LOOM_STREAK_KEY = 'nocharge:daily:word-loom:streak';
+export const WORD_LOOM_SOLVED_KEY = 'nocharge:daily:word-loom:solved';
 export const SUDOKU_PUZZLES_SOLVED_KEY = 'nocharge:sudoku:puzzles-solved';
 export const SUDOKU_CURRENT_PUZZLE_KEY = 'nocharge:sudoku:current-puzzle';
+export const MINESWEEPER_GAMES_WON_KEY = 'nocharge:minesweeper:games-won';
+export const MINESWEEPER_BEST_TIME_KEY = 'nocharge:minesweeper:best-time';
+export const HANGMAN_GAMES_SOLVED_KEY = 'nocharge:hangman:games-solved';
+export const LIGHTS_OUT_PUZZLES_SOLVED_KEY = 'nocharge:lights-out:puzzles-solved';
+export const LIGHTS_OUT_BEST_MOVES_KEY = 'nocharge:lights-out:best-moves';
+export const SIMON_BEST_LENGTH_KEY = 'nocharge:simon:best-length';
+export const SUDOKU9_CURRENT_PUZZLE_KEY = 'nocharge:sudoku9:current-puzzle';
+export const SUDOKU9_PUZZLES_SOLVED_KEY = 'nocharge:sudoku9:puzzles-solved';
 
 /**
  * Pass & Play match records: exactly one bounded key per game, holding the
@@ -66,6 +79,16 @@ export const CLEARABLE_GAME_DATA_KEYS: readonly string[] = [
   WORD_SEARCH_LAST_LIST_KEY,
   SUDOKU_PUZZLES_SOLVED_KEY,
   SUDOKU_CURRENT_PUZZLE_KEY,
+  MINESWEEPER_GAMES_WON_KEY,
+  MINESWEEPER_BEST_TIME_KEY,
+  HANGMAN_GAMES_SOLVED_KEY,
+  LIGHTS_OUT_PUZZLES_SOLVED_KEY,
+  LIGHTS_OUT_BEST_MOVES_KEY,
+  SIMON_BEST_LENGTH_KEY,
+  WORD_LOOM_STREAK_KEY,
+  WORD_LOOM_SOLVED_KEY,
+  SUDOKU9_CURRENT_PUZZLE_KEY,
+  SUDOKU9_PUZZLES_SOLVED_KEY,
   ...GAME_PREFERENCE_KEYS.map((preference) => prefKey(preference)),
   RECENTLY_PLAYED_KEY,
   ...PASS_PLAY_MATCH_KEYS,

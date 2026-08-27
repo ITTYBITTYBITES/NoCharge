@@ -1,0 +1,75 @@
+.ck {
+  display: grid;
+  gap: 0.8rem;
+  width: min(100%, 34rem);
+  margin-inline: auto;
+}
+
+.ck__board {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  width: min(100%, 26rem);
+  margin-inline: auto;
+  border: 2px solid #4a5852;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.ck__cell {
+  position: relative;
+  aspect-ratio: 1;
+  border: 0;
+}
+
+.ck__cell.is-dark {
+  background: #20292b;
+}
+
+.ck__cell.is-light {
+  background: #13191b;
+}
+
+.ck__cell.is-dark-piece::before,
+.ck__cell.is-light-piece::before {
+  content: '';
+  position: absolute;
+  inset: 18%;
+  border-radius: 50%;
+}
+
+.ck__cell.is-dark-piece::before {
+  background: #12181b;
+  border: 1px solid #75837c;
+}
+
+.ck__cell.is-light-piece::before {
+  background: #e8f0ec;
+  border: 1px solid #9fb4ac;
+}
+
+.ck__cell.is-king::after {
+  content: 'K';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--pp-accent, #fbbf24);
+  font-size: clamp(0.7rem, 2.4vw, 1rem);
+  font-weight: 800;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.ck__cell.is-selected {
+  outline: 2px solid var(--pp-accent, #fbbf24);
+  outline-offset: -2px;
+}
+
+.ck__cell.is-legal {
+  box-shadow: inset 0 0 0 3px color-mix(in srgb, #4ade80 70%, transparent);
+}
+
+.ck__note {
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}

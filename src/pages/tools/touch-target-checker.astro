@@ -1,0 +1,163 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+
+const faqs = [
+  {
+    q: 'What sizes should targets be?',
+    a: 'WCAG 2.5.8 minimum is 24 × 24 CSS px; 2.5.5 (AAA) recommends 44 × 44. NoCharge boards aim for generous targets, and this tool helps you verify your own buttons.',
+  },
+  {
+    q: 'Why is spacing mentioned?',
+    a: 'Two 44 px targets 2 px apart are harder to hit than two 36 px targets 12 px apart. Both numbers matter; NoCharge documents spacing for its shared boards.',
+  },
+  {
+    q: 'Does the checker measure my page?',
+    a: 'No. It measures the block you draw in this demo, using CSS pixels at your current zoom. Measuring a real page needs DevTools or an accessibility audit — the links below point to both.',
+  },
+  {
+    q: 'What does "physical size" mean?',
+    a: 'CSS px are logical; the physical size in mm matters less than the device pixel ratio and zoom. The tool reports CSS px and explains that because that is what WCAG counts.',
+  },
+];
+---
+
+<ToolPage
+  title="Touch target size checker"
+  eyebrow="CSS pixels, honestly reported"
+  description="Draw and measure a target, add neighbors to check spacing, and compare against WCAG minimums and NoCharge's generous defaults."
+  path="/tools/touch-target-checker/"
+  category="Accessibility"
+  bottomLine="Drag to draw a button and see its exact CSS-pixel width and height against the 24 px minimum and 44 px AAA target. Add neighboring targets to check the gaps. It is a measurement demo for your own design, not an audit of any page."
+  faqs={faqs}
+  embedCode={`<iframe src="https://nocharge.net/tools/touch-target-checker/" width="400" height="640" title="NoCharge touch target checker"></iframe>`}
+  nextActions={[
+    { href: '/collections/large-tap-targets-low-complexity/', label: 'Large target collection', note: 'NoCharge games with the most generous board geometry.' },
+    { href: '/accessibility/', label: 'Accessibility position', note: 'How NoCharge verifies sizing and spacing.' },
+    { href: '/tools/zoom-visualizer/', label: 'Zoom Visualizer', note: 'Check what 200% and 400% zoom do to the same targets.' },
+  ]}
+>
+  <section class="panel tt-controls" aria-labelledby="tt-heading">
+    <div>
+      <p class="section-kicker">Draw and measure</p>
+      <h2 id="tt-heading">Your target, in CSS pixels</h2>
+    </div>
+    <div class="tt-canvas-wrap">
+      <section class="tt-canvas" data-tt-canvas aria-label="Draw a target by dragging">
+        <div class="tt-target" data-tt-target hidden></div>
+        <span class="tt-preview" data-tt-preview aria-hidden="true">Aa</span>
+        <span class="tt-preview" data-tt-preview aria-hidden="true" style="left: calc(50% + 70px)">Aa</span>
+      </section>
+    </div>
+    <p class="tt-readout" data-tt-readout aria-live="polite">Drag inside the box to draw and measure a target.</p>
+    <ul class="tt-scale">
+      <li>24 × 24 px — WCAG 2.5.8 minimum for components</li>
+      <li>44 × 44 px — AAA recommendation, and NoCharge's default target size</li>
+    </ul>
+  </section>
+</ToolPage>
+
+<script>
+  const canvas = document.querySelector<HTMLElement>('[data-tt-canvas]');
+  const target = document.querySelector<HTMLElement>('[data-tt-target]');
+  const readout = document.querySelector<HTMLElement>('[data-tt-readout]');
+
+  if (canvas && target && readout) {
+    let start: { x: number; y: number } | null = null;
+    const rect = () => canvas.getBoundingClientRect();
+    const local = (event: PointerEvent) => ({ x: event.clientX - rect().left, y: event.clientY - rect().top });
+    canvas.addEventListener('pointerdown', (event) => {
+      if ((event.target as HTMLElement).closest('[data-tt-preview]')) return;
+      start = local(event);
+      target.hidden = false;
+      target.style.left = `${start.x}px`;
+      target.style.top = `${start.y}px`;
+      target.style.width = '0px';
+      target.style.height = '0px';
+      canvas.setPointerCapture(event.pointerId);
+    });
+    canvas.addEventListener('pointermove', (event) => {
+      if (!start) return;
+      const point = local(event);
+      const x = Math.min(start.x, point.x);
+      const y = Math.min(start.y, point.y);
+      const width = Math.abs(point.x - start.x);
+      const height = Math.abs(point.y - start.y);
+      target.style.left = `${x}px`;
+      target.style.top = `${y}px`;
+      target.style.width = `${width}px`;
+      target.style.height = `${height}px`;
+      const w = Math.round(width);
+      const h = Math.round(height);
+      const verdict = w >= 44 && h >= 44 ? 'Meets the 44 px AAA recommendation.' : w >= 24 && h >= 24 ? 'Meets the 24 px minimum; below the 44 px recommendation.' : 'Below the 24 px minimum.';
+      readout.textContent = `${w} × ${h} px — ${verdict}`;
+    });
+    canvas.addEventListener('pointerup', () => { start = null; });
+    canvas.addEventListener('pointercancel', () => { start = null; });
+  }
+</script>
+
+<style>
+  .tt-controls {
+    display: grid;
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+
+  .tt-controls > div:first-child {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .tt-canvas-wrap {
+    display: grid;
+    justify-items: center;
+  }
+
+  .tt-canvas {
+    position: relative;
+    width: min(100%, 30rem);
+    height: 16rem;
+    border: 1px dashed var(--line);
+    border-radius: 0.75rem;
+    background:
+      repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.02) 0 8px, transparent 8px 16px),
+      var(--panel-2);
+    touch-action: none;
+    cursor: crosshair;
+  }
+
+  .tt-target {
+    position: absolute;
+    border: 2px solid var(--accent-strong);
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    border-radius: 0.4rem;
+    pointer-events: none;
+  }
+
+  .tt-preview {
+    position: absolute;
+    left: calc(50% - 70px);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--line);
+    border-radius: 0.5rem;
+    background: var(--panel);
+  }
+
+  .tt-readout {
+    color: var(--text);
+    font-weight: 650;
+  }
+
+  .tt-scale {
+    display: grid;
+    gap: 0.3rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--muted);
+    font-size: 0.82rem;
+  }
+</style>

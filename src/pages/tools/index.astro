@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { TOOLS, TOOL_CATEGORIES } from '../../config/tools';
 
 const faqs = [
   {
@@ -9,7 +10,11 @@ const faqs = [
   },
   {
     q: 'Do the tools upload my entries?',
-    a: 'No. The discovery filters and zoom values are used only by the current page, and the ambient mixer synthesizes audio locally with the Web Audio API.',
+    a: 'No. Values you enter are used only by the current page. The ambient mixer synthesizes audio locally with the Web Audio API, and no tool sends your input to NoCharge.',
+  },
+  {
+    q: 'How is a tool categorized?',
+    a: 'Each tool appears in one of five categories by its primary purpose: Play, Audio, Accessibility, Setup helpers, or Learning. Categories are descriptive, not a ranking.',
   },
   {
     q: 'Can I embed a tool?',
@@ -22,8 +27,18 @@ const schema = [
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
     name: 'NoCharge Tools',
-    description: 'Free client-side tools for choosing a browser game, trying synthesized ambient audio, and estimating a viewport after browser zoom.',
+    description: 'Free client-side tools for choosing a browser game, trying synthesized ambient audio, checking accessibility details, and estimating setup dimensions.',
     url: 'https://nocharge.net/tools/',
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: TOOLS.length,
+      itemListElement: TOOLS.map((tool, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: tool.title,
+        url: `https://nocharge.net/tools/${tool.slug}/`,
+      })),
+    },
   },
   {
     '@context': 'https://schema.org',
@@ -48,7 +63,7 @@ const schema = [
 
 <BaseLayout
   title="Tools — Free browser game utilities"
-  description="Client-side tools for choosing a NoCharge game, trying ten synthesized ambient textures, and estimating an equivalent viewport after browser zoom."
+  description="Client-side tools for choosing a NoCharge game, trying synthesized ambient textures, checking accessibility details, and estimating setup dimensions."
   path="/tools/"
   schema={schema}
   showAds={false}
@@ -58,45 +73,213 @@ const schema = [
     <header>
       <p class="eyebrow">Small browser utilities</p>
       <h1 class="page-title">Free tools for quiet play</h1>
-      <p class="lede">Choose a game for the time and input you have, try a locally synthesized background texture, or estimate the layout space available after browser zoom.</p>
+      <p class="lede">
+        Choose a game for the time and input you have, try a locally synthesized background texture, check contrast or focus order, or estimate the layout space after browser zoom. Every tool runs in this browser and needs no account.
+      </p>
+      <dl class="tools-facts">
+        <div><dt>{TOOLS.length}</dt><dd>tools</dd></div>
+        <div><dt>0</dt><dd>uploads</dd></div>
+        <div><dt>{TOOL_CATEGORIES.length}</dt><dd>categories</dd></div>
+      </dl>
     </header>
 
-    <section class="tool-grid" aria-label="Available tools">
-      <article class="panel tool-card">
-        <h2><a href="/tools/discovery-wheel/">Game Discovery Wheel</a></h2>
-        <p>Filter the live arcade collection by time, documented input, pressure, and number of players. Results include direct play and guide links.</p>
-        <p><strong>Useful when:</strong> you know the kind of session you want but not the game.</p>
-      </article>
-      <article class="panel tool-card">
-        <h2><a href="/tools/ambient-mixer/">Ambient Mixer</a></h2>
-        <p>Try white noise, environmental approximations, sparse generated notes, or a low drone. Audio is synthesized with Web Audio and stops when the page is hidden.</p>
-        <p><strong>Useful when:</strong> you want to compare a low background texture with silence.</p>
-      </article>
-      <article class="panel tool-card">
-        <h2><a href="/tools/zoom-visualizer/">Browser Zoom Viewport Calculator</a></h2>
-        <p>Convert a starting viewport and browser zoom percentage into approximate CSS layout dimensions, then use that size for manual reflow testing.</p>
-        <p><strong>Useful when:</strong> preparing 200% or 400% browser-zoom checks.</p>
-      </article>
+    <nav class="tools-category-nav" aria-label="Tool categories">
+      {TOOL_CATEGORIES.map((category) => <a href={`#tools-${category.id}`}>{category.label}</a>)}
+    </nav>
+
+    {
+      TOOL_CATEGORIES.map((category) => {
+        const tools = TOOLS.filter((tool) => tool.category === category.id);
+        if (tools.length === 0) return null;
+        return (
+          <section class="tools-section" id={`tools-${category.id}`} aria-labelledby={`tools-${category.id}-heading`}>
+            <div class="tools-section__heading">
+              <p class="section-kicker">Tool category</p>
+              <h2 id={`tools-${category.id}-heading`}>{category.label}</h2>
+              <p>{category.blurb}</p>
+            </div>
+            <div class="tool-grid">
+              {tools.map((tool) => (
+                <article class="panel tool-card">
+                  <h3><a href={`/tools/${tool.slug}/`}>{tool.title}</a></h3>
+                  <p>{tool.description}</p>
+                  <p><strong>Useful when:</strong> {tool.usefulWhen}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+        );
+      })
+    }
+
+    <section class="tools-note panel" aria-labelledby="tools-note-heading">
+      <div>
+        <p class="section-kicker">How these tools behave</p>
+        <h2 id="tools-note-heading">In the browser, and nowhere else.</h2>
+      </div>
+      <div>
+        <p>No tool sends your inputs to NoCharge. Where a tool writes a preference (for example an audio texture choice), the Privacy page documents it and Clear game data removes it.</p>
+        <p>Tool results are estimates and explanations, not guarantees. Each page states what it cannot do next to what it can.</p>
+      </div>
     </section>
 
-    <section class="panel tools-faq" id="faq" aria-labelledby="tools-faq-heading">
-      <h2 id="tools-faq-heading">FAQ — Tools</h2>
-      <dl>
-        {faqs.map(({ q, a }) => <><dt>{q}</dt><dd>{a}</dd></>)}
+    <section class="prose" aria-labelledby="faq">
+      <h2 id="faq">FAQ — Tools</h2>
+      <dl class="tools-faq">
+        {faqs.map(({ q, a }) => (
+          <>
+            <dt>{q}</dt>
+            <dd>{a}</dd>
+          </>
+        ))}
       </dl>
     </section>
   </div>
 </BaseLayout>
 
 <style>
-  .tools-page { display: grid; gap: 2rem; max-width: 52rem; margin-inline: auto; min-width: 0; }
-  .tool-grid { display: grid; gap: 1rem; }
-  .tool-card { padding: 1.25rem; display: grid; gap: 0.5rem; }
-  .tool-card h2 a { color: var(--accent-strong); text-decoration: underline; }
-  .tool-card p { color: var(--muted); }
-  .tools-faq { padding: 1.25rem; display: grid; gap: 1rem; }
-  .tools-faq dl { display: grid; gap: 0.6rem; }
-  .tools-faq dt { color: var(--text); font-weight: 700; }
-  .tools-faq dd { color: var(--muted); margin: 0; }
-  @media (min-width: 48rem) { .tool-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .tools-page {
+    display: grid;
+    gap: clamp(2rem, 6vw, 4rem);
+    min-width: 0;
+  }
+
+  .tools-facts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.65rem;
+    max-width: 30rem;
+    margin: 1.3rem 0 0;
+  }
+
+  .tools-facts div {
+    padding: 0.8rem;
+    border: 1px solid var(--line);
+    border-radius: 0.75rem;
+    background: var(--panel);
+  }
+
+  .tools-facts dt {
+    color: var(--accent-strong);
+    font-size: 1.3rem;
+    font-weight: 800;
+  }
+
+  .tools-facts dd {
+    margin: 0.1rem 0 0;
+    color: var(--muted);
+    font-size: 0.74rem;
+  }
+
+  .tools-category-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tools-category-nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0.3rem 0.8rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--accent-strong);
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  .tools-section {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .tools-section__heading {
+    display: grid;
+    gap: 0.35rem;
+    max-width: 44rem;
+  }
+
+  .tools-section__heading h2 {
+    font-size: clamp(1.5rem, 4vw, 2.1rem);
+    letter-spacing: -0.03em;
+  }
+
+  .tools-section__heading p:last-child {
+    color: var(--muted);
+  }
+
+  .tool-grid {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .tool-card {
+    display: grid;
+    gap: 0.6rem;
+    padding: 1.2rem;
+  }
+
+  .tool-card h3 {
+    font-size: 1.15rem;
+  }
+
+  .tool-card h3 a {
+    color: var(--accent-strong);
+  }
+
+  .tool-card p {
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+
+  .tools-note {
+    display: grid;
+    gap: 1rem 2rem;
+    padding: clamp(1.2rem, 4vw, 2rem);
+  }
+
+  .tools-note > div:first-child {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .tools-note h2 {
+    font-size: clamp(1.4rem, 3.5vw, 1.9rem);
+  }
+
+  .tools-note p {
+    color: var(--muted);
+  }
+
+  .prose {
+    display: grid;
+    gap: 1rem;
+    max-width: 46rem;
+  }
+
+  .tools-faq {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .tools-faq dt {
+    font-weight: 700;
+  }
+
+  .tools-faq dd {
+    margin: 0.25rem 0 0;
+    color: var(--muted);
+  }
+
+  @media (min-width: 48rem) {
+    .tool-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .tools-note {
+      grid-template-columns: minmax(16rem, 0.8fr) minmax(20rem, 1.2fr);
+      align-items: start;
+    }
+  }
 </style>

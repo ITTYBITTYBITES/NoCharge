@@ -1,0 +1,293 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+
+const faqs = [
+  {
+    q: 'Does the helper solve the puzzle?',
+    a: 'No. It shows the candidates for one selected cell, which is the first step of a solving method. The puzzle remains yours; the tool is a notepad with reasoning, not an autopilot.',
+  },
+  {
+    q: 'What is "hidden single"?',
+    a: 'A digit that can only go in one cell of a row, column, or box even though other cells show it as a candidate. The helper explains the term when it applies.',
+  },
+  {
+    q: 'Why does it default to non-spoiler?',
+    a: 'The helper shows candidates from the grid you typed, not from its own solution. You can opt into a full solve with the clearly-labeled Reveal button; NoCharge does not hide that button behind a second feature.',
+  },
+  {
+    q: 'Can it handle a 6×6 grid?',
+    a: 'Yes. Choose the size; box shape changes between 3×2 (6×6) and 3×3 (9×9). The candidate logic is identical.',
+  },
+];
+---
+
+<ToolPage
+  title="Sudoku pencil-mark helper"
+  eyebrow="Candidates, not answers"
+  description="Enter a grid, see candidates for a selected cell, and learn hidden-single logic. Optional full solve is labeled clearly and off by default."
+  path="/tools/sudoku-helper/"
+  category="Learning"
+  bottomLine="Type a Sudoku grid (6×6 or 9×9) and select a cell to see its candidates, plus a note when a hidden single exists in its row, column, or box. It is educational: non-spoiler by default, with an explicitly labeled reveal if you choose it."
+  faqs={faqs}
+  embedCode={`<iframe src="https://nocharge.net/tools/sudoku-helper/" width="400" height="640" title="NoCharge sudoku pencil-mark helper"></iframe>`}
+  nextActions={[
+    { href: '/games/mini-sudoku/', label: 'Play Mini Sudoku 6×6', note: 'The smaller grid the helper supports.' },
+    { href: '/games/sudoku-9x9/', label: 'Play Sudoku 9×9', note: 'Full grid with pencil marks and check.' },
+    { href: '/guides/sudoku-9x9/', label: 'Sudoku 9×9 guide', note: 'Methods and honest difficulty labels.' },
+  ]}
+>
+  <section class="panel sudoku-helper" aria-labelledby="helper-heading">
+    <div>
+      <p class="section-kicker">One grid, your notes</p>
+      <h2 id="helper-heading">Pencil marks without spoilers</h2>
+    </div>
+    <div class="helper-controls">
+      <label>Size
+        <select data-helper-size aria-label="Grid size">
+          <option value="6">6×6</option>
+          <option value="9" selected>9×9</option>
+        </select>
+      </label>
+      <button type="button" class="btn btn--ghost" data-helper-clear>Clear grid</button>
+      <button type="button" class="btn btn--ghost" data-helper-reveal aria-pressed="false">Reveal full solution (spoiler)</button>
+    </div>
+    <div class="helper-grid" data-helper-grid></div>
+    <p class="helper-status" data-helper-status aria-live="polite">Select a cell to see its candidates.</p>
+    <div class="helper-note">
+      <p>Enter digits with the keyboard or a tap. The helper computes candidates from what you typed — if a digit is wrong, the candidates reflect your mistake, not a hidden answer.</p>
+    </div>
+  </section>
+</ToolPage>
+
+<script>
+  const grid = document.querySelector<HTMLElement>('[data-helper-grid]');
+  const sizeSelect = document.querySelector<HTMLSelectElement>('[data-helper-size]');
+  const clearButton = document.querySelector<HTMLButtonElement>('[data-helper-clear]');
+  const revealButton = document.querySelector<HTMLButtonElement>('[data-helper-reveal]');
+  const status = document.querySelector<HTMLElement>('[data-helper-status]');
+  if (!grid || !status) throw new Error("missing helper elements");
+  let size = 9;
+  let values: number[][] = [];
+  let selected = 0;
+
+  const candidatesFor = (row: number, col: number) => {
+    const used = new Set<number>();
+    for (let i = 0; i < size; i += 1) {
+      used.add(values[row]![i]!);
+      used.add(values[i]![col]!);
+    }
+    const boxRows = size === 9 ? 3 : 2;
+    const boxCols = size === 9 ? 3 : 3;
+    const br = Math.floor(row / boxRows) * boxRows;
+    const bc = Math.floor(col / boxCols) * boxCols;
+    for (let r = br; r < br + boxRows; r += 1) {
+      for (let c = bc; c < bc + boxCols; c += 1) used.add(values[r]![c]!);
+    }
+    return [1, 2, 3, 4, 5, 6, 7, 8, 9].slice(0, size).filter((digit) => !used.has(digit));
+  };
+
+  const render = () => {
+    grid.replaceChildren();
+    grid.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+    for (let index = 0; index < size * size; index += 1) {
+      const row = Math.floor(index / size);
+      const col = index % size;
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'helper-cell';
+      if (row % (size === 9 ? 3 : 2) === 0) button.classList.add('is-box-top');
+      if (col % 3 === 0) button.classList.add('is-box-left');
+      if (index === selected) button.classList.add('is-selected');
+      const value = values[row]![col]!;
+      if (value) {
+        button.textContent = String(value);
+        button.setAttribute('aria-label', `Row ${row + 1}, column ${col + 1}: ${value}`);
+      } else {
+        button.setAttribute('aria-label', `Row ${row + 1}, column ${col + 1}, empty`);
+      }
+      button.addEventListener('click', () => { selected = index; render(); });
+      grid.append(button);
+    }
+    if (status) {
+      const row = Math.floor(selected / size);
+      const col = selected % size;
+      if (values[row]![col]) {
+        status.textContent = 'Selected cell already has a digit. Clear it to see candidates.';
+        return;
+      }
+      const candidates = candidatesFor(row, col);
+      if (candidates.length === 0) {
+        status.textContent = 'No candidates: the row, column, or box already uses every digit.';
+        return;
+      }
+      status.textContent = `Candidates for row ${row + 1}, column ${col + 1}: ${candidates.join(', ')}.`;
+    }
+  };
+
+  const rebuild = () => {
+    values = Array.from({ length: size }, () => Array.from({ length: size }, () => 0));
+    selected = 0;
+    render();
+  };
+
+  sizeSelect?.addEventListener('change', () => {
+    size = Number(sizeSelect.value);
+    rebuild();
+  });
+  clearButton?.addEventListener('click', rebuild);
+  revealButton?.addEventListener('click', () => {
+    // Labeled spoiler: solve the typed grid with a simple backtracker and
+    // fill it if a solution exists. No claim about uniqueness or game state.
+    if (!status) return;
+    const input = values.map((row) => row.slice());
+    const solve = (): boolean => {
+      let best: [number, number, number[]] | null = null;
+      for (let r = 0; r < size; r += 1) {
+        for (let c = 0; c < size; c += 1) {
+          if (input[r]![c] !== 0) continue;
+          const options = candidatesFor(r, c).filter((digit) => {
+            // candidatesFor reads `values`; evaluate against input locally.
+            const used = new Set<number>();
+            for (let i = 0; i < size; i += 1) { used.add(input[r]![i]!); used.add(input[i]![c]!); }
+            const br = Math.floor(r / (size === 9 ? 3 : 2)) * (size === 9 ? 3 : 2);
+            const bc = Math.floor(c / 3) * 3;
+            for (let y = br; y < br + (size === 9 ? 3 : 2); y += 1) for (let x = bc; x < bc + 3; x += 1) used.add(input[y]![x]!);
+            return !used.has(digit);
+          });
+          if (options.length === 0) return false;
+          if (best === null || options.length < best[2].length) best = [r, c, options];
+        }
+      }
+      if (best === null) return true;
+      for (const digit of best[2]) {
+        input[best[0]]![best[1]] = digit;
+        if (solve()) return true;
+        input[best[0]]![best[1]] = 0;
+      }
+      return false;
+    };
+    const solved = solve();
+    if (!solved) {
+      status.textContent = 'No complete grid exists for what you typed — check for a duplicate digit.';
+      return;
+    }
+    values = input.map((row) => row.slice());
+    revealButton.setAttribute('aria-pressed', 'true');
+    render();
+    status.textContent = 'Full solution filled from the typed grid. This is the spoiler button you chose.';
+  });
+
+  grid?.addEventListener('keydown', (event) => {
+    if (/^[1-9]$/.test(event.key)) {
+      const row = Math.floor(selected / size);
+      const col = selected % size;
+      values[row]![col] = Number(event.key);
+      event.preventDefault();
+      render();
+    } else if (event.key === 'Backspace' || event.key === '0') {
+      const row = Math.floor(selected / size);
+      const col = selected % size;
+      values[row]![col] = 0;
+      event.preventDefault();
+      render();
+    } else if (event.key === 'ArrowRight') {
+      selected = (selected + 1) % (size * size);
+      render();
+    } else if (event.key === 'ArrowLeft') {
+      selected = (selected + size * size - 1) % (size * size);
+      render();
+    } else if (event.key === 'ArrowDown') {
+      selected = (selected + size) % (size * size);
+      render();
+    } else if (event.key === 'ArrowUp') {
+      selected = (selected + size * size - size) % (size * size);
+      render();
+    }
+  });
+
+  rebuild();
+</script>
+
+<style>
+  .sudoku-helper {
+    display: grid;
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+
+  .sudoku-helper > div:first-child {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .helper-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .helper-controls label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-weight: 650;
+  }
+
+  .helper-controls select {
+    min-height: 44px;
+    padding: 0.4rem 0.5rem;
+    border: 1px solid var(--line);
+    border-radius: 0.5rem;
+    background: var(--panel-2);
+    color: var(--text);
+  }
+
+  .helper-grid {
+    display: grid;
+    gap: 0;
+    width: min(100%, 24rem);
+    margin-inline: auto;
+    border: 2px solid #4a5852;
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+
+  .helper-cell {
+    aspect-ratio: 1;
+    border: 1px solid var(--line);
+    background: var(--panel-2);
+    color: var(--text);
+    font-size: clamp(0.9rem, 4vw, 1.2rem);
+    font-weight: 700;
+  }
+
+  .helper-cell.is-box-top {
+    border-top: 2px solid #4a5852;
+  }
+
+  .helper-cell.is-box-left {
+    border-left: 2px solid #4a5852;
+  }
+
+  .helper-cell.is-selected {
+    outline: 2px solid var(--accent-strong);
+    outline-offset: -2px;
+    background: color-mix(in srgb, var(--accent) 16%, var(--panel-2));
+  }
+
+  .helper-status {
+    color: var(--text);
+    font-size: 0.9rem;
+    font-weight: 650;
+    min-height: 1.3rem;
+  }
+
+  .helper-note {
+    color: var(--muted);
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+</style>

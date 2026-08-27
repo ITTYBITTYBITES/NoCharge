@@ -1,0 +1,208 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+
+const faqs = [
+  {
+    q: 'What is a nonogram run?',
+    a: 'A clue number is the length of one filled run; runs appear in order with at least one empty cell between them. The calculator enumerates every placement of those runs in a line.',
+  },
+  {
+    q: 'Does the calculator solve a puzzle?',
+    a: 'No. It computes the possible arrangements of one row or column from its clue. Cross-referencing rows and columns to reach a unique grid is the puzzle itself.',
+  },
+  {
+    q: 'Why does it show "all cells determined"?',
+    a: 'When every possible arrangement shares the same filled or empty cell, that cell is forced. The calculator lists those determined cells but does not claim the whole line is solved.',
+  },
+  {
+    q: 'Can it handle large lines?',
+    a: 'Lines up to 25 cells with a handful of runs are instant; the tool caps output at 200 arrangements and says so.',
+  },
+];
+---
+
+<ToolPage
+  title="Nonogram clue calculator"
+  eyebrow="Enumerate the arrangements"
+  description="Enter a line length and clue runs. The calculator lists possible arrangements, marks cells forced in every one, and explains the arithmetic without solving the puzzle for you."
+  path="/tools/nonogram-clue-calculator/"
+  category="Learning"
+  bottomLine="For a single nonogram line, this tool lists every way the runs can fit, and marks cells that are the same in all arrangements. It is educational: it shows the pattern and the count, and does not solve a whole puzzle or spoiler the next clue."
+  faqs={faqs}
+  embedCode={`<iframe src="https://nocharge.net/tools/nonogram-clue-calculator/" width="400" height="640" title="NoCharge nonogram clue calculator"></iframe>`}
+  nextActions={[
+    { href: '/games/nonogram/', label: 'Play Nonogram', note: 'Use the calculator beside a line of the grid.' },
+    { href: '/guides/nonogram/', label: 'Nonogram guide', note: 'Clue reading, marking, and accessibility notes.' },
+    { href: '/learn/glossary/#nonogram-runs', label: 'Glossary: nonogram runs', note: 'One-line definition with a link back here.' },
+  ]}
+>
+  <section class="panel calc-controls" aria-labelledby="calc-heading">
+    <div>
+      <p class="section-kicker">One line at a time</p>
+      <h2 id="calc-heading">Length and runs</h2>
+      <p>Line length is total cells. Runs are entered as commas: 2,1 means a two-cell run, a gap, then a one-cell run.</p>
+    </div>
+    <div class="calc-form">
+      <label>Line length
+        <input type="number" min="1" max="25" value="10" data-calc-length aria-label="Line length in cells" />
+      </label>
+      <label>Runs (comma-separated)
+        <input type="text" value="2,1" data-calc-runs aria-label="Clue runs" />
+      </label>
+      <button type="button" class="btn" data-calc-run>Enumerate</button>
+    </div>
+    <div class="calc-output" data-calc-output aria-live="polite"></div>
+  </section>
+</ToolPage>
+
+<script>
+  const lengthInput = document.querySelector<HTMLInputElement>('[data-calc-length]');
+  const runsInput = document.querySelector<HTMLInputElement>('[data-calc-runs]');
+  const runButton = document.querySelector<HTMLButtonElement>('[data-calc-run]');
+  const output = document.querySelector<HTMLElement>('[data-calc-output]');
+  if (!output) throw new Error('missing calc output');
+
+  function arrangements(lineLength: number, runs: number[]): string[] {
+    const results: string[] = [];
+    const total = runs.reduce((sum, run) => sum + run, 0) + (runs.length - 1);
+    const free = lineLength - total;
+    if (free < 0) return results;
+    const positions = runs.length;
+    const place = (start: number, index: number, cells: (0 | 1 | 2)[]) => {
+      if (index >= runs.length) {
+        results.push(cells.map((cell) => (cell === 1 ? 'X' : cell === 0 ? '.' : '.')).join(''));
+        return;
+      }
+      const run = runs[index]!;
+      const remainingAfter = runs.slice(index + 1).reduce((sum, r) => sum + r, 0) + Math.max(0, runs.length - index - 2);
+      const maxStart = lineLength - run - remainingAfter;
+      for (let offset = 0; start + offset + run <= lineLength && start + offset <= maxStart; offset += 1) {
+        const next = cells.slice();
+        for (let i = start + offset; i < start + offset + run; i += 1) next[i] = 1;
+        if (start + offset + run < lineLength) next[start + offset + run] = 0;
+        place(start + offset + run + 1, index + 1, next);
+      }
+    };
+    place(0, 0, Array.from({ length: lineLength }, () => 2 as 0 | 1 | 2));
+    return results;
+  }
+
+  const render = () => {
+    const lineLength = Math.max(1, Math.min(25, Number(lengthInput?.value) || 1));
+    const runs = (runsInput?.value ?? '').split(',').map((value) => Number(value.trim())).filter((value) => Number.isInteger(value) && value > 0);
+    output.replaceChildren();
+    if (runs.length === 0) {
+      output.textContent = 'Enter at least one positive run.';
+      return;
+    }
+    const result = arrangements(lineLength, runs);
+    if (result.length === 0) {
+      output.textContent = `No arrangement: the runs need ${runs.reduce((a, b) => a + b, 0) + runs.length - 1} cells, but the line has ${lineLength}.`;
+      return;
+    }
+    const limited = result.slice(0, 200);
+    const first = limited[0]!;
+    const forced = Array.from({ length: lineLength }, (_, index) => {
+      const values = limited.map((line) => line[index]);
+      const allX = values.every((value) => value === 'X');
+      const allDot = values.every((value) => value === '.');
+      return allX ? 'X' : allDot ? '.' : '?';
+    });
+    const summary = document.createElement('p');
+    summary.textContent = `${result.length} arrangement${result.length === 1 ? '' : 's'}${result.length > 200 ? ` (showing first 200)` : ''}. Minimum span ${runs.reduce((a, b) => a + b, 0) + runs.length - 1} of ${lineLength} cells.`;
+    output.append(summary);
+    const forcedLine = document.createElement('p');
+    forcedLine.className = 'calc-forced';
+    forcedLine.innerHTML = `<strong>Determined if any arrangement is possible</strong>: <code>${forced.join(' ')}</code>`;
+    output.append(forcedLine);
+    const list = document.createElement('div');
+    list.className = 'calc-lines';
+    for (const line of limited) {
+      const code = document.createElement('code');
+      code.textContent = line;
+      list.append(code);
+    }
+    output.append(list);
+    const note = document.createElement('p');
+    note.textContent = 'X = filled, . = empty. “Determined” means every arrangement agrees on that cell; it does not mean the whole line is solved.';
+    output.append(note);
+  };
+
+  runButton?.addEventListener('click', render);
+  lengthInput?.addEventListener('keydown', (event) => { if (event.key === 'Enter') render(); });
+  runsInput?.addEventListener('keydown', (event) => { if (event.key === 'Enter') render(); });
+  render();
+</script>
+
+<style>
+  .calc-controls {
+    display: grid;
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+
+  .calc-controls > div:first-child {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .calc-controls > div:first-child p:last-child {
+    color: var(--muted);
+  }
+
+  .calc-form {
+    display: grid;
+    gap: 0.8rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(10rem, 100%), 1fr));
+    align-items: end;
+  }
+
+  .calc-form label {
+    display: grid;
+    gap: 0.35rem;
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-weight: 650;
+  }
+
+  .calc-form input {
+    min-height: 44px;
+    padding: 0.5rem;
+    border: 1px solid var(--line);
+    border-radius: 0.5rem;
+    background: var(--panel-2);
+    color: var(--text);
+  }
+
+  .calc-output {
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .calc-output > p {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  .calc-forced code {
+    display: inline-block;
+    letter-spacing: 0.2em;
+    font-size: 1.1rem;
+    color: var(--accent-strong);
+  }
+
+  .calc-lines {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .calc-lines code {
+    padding: 0.25rem 0.45rem;
+    border: 1px solid var(--line);
+    border-radius: 0.4rem;
+    background: var(--panel-2);
+    letter-spacing: 0.15em;
+    font-size: 0.85rem;
+  }
+</style>

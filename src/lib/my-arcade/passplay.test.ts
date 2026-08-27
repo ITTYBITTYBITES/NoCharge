@@ -76,7 +76,7 @@ describe('buildPassPlayDashboard', () => {
     expect(dashboard.rows).toEqual([]);
   });
 
-  it('reads only the six bounded passplay keys — never enumerating storage', () => {
+  it('reads only the bounded passplay keys — never enumerating storage', () => {
     const keysRead: string[] = [];
     const storage = {
       getItem: (key: string) => {
@@ -92,6 +92,9 @@ describe('buildPassPlayDashboard', () => {
       'nocharge:passplay:match:reversi',
       'nocharge:passplay:match:last-token',
       'nocharge:passplay:match:pass-the-picture',
+      'nocharge:passplay:match:gomoku',
+      'nocharge:passplay:match:nine-mens-morris',
+      'nocharge:passplay:match:checkers',
     ]);
   });
 

@@ -157,6 +157,20 @@ const schema = [
   if (select && volume && status && playButton && stopButton) {
     let resumeAfterVisibility = false;
 
+    // Shareable query params (D4-23): ?texture=rainfall&vol=40. The mixer
+    // applies the values on load; it does not auto-play (browsers block
+    // audio without a user gesture, which is correct behavior).
+    const params = new URLSearchParams(window.location.search);
+    const textureParam = params.get('texture');
+    const volumeParam = params.get('vol');
+    if (textureParam && select.querySelector(`option[value="${textureParam}"]`)) {
+      select.value = textureParam;
+    }
+    const requestedVolume = Number(volumeParam);
+    if (Number.isFinite(requestedVolume) && requestedVolume >= 0 && requestedVolume <= 100) {
+      volume.value = String(requestedVolume);
+    }
+
     const updateStatus = (message?: string) => {
       status.textContent = message ?? (getActiveAmbient() === 'none'
         ? 'Status: stopped.'
@@ -200,6 +214,7 @@ const schema = [
         playSelection();
       }
     });
+    if (textureParam && volumeParam) updateStatus();
     window.addEventListener('pagehide', () => stopAmbient());
   }
 </script>
