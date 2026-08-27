@@ -135,6 +135,7 @@ const gameSchema = [
   additionalImages={game.data.artwork ? [
     { url: game.data.artwork.coverSquare, width: 800, height: 800, alt: `${game.data.title} square cover` },
     { url: game.data.artwork.coverLandscape, width: 1280, height: 720, alt: `${game.data.title} landscape cover` },
+    { url: `/game-art/${game.id}/pin-1000x1500.jpg`, width: 1000, height: 1500, alt: `Pinterest pin for ${game.data.title}` },
   ] : []}
 >
   <GameShell
