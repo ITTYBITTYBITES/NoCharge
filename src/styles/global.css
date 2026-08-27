@@ -328,9 +328,18 @@ p {
 }
 
 .prose {
+  min-width: 0;
   color: var(--muted);
   font-size: 1rem;
   line-height: 1.75;
+}
+
+.prose pre {
+  max-width: 100%;
+  margin: 1rem 0;
+  padding: 0.85rem 1rem;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
 }
 
 .prose h2,
