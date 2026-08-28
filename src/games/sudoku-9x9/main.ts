@@ -5,7 +5,6 @@ import { signalMeaningfulGameInteraction } from '../shared/recently-played';
 import type { GameController } from '../shared/types';
 import './styles.css';
 
-const GAME_ID = 'sudoku-9x9';
 const SAVED_KEY = 'nocharge:sudoku9:current-puzzle';
 const SOLVED_KEY = 'nocharge:sudoku9:puzzles-solved';
 const SIZE = 9;
@@ -58,14 +57,13 @@ export function mountSudoku9x9(root: HTMLElement): GameController {
   const marks = Array.from({ length: SIZE * SIZE }, () => new Set<number>());
   let paused = false;
 
+  const isInitialClue = (row: number, col: number) => game.puzzle[row]![col] !== 0;
+
   const grid = root.querySelector<HTMLElement>('[data-s9-grid]')!;
   const status = root.querySelector<HTMLElement>('[data-s9-status]')!;
   const difficulty = root.querySelector<HTMLSelectElement>('[data-s9-difficulty]')!;
   const marksBtn = root.querySelector<HTMLButtonElement>('[data-s9-marks]')!;
 
-  function cellIndex(row: number, col: number): number {
-    return row * SIZE + col;
-  }
 
   function saveState(): void {
     try {
@@ -91,6 +89,8 @@ export function mountSudoku9x9(root: HTMLElement): GameController {
         for (let col = 0; col < SIZE; col += 1) {
           const cell = (rowValue as unknown[])[col] as number;
           if (!Number.isInteger(cell) || cell < 0 || cell > 9) return false;
+          const clue = restored.puzzle[row]![col]!;
+          if (clue !== 0 && cell !== clue) return false;
           if (cell !== 0 && restored.solution[row]![col] !== cell) return false;
         }
       }
@@ -131,11 +131,14 @@ export function mountSudoku9x9(root: HTMLElement): GameController {
       if (row % 3 === 2) button.classList.add('s9__cell--box-bottom');
       if (col % 3 === 2) button.classList.add('s9__cell--box-right');
       button.classList.toggle('is-selected', index === selected);
+      const given = isInitialClue(row, col);
+      button.classList.toggle('is-given', given);
+      button.dataset.initialClue = String(given);
       const value = board[row]![col]!;
       const notes = Array.from(marks[index]!).sort().join('');
       if (value) {
         button.textContent = String(value);
-        button.setAttribute('aria-label', `Row ${row + 1}, column ${col + 1}: ${value}`);
+        button.setAttribute('aria-label', `Row ${row + 1}, column ${col + 1}: ${value}${given ? ', fixed clue' : ''}`);
       } else if (notes) {
         button.classList.add('has-marks');
         button.textContent = notes;
@@ -145,6 +148,7 @@ export function mountSudoku9x9(root: HTMLElement): GameController {
       }
       button.tabIndex = index === selected ? 0 : -1;
       button.addEventListener('click', () => {
+        if (paused) return;
         selected = index;
         render();
       });
@@ -155,8 +159,11 @@ export function mountSudoku9x9(root: HTMLElement): GameController {
   }
 
   function fill(digit: number): void {
+    if (paused) return;
+    unlockAudio();
     const row = Math.floor(selected / SIZE);
     const col = selected % SIZE;
+    if (isInitialClue(row, col)) { status.textContent = 'That clue is fixed.'; return; }
     if (!isValidMove(board, row, col, digit)) {
       status.textContent = 'That digit conflicts with this row, column, or box.';
       void play('error');
@@ -176,8 +183,11 @@ export function mountSudoku9x9(root: HTMLElement): GameController {
   }
 
   function enterDigit(digit: number): void {
+    if (paused) return;
+    unlockAudio();
     const row = Math.floor(selected / SIZE);
     const col = selected % SIZE;
+    if (isInitialClue(row, col)) { status.textContent = 'That clue is fixed.'; return; }
     if (markMode) {
       if (board[row]![col]) {
         status.textContent = 'Clear the cell before adding notes.';
@@ -192,8 +202,11 @@ export function mountSudoku9x9(root: HTMLElement): GameController {
   }
 
   function clearSelected(): void {
+    if (paused) return;
+    unlockAudio();
     const row = Math.floor(selected / SIZE);
     const col = selected % SIZE;
+    if (isInitialClue(row, col)) { status.textContent = 'That clue is fixed.'; return; }
     if (board[row]![col]) {
       history.push(board.map((rowValue) => rowValue.slice()));
       board[row]![col] = 0;
@@ -209,6 +222,8 @@ export function mountSudoku9x9(root: HTMLElement): GameController {
   }
 
   function doCheck(): void {
+    if (paused) return;
+    unlockAudio();
     const wrong = board.some((row, rowIndex) =>
       row.some((cell, colIndex) => cell !== 0 && cell !== game.solution[rowIndex]![colIndex]),
     );
@@ -217,8 +232,11 @@ export function mountSudoku9x9(root: HTMLElement): GameController {
   }
 
   function doReveal(): void {
+    if (paused) return;
+    unlockAudio();
     const row = Math.floor(selected / SIZE);
     const col = selected % SIZE;
+    if (isInitialClue(row, col)) { status.textContent = 'That clue is fixed.'; return; }
     if (!board[row]![col]) {
       history.push(board.map((rowValue) => rowValue.slice()));
       board[row]![col] = game.solution[row]![col]!;
@@ -232,6 +250,8 @@ export function mountSudoku9x9(root: HTMLElement): GameController {
   }
 
   function doUndo(): void {
+    if (paused) return;
+    unlockAudio();
     const previous = history.pop();
     if (previous) {
       board = previous;
@@ -246,6 +266,8 @@ export function mountSudoku9x9(root: HTMLElement): GameController {
   root.querySelector<HTMLButtonElement>('[data-s9-reveal]')!.addEventListener('click', doReveal);
   root.querySelector<HTMLButtonElement>('[data-s9-undo]')!.addEventListener('click', doUndo);
   marksBtn.addEventListener('click', () => {
+    if (paused) return;
+    unlockAudio();
     markMode = !markMode;
     savePref('sudoku-pencil-marks', markMode);
     syncMarksBtn();
@@ -256,9 +278,13 @@ export function mountSudoku9x9(root: HTMLElement): GameController {
     button.addEventListener('click', () => enterDigit(Number(button.dataset.s9Digit)));
   }
   root.querySelector<HTMLButtonElement>('[data-s9-erase]')!.addEventListener('click', clearSelected);
-  difficulty.addEventListener('change', init);
+  difficulty.addEventListener('change', () => {
+    if (paused) return;
+    unlockAudio();
+    init();
+  });
   root.addEventListener('keydown', (event) => {
-    if (event.target === difficulty) return;
+    if (paused || event.target === difficulty) return;
     const key = event.key;
     if (/^[1-9]$/.test(key)) {
       event.preventDefault();
@@ -293,19 +319,21 @@ export function mountSudoku9x9(root: HTMLElement): GameController {
   });
 
   syncMarksBtn();
-  unlockAudio();
   if (restoreState()) render();
   else init();
 
   return {
     destroy() {
+      root.inert = false;
       root.innerHTML = '';
     },
     pause(_reason?: unknown) {
       paused = true;
+      root.inert = true;
     },
     resume() {
       paused = false;
+      root.inert = false;
     },
     isPaused() {
       return paused;

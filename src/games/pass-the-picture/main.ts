@@ -96,7 +96,20 @@ export function mountPassThePicture(root: HTMLElement): GameController {
   const passesButtons = [...root.querySelectorAll<HTMLButtonElement>('[data-ptp-passes]')];
   const stage = () => root.querySelector<HTMLElement>('.pp-stage')!;
 
-  const context = canvas.getContext('2d')!;
+  const context = canvas.getContext('2d');
+  if (!context) {
+    root.innerHTML = `
+      <div class="pp-error" role="alert">
+        <h2>Drawing is unavailable</h2>
+        <p>This browser could not start Canvas 2D. Reload the page or try a browser with canvas enabled.</p>
+      </div>`;
+    return {
+      destroy() { root.innerHTML = ''; },
+      pause() {},
+      resume() {},
+      isPaused: () => false,
+    };
+  }
 
   let paused = false;
   let passesPerPlayer = DEFAULT_PASSES;
@@ -107,6 +120,7 @@ export function mountPassThePicture(root: HTMLElement): GameController {
   let color: string = PICTURE_PALETTE[0];
   let drawing = false;
   let currentPoints: { x: number; y: number }[] = [];
+  const pendingTimers = new Set<number>();
 
   const status = (text: string) => {
     statusEl.textContent = text;
@@ -302,7 +316,8 @@ export function mountPassThePicture(root: HTMLElement): GameController {
       link.className = 'ptp__download-link';
       root.appendChild(link);
       link.click();
-      window.setTimeout(() => link.remove(), 0);
+      const timer = window.setTimeout(() => { pendingTimers.delete(timer); link.remove(); }, 0);
+      pendingTimers.add(timer);
     } catch {
       status('The picture could not be saved in this browser.');
     }
@@ -352,6 +367,8 @@ export function mountPassThePicture(root: HTMLElement): GameController {
 
   return {
     destroy() {
+      pendingTimers.forEach((timer) => window.clearTimeout(timer));
+      pendingTimers.clear();
       closeHandoff();
       root.innerHTML = '';
     },

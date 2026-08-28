@@ -1,8 +1,8 @@
-import { play } from '../shared/audio';
+import { play, unlockAudio } from '../shared/audio';
 import { signalMeaningfulGameInteraction } from '../shared/recently-played';
 import { loadPref, savePref } from '../shared/storage';
 import type { GameController, PauseReason } from '../shared/types';
-import { beginInput, expectedPadLabel, extendSequence, newGame, padById, PADS, pressPad, SIMON_PADS, SIMON_TARGET, type SimonState } from './engine';
+import { beginInput, expectedPadLabel, extendSequence, newGame, padById, PADS, pressPad, SIMON_TARGET, type SimonState } from './engine';
 import './styles.css';
 
 const GAME_ID = 'simon';
@@ -85,15 +85,36 @@ export function mountSimon(root: HTMLElement): GameController {
   let bestLength = loadBest();
   let showingIndex = 0;
   let showTimer: number | null = null;
+  let showDeadline = 0;
+  let showRemaining = 0;
+  let pendingShowCallback: (() => void) | null = null;
+  const uiTimers = new Set<number>();
+  const scheduleUi = (callback: () => void, delay: number) => {
+    const id = window.setTimeout(() => { uiTimers.delete(id); callback(); }, delay);
+    uiTimers.add(id);
+  };
   let pausedDuringShow = false;
 
   const padButtons = () => [...padsEl.querySelectorAll<HTMLButtonElement>('[data-sn-pad]')];
 
   const metrics = () => `Best remembered: ${bestLength > 0 ? bestLength : '—'}`;
 
-  const clearShowTimer = () => {
+  const clearShowTimer = (clearPending = true) => {
     if (showTimer !== null) window.clearTimeout(showTimer);
     showTimer = null;
+    if (clearPending) pendingShowCallback = null;
+  };
+
+  const scheduleShow = (callback: () => void, delay: number) => {
+    clearShowTimer(false);
+    pendingShowCallback = callback;
+    showRemaining = Math.max(0, delay);
+    showDeadline = performance.now() + showRemaining;
+    showTimer = window.setTimeout(() => {
+      showTimer = null;
+      pendingShowCallback = null;
+      callback();
+    }, showRemaining);
   };
 
   const stopShow = () => {
@@ -105,6 +126,8 @@ export function mountSimon(root: HTMLElement): GameController {
   const showNext = () => {
     if (paused) {
       pausedDuringShow = true;
+      pendingShowCallback = showNext;
+      showRemaining = 300;
       return;
     }
     if (showingIndex >= state.sequence.length) {
@@ -121,10 +144,10 @@ export function mountSimon(root: HTMLElement): GameController {
     button.classList.add('is-active');
     void play(state.calm ? 'blip' : 'tick');
     statusEl.textContent = `Watch: ${pad.label}.`;
-    showTimer = window.setTimeout(() => {
+    scheduleShow(() => {
       button.classList.remove('is-active');
       showingIndex += 1;
-      showTimer = window.setTimeout(showNext, state.calm ? 520 : 420);
+      scheduleShow(showNext, state.calm ? 520 : 420);
     }, state.calm ? 560 : 380);
   };
 
@@ -142,6 +165,8 @@ export function mountSimon(root: HTMLElement): GameController {
   };
 
   const startPattern = () => {
+    if (paused) return;
+    unlockAudio();
     stopShow();
     state = newGame(calm);
     state = extendSequence(state);
@@ -149,7 +174,7 @@ export function mountSimon(root: HTMLElement): GameController {
     hintEl.textContent = '';
     renderRound();
     showingIndex = 0;
-    showTimer = window.setTimeout(showNext, 500);
+    scheduleShow(showNext, 500);
     signalMeaningfulGameInteraction(root);
   };
 
@@ -157,7 +182,7 @@ export function mountSimon(root: HTMLElement): GameController {
     if (paused || state.status !== 'input') return;
     const button = padButtons()[pad]!;
     button.classList.add('is-pressed');
-    window.setTimeout(() => button.classList.remove('is-pressed'), 140);
+    scheduleUi(() => button.classList.remove('is-pressed'), 140);
     void play('pop');
     const before = state;
     state = pressPad(state, pad);
@@ -183,7 +208,7 @@ export function mountSimon(root: HTMLElement): GameController {
       void play('win');
       showingIndex = 0;
       statusEl.textContent = 'Watch the next pattern.';
-      showTimer = window.setTimeout(showNext, 700);
+      scheduleShow(showNext, 700);
       return;
     }
     if (state.status === 'won') {
@@ -209,6 +234,7 @@ export function mountSimon(root: HTMLElement): GameController {
   againBtn.addEventListener('click', startPattern);
 
   calmInput.addEventListener('change', () => {
+    if (paused) return;
     calm = calmInput.checked;
     savePref(CALM_PREF, calm);
     state = { ...state, calm };
@@ -220,17 +246,30 @@ export function mountSimon(root: HTMLElement): GameController {
 
   return {
     destroy() {
+      root.inert = false;
+      uiTimers.forEach((id) => window.clearTimeout(id));
+      uiTimers.clear();
       stopShow();
       root.innerHTML = '';
     },
     pause(_reason?: PauseReason) {
+      if (paused) return;
       paused = true;
+      if (showTimer !== null && pendingShowCallback) {
+        showRemaining = Math.max(0, showDeadline - performance.now());
+        window.clearTimeout(showTimer);
+        showTimer = null;
+        pausedDuringShow = true;
+      }
+      root.inert = true;
     },
     resume() {
+      if (!paused) return;
       paused = false;
-      if (pausedDuringShow && state.status === 'showing') {
+      root.inert = false;
+      if (pausedDuringShow && state.status === 'showing' && pendingShowCallback) {
         pausedDuringShow = false;
-        showTimer = window.setTimeout(showNext, 300);
+        scheduleShow(pendingShowCallback, showRemaining);
       }
     },
     isPaused() {

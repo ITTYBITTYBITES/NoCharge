@@ -111,6 +111,11 @@ export function mountKlondike(root: HTMLElement): GameController {
   let fanPage = 0;
   let geometryKey = '';
   let observer: ResizeObserver | null = null;
+  const pendingTimers = new Set<number>();
+  const defer = (callback: () => void, delay: number) => {
+    const id = window.setTimeout(() => { pendingTimers.delete(id); callback(); }, delay);
+    pendingTimers.add(id);
+  };
 
   // Load persisted stats
   let gamesWon = loadInt(GAMES_WON_KEY);
@@ -264,9 +269,9 @@ export function mountKlondike(root: HTMLElement): GameController {
       }
     };
     attemptFocus();
-    window.setTimeout(attemptFocus, 0);
-    window.setTimeout(attemptFocus, 50);
-    window.setTimeout(attemptFocus, 150);
+    defer(attemptFocus, 0);
+    defer(attemptFocus, 50);
+    defer(attemptFocus, 150);
   }
 
   function closeFan(returnFocus = true) {
@@ -282,9 +287,9 @@ export function mountKlondike(root: HTMLElement): GameController {
         }
       };
       attemptFocus();
-      window.setTimeout(attemptFocus, 0);
-      window.setTimeout(attemptFocus, 50);
-      window.setTimeout(attemptFocus, 150);
+      defer(attemptFocus, 0);
+      defer(attemptFocus, 50);
+      defer(attemptFocus, 150);
     }
   }
 
@@ -698,6 +703,8 @@ export function mountKlondike(root: HTMLElement): GameController {
 
   return {
     destroy() {
+      pendingTimers.forEach((id) => window.clearTimeout(id));
+      pendingTimers.clear();
       observer?.disconnect();
       observer = null;
       root.removeEventListener('keydown', onKeyDown);

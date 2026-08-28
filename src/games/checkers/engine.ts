@@ -73,10 +73,6 @@ function indexOf(row: number, col: number): number {
   return row * CHECKERS_SIZE + col;
 }
 
-function rowsFor(player: CheckersPlayer): number[] {
-  return player === 1 ? [1] : [-1];
-}
-
 /** Forward directions for a man; king adds the reverse. */
 function directions(piece: CheckersPiece): [number, number][] {
   const forward = piecePlayer(piece) === 1 ? [1] : [-1];

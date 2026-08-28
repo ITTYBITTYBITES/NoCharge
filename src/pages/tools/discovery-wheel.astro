@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import FaqList from '../../components/FaqList.astro';
 import { buildGameFacts } from '../../lib/game-catalog';
 
 const allGames = (await getCollection('games'))
@@ -138,9 +139,7 @@ const schema = [
       </ul>
 
       <h2 id="faq">FAQ — Discovery Wheel</h2>
-      <dl>
-        {faqs.map(({ q, a }) => <><dt>{q}</dt><dd>{a}</dd></>)}
-      </dl>
+      <FaqList items={faqs} />
 
       <h2>Embed this tool</h2>
       <pre><code>&lt;iframe src="https://nocharge.net/tools/discovery-wheel/" width="400" height="600" title="NoCharge game discovery wheel"&gt;&lt;/iframe&gt;

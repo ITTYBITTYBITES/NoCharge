@@ -3,7 +3,6 @@ import { signalMeaningfulGameInteraction } from '../shared/recently-played';
 import {
   createHandoffScreen,
   getPlayerNames,
-  passPlayMatchKey,
   playerName,
   savePassPlayMatchRecord,
   type HandoffScreenController,
@@ -14,7 +13,6 @@ import '../shared/pass-play-chrome.css';
 import './styles.css';
 
 const GAME_ID = 'gomoku';
-const MATCH_KEY = passPlayMatchKey(GAME_ID);
 
 function getBrowserStorage(): Storage | undefined {
   try {

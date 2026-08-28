@@ -1,5 +1,6 @@
-import { play } from '../shared/audio';
+import { play, unlockAudio } from '../shared/audio';
 import { signalMeaningfulGameInteraction } from '../shared/recently-played';
+import { ActiveTimeTracker } from '../shared/active-time';
 import { loadPref, savePref } from '../shared/storage';
 import type { GameController, PauseReason } from '../shared/types';
 import {
@@ -104,7 +105,7 @@ export function mountMinesweeper(root: HTMLElement): GameController {
   let difficulty: Difficulty = initialDifficulty;
   let state: GameState = newGame(difficulty);
   let flagMode = false;
-  let startedAt = 0;
+  const activeTime = new ActiveTimeTracker();
   let elapsedSeconds = 0;
   let timer: number | null = null;
   let focusRow = 0;
@@ -124,12 +125,23 @@ export function mountMinesweeper(root: HTMLElement): GameController {
 
   const startTimer = () => {
     stopTimer();
-    startedAt = performance.now();
-    elapsedSeconds = 0;
+    activeTime.start();
     timer = window.setInterval(() => {
       if (paused || state.status !== 'playing') return;
-      elapsedSeconds = Math.floor((performance.now() - startedAt) / 1000);
+      elapsedSeconds = Math.floor(activeTime.elapsedMs() / 1000);
     }, 1000);
+  };
+
+  const pauseTimer = () => {
+    activeTime.pause();
+    elapsedSeconds = Math.floor(activeTime.elapsedMs() / 1000);
+    stopTimer();
+  };
+
+  const resetTimer = () => {
+    stopTimer();
+    activeTime.reset();
+    elapsedSeconds = 0;
   };
 
   const metricSummary = () => {
@@ -206,7 +218,7 @@ export function mountMinesweeper(root: HTMLElement): GameController {
   };
 
   const finish = (status: 'won' | 'lost') => {
-    stopTimer();
+    pauseTimer();
     lastResult = status;
     if (status === 'won') {
       gamesWon += 1;
@@ -231,6 +243,7 @@ export function mountMinesweeper(root: HTMLElement): GameController {
   };
 
   const activate = (row: number, col: number) => {
+    unlockAudio();
     if (paused || state.status === 'won' || state.status === 'lost') return;
     if (flagMode || state.board[row]![col]!.flagged) {
       state = toggleFlag(state, row, col);
@@ -303,7 +316,7 @@ export function mountMinesweeper(root: HTMLElement): GameController {
         activate(focusRow, focusCol);
       }
     }
-    if (event.key.toLowerCase() === 'f' || event.key.toLowerCase() === 'm') {
+    if (!paused && (event.key.toLowerCase() === 'f' || event.key.toLowerCase() === 'm')) {
       event.preventDefault();
       flagMode = false;
       state = toggleFlag(state, focusRow, focusCol);
@@ -313,15 +326,16 @@ export function mountMinesweeper(root: HTMLElement): GameController {
   });
 
   flagModeBtn.addEventListener('click', () => {
+    if (paused) return;
     flagMode = !flagMode;
     renderFlagMode();
   });
 
   againBtn.addEventListener('click', () => {
+    if (paused) return;
     state = newGame(difficulty);
     lastResult = null;
-    elapsedSeconds = 0;
-    stopTimer();
+    resetTimer();
     resultEl.hidden = true;
     focusRow = 0;
     focusCol = 0;
@@ -331,13 +345,13 @@ export function mountMinesweeper(root: HTMLElement): GameController {
 
   for (const button of difficultyButtons) {
     button.addEventListener('click', () => {
+      if (paused) return;
       const next = DIFFICULTIES.find((candidate) => candidate.id === button.dataset.msDifficulty) ?? DIFFICULTIES[0]!;
       difficulty = next;
       savePref(SIZE_KEY, next.id);
       state = newGame(difficulty);
       lastResult = null;
-      elapsedSeconds = 0;
-      stopTimer();
+      resetTimer();
       resultEl.hidden = true;
       focusRow = 0;
       focusCol = 0;
@@ -353,15 +367,18 @@ export function mountMinesweeper(root: HTMLElement): GameController {
 
   return {
     destroy() {
-      stopTimer();
+      resetTimer();
       root.innerHTML = '';
     },
     pause(_reason?: PauseReason) {
+      if (paused) return;
       paused = true;
+      if (state.status === 'playing') pauseTimer();
     },
     resume() {
+      if (!paused) return;
       paused = false;
-      if (state.status === 'playing' && timer === null) startTimer();
+      if (state.status === 'playing') startTimer();
     },
     isPaused() {
       return paused;

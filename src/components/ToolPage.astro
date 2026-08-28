@@ -9,6 +9,7 @@
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from './Breadcrumbs.astro';
+import FaqList from './FaqList.astro';
 
 interface Props {
   title: string;
@@ -121,14 +122,7 @@ const toolSchema = schema ?? [
       faqs.length > 0 && (
         <section class="prose" id="faq" aria-labelledby="tool-faq-heading">
           <h2 id="tool-faq-heading">FAQ</h2>
-          <dl class="tool-faq">
-            {faqs.map(({ q, a }) => (
-              <>
-                <dt>{q}</dt>
-                <dd>{a}</dd>
-              </>
-            ))}
-          </dl>
+          <FaqList items={faqs} />
         </section>
       )
     }

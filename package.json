@@ -33,6 +33,7 @@
     "lighthouse": "lhci autorun",
     "validate:html": "html-validate \"dist/**/*.html\"",
     "check:links": "node scripts/check-internal-links.mjs",
+    "check:spacing": "node scripts/audit-rendered-spacing.mjs",
     "audit:content": "node scripts/audit-content-quality.mjs",
     "check:game-pins": "node scripts/generate-game-pins.mjs && git diff --exit-code -- 'public/game-art/*/pin-1000x1500.jpg' 'public/game-art/*/pin-1000x1500.webp'",
     "check:ci-policy": "node scripts/reject-ci-bypass.mjs",
@@ -47,7 +48,7 @@
     "validate:brand-media": "node scripts/validate-brand-media.mjs",
     "kit:media": "node scripts/generate-media-kit.mjs",
     "inspect:favicons": "node scripts/inspect-favicons.mjs",
-    "verify:build": "npm run validate:html && npm run check:links && npm run validate:sitemap && npm run inspect:structured-data && npm run validate:faq && npm run check:assets && npm run validate:setup && npm run validate:feed && npm run validate:brand && npm run validate:brand-media && npm run inspect:favicons"
+    "verify:build": "npm run validate:html && npm run check:links && npm run check:spacing && npm run validate:sitemap && npm run inspect:structured-data && npm run validate:faq && npm run check:assets && npm run validate:setup && npm run validate:feed && npm run validate:brand && npm run validate:brand-media && npm run inspect:favicons"
   },
   "engines": {
     "node": ">=22.12.0"

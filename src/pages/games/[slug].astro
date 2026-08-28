@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import GameShell from '../../components/GameShell.astro';
 import ArticleCard from '../../components/ArticleCard.astro';
+import FaqList from '../../components/FaqList.astro';
 import { isPassPlayGameId } from '../../games/shared/pass-play';
 import { allFacts, relatedGames as catalogRelated } from '../../lib/game-catalog';
 
@@ -235,7 +236,7 @@ const gameSchema = [
     }
     <section class="panel game-faq" id="faq" aria-labelledby="faq-heading">
       <h2 id="faq-heading">Frequently asked questions about {game.data.title}</h2>
-      <dl>{faqQuestions.map(({ q, a }) => <><dt>{q}</dt><dd>{a}</dd></>)}</dl>
+      <FaqList items={faqQuestions} />
     </section>
   </GameShell>
 </BaseLayout>

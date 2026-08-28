@@ -82,6 +82,7 @@ export function mountFourInARow(root: HTMLElement): GameController {
   let finished = false;
   let handoff: HandoffScreenController | null = null;
   let dropAnimated = false;
+  const animationTimers = new Set<number>();
 
   const size = () => FOUR_IN_A_ROW_SIZES[sizeIndex]!;
   const modeLabel = () => size().label;
@@ -185,9 +186,11 @@ export function mountFourInARow(root: HTMLElement): GameController {
       animated.classList.add('is-falling');
       animated.style.setProperty('--fir-fall-from', `-${(dropped.row + 1) * 4.4}rem`);
       cell.append(animated);
-      window.setTimeout(() => {
+      const timer = window.setTimeout(() => {
+        animationTimers.delete(timer);
         animated.replaceWith(disc);
       }, 260);
+      animationTimers.add(timer);
     } else {
       cell.append(disc);
     }
@@ -280,6 +283,8 @@ export function mountFourInARow(root: HTMLElement): GameController {
 
   return {
     destroy() {
+      animationTimers.forEach((timer) => window.clearTimeout(timer));
+      animationTimers.clear();
       closeHandoff();
       root.innerHTML = '';
     },

@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import FaqList from '../../components/FaqList.astro';
 import { TOOLS, TOOL_CATEGORIES } from '../../config/tools';
 
 const faqs = [
@@ -125,14 +126,7 @@ const schema = [
 
     <section class="prose" aria-labelledby="faq">
       <h2 id="faq">FAQ — Tools</h2>
-      <dl class="tools-faq">
-        {faqs.map(({ q, a }) => (
-          <>
-            <dt>{q}</dt>
-            <dd>{a}</dd>
-          </>
-        ))}
-      </dl>
+      <FaqList items={faqs} />
     </section>
   </div>
 </BaseLayout>

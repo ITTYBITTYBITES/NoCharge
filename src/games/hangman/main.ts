@@ -1,8 +1,8 @@
-import { play } from '../shared/audio';
+import { play, unlockAudio } from '../shared/audio';
 import { signalMeaningfulGameInteraction } from '../shared/recently-played';
 import { loadPref, savePref } from '../shared/storage';
 import type { GameController, PauseReason } from '../shared/types';
-import { alphabet, canGuess, guess, MAX_WRONG, newGame, revealedWord, THEMES, type HangmanState, type HangmanTheme } from './engine';
+import { alphabet, canGuess, guess, MAX_WRONG, newGame, revealedWord, THEMES, type HangmanState } from './engine';
 import './styles.css';
 
 const GAME_ID = 'hangman';
@@ -136,6 +136,7 @@ export function mountHangman(root: HTMLElement): GameController {
 
   const submit = (letter: string) => {
     if (paused || !canGuess(state, letter)) return;
+    unlockAudio();
     state = guess(state, letter);
     void play(state.guessed[state.guessed.length - 1] === letter && state.word.includes(letter) ? 'flip' : 'error');
     signalMeaningfulGameInteraction(root);

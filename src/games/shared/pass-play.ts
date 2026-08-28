@@ -395,12 +395,13 @@ export function createHandoffScreen(
   };
   // Announce one frame later so screen readers register the new dialog first.
   const view = doc.defaultView;
-  if (view) view.setTimeout(announceTurn, 0);
+  const announceTimer = view?.setTimeout(announceTurn, 0);
 
   let closed = false;
   const close = () => {
     if (closed) return;
     closed = true;
+    if (announceTimer !== undefined) view?.clearTimeout(announceTimer);
     view?.removeEventListener('keydown', onKeydown, true);
     host.remove();
     for (const target of hiddenTargets) target.hidden = false;

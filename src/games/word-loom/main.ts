@@ -1,4 +1,4 @@
-import { play } from '../shared/audio';
+import { play, unlockAudio } from '../shared/audio';
 import { signalMeaningfulGameInteraction } from '../shared/recently-played';
 import type { GameController, PauseReason } from '../shared/types';
 import {
@@ -9,13 +9,11 @@ import {
   symbolFor,
   WORD_LENGTH,
   wordForSeed,
-  WORD_LIST,
   type Feedback,
   type GuessResult,
 } from './engine';
 import './styles.css';
 
-const GAME_ID = 'word-loom';
 const DAILY_STREAK_KEY = 'nocharge:daily:word-loom:streak';
 const DAILY_SOLVED_KEY = 'nocharge:daily:word-loom:solved';
 
@@ -164,6 +162,7 @@ export function mountWordLoom(root: HTMLElement): GameController {
   };
 
   const submit = () => {
+    unlockAudio();
     if (paused || finished) return;
     const word = inputEl.value.trim().toLowerCase();
     if (word.length !== WORD_LENGTH) {

@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import FaqList from '../../components/FaqList.astro';
 import { REGISTRY_REVIEW_DATE } from '../../lib/game-catalog';
 
 export async function getStaticPaths() {
@@ -75,14 +76,7 @@ const schema = [
       faqs.length > 0 && (
         <section class="panel learn-article__faq" id="faq" aria-labelledby="learn-faq-heading">
           <h2 id="learn-faq-heading">FAQ</h2>
-          <dl>
-            {faqs.map(({ q, a }) => (
-              <>
-                <dt>{q}</dt>
-                <dd>{a}</dd>
-              </>
-            ))}
-          </dl>
+          <FaqList items={faqs} />
         </section>
       )
     }
