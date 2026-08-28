@@ -201,19 +201,22 @@ const schema = [
       grid-template-columns: 9rem minmax(0, 1fr);
     }
   }
-.registry-log {
+  .registry-log {
     display: grid;
     gap: 1rem;
     padding: 1.25rem;
+    min-width: 0;
   }
 
   .registry-log > div:first-child {
     display: grid;
     gap: 0.4rem;
+    min-width: 0;
   }
 
   .registry-log__scroll {
     max-width: 100%;
+    min-width: 0;
     overflow-x: auto;
     border: 1px solid var(--line);
     border-radius: 0.6rem;

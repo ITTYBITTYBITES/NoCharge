@@ -178,6 +178,9 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 
   .trust-page section {
     padding-top: 0.25rem;
+    /* Grid children default to min-width:auto, which lets a wide table
+       stretch the page instead of scrolling inside its container. */
+    min-width: 0;
   }
 
   .trust-page section + section {
@@ -196,6 +199,7 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 
   .accessibility-matrix table {
     width: 100%;
+    min-width: 26rem;
     border-collapse: collapse;
     font-size: 0.84rem;
     text-align: left;
