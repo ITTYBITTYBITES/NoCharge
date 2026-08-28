@@ -60,6 +60,13 @@ export const TOOLS: ToolEntry[] = [
     usefulWhen: 'you want to compare a low procedural soundscape with silence.',
   },
   {
+    slug: 'singing-bowl-engine',
+    title: 'Singing Bowl Engine',
+    description: 'Place and strike singing bowls on an interactive canvas. Bronze and quartz additive synthesis profiles with harmonic connection lines, organic pitch drift, and synthetic reverb. All audio is generated in the browser.',
+    category: 'audio',
+    usefulWhen: 'you want to explore consonant intervals and additive synthesis hands-on.',
+  },
+  {
     slug: 'contrast-checker',
     title: 'Contrast checker',
     description: 'Compute WCAG contrast ratios for any two hex colors and compare the common Quiet Arcade palette pairs.',

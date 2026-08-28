@@ -1,0 +1,41 @@
+---
+/**
+ * Standalone embed route for the Singing Bowl Engine.
+ * Designed to be loaded inside an iframe with sandbox="allow-scripts allow-same-origin".
+ * Minimal chrome — just the canvas engine filling the viewport.
+ */
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>NoCharge Singing Bowl Engine</title>
+    <meta name="robots" content="noindex" />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #121212;
+        color: #e0e0e0;
+        font-family: Inter, system-ui, -apple-system, sans-serif;
+      }
+      singing-bowl-engine {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <singing-bowl-engine></singing-bowl-engine>
+    <script type="module">
+      import '../../components/SoundEngine/SoundEngine.js';
+    </script>
+  </body>
+</html>
