@@ -6,6 +6,7 @@ const toolPaths = [
   '/tools/',
   '/tools/discovery-wheel/',
   '/tools/ambient-mixer/',
+  '/tools/singing-bowl-engine/',
   '/tools/zoom-visualizer/',
   '/tools/game-finder/',
   '/tools/session-planner/',
@@ -25,7 +26,7 @@ test.beforeEach(async ({ page }) => denyOptionalServices(page));
 
 test('tools index links to the three current utilities', async ({ page }) => {
   await page.goto('/tools/');
-  await expect(page.locator('.tool-card')).toHaveCount(15);
+  await expect(page.locator('.tool-card')).toHaveCount(16);
   for (const path of toolPaths.slice(1)) await expect(page.locator(`a[href="${path}"]`)).toHaveCount(1);
 });
 
