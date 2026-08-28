@@ -203,9 +203,14 @@ p {
   content: '';
 }
 
+/* Search is icon-only in the header (with an accessible name via aria-label)
+   so it adds minimal width. On the narrowest one-row layout it is omitted
+   entirely — Search stays available from the footer and the 404 search box —
+   keeping that header byte-identical in width to the passing baseline. */
 .nav-link--search {
-  gap: 0.3rem;
-  padding: 0 0.15rem;
+  justify-content: center;
+  min-width: 44px;
+  padding: 0;
 }
 
 .nav-link__icon {
@@ -216,12 +221,12 @@ p {
 @media (max-width: 30rem) {
   .site-header {
     flex-wrap: nowrap;
-    gap: 0.4rem;
+    gap: 0.5rem;
     padding: 0.75rem 0 0.5rem;
   }
 
   .brand {
-    flex: 0 0 40px;
+    flex: 0 0 44px;
     justify-content: center;
   }
 
@@ -233,27 +238,14 @@ p {
     flex: 1 1 auto;
     flex-wrap: nowrap;
     justify-content: flex-end;
-    gap: 0.32rem;
+    gap: 0.45rem;
   }
 
   .nav-link {
-    font-size: 0.76rem;
-  }
-
-  /* Keep the one-row mobile header within the narrowest viewport: Setup
-     remains reachable from the footer, and Search becomes icon-only. */
-  .nav-link--setup {
-    display: none;
+    font-size: 0.82rem;
   }
 
   .nav-link--search {
-    min-height: 44px;
-    min-width: 40px;
-    justify-content: center;
-    padding: 0 0.15rem;
-  }
-
-  .nav-link--search .nav-link__label {
     display: none;
   }
 }

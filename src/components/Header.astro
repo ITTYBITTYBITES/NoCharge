@@ -34,8 +34,8 @@ const searchAria = searchCurrent ? 'page' : undefined;
     <a class:list={['nav-link', { 'is-current': dailyCurrent }]} href="/daily/" aria-current={dailyAria}>Daily</a>
     <a class:list={['nav-link', 'nav-link--setup', { 'is-current': setupCurrent }]} href="/setup/" aria-current={setupAria}>Setup</a>
     <a class:list={['nav-link', 'nav-link--search', { 'is-current': searchCurrent }]} href="/search/" aria-current={searchAria} aria-label="Search NoCharge">
-      <svg class="nav-link__icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
-      <span class="nav-link__label">Search</span>
+      <svg class="nav-link__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
+      <span class="sr-only">Search</span>
     </a>
   </nav>
 </header>
