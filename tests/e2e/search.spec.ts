@@ -9,14 +9,15 @@ test('site search returns matching games, guides, and tools from the static inde
   await expect(input).toBeVisible();
 
   await input.fill('solitaire');
-  await expect(page.locator('#search-status')).toContainText('result');
+  // Live results appear after the debounced fetch of the static index.
   const results = page.locator('#results-list .result-item');
   await expect(results.first()).toBeVisible();
+  await expect(page.locator('#search-status')).toContainText('result');
   const titles = await results.locator('.result-item__title').allTextContents();
   expect(titles.join(' ')).toContain('Klondike');
 
-  // The query is reflected in the URL so searches are shareable.
-  await page.getByRole('button', { name: 'Search' }).click();
+  // Submitting reflects the query in the URL so searches are shareable.
+  await page.locator('#search-form button[type="submit"]').click();
   await expect(page).toHaveURL(/q=solitaire/);
 });
 
@@ -34,7 +35,7 @@ test('site search shows a clear no-results state and recovers', async ({ page })
 test('site search opens from the header and an initial query runs on load', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('link', { name: 'Search NoCharge' }).click();
-  await expect(page).toHaveURL(/\/search\/?$/);
+  await expect(page).toHaveURL(/\/search(?:\/)?$/);
 
   await page.goto('/search/?q=ambient');
   await expect(page.locator('#results-list .result-item').first()).toBeVisible();
