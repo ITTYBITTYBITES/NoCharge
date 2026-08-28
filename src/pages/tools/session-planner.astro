@@ -1,0 +1,204 @@
+---
+import { getCollection } from 'astro:content';
+import ToolPage from '../../components/ToolPage.astro';
+import { buildGameFacts } from '../../lib/game-catalog';
+
+const games = (await getCollection('games')).filter((game) => !game.data.draft);
+const facts = buildGameFacts(games).map((fact) => ({
+  id: fact.slug,
+  title: fact.title,
+  genre: fact.genre,
+  sessionLabel: fact.sessionLabel,
+  sessionMin: fact.sessionMin,
+  sessionMax: fact.sessionMax,
+  players: fact.players,
+  inputs: fact.inputs,
+}));
+
+const faqs = [
+  {
+    q: 'Are session labels promises?',
+    a: 'No. They are estimated ranges from typical play in the catalog. A session planner can suggest a count; it cannot promise how long any player will take.',
+  },
+  {
+    q: 'What does "1–2 games" mean?',
+    a: 'The planner divides your minutes by the midpoint of each listed range and rounds down, so the count is a starting point, not a schedule.',
+  },
+  {
+    q: 'Does it save my answers?',
+    a: 'No. Everything stays in page memory and disappears on reload. The tool writes no storage at all.',
+  },
+];
+---
+
+<ToolPage
+  title="Session planner"
+  eyebrow="Minutes × players × input"
+  description="Turn a free minute count into a shortlist of games and an estimated number of runs, then open them directly. Player and input filters apply on top."
+  path="/tools/session-planner/"
+  category="Play"
+  bottomLine="The planner takes the minutes you have, plus players and input, and lists matching NoCharge games with an estimated runs-per-session. It is an estimate from catalog session labels, not a timer and not a promise."
+  faqs={faqs}
+  embedCode={`<iframe src="https://nocharge.net/tools/session-planner/" width="400" height="620" title="NoCharge session planner"></iframe>`}
+  nextActions={[
+    { href: '/arcade/', label: 'Open the Arcade', note: 'The same catalog, with chips and sort controls.' },
+    { href: '/tools/game-finder/', label: 'Game Finder quiz', note: 'A different way to filter by what fits today.' },
+    { href: '/learn/untimed-play/', label: 'Untimed play explainer', note: 'Why “untimed” is not the same as “short”.' },
+  ]}
+>
+  <section class="panel planner-controls" aria-labelledby="planner-heading">
+    <div>
+      <p class="section-kicker">Plan a break</p>
+      <h2 id="planner-heading">How long do you have?</h2>
+    </div>
+    <div class="planner-grid">
+      <label>Minutes available
+        <input type="number" min="1" max="240" value="10" data-planner-min aria-label="Minutes available" />
+      </label>
+      <label>Players
+        <select data-planner-players aria-label="Players">
+          <option value="any">Any</option>
+          <option value="solo">Solo</option>
+          <option value="pass-and-play">Pass &amp; Play</option>
+        </select>
+      </label>
+      <label>Input
+        <select data-planner-input aria-label="Input">
+          <option value="any">Any</option>
+          <option value="keyboard">Keyboard</option>
+          <option value="pointer">Pointer</option>
+          <option value="touch">Touch</option>
+        </select>
+      </label>
+    </div>
+    <div id="planner-results" class="planner-results" data-games={JSON.stringify(facts)} aria-live="polite"></div>
+  </section>
+</ToolPage>
+
+<script>
+  interface Fact { id: string; title: string; genre: string; sessionLabel: string; sessionMin: number; sessionMax: number; players: 'solo' | 'pass-and-play'; inputs: string[]; }
+  const minutes = document.querySelector<HTMLInputElement>('[data-planner-min]');
+  const players = document.querySelector<HTMLSelectElement>('[data-planner-players]');
+  const input = document.querySelector<HTMLSelectElement>('[data-planner-input]');
+  const results = document.querySelector<HTMLElement>('#planner-results');
+  if (minutes && players && input && results) {
+    const games = JSON.parse(results.dataset.games ?? '[]') as Fact[];
+    const render = () => {
+      const total = Math.max(1, Math.min(240, Number(minutes.value) || 10));
+      const playerValue = players.value;
+      const inputValue = input.value;
+      const matched = games.filter((game) => {
+        if (playerValue !== 'any' && game.players !== playerValue) return false;
+        if (inputValue !== 'any' && !game.inputs.includes(inputValue)) return false;
+        return true;
+      }).sort((a, b) => a.sessionMax - b.sessionMax || a.title.localeCompare(b.title));
+      results.replaceChildren();
+      if (matched.length === 0) {
+        results.textContent = 'No game matches both filters. Broaden one to see results — nothing was ignored.';
+        return;
+      }
+      const summary = document.createElement('p');
+      summary.textContent = `${total} min · ${playerValue === 'any' ? 'any players' : playerValue === 'solo' ? 'solo' : 'two players'} · ${inputValue === 'any' ? 'any input' : inputValue} — ${matched.length} candidate game${matched.length === 1 ? '' : 's'}.`;
+      results.append(summary);
+      for (const game of matched.slice(0, 12)) {
+        const card = document.createElement('article');
+        card.className = 'panel planner-card';
+        const heading = document.createElement('h3');
+        const link = document.createElement('a');
+        link.href = `/games/${game.id}/`;
+        link.textContent = game.title;
+        heading.append(link);
+        const midpoint = Math.round((game.sessionMin + game.sessionMax) / 2);
+        const approximate = Math.max(1, Math.floor(total / Math.max(1, midpoint)));
+        const meta = document.createElement('p');
+        meta.textContent = `${game.genre} · ${game.sessionLabel} · about ${approximate} run${approximate === 1 ? '' : 's'} in ${total} min`;
+        const actions = document.createElement('p');
+        const play = document.createElement('a');
+        play.href = `/games/${game.id}/`;
+        play.textContent = 'Play';
+        const guide = document.createElement('a');
+        guide.href = `/guides/${game.id}/`;
+        guide.textContent = 'Guide';
+        const sep = document.createTextNode(' · ');
+        actions.append(play, sep, guide);
+        card.append(heading, meta, actions);
+        results.append(card);
+      }
+    };
+    for (const control of [minutes, players, input]) control.addEventListener('change', render);
+    minutes.addEventListener('input', render);
+    render();
+  }
+</script>
+
+<style is:global>
+  .planner-controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+
+  .planner-controls > div:first-child {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.3rem;
+  }
+
+  .planner-grid {
+    display: grid;
+    gap: 0.8rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(10rem, 100%), 1fr));
+  }
+
+  .planner-grid label {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.35rem;
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-weight: 650;
+  }
+
+  .planner-grid input,
+  .planner-grid select {
+    min-height: 44px;
+    padding: 0.5rem;
+    border: 1px solid var(--line);
+    border-radius: 0.5rem;
+    background: var(--panel-2);
+    color: var(--text);
+  }
+
+  .planner-results {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.7rem;
+  }
+
+  .planner-results > p:first-child {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  .planner-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.3rem;
+    padding: 0.9rem;
+  }
+
+  .planner-card h3 a {
+    color: var(--accent-strong);
+  }
+
+  .planner-card p {
+    color: var(--muted);
+    font-size: 0.84rem;
+  }
+
+  .planner-card p:last-child a {
+    color: var(--accent-strong);
+    font-weight: 700;
+  }
+</style>

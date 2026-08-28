@@ -15,6 +15,15 @@ import { mountTwentyFortyEight } from './twenty-forty-eight/main';
 import { mountTileGarden } from './tile-garden/main';
 import { mountWordSearch } from './word-search/main';
 import { mountMiniSudoku } from './mini-sudoku/main';
+import { mountMinesweeper } from './minesweeper/main';
+import { mountHangman } from './hangman/main';
+import { mountLightsOut } from './lights-out/main';
+import { mountSimon } from './simon/main';
+import { mountSudoku9x9 } from './sudoku-9x9/main';
+import { mountGomoku } from './gomoku/main';
+import { mountNineMensMorris } from './nine-mens-morris/main';
+import { mountWordLoom } from './word-loom/main';
+import { mountCheckers } from './checkers/main';
 import type { GameController } from './shared/types';
 
 export interface GameModule {
@@ -39,6 +48,15 @@ const registry: Record<string, GameModule> = {
   'tile-garden': { mount: mountTileGarden },
   'word-search': { mount: mountWordSearch },
   'mini-sudoku': { mount: mountMiniSudoku },
+  minesweeper: { mount: mountMinesweeper },
+  hangman: { mount: mountHangman },
+  'lights-out': { mount: mountLightsOut },
+  simon: { mount: mountSimon },
+  'sudoku-9x9': { mount: mountSudoku9x9 },
+  gomoku: { mount: mountGomoku },
+  'nine-mens-morris': { mount: mountNineMensMorris },
+  'word-loom': { mount: mountWordLoom },
+  checkers: { mount: mountCheckers },
 };
 
 export function mountGame(id: string, root: HTMLElement): GameController {

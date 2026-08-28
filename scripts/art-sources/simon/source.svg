@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+    <defs>
+      <radialGradient id="bg" cx="70%" cy="42%" r="80%"><stop stop-color="#f472b6" stop-opacity=".14"/><stop offset=".5" stop-color="#10181b"/><stop offset="1" stop-color="#0a0e11"/></radialGradient>
+      <filter id="grain"><feTurbulence baseFrequency=".7" numOctaves="2" seed="61"/><feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 .04 0"/></filter>
+    </defs>
+    <rect width="1280" height="720" fill="url(#bg)"/>
+    <circle cx="640" cy="199.29600000000002" r="67.392" fill="#1c2422" stroke="#38bdf8" stroke-width="3"/>
+<circle cx="792.8385863946963" cy="310.33973293596847" r="67.392" fill="#1c2422" stroke="#f472b6" stroke-width="3"/>
+<circle cx="734.4594411844096" cy="490.01226706403156" r="67.392" fill="#fbbf24" stroke="#fbbf24" stroke-width="3"/>
+<circle cx="545.5405588155904" cy="490.01226706403156" r="67.392" fill="#1c2422" stroke="#34d399" stroke-width="3"/>
+<circle cx="487.16141360530366" cy="310.33973293596847" r="67.392" fill="#1c2422" stroke="#f472b6" stroke-width="3"/>
+<circle cx="640" cy="360" r="77.75999999999999" fill="#12181b" stroke="#38453f" stroke-width="3"/><text x="640" y="370" text-anchor="middle" font-family="system-ui" font-size="41.472" font-weight="800" fill="#cfd8d3">pattern</text>
+    <rect width="1280" height="720" filter="url(#grain)" opacity=".5"/>
+  </svg>

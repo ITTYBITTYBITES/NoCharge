@@ -18,6 +18,12 @@ games:
     reason: "Two players take 1–3 tokens per turn from shared piles in quick misère rounds that finish in a minute or two."
   - game: pass-the-picture
     reason: "Both players add strokes to one shared canvas each pass and finish with a downloadable picture instead of a winner."
+  - game: gomoku
+    reason: "Two humans alternate placing stones on one shared screen using the handoff screen between turns."
+  - game: nine-mens-morris
+    reason: "Two players take turns on one device with the shared handoff blocking nothing but naming the next turn."
+  - game: checkers
+    reason: "Two humans share one screen with a handoff between turns; no network, no AI."
 ---
 
 Every game here is local play on a single screen: hand the device back and forth, or set it on a table between you. Nothing is uploaded, there are no accounts, and the most recent match result for each game stays on the device in [My Arcade](/my-arcade/).

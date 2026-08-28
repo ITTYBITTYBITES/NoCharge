@@ -1,0 +1,210 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { REGISTRY_REVIEW_DATE } from '../../lib/game-catalog';
+
+const learn = (await getCollection('learn'))
+  .filter((entry) => !entry.data.draft)
+  .sort((a, b) => a.data.order - b.data.order);
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'NoCharge Learn',
+  description: 'Definitional pages for the terms NoCharge uses: Quiet Arcade, Pass & Play, local scoring, untimed play, Game Mode, and network honesty.',
+  url: 'https://nocharge.net/learn/',
+  dateModified: REGISTRY_REVIEW_DATE,
+  mainEntity: {
+    '@type': 'ItemList',
+    numberOfItems: learn.length,
+    itemListElement: learn.map((entry, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: entry.data.title,
+      url: `https://nocharge.net/learn/${entry.id}/`,
+    })),
+  },
+};
+---
+
+<BaseLayout
+  title="Learn — the terms NoCharge uses"
+  description="Definitional pages for Quiet Arcade, Pass & Play, local scoring, untimed play, Game Mode, and the unblocked/no-account distinction."
+  path="/learn/"
+  schema={schema}
+  showAds={false}
+>
+  <div class="learn-page">
+    <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Learn' }]} />
+    <header>
+      <p class="eyebrow">Definitions with receipts</p>
+      <h1 class="page-title">Learn how NoCharge works.</h1>
+      <p class="lede">
+        Short, citable pages for the terms we use: what Quiet Arcade means, how Pass &amp; Play works, where scores live, what untimed mode is, and the difference between “no account” and “unblocked.”
+      </p>
+      <p class="learn-updated">Reviewed <time datetime={REGISTRY_REVIEW_DATE}>{REGISTRY_REVIEW_DATE}</time></p>
+    </header>
+
+    <section class="learn-grid" aria-label="Learn pages">
+      {
+        learn.map((entry) => (
+          <article class="panel learn-card">
+            <p class="learn-card__topic">{entry.data.topic.replace(/-/g, ' ')}</p>
+            <h2><a href={`/learn/${entry.id}/`}>{entry.data.title}</a></h2>
+            <p>{entry.data.description}</p>
+            <p class="learn-card__meta">{entry.data.readTime} min read</p>
+          </article>
+        ))
+      }
+    </section>
+
+    <section class="learn-glossary panel" aria-labelledby="learn-glossary-heading">
+      <div>
+        <p class="section-kicker">Game terms</p>
+        <h2 id="learn-glossary-heading">Glossary shorts</h2>
+      </div>
+      <div>
+        <p>One-line definitions for the exact vocabulary used in guides, anchored on a single page: exact cover, foundation/tableau/stock/waste, nonogram runs, and reduced-pressure mode.</p>
+        <a class="section-link" href="/learn/glossary/">Open the glossary →</a>
+      </div>
+    </section>
+
+    <section class="learn-related panel" aria-labelledby="learn-related-heading">
+      <div>
+        <p class="section-kicker">Dig deeper</p>
+        <h2 id="learn-related-heading">Articles and proof</h2>
+      </div>
+      <ul>
+        <li><a href="/articles/">All articles →</a><p>Game notes and platform explainers with review dates.</p></li>
+        <li><a href="/articles/registry-facts/">Registry facts →</a><p>Current counts and the date of the last catalog review.</p></li>
+        <li><a href="/tools/discovery-wheel/">Discovery Wheel →</a><p>Apply the same facets to find a game.</p></li>
+      </ul>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .learn-page {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(2rem, 6vw, 4rem);
+  }
+
+  .learn-updated {
+    margin-top: 0.8rem;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  .learn-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.9rem;
+  }
+
+  .learn-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem;
+    padding: 1.2rem;
+  }
+
+  .learn-card__topic {
+    color: var(--accent-strong);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .learn-card h2 {
+    font-size: 1.2rem;
+  }
+
+  .learn-card h2 a {
+    color: var(--accent-strong);
+  }
+
+  .learn-card p:not(.learn-card__topic):not(.learn-card__meta) {
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+
+  .learn-card__meta {
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+
+  .learn-glossary,
+  .learn-related {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem 2rem;
+    padding: clamp(1.2rem, 4vw, 2rem);
+  }
+
+  .learn-glossary > div:first-child,
+  .learn-related > div:first-child {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.4rem;
+    align-content: start;
+  }
+
+  .learn-glossary h2,
+  .learn-related h2 {
+    font-size: clamp(1.4rem, 3.5vw, 1.9rem);
+  }
+
+  .learn-glossary p,
+  .learn-related p {
+    color: var(--muted);
+  }
+
+  .section-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--accent-strong);
+    font-weight: 700;
+  }
+
+  .learn-related ul {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.9rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .learn-related li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.2rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .learn-related a {
+    color: var(--accent-strong);
+    font-weight: 700;
+  }
+
+  .learn-related li p {
+    font-size: 0.85rem;
+  }
+
+  @media (min-width: 48rem) {
+    .learn-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .learn-glossary,
+    .learn-related {
+      grid-template-columns: minmax(16rem, 0.8fr) minmax(20rem, 1.2fr);
+      align-items: start;
+    }
+  }
+</style>

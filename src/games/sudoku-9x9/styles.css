@@ -1,0 +1,115 @@
+.s9 {
+  display: grid;
+  gap: 0.8rem;
+  width: min(100%, 30rem);
+  margin-inline: auto;
+}
+
+.s9__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.s9__controls label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+.s9__controls select {
+  min-height: 44px;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: var(--panel-2);
+  color: var(--text);
+}
+
+.s9__pad {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.4rem;
+}
+
+.s9__pad-btn {
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: var(--panel-2);
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.s9__pad-btn--erase {
+  color: var(--muted);
+}
+
+.s9__grid {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 0;
+  width: min(100%, 24rem);
+  margin-inline: auto;
+  border: 2px solid #4a5852;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.s9__cell {
+  aspect-ratio: 1;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--text);
+  font-size: clamp(0.9rem, 4vw, 1.25rem);
+  font-weight: 700;
+}
+
+.s9__cell--box-bottom {
+  border-bottom: 2px solid #4a5852;
+}
+
+.s9__cell--box-right {
+  border-right: 2px solid #4a5852;
+}
+
+.s9__cell.is-selected {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: -2px;
+  background: color-mix(in srgb, var(--accent) 16%, var(--panel-2));
+}
+
+.s9__cell.has-marks {
+  font-size: 0.6rem;
+  line-height: 1.1;
+  color: var(--muted);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.s9__status {
+  color: var(--muted);
+  font-size: 0.85rem;
+  min-height: 1.2rem;
+}
+
+.s9__note {
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 30rem) {
+  .s9__controls {
+    gap: 0.35rem;
+  }
+
+  .s9__controls label {
+    flex-basis: 100%;
+  }
+}

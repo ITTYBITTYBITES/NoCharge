@@ -1,0 +1,144 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+
+const faqs = [
+  {
+    q: 'Which solitaire is easiest to learn?',
+    a: 'The comparator does not rank difficulty — that depends on the player and the ruleset. It lists rule differences; Klondike is the most familiar, FreeCell is fully face-up, and Spider uses multiple decks.',
+  },
+  {
+    q: 'Does NoCharge have Spider yet?',
+    a: 'Not yet. The comparator lists Spider as a planned ruleset with its 1/2/4-suit variants described from the classic rules; the row becomes a play link when the game ships.',
+  },
+  {
+    q: 'What is the difference between draw-one and draw-three?',
+    a: 'In Klondike, draw-one turns over one stock card per click; draw-three turns over three, and the waste pile cycles. NoCharge remembers the choice under nocharge:pref:klondike-draw-mode.',
+  },
+  {
+    q: 'Why does FreeCell call itself "all cards visible"?',
+    a: 'Every card in FreeCell\'s tableau is face-up, so the game is about planning moves with free cells and empty columns rather than guessing about hidden cards.',
+  },
+];
+---
+
+<ToolPage
+  title="Solitaire rules comparator"
+  eyebrow="Klondike · FreeCell · Spider"
+  description="Side-by-side rule table for Klondike, FreeCell, and planned Spider on NoCharge — decks, draw, tableau, foundations, and what each one makes you decide."
+  path="/tools/solitaire-comparator/"
+  category="Learning"
+  bottomLine="The comparator lays out Klondike, FreeCell, and planned Spider in one table: decks, draw behavior, tableau, foundations, planning style, and local storage. It is rules comparison, not a difficulty ranking, and it links each entry to the live game or guide."
+  faqs={faqs}
+  embedCode={`<iframe src="https://nocharge.net/tools/solitaire-comparator/" width="400" height="640" title="NoCharge solitaire rules comparator"></iframe>`}
+  nextActions={[
+    { href: '/games/klondike/', label: 'Play Klondike', note: 'Draw-one or draw-three on a classic tableau.' },
+    { href: '/games/freecell/', label: 'Play FreeCell', note: 'Every card visible; plan with free cells.' },
+    { href: '/learn/glossary/#solitaire-foundation', label: 'Solitaire glossary', note: 'Foundation, tableau, stock, waste in one sentence each.' },
+  ]}
+>
+  <section class="panel comparator-table" aria-labelledby="comparator-heading">
+    <div>
+      <p class="section-kicker">Rules side by side</p>
+      <h2 id="comparator-heading">Classic solitaire families</h2>
+    </div>
+    <section class="comparator-scroll" aria-label="Solitaire comparison table" tabindex="0">
+      <table>
+        <thead>
+          <tr><th>Rule</th><th>Klondike (live)</th><th>FreeCell (live)</th><th>Spider (planned)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Decks</td><td>1 (52 cards)</td><td>1 (52 cards)</td><td>2 decks (104); 1, 2, or 4 suits</td></tr>
+          <tr><td>Tableau</td><td>7 columns, increasing; top card face-up</td><td>8 columns, all face-up</td><td>10 columns, all face-up</td></tr>
+          <tr><td>Draw</td><td>Stock to waste, draw-one or draw-three</td><td>No stock; cards are already distributed</td><td>One card dealt to each column per turn; no waste</td></tr>
+          <tr><td>Foundations</td><td>4 foundations, Ace-up by suit</td><td>4 foundations, Ace-up by suit</td><td>13 foundation piles, King-down by suit sequence</td></tr>
+          <tr><td>Key skill</td><td>Ordering with limited knowledge</td><td>Planning with complete knowledge</td><td>Building descending sequences within suits</td></tr>
+          <tr><td>Local metric</td><td>Games won, best moves, draw preference</td><td>Games won</td><td>Games won (planned)</td></tr>
+          <tr><td>Guide</td><td><a href="/guides/klondike/">Klondike guide</a></td><td><a href="/guides/freecell/">FreeCell guide</a></td><td>Live with Spider</td></tr>
+        </tbody>
+      </table>
+    </section>
+    <p class="comparator-note">Spider rows describe the classic ruleset NoCharge will implement when it ships; the do-not-claim section of each guide will state any differences from physical play.</p>
+    <h3>Comparison reading</h3>
+    <ul>
+      <li><strong>Klondike</strong> is the familiar guessing game: some cards are hidden, and the draw mode changes your options.</li>
+      <li><strong>FreeCell</strong> removes luck from the tableau: every card is visible, so a bad position is a planning problem, not a coin flip.</li>
+      <li><strong>Spider</strong> (planned) uses two decks and builds down by suit; 1-suit is more forgiving than 4-suit, and NoCharge will document the difference as a label, not a difficulty claim.</li>
+    </ul>
+  </section>
+</ToolPage>
+
+<style>
+  .comparator-table {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    padding: 1.25rem;
+    min-width: 0;
+  }
+
+  .comparator-table > div:first-child {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.35rem;
+  }
+
+  .comparator-scroll {
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 0.6rem;
+  }
+
+  .comparator-scroll:focus-visible {
+    outline: 2px solid var(--accent-strong);
+    outline-offset: 2px;
+  }
+
+  .comparator-scroll table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.84rem;
+    text-align: left;
+  }
+
+  .comparator-scroll th,
+  .comparator-scroll td {
+    padding: 0.5rem 0.6rem;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    overflow-wrap: anywhere;
+  }
+
+  .comparator-scroll th {
+    color: var(--muted);
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .comparator-scroll a {
+    color: var(--accent-strong);
+    font-weight: 700;
+  }
+
+  .comparator-note {
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+
+  .comparator-table h3 {
+    margin-top: 0.4rem;
+    font-size: 1rem;
+  }
+
+  .comparator-table ul {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.45rem;
+    margin: 0;
+    padding-left: 1.2rem;
+    color: var(--muted);
+    font-size: 0.86rem;
+  }
+</style>

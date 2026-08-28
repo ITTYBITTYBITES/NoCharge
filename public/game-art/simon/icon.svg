@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#10181b"/><g>
+    
+    <circle cx="256" cy="141.72160000000002" r="47.9232" fill="#1c2422" stroke="#38bdf8" stroke-width="3"/>
+<circle cx="364.68521699178405" cy="220.68603231002203" r="47.9232" fill="#1c2422" stroke="#f472b6" stroke-width="3"/>
+<circle cx="323.17115817558016" cy="348.453167689978" r="47.9232" fill="#fbbf24" stroke="#fbbf24" stroke-width="3"/>
+<circle cx="188.82884182441984" cy="348.453167689978" r="47.9232" fill="#1c2422" stroke="#34d399" stroke-width="3"/>
+<circle cx="147.3147830082159" cy="220.68603231002203" r="47.9232" fill="#1c2422" stroke="#f472b6" stroke-width="3"/>
+<circle cx="256" cy="256" r="55.296" fill="#12181b" stroke="#38453f" stroke-width="3"/><text x="256" y="266" text-anchor="middle" font-family="system-ui" font-size="29.4912" font-weight="800" fill="#cfd8d3">pattern</text>
+    
+  </svg></g></svg>

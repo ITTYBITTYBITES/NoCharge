@@ -1,0 +1,152 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+
+const faqs = [
+  {
+    q: 'What does prefers-reduced-motion actually do?',
+    a: 'It is a CSS media query that reports whether the user asked the operating system or browser to reduce motion. Sites that honor it can switch animations off without JavaScript.',
+  },
+  {
+    q: 'What changes at NoCharge when I set it?',
+    a: 'Transforms that scale buttons on press stop animating, and pages avoid decorative motion. Sound is unaffected, and game-specific behavior (like Calm pattern in Simon) is a separate preference.',
+  },
+  {
+    q: 'Does this tool change my system setting?',
+    a: 'No. It only reads the browser\'s live media query and demonstrates its effect. Changing the setting happens in your browser or operating system accessibility menu.',
+  },
+  {
+    q: 'Why does my answer show "unsupported"?',
+    a: 'Very old browsers do not implement the query. NoCharge still ships calm defaults, no flashing, and no auto-playing media, so those pages remain usable.',
+  },
+];
+---
+
+<ToolPage
+  title="Reduced-motion preference tester"
+  eyebrow="Read the live media query"
+  description="Check whether this browser reports prefers-reduced-motion: reduce, see a live animation toggle, and read exactly what NoCharge changes when it is on."
+  path="/tools/reduced-motion-tester/"
+  category="Accessibility"
+  bottomLine="This tool reads the browser's live reduced-motion preference and shows a pulsing dot that stops when the preference is set. It also states what NoCharge changes — motion removal only, never sound or rules."
+  faqs={faqs}
+  embedCode={`<iframe src="https://nocharge.net/tools/reduced-motion-tester/" width="400" height="620" title="NoCharge reduced-motion preference tester"></iframe>`}
+  nextActions={[
+    { href: '/games/simon/', label: 'Simon — Calm pattern', note: 'A game-specific reduced-motion alternative, separate from the OS setting.' },
+    { href: '/accessibility/', label: 'Accessibility position', note: 'How NoCharge tests motion, focus, and color.' },
+    { href: '/learn/game-mode-viewport/', label: 'Game Mode explainer', note: 'What the shell changes visually and what it never changes.' },
+  ]}
+>
+  <section class="panel rm-controls" aria-labelledby="rm-heading">
+    <div>
+      <p class="section-kicker">Live query</p>
+      <h2 id="rm-heading">What your browser reports</h2>
+    </div>
+    <div class="rm-demo">
+      <p class="rm-status" data-rm-status role="status" aria-live="polite"></p>
+      <div class="rm-demo-row">
+        <span class="rm-dot" aria-hidden="true"></span>
+        <p>The dot pulses while motion is allowed. With reduced motion on, it stays still.</p>
+      </div>
+    </div>
+    <div class="rm-changes">
+      <h3>What NoCharge changes when it is on</h3>
+      <ul>
+        <li>Button press scale transforms are removed.</li>
+        <li>Ambient page motion (if any) is skipped.</li>
+        <li>Sound, rules, difficulty, and storage are <strong>not</strong> changed.</li>
+      </ul>
+      <h3>What it does not claim</h3>
+      <p>The tester reports the browser's setting and its demonstration effect. It is not a medical recommendation and does not assess photosensitivity for any person.</p>
+    </div>
+  </section>
+</ToolPage>
+
+<script>
+  const status = document.querySelector<HTMLElement>('[data-rm-status]');
+  const read = () => {
+    if (!status) return;
+    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
+    status.textContent = query.matches
+      ? 'Your browser reports: reduce motion is on (prefers-reduced-motion: reduce).'
+      : 'Your browser reports: motion allowed (no reduced-motion preference set).';
+    return query;
+  };
+  const query = read();
+  query?.addEventListener('change', read);
+</script>
+
+<style>
+  .rm-controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+
+  .rm-controls > div:first-child {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.35rem;
+  }
+
+  .rm-status {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .rm-demo-row {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+  }
+
+  .rm-demo-row p {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  .rm-dot {
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: rm-pulse 1.4s ease-in-out infinite;
+  }
+
+  @keyframes rm-pulse {
+    0%, 100% { transform: scale(0.85); opacity: 0.7; }
+    50% { transform: scale(1.15); opacity: 1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rm-dot {
+      animation: none;
+    }
+  }
+
+  .rm-changes {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .rm-changes h3 {
+    font-size: 0.95rem;
+  }
+
+  .rm-changes ul {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.35rem;
+    padding-left: 1.2rem;
+    color: var(--muted);
+    font-size: 0.86rem;
+  }
+
+  .rm-changes p {
+    color: var(--muted);
+    font-size: 0.84rem;
+  }
+</style>

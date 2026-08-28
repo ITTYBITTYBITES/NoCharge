@@ -2,33 +2,25 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
-import { isPassPlayGameId } from '../../games/shared/pass-play';
+import { buildGameFacts } from '../../lib/game-catalog';
 
 const allGames = (await getCollection('games'))
   .filter((game) => !game.data.draft)
   .sort((a, b) => a.data.order - b.data.order);
 
-const discoveryGames = allGames.map((game) => {
-  const controls = game.data.presentation?.controls
-    .map(({ label, description }) => `${label} ${description}`)
-    .join(' ') ?? '';
-  const minutes = [...game.data.session.matchAll(/\d+/g)].map((match) => Number(match[0]));
-  return {
-    id: game.id,
-    title: game.data.title,
-    genre: game.data.genre,
-    session: minutes.length ? Math.max(...minutes) : 10,
-    sessionLabel: game.data.session,
-    input: [
-      'pointer',
-      'touch',
-      ...(/keyboard|arrow|enter|space|digit|key\b/i.test(controls) ? ['keyboard'] : []),
-    ],
-    pressure: game.id === 'word-tile-rush' ? 'timed' : game.id === 'color-flip' ? 'either' : 'untimed',
-    players: isPassPlayGameId(game.id) ? 'passplay' : 'solo',
-    tagline: game.data.tagline,
-  };
-});
+// Structured facts come from the single game catalog (A1); the wheel never
+// derives gameplay facts from prose.
+const discoveryGames = buildGameFacts(allGames).map((facts) => ({
+  id: facts.slug,
+  title: facts.title,
+  genre: facts.genre,
+  session: facts.sessionMax,
+  sessionLabel: facts.sessionLabel,
+  input: facts.inputs,
+  pressure: facts.pressure === 'both' ? 'either' : facts.pressure,
+  players: facts.players === 'pass-and-play' ? 'passplay' : 'solo',
+  tagline: facts.blurb,
+}));
 
 const faqs = [
   {
@@ -52,7 +44,7 @@ const faqs = [
 const schema = [
   {
     '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
+    '@type': 'WebApplication',
     '@id': 'https://nocharge.net/tools/discovery-wheel/#app',
     name: 'NoCharge Game Discovery Wheel',
     description: 'A free client-side tool for filtering the current NoCharge game catalog by time, input, pressure, and number of players.',

@@ -1,5 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { STORAGE_KEY_DOCS } from '../lib/storage-docs';
+
+const documented = STORAGE_KEY_DOCS.filter((doc) => !doc.planned);
+const planned = STORAGE_KEY_DOCS.filter((doc) => doc.planned);
 ---
 
 <BaseLayout
@@ -48,6 +52,42 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </p>
         <button class="btn btn--ghost btn--sm" type="button" data-clear-games>Clear game data</button>
         <p class="privacy__status" data-game-status aria-live="polite"></p>
+        <h3>Every NoCharge storage key</h3>
+        <p>
+          The table below is generated from the same allowlist that “Clear game data” removes, so documentation and
+          deletion cannot drift. Daily keys marked <em>planned</em> are listed for transparency but are not written
+          until the daily games ship.
+        </p>
+        <section class="privacy__table" aria-label="NoCharge storage keys" tabindex="0">
+          <table>
+            <thead><tr><th>Key</th><th>Written by</th><th>Kind</th><th>Purpose</th></tr></thead>
+            <tbody>
+              {documented.map((doc) => (
+                <tr>
+                  <td><code>{doc.key}</code></td>
+                  <td>{doc.owner}</td>
+                  <td>{doc.category}</td>
+                  <td>{doc.purpose}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+        {planned.length > 0 && (
+          <>
+            <h3>Planned keys (not yet written)</h3>
+            <section class="privacy__table" aria-label="Planned NoCharge storage keys" tabindex="0">
+              <table>
+                <thead><tr><th>Key</th><th>Written by</th><th>Purpose</th></tr></thead>
+                <tbody>
+                  {planned.map((doc) => (
+                    <tr><td><code>{doc.key}</code></td><td>{doc.owner}</td><td>{doc.purpose}</td></tr>
+                  ))}
+                </tbody>
+              </table>
+            </section>
+          </>
+        )}
       </section>
 
       <section aria-labelledby="my-arcade">
@@ -158,6 +198,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 <style>
   .privacy {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.85rem;
     max-width: 46rem;
   }
@@ -170,15 +211,19 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
   .privacy__body {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1.5rem;
     padding: 1.25rem 1.3rem;
     margin-top: 0.5rem;
+    min-width: 0;
   }
 
   .privacy__body section {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     justify-items: start;
     gap: 0.65rem;
+    min-width: 0;
   }
 
   .privacy__body section + section {
@@ -205,5 +250,49 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   .privacy__status {
     min-height: 1.3rem;
     font-size: 0.85rem;
+  }
+
+  .privacy__body h3 {
+    margin-top: 0.6rem;
+    font-size: 0.95rem;
+  }
+
+  .privacy__table {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 0.5rem;
+  }
+
+  .privacy__table:focus-visible {
+    outline: 2px solid var(--accent-strong);
+    outline-offset: 2px;
+  }
+
+  .privacy__table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+    text-align: left;
+  }
+
+  .privacy__table th,
+  .privacy__table td {
+    padding: 0.45rem 0.55rem;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    overflow-wrap: anywhere;
+  }
+
+  .privacy__table th {
+    color: var(--muted);
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .privacy__table code {
+    color: var(--text);
   }
 </style>

@@ -82,6 +82,23 @@ const schema = [
       <div class="preview-track" aria-hidden="true"><div id="preview" class="preview-box">50% of the original width</div></div>
     </section>
 
+    <section class="panel tool-devices" aria-labelledby="devices-heading">
+      <div>
+        <p class="section-kicker">Device presets</p>
+        <h2 id="devices-heading">Start from a familiar screen</h2>
+        <p>Select a preset to fill the calculator, or reflow test at 320 CSS px (the WCAG 400% reference) with one click.</p>
+      </div>
+      <div class="device-grid">
+        <button type="button" class="btn btn--ghost" data-device="320,568">Small phone 320 × 568</button>
+        <button type="button" class="btn btn--ghost" data-device="390,844">Typical phone 390 × 844</button>
+        <button type="button" class="btn btn--ghost" data-device="1280,720">Laptop 1280 × 720</button>
+        <button type="button" class="btn btn--ghost" data-device="1440,900">Desktop 1440 × 900</button>
+        <button type="button" class="btn btn--ghost" data-device="1280,1024">Desktop tall 1280 × 1024</button>
+        <button type="button" class="btn btn--ghost" data-reflow>400% reflow test (320 CSS px)</button>
+      </div>
+      <p class="device-note">Presets are starting points. Browser chrome, OS scaling, and dynamic mobile toolbars change the real visible viewport.</p>
+    </section>
+
     <section class="prose">
       <h2>How to use the result</h2>
       <p>The calculation is a test setup, not a pass result. Resize developer tools to the equivalent width or use real browser page zoom. Then check that text remains readable, controls are operable, focus is visible, and the document does not require two-dimensional scrolling.</p>
@@ -141,6 +158,24 @@ const schema = [
       preview.style.width = `${widthPercent}%`;
     };
     calculateButton.addEventListener('click', calculate);
+
+    for (const button of document.querySelectorAll<HTMLButtonElement>('[data-device]')) {
+      button.addEventListener('click', () => {
+        const [width, height] = (button.dataset.device ?? '1280,1024').split(',').map(Number);
+        widthInput.value = String(width);
+        heightInput.value = String(height);
+        zoomInput.value = '100';
+        calculate();
+      });
+    }
+    const reflow = document.querySelector<HTMLButtonElement>('[data-reflow]');
+    reflow?.addEventListener('click', () => {
+      widthInput.value = '1280';
+      heightInput.value = '1024';
+      zoomInput.value = '400';
+      calculate();
+    });
+
     calculate();
   }
 </script>
@@ -153,6 +188,11 @@ const schema = [
   .controls-grid label { display: grid; gap: 0.3rem; color: var(--muted); font-size: 0.85rem; }
   .controls-grid input, .controls-grid select { width: 100%; min-width: 0; max-width: 100%; min-height: 44px; padding: 0.5rem; border-radius: 6px; color: var(--text); background: var(--panel-2); border: 1px solid var(--line); }
   .preview-track { width: 100%; min-height: 6rem; border: 1px solid var(--line); border-radius: 8px; background: var(--panel-2); }
+  .tool-devices { padding: 1.25rem; display: grid; gap: 1rem; }
+  .tool-devices > div:first-child { display: grid; gap: 0.35rem; }
+  .tool-devices > div:first-child p:last-child { color: var(--muted); }
+  .device-grid { display: flex; flex-wrap: wrap; gap: 0.55rem; }
+  .device-note { color: var(--muted); font-size: 0.8rem; }
   .preview-box { display: grid; place-items: center; min-height: 6rem; padding: 0.75rem; border-right: 2px solid var(--accent); border-radius: 8px; color: var(--muted); background: color-mix(in srgb, var(--accent) 8%, var(--panel-2)); text-align: center; }
   .prose { display: grid; gap: 1rem; max-width: 46rem; min-width: 0; }
   .prose table { width: 100%; display: block; overflow-x: auto; border: 1px solid var(--line); border-collapse: collapse; }

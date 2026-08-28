@@ -1,0 +1,336 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { getCollection } from 'astro:content';
+import { buildGameFacts, REGISTRY_REVIEW_DATE } from '../../lib/game-catalog';
+import { TOOLS } from '../../config/tools';
+
+const games = (await getCollection('games')).filter((game) => !game.data.draft);
+const guides = (await getCollection('guides')).filter((guide) => !guide.data.draft);
+const articles = (await getCollection('articles')).filter((article) => !article.data.draft);
+const collections = (await getCollection('collections')).filter((collection) => !collection.data.draft);
+const setup = (await getCollection('setup')).filter((entry) => !entry.data.draft);
+const facts = buildGameFacts(games);
+
+const keyboardComplete = facts.filter((fact) => fact.hasKeyboardComplete);
+const untimedOrBoth = facts.filter((fact) => fact.pressure !== 'timed');
+const passPlay = facts.filter((fact) => fact.players === 'pass-and-play');
+const originals = facts.filter((fact) => fact.isOriginal);
+const sessions = facts.map((fact) => fact.sessionMax).sort((a, b) => a - b);
+const medianSession = sessions[Math.floor(sessions.length / 2)];
+const median = (values: number[]) => {
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[mid] : Math.round((sorted[mid - 1]! + sorted[mid]!) / 2);
+};
+const medianUntimedSession = median(untimedOrBoth.map((fact) => fact.sessionMax));
+
+const percent = (part: number, whole: number) => Math.round((part / whole) * 100);
+const table = [
+  { metric: 'Games', value: String(games.length), note: '11 solo + 6 Pass & Play at the time of writing' },
+  { metric: 'Pass & Play games', value: String(passPlay.length), note: 'Two players, one device; no network play' },
+  { metric: 'Original NoCharge designs', value: `${originals.length} (${percent(originals.length, facts.length)}%)`, note: 'Rules are not a named third-party game' },
+  { metric: 'Games with a documented complete keyboard path', value: `${keyboardComplete.length} (${percent(keyboardComplete.length, facts.length)}%)`, note: 'Verified against game code, not prose' },
+  { metric: 'Games untimed by default or with an untimed mode', value: `${untimedOrBoth.length} (${percent(untimedOrBoth.length, facts.length)}%)`, note: 'Word Tile Rush is timed-only' },
+  { metric: 'Median documented session upper bound', value: `${medianSession} min`, note: 'Across all games; individual rounds vary' },
+  { metric: 'Median upper bound for untimed games', value: `${medianUntimedSession} min`, note: 'Untimed means no countdown, not a fixed length' },
+  { metric: 'Guides', value: String(guides.length), note: 'One definitive guide per game' },
+  { metric: 'Articles', value: String(articles.length), note: 'Game notes plus platform/trust explainers' },
+  { metric: 'Collections', value: String(collections.length), note: 'Each with an explicit inclusion method' },
+  { metric: 'Setup guides', value: String(setup.length), note: 'Across 7 Quiet Setup topics' },
+  { metric: 'Tools', value: String(TOOLS.length), note: 'All client-side; no uploads' },
+];
+
+const faqs = [
+  {
+    q: 'How are these counts produced?',
+    a: 'The registry-facts page is generated at build time from the same content collections and game catalog that publish the Arcade. The numbers cannot drift from the pages they describe. Review date 2026-08-27 was set when this inventory was completed.',
+  },
+  {
+    q: 'What does “documented complete keyboard path” mean?',
+    a: 'The core play loop (start, every move, restart, and completion) works with the keyboard alone, and the game page plus guide document the keys. Drawing-based Pass the Picture is excluded because strokes require pointer or touch.',
+  },
+  {
+    q: 'Does “untimed” mean a game takes no time?',
+    a: 'No. Untimed means there is no countdown or pressure timer; a session can still be short or long. Session labels are estimates, not promises.',
+  },
+  {
+    q: 'How often are the facts updated?',
+    a: 'Every time the catalog changes. The procedure is: add the game/tool — update IMPLEMENTATION_STATUS.md — run the build (facts regenerate) — update the sitemap and llms.txt endpoints if hubs changed — re-check this page in preview.',
+  },
+  {
+    q: 'Where is the machine-readable list?',
+    a: 'Everything is in sitemap.xml, llms.txt and llms-full.txt. The registry facts page is the human-readable version of the same source.',
+  },
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    '@id': 'https://nocharge.net/articles/registry-facts/#article',
+    headline: 'NoCharge registry facts',
+    description: 'First-party counts, percentages, and review dates for the NoCharge game catalog.',
+    datePublished: REGISTRY_REVIEW_DATE,
+    dateModified: REGISTRY_REVIEW_DATE,
+    author: { '@type': 'Organization', name: 'NoCharge', url: 'https://nocharge.net/' },
+    publisher: { '@type': 'Organization', name: 'NoCharge', url: 'https://nocharge.net/' },
+    isAccessibleForFree: true,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    '@id': 'https://nocharge.net/articles/registry-facts/#faq',
+    mainEntity: faqs.map(({ q, a }) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nocharge.net/' },
+      { '@type': 'ListItem', position: 2, name: 'Articles', item: 'https://nocharge.net/articles/' },
+      { '@type': 'ListItem', position: 3, name: 'Registry facts', item: 'https://nocharge.net/articles/registry-facts/' },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="Registry facts — current NoCharge catalog numbers"
+  description="First-party counts and review dates for NoCharge games, guides, collections, setup, and tools, regenerated at build time."
+  path="/articles/registry-facts/"
+  schema={schema}
+  showAds={false}
+>
+  <article class="facts-page">
+    <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Articles', href: '/articles/' }, { label: 'Registry facts' }]} />
+    <header>
+      <p class="eyebrow">First-party numbers · built from the catalog</p>
+      <h1 class="page-title">Registry facts</h1>
+      <p class="lede">
+        NoCharge currently publishes {games.length} browser games, {guides.length} guides, {articles.length} articles, {collections.length} collections, {setup.length} setup guides, and {TOOLS.length} tools. {keyboardComplete.length} of {games.length} games have a documented complete keyboard path ({percent(keyboardComplete.length, facts.length)}%), and {untimedOrBoth.length} are untimed by default or offer an untimed mode. These figures are regenerated at build time from the same source as the Arcade.
+      </p>
+      <p class="facts-reviewed">Last registry review: <time datetime={REGISTRY_REVIEW_DATE}>{REGISTRY_REVIEW_DATE}</time></p>
+    </header>
+
+    <section class="panel facts-table" aria-labelledby="facts-heading">
+      <div class="facts-table__heading">
+        <p class="section-kicker">Current counts</p>
+        <h2 id="facts-heading">Catalog at a glance</h2>
+      </div>
+      <table>
+        <thead><tr><th>Metric</th><th>Value</th><th>Note</th></tr></thead>
+        <tbody>
+          {table.map((row) => (
+            <tr><td>{row.metric}</td><td>{row.value}</td><td>{row.note}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+
+    <section class="prose" aria-labelledby="method-heading">
+      <h2 id="method-heading">How these numbers are produced</h2>
+      <ol>
+        <li>The Arcade, Discovery Wheel, Game Finder, sitemap, and this page all read the same game catalog and content collections.</li>
+        <li>Session lengths come from the published session labels; the catalog parses the same label the card shows.</li>
+        <li>Keyboard completeness is verified against game code (native buttons/focus loop) and is marked per game; it is not inferred from guide prose.</li>
+        <li>Originality means the rules are not a named third-party game; it is a factual classification, not a quality claim.</li>
+        <li>The facts regenerated here are exactly the facts published in <a href="/llms.txt">llms.txt</a> and <a href="/llms-full.txt">llms-full.txt</a>.</li>
+      </ol>
+
+      <h2 id="update-procedure">Monthly update procedure</h2>
+      <p>Runbook (documented in the repo at <code>docs/PHASE0_MAP.md</code> and in <code>IMPLEMENTATION_STATUS.md</code>):</p>
+      <ol>
+        <li>Add the game, tool, or page to its content collection and the game catalog.</li>
+        <li>Extend the storage allowlist in <code>src/lib/local-game-data.ts</code> and the Privacy storage table.</li>
+        <li>Run <code>npm run test:unit</code> and <code>npm run build</code> — build-time validation fails on stale catalog entries.</li>
+        <li>Re-check <code>IMPLEMENTATION_STATUS.md</code>, the sitemap, llms.txt, and this page in preview.</li>
+        <li>Update <code>REGISTRY_REVIEW_DATE</code> in the catalog when the review happens (dates are data, not page copy).</li>
+      </ol>
+    </section>
+
+    <section class="prose" aria-labelledby="limits-heading">
+      <h2 id="limits-heading">What these numbers do not say</h2>
+      <ul>
+        <li>They are not a quality ranking and not a measure of difficulty or fun.</li>
+        <li>“100% keyboard-complete” would be a claim; the honest number is {keyboardComplete.length} of {games.length} with Pass the Picture excluded.</li>
+        <li>Session bounds are estimates for typical play, not timers or guarantees.</li>
+        <li>Counts describe the public catalog on the review date; they are not a promise of permanence.</li>
+      </ul>
+    </section>
+
+    <section class="prose" aria-labelledby="faq">
+      <h2 id="faq">FAQ</h2>
+      <dl class="facts-faq">
+        {faqs.map(({ q, a }) => (
+          <>
+            <dt>{q}</dt>
+            <dd>{a}</dd>
+          </>
+        ))}
+      </dl>
+    </section>
+
+    <section class="facts-next panel" aria-labelledby="facts-next-heading">
+      <div>
+        <p class="section-kicker">Next action</p>
+        <h2 id="facts-next-heading">Read the source</h2>
+      </div>
+      <ul>
+        <li><a href="/arcade/">Browse the Arcade →</a><p>Same catalog, filtered by time, input, pace, and players.</p></li>
+        <li><a href="/llms.txt">llms.txt →</a><p>Concise machine-readable catalog with links.</p></li>
+        <li><a href="/about/">About NoCharge →</a><p>Brand, model, and honesty posture.</p></li>
+      </ul>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .facts-page {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(2rem, 6vw, 4rem);
+    min-width: 0;
+  }
+
+  .facts-reviewed {
+    margin-top: 0.8rem;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  .facts-table {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    padding: clamp(1.1rem, 3vw, 1.6rem);
+    min-width: 0;
+  }
+
+  .facts-table__heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.35rem;
+    min-width: 0;
+  }
+
+  .facts-table table {
+    width: 100%;
+    display: block;
+    overflow-x: auto;
+    border-collapse: collapse;
+    /* As a grid child the table must be allowed to shrink below its content
+       width so overflow-x scrolls instead of stretching the page. */
+    min-width: 0;
+  }
+
+  .facts-table th,
+  .facts-table td {
+    padding: 0.5rem 0.6rem;
+    border: 1px solid var(--line);
+    text-align: left;
+    font-size: 0.84rem;
+    overflow-wrap: anywhere;
+  }
+
+  .facts-table th {
+    color: var(--muted);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .facts-table td:nth-child(2) {
+    color: var(--accent-strong);
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  .prose {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    max-width: 46rem;
+  }
+
+  .prose ol,
+  .prose ul {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem;
+    padding-left: 1.3rem;
+  }
+
+  .prose code {
+    font-size: 0.82em;
+  }
+
+  .facts-faq {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.9rem;
+  }
+
+  .facts-faq dt {
+    font-weight: 700;
+  }
+
+  .facts-faq dd {
+    margin: 0.25rem 0 0;
+    color: var(--muted);
+  }
+
+  .facts-next {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+
+  .facts-next > div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.3rem;
+  }
+
+  .facts-next ul {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.9rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .facts-next li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.2rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .facts-next a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--accent-strong);
+    font-weight: 700;
+  }
+
+  .facts-next p {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  @media (min-width: 52rem) {
+    .facts-next {
+      grid-template-columns: minmax(16rem, 0.8fr) minmax(20rem, 1.2fr);
+      align-items: start;
+    }
+  }
+</style>

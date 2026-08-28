@@ -2,6 +2,7 @@
 
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { NOINDEX_ROUTES } from './sitemap-policy.mjs';
 import { publishedSetupSlugs } from './setup-content-utils.mjs';
 
 const dist = join(process.cwd(), 'dist');
@@ -57,7 +58,7 @@ for (const location of locations) {
   if (!existsSync(output)) throw new Error(`Sitemap route has no generated page: ${pathname}`);
 }
 
-for (const excluded of ['/my-arcade/', '/changelog/', '/privacy-policy/', '/404.html']) {
+for (const excluded of NOINDEX_ROUTES) {
   if (locations.some((location) => new URL(location).pathname === excluded)) {
     throw new Error(`No-index or alias route must not appear in sitemap: ${excluded}`);
   }

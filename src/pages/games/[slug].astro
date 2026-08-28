@@ -4,24 +4,30 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import GameShell from '../../components/GameShell.astro';
 import ArticleCard from '../../components/ArticleCard.astro';
 import { isPassPlayGameId } from '../../games/shared/pass-play';
+import { allFacts, relatedGames as catalogRelated } from '../../lib/game-catalog';
 
 export async function getStaticPaths() {
   const games = (await getCollection('games')).filter((game) => !game.data.draft);
   const guides = (await getCollection('guides')).filter((guide) => !guide.data.draft);
   const articles = (await getCollection('articles')).filter((article) => !article.data.draft);
   const guideIds = new Set<string>(guides.map((guide) => guide.data.game));
-  return games.map((game) => ({
-    params: { slug: game.id },
-    props: {
-      game,
-      hasGuide: guideIds.has(game.id),
-      passPlay: isPassPlayGameId(game.id),
-      relatedGames: games.filter((candidate) => candidate.id !== game.id).sort((a, b) => a.data.order - b.data.order),
-      relatedArticles: articles
-        .filter((article) => article.data.kind === 'game' && article.data.game === game.id)
-        .sort((a, b) => Number(b.data.featured) - Number(a.data.featured) || a.data.title.localeCompare(b.data.title)),
-    },
-  }));
+  const allFactsList = allFacts(games);
+  return games.map((game) => {
+    const facts = allFactsList.find((fact) => fact.slug === game.id)!;
+    const relatedSlugs = new Set(catalogRelated(facts, allFactsList, 2).map((fact) => fact.slug));
+    return {
+      params: { slug: game.id },
+      props: {
+        game,
+        hasGuide: guideIds.has(game.id),
+        passPlay: isPassPlayGameId(game.id),
+        relatedGames: games.filter((candidate) => relatedSlugs.has(candidate.id)),
+        relatedArticles: articles
+          .filter((article) => article.data.kind === 'game' && article.data.game === game.id)
+          .sort((a, b) => Number(b.data.featured) - Number(a.data.featured) || a.data.title.localeCompare(b.data.title)),
+      },
+    };
+  });
 }
 
 const { game, hasGuide, passPlay, relatedGames, relatedArticles } = Astro.props;
@@ -144,7 +150,7 @@ const gameSchema = [
     ></div>
     {
       presentation?.controls.length && (
-        <section class="game-controls" aria-labelledby="game-controls-heading">
+        <section class="game-controls" id="controls" aria-labelledby="game-controls-heading">
           <div>
             <p class="game-about__kicker">Controls at a glance</p>
             <h2 id="game-controls-heading">{presentation.controlsHeading}</h2>

@@ -1,0 +1,258 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { REGISTRY_REVIEW_DATE } from '../../lib/game-catalog';
+
+const terms = [
+  {
+    id: 'exact-cover',
+    term: 'Exact cover (Beacon Lattice)',
+    definition: 'A placement problem where every cell must be covered exactly once: every cell belongs to exactly one chosen shape, with no overlaps and no gaps. Beacon Lattice presents this as a quiet lattice puzzle; the article “How exact coverage works in Beacon Lattice” explains the constraint in detail.',
+    links: [
+      { label: 'Beacon Lattice game', href: '/games/beacon-lattice/' },
+      { label: 'Exact coverage article', href: '/articles/how-exact-coverage-works-in-beacon-lattice/' },
+    ],
+  },
+  {
+    id: 'solitaire-foundation',
+    term: 'Solitaire: foundation',
+    definition: 'The four piles where finished suits are built, usually from Ace upward. In NoCharge Klondike and FreeCell, a card may move to a foundation only when it is the next rank of its suit.',
+    links: [{ label: 'Klondike guide', href: '/guides/klondike/' }],
+  },
+  {
+    id: 'solitaire-tableau',
+    term: 'Solitaire: tableau',
+    definition: 'The main play area: columns of face-up and face-down cards where you sequence cards in alternating colors and descending ranks. FreeCell’s tableau is fully face-up, so planning replaces guessing.',
+    links: [{ label: 'FreeCell guide', href: '/guides/freecell/' }],
+  },
+  {
+    id: 'solitaire-stock',
+    term: 'Solitaire: stock',
+    definition: 'The draw pile of cards not yet in play. Klondike draws one or three (a documented preference); when the stock is empty the discard becomes the new stock in NoCharge’s draw loop.',
+    links: [{ label: 'Klondike guide', href: '/guides/klondike/' }],
+  },
+  {
+    id: 'solitaire-waste',
+    term: 'Solitaire: waste',
+    definition: 'The face-up pile of cards drawn from the stock and not yet played. In Klondike the top card of the waste is the only card available from it.',
+    links: [{ label: 'Klondike guide', href: '/guides/klondike/' }],
+  },
+  {
+    id: 'nonogram-runs',
+    term: 'Nonogram runs',
+    definition: 'The clue numbers for a row or column: each number is the length of one filled run, in order, with at least one empty cell between runs. 2 1 means a two-cell run, a gap, then a one-cell run.',
+    links: [
+      { label: 'Nonogram game', href: '/games/nonogram/' },
+      { label: 'Nonogram guide', href: '/guides/nonogram/' },
+    ],
+  },
+  {
+    id: 'reduced-pressure-mode',
+    term: 'Reduced pressure mode',
+    definition: 'A mode that removes a performance timer or countdown without changing the core rules. Color Flip’s turn-based mode is the example: the same color-step board, no moving-canvas timer. Guides label the mode instead of claiming it is “easier”.',
+    links: [
+      { label: 'Untimed play explainer', href: '/learn/untimed-play/' },
+      { label: 'Color Flip guide', href: '/guides/color-flip/' },
+    ],
+  },
+  {
+    id: 'handoff-screen',
+    term: 'Handoff screen',
+    definition: 'The shared NoCharge component that passes the device from one Pass & Play player to the next, hiding hidden information and showing only whose turn it is. See the handoff screen explainer.',
+    links: [{ label: 'Handoff screen explainer', href: '/learn/handoff-screen/' }],
+  },
+  {
+    id: 'game-mode',
+    term: 'Game Mode (viewport)',
+    definition: 'A shared shell state that fills the viewport with the game and collapses the toolbar into an icon bar. Fullscreen when the browser allows it; an immersive fallback otherwise. See the Game Mode explainer.',
+    links: [{ label: 'Game Mode explainer', href: '/learn/game-mode-viewport/' }],
+  },
+  {
+    id: 'date-seeded-daily',
+    term: 'Date-seeded daily',
+    definition: 'A puzzle chosen by the device-local date (YYYY-MM-DD), so the whole day shares one layout. The streak is stored only in this browser; practice mode is always available and never touches it. See the daily hub.',
+    links: [{ label: 'Daily hub', href: '/daily/' }],
+  },
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'DefinedTermSet',
+    '@id': 'https://nocharge.net/learn/glossary/#termset',
+    name: 'NoCharge glossary of game terms',
+    description: 'Short definitions for the exact game vocabulary used in NoCharge guides',
+    url: 'https://nocharge.net/learn/glossary/',
+    hasDefinedTerm: terms.map(({ id, term, definition }) => ({
+      '@type': 'DefinedTerm',
+      '@id': `https://nocharge.net/learn/glossary/#${id}`,
+      name: term,
+      description: definition,
+      inDefinedTermSet: 'https://nocharge.net/learn/glossary/#termset',
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nocharge.net/' },
+      { '@type': 'ListItem', position: 2, name: 'Learn', item: 'https://nocharge.net/learn/' },
+      { '@type': 'ListItem', position: 3, name: 'Glossary', item: 'https://nocharge.net/learn/glossary/' },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="Glossary of NoCharge game terms"
+  description="Short definitions for exact cover, solitaire foundations and tableau, nonogram runs, reduced-pressure mode, handoff screens, Game Mode, and date-seeded dailies."
+  path="/learn/glossary/"
+  schema={schema}
+  showAds={false}
+>
+  <div class="glossary-page">
+    <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Learn', href: '/learn/' }, { label: 'Glossary' }]} />
+    <header>
+      <p class="eyebrow">One line, no ambiguity</p>
+      <h1 class="page-title">Glossary of game terms.</h1>
+      <p class="lede">
+        The exact vocabulary NoCharge uses in guides and articles, defined in one sentence each and linked to the game that uses it. Terms are added as new titles ship.
+      </p>
+      <p class="glossary-updated">Reviewed <time datetime={REGISTRY_REVIEW_DATE}>{REGISTRY_REVIEW_DATE}</time></p>
+    </header>
+
+    <nav class="glossary-index" aria-label="Glossary terms">
+      {terms.map(({ id, term }) => <a href={`#${id}`}>{term}</a>)}
+    </nav>
+
+    <dl class="glossary-list">
+      {
+        terms.map(({ id, term, definition, links }) => (
+          <div class="glossary-term" id={id}>
+            <dt>{term}</dt>
+            <dd>
+              <p>{definition}</p>
+              <p class="glossary-term__links">
+                {links.map((link, index) => (
+                  <>
+                    <a href={link.href}>{link.label}</a>
+                    {index < links.length - 1 && <span aria-hidden="true"> · </span>}
+                  </>
+                ))}
+              </p>
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    <section class="glossary-note panel" aria-labelledby="glossary-note-heading">
+      <div>
+        <p class="section-kicker">Why terms matter</p>
+        <h2 id="glossary-note-heading">Same word, same meaning.</h2>
+      </div>
+      <p>Guides, articles, collections, and tools share this vocabulary. If a term here ever disagrees with a guide, the guide and this glossary are both wrong and the catalog review should catch it.</p>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .glossary-page {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(2rem, 6vw, 4rem);
+  }
+
+  .glossary-updated {
+    margin-top: 0.8rem;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  .glossary-index {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .glossary-index a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0.3rem 0.8rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--accent-strong);
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  .glossary-list {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.85rem;
+    margin: 0;
+  }
+
+  .glossary-term {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem;
+    padding: 1.1rem 1.2rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--panel);
+    scroll-margin-top: 1rem;
+  }
+
+  .glossary-term dt {
+    font-size: 1.1rem;
+    font-weight: 800;
+  }
+
+  .glossary-term dd {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem;
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .glossary-term__links {
+    font-size: 0.85rem;
+  }
+
+  .glossary-term__links a {
+    color: var(--accent-strong);
+    font-weight: 700;
+  }
+
+  .glossary-note {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+
+  .glossary-note > div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.3rem;
+  }
+
+  .glossary-note h2 {
+    font-size: 1.3rem;
+  }
+
+  .glossary-note p:not(.section-kicker) {
+    color: var(--muted);
+  }
+
+  @media (min-width: 52rem) {
+    .glossary-note {
+      grid-template-columns: minmax(16rem, 0.8fr) minmax(20rem, 1.2fr);
+      align-items: start;
+    }
+  }
+</style>

@@ -1,0 +1,58 @@
+.gom {
+  display: grid;
+  gap: 0.8rem;
+  width: min(100%, 40rem);
+  margin-inline: auto;
+}
+
+.gom__board {
+  display: grid;
+  grid-template-columns: repeat(15, minmax(0, 1fr));
+  width: min(100%, 30rem);
+  margin-inline: auto;
+  gap: 0;
+  border: 2px solid #4a5852;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  /* Grid lines painted as a background so stones can own their pseudo-element. */
+  background-color: #18211e;
+  background-image:
+    linear-gradient(rgba(120, 140, 132, 0.35) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120, 140, 132, 0.35) 1px, transparent 1px);
+  background-size: 100% calc(100% / 15), calc(100% / 15) 100%;
+}
+
+.gom__cell {
+  position: relative;
+  aspect-ratio: 1;
+  border: 0;
+  background: transparent;
+}
+
+.gom__cell.is-black::before,
+.gom__cell.is-white::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 66%;
+  height: 66%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+}
+
+.gom__cell.is-black::before {
+  background: #12181b;
+  border: 1px solid #75837c;
+}
+
+.gom__cell.is-white::before {
+  background: #e8f0ec;
+  border: 1px solid #9fb4ac;
+}
+
+.gom__note {
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}

@@ -1,0 +1,202 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import { STORAGE_KEY_DOCS } from '../../lib/storage-docs';
+
+const faqs = [
+  {
+    q: 'Is this tool safe to use?',
+    a: 'It is strictly read-only. It lists keys already present under the nocharge: prefix in this browser and never writes, edits, or deletes anything. Removing data happens only through Clear game data on Privacy or your browser\'s own controls.',
+  },
+  {
+    q: 'What is the nocharge: prefix?',
+    a: 'Every NoCharge game, preference, and match record uses the nocharge: prefix so storage stays separable from other sites and from Google consent data. The tool only reports keys with that prefix.',
+  },
+  {
+    q: 'Why do I see no keys?',
+    a: 'Nothing has been saved by NoCharge in this browser yet, or site data was cleared. Play one game — saving a score or preference writes a key — and reopen this page.',
+  },
+  {
+    q: 'Does it upload my storage?',
+    a: 'No. The scan runs in this page and never sends anything to NoCharge or any server.',
+  },
+];
+
+const knownDocs = STORAGE_KEY_DOCS;
+const knownKeys = new Set(knownDocs.map((doc) => doc.key));
+---
+
+<ToolPage
+  title="LocalStorage Inspector (read-only)"
+  eyebrow="Know what this browser holds"
+  description="List every NoCharge key currently stored in this browser, with the purpose, owner, and kind. Read-only by design; removal stays on the Privacy page."
+  path="/tools/storage-inspector/"
+  category="Accessibility"
+  bottomLine="The inspector lists NoCharge keys present in this browser and explains what each one is for. It never writes or deletes anything: clearing data is a deliberate action on the Privacy page, and analytics consent is never shown or touched here."
+  faqs={faqs}
+  embedCode={`<iframe src="https://nocharge.net/tools/storage-inspector/" width="400" height="620" title="NoCharge read-only localStorage inspector"></iframe>`}
+  nextActions={[
+    { href: '/privacy/', label: 'Privacy storage table', note: 'Every documented key with its purpose and the Clear game data control.' },
+    { href: '/learn/local-storage-scoring/', label: 'Local storage scoring', note: 'Why scores live in the browser and what the prefix means.' },
+    { href: '/my-arcade/', label: 'My Arcade', note: 'A human-readable dashboard over the same local values.' },
+  ]}
+>
+  <section class="panel inspector-controls" aria-labelledby="scan-heading">
+    <div>
+      <p class="section-kicker">On-device only</p>
+      <h2 id="scan-heading">What this browser holds</h2>
+      <p>Reading localStorage; nothing is sent anywhere. Unknown keys under <code>nocharge:</code> appear in a separate list because the catalog may have changed since this page was built.</p>
+    </div>
+    <div class="inspector-actions">
+      <button type="button" class="btn" data-inspector-scan data-inspector-known={JSON.stringify(knownDocs.map(({ key, owner, category, purpose }) => ({ key, owner, category, purpose })))}>Scan this browser</button>
+      <a class="btn btn--ghost" href="/privacy/">Clear on Privacy</a>
+    </div>
+    <p class="inspector-status" data-inspector-status aria-live="polite">Press Scan to read the keys for this browser.</p>
+  </section>
+
+  <section class="panel inspector-results" id="results" aria-labelledby="results-heading" hidden>
+    <h2 id="results-heading">Found keys</h2>
+    <section class="inspector-table" aria-label="NoCharge keys found in this browser" tabindex="0">
+      <table>
+        <thead><tr><th>Key</th><th>Written by</th><th>Kind</th><th>Purpose</th></tr></thead>
+        <tbody data-inspector-rows></tbody>
+      </table>
+    </section>
+    <p data-inspector-unknown class="inspector-unknown" hidden></p>
+  </section>
+</ToolPage>
+
+<script>
+  const scanButton = document.querySelector<HTMLButtonElement>('[data-inspector-scan]');
+  const status = document.querySelector<HTMLElement>('[data-inspector-status]');
+  const results = document.querySelector<HTMLElement>('#results');
+  const rows = document.querySelector<HTMLElement>('[data-inspector-rows]');
+  const unknown = document.querySelector<HTMLElement>('[data-inspector-unknown]');
+  if (!unknown) throw new Error('missing inspector unknown');
+
+  interface KnownDoc { key: string; owner: string; category: string; purpose: string }
+  const knownDocs = JSON.parse(scanButton?.dataset.inspectorKnown ?? '[]') as KnownDoc[];
+
+  if (scanButton && status && results && rows) {
+    scanButton.addEventListener('click', () => {
+      try {
+        const found: { key: string; value: string }[] = [];
+        for (let index = 0; index < localStorage.length; index += 1) {
+          const key = localStorage.key(index);
+          if (key && key.startsWith('nocharge:')) {
+            found.push({ key, value: localStorage.getItem(key) ?? '' });
+          }
+        }
+        found.sort((a, b) => a.key.localeCompare(b.key));
+        rows.replaceChildren();
+        const knownMap = new Map(knownDocs.map((doc) => [doc.key, doc]));
+        const unknownKeys: string[] = [];
+        if (found.length === 0) {
+          rows.innerHTML = '<tr><td colspan="4">No nocharge: keys found. Play a game or change a setting, then scan again.</td></tr>';
+          status.textContent = `Scanned: 0 NoCharge keys in this browser.`;
+        } else {
+          for (const { key, value } of found) {
+            const doc = knownMap.get(key);
+            const row = document.createElement('tr');
+            const keyCell = document.createElement('td');
+            keyCell.innerHTML = `<code>${key.replace(/</g, '&lt;')}</code>`;
+            const owner = document.createElement('td');
+            owner.textContent = doc?.owner ?? 'Unlisted';
+            const kind = document.createElement('td');
+            kind.textContent = doc?.category ?? 'unknown';
+            const purpose = document.createElement('td');
+            purpose.textContent = doc?.purpose ?? 'Documented in the catalog after the next review';
+            purpose.title = value.length > 120 ? `${value.slice(0, 120)}…` : value;
+            row.append(keyCell, owner, kind, purpose);
+            rows.append(row);
+            if (!doc) unknownKeys.push(key);
+          }
+          status.textContent = `Scanned: ${found.length} NoCharge key${found.length === 1 ? '' : 's'} in this browser. Values are not displayed by design.`;
+        }
+        if (unknownKeys.length) {
+          unknown.hidden = false;
+          unknown.textContent = `Keys not yet documented: ${unknownKeys.join(', ')}. The storage table on Privacy is the source of truth; the catalog review will list them.`;
+        } else {
+          unknown.hidden = true;
+        }
+        results.hidden = false;
+      } catch {
+        status.textContent = 'This browser did not allow localStorage to be read. Nothing was changed.';
+      }
+    });
+  }
+</script>
+
+<style is:global>
+  .inspector-controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    padding: 1.25rem;
+    min-width: 0;
+  }
+
+  .inspector-controls > div:first-child {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.4rem;
+  }
+
+  .inspector-controls p:not(.section-kicker) {
+    color: var(--muted);
+  }
+
+  .inspector-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .inspector-status {
+    min-height: 1.3rem;
+    font-size: 0.85rem;
+  }
+
+  .inspector-results {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.9rem;
+    padding: 1.25rem;
+    min-width: 0;
+  }
+
+  .inspector-results[hidden] {
+    display: none;
+  }
+
+  .inspector-table {
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 0.5rem;
+  }
+
+  .inspector-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    text-align: left;
+  }
+
+  .inspector-table th,
+  .inspector-table td {
+    padding: 0.45rem 0.55rem;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    overflow-wrap: anywhere;
+  }
+
+  .inspector-table code {
+    color: var(--text);
+  }
+
+  .inspector-unknown {
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+</style>

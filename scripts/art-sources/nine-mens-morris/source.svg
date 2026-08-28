@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+    <defs>
+      <radialGradient id="bg" cx="70%" cy="42%" r="80%"><stop stop-color="#f87171" stop-opacity=".14"/><stop offset=".5" stop-color="#10181b"/><stop offset="1" stop-color="#0a0e11"/></radialGradient>
+      <filter id="grain"><feTurbulence baseFrequency=".7" numOctaves="2" seed="113"/><feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 .04 0"/></filter>
+    </defs>
+    <rect width="1280" height="720" fill="url(#bg)"/>
+    <rect x="337.6" y="57.60000000000002" width="604.8" height="604.8" fill="none" stroke="#38453f" stroke-width="2"/><rect x="438.4" y="158.39999999999998" width="403.20000000000005" height="403.20000000000005" fill="none" stroke="#38453f" stroke-width="2"/><rect x="539.2" y="259.2" width="201.60000000000002" height="201.60000000000002" fill="none" stroke="#38453f" stroke-width="2"/><line x1="337.6" y1="57.60000000000002" x2="539.2" y2="259.2" stroke="#38453f" stroke-width="2"/><line x1="740.8" y1="259.2" x2="942.4" y2="57.60000000000002" stroke="#38453f" stroke-width="2"/><line x1="337.6" y1="662.4" x2="539.2" y2="460.8" stroke="#38453f" stroke-width="2"/><line x1="740.8" y1="460.8" x2="942.4" y2="662.4" stroke="#38453f" stroke-width="2"/>
+<circle cx="337.6" cy="57.60000000000002" r="25.200000000000003" fill="#e8f0ec"/>
+<circle cx="942.4" cy="57.60000000000002" r="25.200000000000003" fill="#e8f0ec"/>
+<circle cx="942.4" cy="662.4" r="25.200000000000003" fill="#e8f0ec"/>
+<circle cx="337.6" cy="662.4" r="25.200000000000003" fill="#e8f0ec"/>
+<circle cx="337.6" cy="360" r="25.200000000000003" fill="#e8f0ec"/>
+<circle cx="942.4" cy="360" r="25.200000000000003" fill="#1c2422"/>
+<circle cx="640" cy="57.60000000000002" r="25.200000000000003" fill="#e8f0ec"/>
+<circle cx="640" cy="662.4" r="25.200000000000003" fill="#1c2422"/>
+<circle cx="438.4" cy="158.39999999999998" r="25.200000000000003" fill="#e8f0ec"/>
+<circle cx="841.6" cy="158.39999999999998" r="25.200000000000003" fill="#e8f0ec"/>
+<circle cx="841.6" cy="561.6" r="25.200000000000003" fill="#e8f0ec"/>
+<circle cx="438.4" cy="561.6" r="25.200000000000003" fill="#e8f0ec"/>
+<circle cx="438.4" cy="360" r="25.200000000000003" fill="#e8f0ec"/>
+<circle cx="841.6" cy="360" r="25.200000000000003" fill="#1c2422"/>
+<circle cx="640" cy="158.39999999999998" r="25.200000000000003" fill="#e8f0ec"/>
+<circle cx="640" cy="561.6" r="25.200000000000003" fill="#1c2422"/>
+<circle cx="539.2" cy="259.2" r="25.200000000000003" fill="#e8f0ec"/>
+<circle cx="740.8" cy="259.2" r="25.200000000000003" fill="#e8f0ec"/>
+<circle cx="740.8" cy="460.8" r="25.200000000000003" fill="#e8f0ec"/>
+<circle cx="539.2" cy="460.8" r="25.200000000000003" fill="#e8f0ec"/>
+<circle cx="539.2" cy="360" r="25.200000000000003" fill="#e8f0ec"/>
+<circle cx="740.8" cy="360" r="25.200000000000003" fill="#1c2422"/>
+<circle cx="640" cy="259.2" r="25.200000000000003" fill="#e8f0ec"/>
+<circle cx="640" cy="460.8" r="25.200000000000003" fill="#1c2422"/>
+    <rect width="1280" height="720" filter="url(#grain)" opacity=".5"/>
+  </svg>
