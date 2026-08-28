@@ -1,5 +1,7 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
+import { TOOLS } from '../config/tools';
+import { DAILY_SLOTS } from '../config/dailies';
 
 export const GET: APIRoute = async ({ site }) => {
   const origin = site ?? new URL('https://nocharge.net');
@@ -16,14 +18,21 @@ export const GET: APIRoute = async ({ site }) => {
   const curatedCollections = (await getCollection('collections'))
     .filter((collection) => !collection.data.draft)
     .sort((a, b) => a.data.order - b.data.order);
+  const learn = (await getCollection('learn')).filter((entry) => !entry.data.draft);
   const paths = [
     '/',
     '/arcade/',
     ...games.map((game) => `/games/${game.id}/`),
+    ...DAILY_SLOTS.filter((slot) => slot.status === 'live').map((slot) => `/games/${slot.slug}/?daily=1`),
+    '/daily/',
     '/guides/',
     ...guides.map((guide) => `/guides/${guide.id}/`),
     '/articles/',
     ...articles.map((article) => `/articles/${article.id}/`),
+    '/articles/registry-facts/',
+    '/learn/',
+    ...learn.map((entry) => `/learn/${entry.id}/`),
+    '/learn/glossary/',
     '/setup/',
     ...setup.map((entry) => `/setup/${entry.id}/`),
     '/collections/',
@@ -33,9 +42,7 @@ export const GET: APIRoute = async ({ site }) => {
     '/help/',
     '/contact/',
     '/tools/',
-    '/tools/discovery-wheel/',
-    '/tools/ambient-mixer/',
-    '/tools/zoom-visualizer/',
+    ...TOOLS.map((tool) => `/tools/${tool.slug}/`),
     '/terms/',
     '/advertising/',
     '/privacy/',

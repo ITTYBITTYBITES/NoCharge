@@ -1,0 +1,302 @@
+---
+import { getCollection } from 'astro:content';
+import ToolPage from '../../components/ToolPage.astro';
+import { buildGameFacts } from '../../lib/game-catalog';
+
+const games = (await getCollection('games')).filter((game) => !game.data.draft);
+const facts = buildGameFacts(games).map((fact) => ({
+  id: fact.slug,
+  title: fact.title,
+  genre: fact.genre,
+  sessionLabel: fact.sessionLabel,
+  sessionMax: fact.sessionMax,
+  players: fact.players,
+  pressure: fact.pressure === 'both' ? 'either' : fact.pressure,
+  inputs: fact.inputs,
+  keyboardComplete: fact.hasKeyboardComplete,
+  tagline: fact.blurb,
+}));
+
+const faqs = [
+  {
+    q: 'Is the Game Finder a ranking?',
+    a: 'No. It returns games that match your five answers, sorted alphabetically. The result order is not a quality rating, and the tool says so.',
+  },
+  {
+    q: 'Why does it sometimes return no game?',
+    a: 'Not every combination has a match in the current catalog. The tool says that plainly and suggests which answer to broaden instead of silently ignoring one.',
+  },
+  {
+    q: 'What does "keyboard only" mean here?',
+    a: 'The game catalog marks a game as keyboard-complete when the full core loop (start, every move, restart) works with the keyboard alone. Pass the Picture is excluded because strokes need pointer or touch.',
+  },
+];
+
+const questions = [
+  { id: 'time', label: 'How much time do you have?', options: [
+    { value: '5', label: 'About 5 minutes or less' },
+    { value: '10', label: 'Up to 10 minutes' },
+    { value: '20', label: 'Up to 20 minutes' },
+    { value: 'any', label: 'No limit' },
+  ]},
+  { id: 'players', label: 'Who is playing?', options: [
+    { value: 'solo', label: 'Just me' },
+    { value: 'pass-and-play', label: 'Two people, one device' },
+    { value: 'any', label: 'Either' },
+  ]},
+  { id: 'pressure', label: 'What pace?', options: [
+    { value: 'untimed', label: 'Untimed / no countdown' },
+    { value: 'timed', label: 'Timed is fine' },
+    { value: 'any', label: 'Any pace' },
+  ]},
+  { id: 'input', label: 'Input?', options: [
+    { value: 'keyboard', label: 'Keyboard preferred' },
+    { value: 'pointer', label: 'Mouse or touch' },
+    { value: 'any', label: 'Anything' },
+  ]},
+  { id: 'kind', label: 'What kind?', options: [
+    { value: 'logic', label: 'Logic or numbers' },
+    { value: 'word', label: 'Words or letters' },
+    { value: 'cards', label: 'Cards or solitaire' },
+    { value: 'board', label: 'Board strategy' },
+    { value: 'memory', label: 'Memory or recall' },
+    { value: 'any', label: 'Surprise me' },
+  ]},
+];
+---
+
+<ToolPage
+  title="Game Finder quiz"
+  eyebrow="Five answers, a shortlist"
+  description="Answer five questions about time, players, pace, input, and kind. The tool returns matching current NoCharge games with play and guide links — alphabetically, not as a ranking."
+  path="/tools/game-finder/"
+  category="Play"
+  bottomLine="Five questions produce a shortlist from the live game catalog. It is a filter, not a rating: results are alphabetical, every combination is answered honestly (including no match), and the tool runs entirely in this browser."
+  faqs={faqs}
+  embedCode={`<iframe src="https://nocharge.net/tools/game-finder/" width="400" height="640" title="NoCharge game finder quiz"></iframe>`}
+  nextActions={[
+    { href: '/arcade/', label: 'Browse the Arcade', note: 'All games with the same catalog filters as chips and sort.' },
+    { href: '/articles/registry-facts/', label: 'See registry facts', note: 'Current counts, keyboard-complete percentage, and review date.' },
+    { href: '/tools/discovery-wheel/', label: 'Compare with the Discovery Wheel', note: 'The wheel filters the same facts with different controls.' },
+  ]}
+>
+  <section class="panel finder-questions" aria-labelledby="finder-heading">
+    <div>
+      <p class="section-kicker">Answer all five</p>
+      <h2 id="finder-heading">What fits this session?</h2>
+      <p>Every answer maps to a catalog fact. The tool never scores or ranks the games — it only checks whether a game matches.</p>
+    </div>
+    <div class="finder-form">
+      {questions.map((question) => (
+        <fieldset class="finder-field">
+          <legend>{question.label}</legend>
+          <div class="finder-options">
+            {question.options.map((option) => (
+              <label><input type="radio" name={question.id} value={option.value} /> {option.label}</label>
+            ))}
+          </div>
+        </fieldset>
+      ))}
+      <button type="button" class="btn" data-finder-run>Find games</button>
+    </div>
+    <div id="finder-results" class="finder-results" data-games={JSON.stringify(facts)} aria-live="polite"></div>
+  </section>
+</ToolPage>
+
+<script>
+  interface GameFact {
+    id: string;
+    title: string;
+    genre: string;
+    sessionMax: number;
+    players: 'solo' | 'pass-and-play';
+    pressure: 'timed' | 'untimed' | 'either';
+    inputs: string[];
+    keyboardComplete: boolean;
+    tagline: string;
+    sessionLabel: string;
+  }
+
+  const runButton = document.querySelector<HTMLButtonElement>('[data-finder-run]');
+  const results = document.querySelector<HTMLElement>('#finder-results');
+  if (runButton && results) {
+    let games: GameFact[] = [];
+    try {
+      games = JSON.parse(results.dataset.games ?? '[]') as GameFact[];
+    } catch {
+      results.textContent = 'The game list could not be read. Open the Arcade to browse all games.';
+    }
+
+    const value = (name: string) => document.querySelector<HTMLInputElement>(`input[name="${name}"]:checked`)?.value ?? 'any';
+
+    const render = () => {
+      const time = Number(value('time'));
+      const players = value('players');
+      const pressure = value('pressure');
+      const input = value('input');
+      const kind = value('kind');
+      const matched = games.filter((game) => {
+        if (time > 0 && game.sessionMax > time) return false;
+        if (players !== 'any' && game.players !== players) return false;
+        if (pressure !== 'any') {
+          if (pressure === 'timed' && game.pressure === 'untimed') return false;
+          if (pressure === 'untimed' && game.pressure === 'timed') return false;
+        }
+        if (input !== 'any') {
+          if (input === 'keyboard' && !game.keyboardComplete) return false;
+          if (input === 'pointer' && !game.inputs.includes('pointer')) return false;
+        }
+        const kindMap: Record<string, string[]> = {
+          logic: ['Logic', 'Tile puzzle', 'Number puzzle', 'Merge puzzle'],
+          word: ['Word'],
+          cards: ['Cards'],
+          board: ['Board game'],
+          memory: ['Memory'],
+        };
+        if (kind !== 'any' && !(kindMap[kind] ?? []).some((genre) => game.genre === genre || game.genre.includes(genre))) return false;
+        return true;
+      }).sort((a, b) => a.title.localeCompare(b.title));
+
+      results.replaceChildren();
+      if (matched.length === 0) {
+        const p = document.createElement('p');
+        p.textContent = 'No game in the current catalog matches all five answers. Broaden one answer — the tool did not ignore any of your choices.';
+        results.append(p);
+        return;
+      }
+      const intro = document.createElement('p');
+      intro.textContent = `${matched.length} matching game${matched.length === 1 ? '' : 's'} — alphabetical, not a ranking.`;
+      results.append(intro);
+      for (const game of matched) {
+        const card = document.createElement('article');
+        card.className = 'panel finder-card';
+        const heading = document.createElement('h3');
+        const link = document.createElement('a');
+        link.href = `/games/${game.id}/`;
+        link.textContent = game.title;
+        heading.append(link);
+        const meta = document.createElement('p');
+        meta.textContent = `${game.genre} · ${game.sessionLabel} · ${game.players === 'solo' ? 'Solo' : 'Pass & Play'} · ${game.pressure === 'timed' ? 'timed' : game.pressure === 'either' ? 'timed or untimed' : 'untimed'}${game.keyboardComplete ? ' · keyboard-complete' : ''}`;
+        const blurb = document.createElement('p');
+        blurb.textContent = game.tagline;
+        const actions = document.createElement('p');
+        const play = document.createElement('a');
+        play.href = `/games/${game.id}/`;
+        play.textContent = 'Play';
+        const guide = document.createElement('a');
+        guide.href = `/guides/${game.id}/`;
+        guide.textContent = 'Guide';
+        const sep = document.createTextNode(' · ');
+        actions.append(play, sep, guide);
+        card.append(heading, meta, blurb, actions);
+        results.append(card);
+      }
+    };
+
+    runButton.addEventListener('click', render);
+    for (const input of document.querySelectorAll<HTMLInputElement>('.finder-form input[type="radio"]')) {
+      input.addEventListener('change', render);
+    }
+    render();
+  }
+</script>
+
+<style is:global>
+  .finder-questions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.1rem;
+    padding: 1.25rem;
+  }
+
+  .finder-questions > div:first-child {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.4rem;
+  }
+
+  .finder-questions > div:first-child p:last-child {
+    color: var(--muted);
+  }
+
+  .finder-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.9rem;
+  }
+
+  .finder-field {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.45rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .finder-field legend {
+    font-weight: 700;
+  }
+
+  .finder-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .finder-options label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-height: 44px;
+    padding: 0.35rem 0.7rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-weight: 650;
+    cursor: pointer;
+  }
+
+  .finder-options label:has(input:checked) {
+    border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+    color: var(--text);
+    background: color-mix(in srgb, var(--accent) 12%, var(--panel-2));
+  }
+
+  .finder-options input {
+    accent-color: var(--accent);
+  }
+
+  .finder-results {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.8rem;
+  }
+
+  .finder-results > p:first-child {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  .finder-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.35rem;
+    padding: 1rem;
+  }
+
+  .finder-card h3 a {
+    color: var(--accent-strong);
+  }
+
+  .finder-card p {
+    color: var(--muted);
+    font-size: 0.86rem;
+  }
+
+  .finder-card p:last-child a {
+    color: var(--accent-strong);
+    font-weight: 700;
+  }
+</style>

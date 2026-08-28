@@ -37,6 +37,7 @@ export function mountWordSearch(root: HTMLElement): GameController {
   let cursor = 0;
   let isDragging = false;
   let dragStart: Coord | null = null;
+  let paused = false;
 
   const grid = root.querySelector<HTMLElement>('[data-ws-grid]')!;
   const list = root.querySelector<HTMLUListElement>('[data-ws-words]')!;
@@ -145,7 +146,7 @@ export function mountWordSearch(root: HTMLElement): GameController {
   }
 
   function handlePointerDown(e: PointerEvent) {
-    if (isComplete(found, puzzle.words)) return;
+    if (paused || isComplete(found, puzzle.words)) return;
     unlockAudio();
     const cell = cellFromPoint(e.clientX, e.clientY);
     if (!cell) return;
@@ -158,7 +159,7 @@ export function mountWordSearch(root: HTMLElement): GameController {
   }
 
   function handlePointerMove(e: PointerEvent) {
-    if (!isDragging || !dragStart) return;
+    if (paused || !isDragging || !dragStart) return;
     const cell = cellFromPoint(e.clientX, e.clientY);
     if (cell) {
       cursor = cell.row * puzzle.size + cell.col;
@@ -167,7 +168,7 @@ export function mountWordSearch(root: HTMLElement): GameController {
   }
 
   function handlePointerUp(e: PointerEvent) {
-    if (!isDragging || !dragStart) return;
+    if (paused || !isDragging || !dragStart) return;
     isDragging = false;
     clearSelecting();
 
@@ -191,6 +192,7 @@ export function mountWordSearch(root: HTMLElement): GameController {
   }
 
   function handleTwoClickSelect(r: number, c: number) {
+    if (paused) return;
     cursor = r * puzzle.size + c;
     if (!first) {
       first = { row: r, col: c };
@@ -240,6 +242,7 @@ export function mountWordSearch(root: HTMLElement): GameController {
   grid.addEventListener('pointercancel', handlePointerCancel);
 
   root.querySelector('[data-ws-list]')?.addEventListener('click', () => {
+    if (paused) return;
     list.hidden = !list.hidden;
     (root.querySelector('[data-ws-list]') as HTMLElement).textContent = list.hidden
       ? 'Show word list'
@@ -247,6 +250,8 @@ export function mountWordSearch(root: HTMLElement): GameController {
   });
 
   root.querySelector('[data-ws-hint]')?.addEventListener('click', () => {
+    if (paused) return;
+    unlockAudio();
     const w = puzzle.words.find((x) => !found.includes(x));
     if (!w) return;
     const p = puzzle.placements.find((x) => x.word === w);
@@ -261,6 +266,7 @@ export function mountWordSearch(root: HTMLElement): GameController {
   });
 
   function switchPuzzle() {
+    if (paused) return;
     if (found.length || first) {
       if (!confirm('Start a new puzzle? Words found so far will be reset.')) return;
     }
@@ -272,7 +278,9 @@ export function mountWordSearch(root: HTMLElement): GameController {
   theme.addEventListener('change', switchPuzzle);
   size.addEventListener('change', switchPuzzle);
 
-  root.addEventListener('keydown', (e) => {
+  const onKeyDown = (e: KeyboardEvent) => {
+    if (paused) return;
+    unlockAudio();
     const k = e.key;
     const n = puzzle.size;
     let r = Math.floor(cursor / n);
@@ -303,21 +311,30 @@ export function mountWordSearch(root: HTMLElement): GameController {
     if (first) {
       highlightLine(first, { row: r, col: c });
     }
-  });
+  };
+  root.addEventListener('keydown', onKeyDown);
 
   init();
-  unlockAudio();
   return {
     destroy() {
+      grid.removeEventListener('pointerdown', handlePointerDown);
+      grid.removeEventListener('pointermove', handlePointerMove);
+      grid.removeEventListener('pointerup', handlePointerUp);
+      grid.removeEventListener('pointercancel', handlePointerCancel);
+      root.removeEventListener('keydown', onKeyDown);
       root.innerHTML = '';
     },
     pause() {
+      paused = true;
+      root.inert = true;
       handlePointerCancel();
     },
     resume() {
+      paused = false;
+      root.inert = false;
       handlePointerCancel();
     },
-    isPaused: () => false,
+    isPaused: () => paused,
     restart: init,
   };
 }

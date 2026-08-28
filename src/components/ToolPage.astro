@@ -1,0 +1,278 @@
+---
+/**
+ * Shared tool page template (A5).
+ *
+ * Every tool ships the same honest structure: bottom line → interactive UI →
+ * how it works → what it cannot do → FAQ → embed → next action. Tools run in
+ * the browser, never upload user input, and link out to at least two games or
+ * guides as next actions.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from './Breadcrumbs.astro';
+import FaqList from './FaqList.astro';
+
+interface Props {
+  title: string;
+  eyebrow: string;
+  description: string;
+  path: string;
+  category?: string;
+  bottomLine: string;
+  faqs?: { q: string; a: string }[];
+  embedCode?: string;
+  embedSourceLabel?: string;
+  nextActions: { href: string; label: string; note: string }[];
+  schema?: Record<string, unknown> | Record<string, unknown>[];
+  showAds?: boolean;
+}
+
+const {
+  title,
+  eyebrow,
+  description,
+  path,
+  category,
+  bottomLine,
+  faqs = [],
+  embedCode,
+  embedSourceLabel = 'NoCharge tool',
+  nextActions,
+  schema,
+  showAds = false,
+} = Astro.props;
+
+const toolSchema = schema ?? [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    '@id': `https://nocharge.net${path}#app`,
+    name: title,
+    description,
+    url: `https://nocharge.net${path}`,
+    applicationCategory: 'UtilitiesApplication',
+    operatingSystem: 'Web',
+    browserRequirements: 'Requires JavaScript',
+    isAccessibleForFree: true,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    publisher: { '@type': 'Organization', name: 'NoCharge', url: 'https://nocharge.net/' },
+  },
+  ...(faqs.length
+    ? [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          '@id': `https://nocharge.net${path}#faq`,
+          mainEntity: faqs.map(({ q, a }) => ({
+            '@type': 'Question',
+            name: q,
+            acceptedAnswer: { '@type': 'Answer', text: a },
+          })),
+        },
+      ]
+    : []),
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nocharge.net/' },
+      { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://nocharge.net/tools/' },
+      { '@type': 'ListItem', position: 3, name: title, item: `https://nocharge.net${path}` },
+    ],
+  },
+];
+---
+
+<BaseLayout title={title} description={description} path={path} schema={toolSchema} showAds={showAds}>
+  <div class="tool-page">
+    <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Tools', href: '/tools/' }, { label: title }]} />
+    <header>
+      <p class="eyebrow">{eyebrow}</p>
+      <h1 class="page-title">{title}</h1>
+      <p class="lede">{description}</p>
+      {category && <p class="tool-page__category">Category: {category}</p>}
+    </header>
+
+    <blockquote class="tool-page__bottom-line">
+      <p><strong>Bottom line:</strong> {bottomLine}</p>
+    </blockquote>
+
+    <div class="tool-page__main">
+      <slot />
+    </div>
+
+    <section class="prose" aria-labelledby="how-it-works-heading">
+      <h2 id="how-it-works-heading">How it works</h2>
+      <slot name="how">
+        <p>Everything on this page runs in the current browser. Values you enter are used only by this page and are not sent to NoCharge or any other server.</p>
+      </slot>
+    </section>
+
+    <section class="prose" aria-labelledby="tool-limits-heading">
+      <h2 id="tool-limits-heading">What it cannot do</h2>
+      <slot name="limits">
+        <ul>
+          <li>It does not measure or guarantee any real-world outcome.</li>
+          <li>It does not replace an eye exam, an ergonomics assessment, or a device manual.</li>
+          <li>It does not upload your input or save a preference without telling you.</li>
+        </ul>
+      </slot>
+    </section>
+
+    {
+      faqs.length > 0 && (
+        <section class="prose" id="faq" aria-labelledby="tool-faq-heading">
+          <h2 id="tool-faq-heading">FAQ</h2>
+          <FaqList items={faqs} />
+        </section>
+      )
+    }
+
+    {
+      embedCode && (
+        <section class="prose" aria-labelledby="tool-embed-heading">
+          <h2 id="tool-embed-heading">Embed this tool</h2>
+          <pre><code>{embedCode}
+&lt;p&gt;Source: &lt;a href="https://nocharge.net${path}"&gt;{embedSourceLabel}&lt;/a&gt;&lt;/p&gt;</code></pre>
+        </section>
+      )
+    }
+
+    <section class="tool-next panel" aria-labelledby="tool-next-heading">
+      <div>
+        <p class="section-kicker">Next action</p>
+        <h2 id="tool-next-heading">Try it with a game</h2>
+      </div>
+      <ul>
+        {nextActions.map(({ href, label, note }) => (
+          <li>
+            <a href={href}><span>{label}</span><span aria-hidden="true">→</span></a>
+            <p>{note}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .tool-page {
+    display: grid;
+    /* Clamp the implicit auto column so wide tool content (code lists,
+       tables, flex rows) cannot stretch the page past the viewport. */
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+    max-width: 52rem;
+    margin-inline: auto;
+    min-width: 0;
+  }
+
+  .tool-page__category {
+    margin-top: 0.5rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+
+  .tool-page__bottom-line {
+    border-left: 4px solid var(--accent);
+    background: color-mix(in srgb, var(--accent) 8%, var(--panel-2));
+    padding: 0.8rem 1rem;
+    border-radius: 6px;
+  }
+
+  .tool-page__main {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .prose {
+    display: grid;
+    gap: 1rem;
+    max-width: 46rem;
+    min-width: 0;
+  }
+
+  .prose table {
+    width: 100%;
+    display: block;
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-collapse: collapse;
+  }
+
+  .prose th,
+  .prose td {
+    border: 1px solid var(--line);
+    padding: 0.5rem;
+    font-size: 0.84rem;
+    min-width: 0;
+    word-break: break-word;
+  }
+
+  .prose pre {
+    overflow-x: auto;
+    padding: 0.9rem;
+    border: 1px solid var(--line);
+    border-radius: 0.5rem;
+    background: var(--panel-2);
+    font-size: 0.8rem;
+  }
+
+  .tool-faq {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .tool-faq dt {
+    font-weight: 700;
+  }
+
+  .tool-faq dd {
+    margin: 0.25rem 0 0;
+    color: var(--muted);
+  }
+
+  .tool-next {
+    display: grid;
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+
+  .tool-next > div {
+    display: grid;
+    gap: 0.3rem;
+  }
+
+  .tool-next h2 {
+    font-size: 1.3rem;
+  }
+
+  .tool-next ul {
+    display: grid;
+    gap: 0.9rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .tool-next li {
+    display: grid;
+    gap: 0.2rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .tool-next a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 44px;
+    color: var(--accent-strong);
+    font-weight: 700;
+  }
+
+  .tool-next p {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+</style>

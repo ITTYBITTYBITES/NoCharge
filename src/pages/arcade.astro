@@ -5,10 +5,37 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 import GameCard from '../components/GameCard.astro';
 import RecentlyPlayed from '../components/RecentlyPlayed.astro';
 import { isPassPlayGameId } from '../games/shared/pass-play';
+import { buildGameFacts, isNewRelease, isRecentlyUpdated } from '../lib/game-catalog';
 
 const games = (await getCollection('games'))
   .filter((game) => !game.data.draft)
   .sort((a, b) => a.data.order - b.data.order);
+
+const facts = buildGameFacts(games);
+const chipFor = (slug: string) => {
+  const item = facts.find((fact) => fact.slug === slug);
+  if (!item) return [];
+  const chips = [];
+  if (isNewRelease(item)) chips.push({ label: 'New', kind: 'new' as const });
+  else if (isRecentlyUpdated(item)) chips.push({ label: 'Updated', kind: 'updated' as const });
+  return chips;
+};
+const cardProps = (slug: string) => {
+  const item = facts.find((fact) => fact.slug === slug);
+  return item
+    ? {
+        sessionMax: item.sessionMax,
+        inputs: item.inputs,
+        pressure: item.pressure,
+        playersMode: item.players,
+        releasedAt: item.releasedAt,
+        updatedAt: item.updatedAt,
+        chips: chipFor(slug),
+      }
+    : {};
+};
+const keyboardCompleteCount = facts.filter((fact) => fact.hasKeyboardComplete).length;
+const untimedOrBothCount = facts.filter((fact) => fact.pressure !== 'timed').length;
 
 // One arcade page, two sections: the solo games exactly as before, plus the
 // Pass & Play section for two players on one device. The solo section keeps
@@ -53,8 +80,8 @@ const schema = {
       </p>
       <dl class="arcade-hero__facts">
         <div><dt>{games.length}</dt><dd>games available</dd></div>
-        <div><dt>0</dt><dd>accounts needed</dd></div>
-        <div><dt>3</dt><dd>input styles supported</dd></div>
+        <div><dt>{keyboardCompleteCount}</dt><dd>keyboard-complete</dd></div>
+        <div><dt>{untimedOrBothCount}</dt><dd>untimed or reduced-pressure</dd></div>
       </dl>
     </header>
 
@@ -62,9 +89,64 @@ const schema = {
       <a href="#solo-games">Solo games</a>
       <span aria-hidden="true">·</span>
       <a href="#pass-and-play">Pass &amp; Play</a>
+      <span aria-hidden="true">·</span>
+      <a href="#arcade-filters">Filter</a>
     </nav>
 
     <RecentlyPlayed games={games} location="arcade" />
+
+    <section class="arcade-filters panel" id="arcade-filters" aria-labelledby="arcade-filters-heading">
+      <div class="arcade-filters__heading">
+        <h2 id="arcade-filters-heading">Filter or sort the arcade</h2>
+        <p>Filters use the same catalog facts as the Discovery Wheel: session, input, pace, and players. Without JavaScript the full list stays visible below.</p>
+      </div>
+      <div class="arcade-filters__controls" id="arcade-filter-controls">
+        <label>Time
+          <select id="arcade-time" aria-label="Filter by session length">
+            <option value="any" selected>Any length</option>
+            <option value="5">About 5 minutes or less</option>
+            <option value="10">About 10 minutes or less</option>
+            <option value="15">About 15 minutes or less</option>
+          </select>
+        </label>
+        <label>Input
+          <select id="arcade-input" aria-label="Filter by input">
+            <option value="any" selected>Any input</option>
+            <option value="keyboard">Keyboard</option>
+            <option value="pointer">Pointer</option>
+            <option value="touch">Touch</option>
+          </select>
+        </label>
+        <label>Pressure
+          <select id="arcade-pressure" aria-label="Filter by pace">
+            <option value="any" selected>Any pace</option>
+            <option value="untimed">Untimed / reduced pressure</option>
+            <option value="timed">Timed</option>
+            <option value="both">Both</option>
+          </select>
+        </label>
+        <label>Players
+          <select id="arcade-players" aria-label="Filter by players">
+            <option value="any" selected>Any</option>
+            <option value="solo">Solo</option>
+            <option value="pass-and-play">Pass &amp; Play</option>
+          </select>
+        </label>
+        <label>Sort
+          <select id="arcade-sort" aria-label="Sort games">
+            <option value="order" selected>Curated order</option>
+            <option value="shortest">Shortest session first</option>
+            <option value="longest">Longest session first</option>
+            <option value="newest">Newest releases first</option>
+            <option value="updated">Recently updated first</option>
+            <option value="title">Title A–Z</option>
+          </select>
+        </label>
+      </div>
+      <p class="arcade-filters__status" id="arcade-filter-status" aria-live="polite">
+        Showing {games.length} games. Chips mark catalog release dates: “New” is within 60 days of the catalog review; “Updated” means changed after release within the last 30 days.
+      </p>
+    </section>
 
     <span id="solo-games" class="arcade-anchor" aria-hidden="true"></span>
     <section class="arcade-list" aria-labelledby="all-games-heading">
@@ -85,6 +167,7 @@ const schema = {
               artwork={game.data.artwork}
               genre={game.data.genre}
               session={game.data.session}
+              {...cardProps(game.id)}
             />
           ))
         }
@@ -115,6 +198,7 @@ const schema = {
                   artwork={game.data.artwork}
                   genre={game.data.genre}
                   session={game.data.session}
+                  {...cardProps(game.id)}
                 />
               ))}
             </div>
@@ -156,6 +240,75 @@ const schema = {
   </div>
 </BaseLayout>
 
+<script>
+  const container = document.querySelector('#arcade-filter-controls');
+  if (container) {
+    const time = document.querySelector<HTMLSelectElement>('#arcade-time');
+    const input = document.querySelector<HTMLSelectElement>('#arcade-input');
+    const pressure = document.querySelector<HTMLSelectElement>('#arcade-pressure');
+    const players = document.querySelector<HTMLSelectElement>('#arcade-players');
+    const sort = document.querySelector<HTMLSelectElement>('#arcade-sort');
+    const status = document.querySelector('#arcade-filter-status');
+    const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-game-card]'));
+
+    const apply = () => {
+      if (!time || !input || !pressure || !players || !sort) return;
+      const maxMinutes = Number(time.value);
+      const inputValue = input.value;
+      const pressureValue = pressure.value;
+      const playersValue = players.value;
+      const sortValue = sort.value;
+      const visible: HTMLElement[] = [];
+      for (const card of cards) {
+        const sessionMax = Number(card.dataset.sessionMax ?? 0);
+        const inputs = (card.dataset.inputs ?? '').split(' ').filter(Boolean);
+        const pressure = card.dataset.pressure ?? '';
+        const playerMode = card.dataset.players ?? '';
+        let show = true;
+        if (maxMinutes > 0 && sessionMax > maxMinutes) show = false;
+        if (inputValue !== 'any' && !inputs.includes(inputValue)) show = false;
+        if (pressureValue !== 'any') {
+          if (pressureValue === 'timed' && pressure === 'untimed') show = false;
+          if (pressureValue === 'untimed' && pressure === 'timed') show = false;
+          if (pressureValue === 'both' && pressure !== 'both') show = false;
+        }
+        if (playersValue !== 'any' && playerMode !== playersValue) show = false;
+        card.hidden = !show;
+        if (show) visible.push(card);
+      }
+      visible.sort((a, b) => {
+        const aSession = Number(a.dataset.sessionMax ?? 0);
+        const bSession = Number(b.dataset.sessionMax ?? 0);
+        const aReleased = a.dataset.released ?? '';
+        const bReleased = b.dataset.released ?? '';
+        switch (sortValue) {
+          case 'shortest': return aSession - bSession || a.textContent!.localeCompare(b.textContent!);
+          case 'longest': return bSession - aSession || a.textContent!.localeCompare(b.textContent!);
+          case 'newest': return bReleased.localeCompare(aReleased) || a.textContent!.localeCompare(b.textContent!);
+          case 'updated': return (b.dataset.updated ?? '').localeCompare(a.dataset.updated ?? '') || a.textContent!.localeCompare(b.textContent!);
+          case 'title': return a.textContent!.localeCompare(b.textContent!);
+          default: return 0;
+        }
+      });
+      for (const card of visible) card.parentElement?.append(card);
+      const sections = Array.from(document.querySelectorAll<HTMLElement>('.arcade-list, .arcade-passplay'));
+      for (const section of sections) {
+        const anyCard = Array.from(section.querySelectorAll<HTMLElement>('[data-game-card]')).some((card) => !card.hidden);
+        section.hidden = !anyCard;
+      }
+      const filterNote = [
+        maxMinutes > 0 ? `up to ${maxMinutes} min` : 'any length',
+        inputValue === 'any' ? 'any input' : inputValue,
+        pressureValue === 'any' ? 'any pace' : pressureValue,
+        playersValue === 'any' ? 'any players' : playersValue,
+      ].join(' · ');
+      if (status) status.textContent = `Showing ${visible.length} of ${cards.length} games — ${filterNote}.`;
+    };
+    for (const control of [time, input, pressure, players, sort]) control?.addEventListener('change', apply);
+    apply();
+  }
+</script>
+
 <style>
   .arcade-page {
     display: grid;
@@ -192,6 +345,52 @@ const schema = {
     margin: 0.1rem 0 0;
     color: var(--muted);
     font-size: 0.76rem;
+  }
+
+  .arcade-filters {
+    display: grid;
+    gap: 1rem;
+    padding: clamp(1.1rem, 3vw, 1.5rem);
+  }
+
+  .arcade-filters__heading {
+    display: grid;
+    gap: 0.35rem;
+    max-width: 46rem;
+  }
+
+  .arcade-filters__heading h2 {
+    font-size: 1.3rem;
+  }
+
+  .arcade-filters__heading p,
+  .arcade-filters__status {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  .arcade-filters__controls {
+    display: grid;
+    gap: 0.7rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(11rem, 100%), 1fr));
+  }
+
+  .arcade-filters__controls label {
+    display: grid;
+    gap: 0.3rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 650;
+  }
+
+  .arcade-filters__controls select {
+    width: 100%;
+    min-height: 44px;
+    padding: 0.5rem 0.6rem;
+    border: 1px solid var(--line);
+    border-radius: 0.5rem;
+    background: var(--panel-2);
+    color: var(--text);
   }
 
   .arcade-sections-nav {

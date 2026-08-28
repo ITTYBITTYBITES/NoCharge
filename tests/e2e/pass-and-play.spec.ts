@@ -300,8 +300,8 @@ test.describe('arcade page sections and anchors', () => {
     const nav = page.locator('.arcade-sections-nav');
     await expect(nav.getByRole('link', { name: 'Solo games' })).toHaveAttribute('href', '#solo-games');
     await expect(nav.getByRole('link', { name: 'Pass & Play' })).toHaveAttribute('href', '#pass-and-play');
-    await expect(page.locator('.arcade-list .arcade-grid .game-card')).toHaveCount(11);
-    await expect(page.locator('.arcade-passplay .arcade-grid .game-card')).toHaveCount(6);
+    await expect(page.locator('.arcade-list .arcade-grid .game-card')).toHaveCount(17);
+    await expect(page.locator('.arcade-passplay .arcade-grid .game-card')).toHaveCount(9);
     await expect(page.getByRole('heading', { name: 'Two players, one device.' })).toBeVisible();
     await expect(page.locator('.arcade-passplay')).toContainText(
       'Take turns on a single screen. Hand the device to a friend, or set it on the table and play face to face.',
@@ -346,7 +346,7 @@ test.describe('homepage Pass & Play section', () => {
     );
     // The arcade grid keeps the featured solo games above this section.
     const arcadeGrid = page.locator('#games');
-    await expect(arcadeGrid.locator('.game-card')).toHaveCount(6);
+    await expect(arcadeGrid.locator('.game-card')).toHaveCount(9);
     // Order: arcade grid, then Pass & Play, then guides/articles sections.
     const order = await page.evaluate(() => {
       const ids = ['#games', '#pass-and-play'];
@@ -372,7 +372,7 @@ test.describe('homepage Pass & Play section', () => {
     await page.goto('/collections/pass-and-play/');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Pass & Play');
     await expect(page.locator('.lede')).toHaveText('Two players, one device.');
-    await expect(page.locator('.members article')).toHaveCount(6);
+    await expect(page.locator('.members article')).toHaveCount(9);
   });
 });
 

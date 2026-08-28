@@ -586,7 +586,7 @@ test('captures brand review screens and asset comparisons', async ({ page, baseU
 
   await page.goto('/games/color-flip/');
   await measure('game-page-header');
-  await shotElement('17-game-page-header', '.site-header');
+  await shotElement('game-page-header', '.site-header');
   await page.goto('/my-arcade/');
   await measure('my-arcade-header');
   await shotElement('18-my-arcade-header', '.site-header');

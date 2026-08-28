@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import FaqList from '../../components/FaqList.astro';
 import SetupArtwork from '../../components/setup/SetupArtwork.astro';
 import EvidenceLabel from '../../components/setup/EvidenceLabel.astro';
 import AffiliateDisclosure from '../../components/setup/AffiliateDisclosure.astro';
@@ -168,14 +169,7 @@ const schema = [
 
     <section class="panel setup-faq" id="faq" aria-labelledby="faq-heading">
       <h2 id="faq-heading">FAQ — {article.data.title}</h2>
-      <dl>
-        {faqQuestions.map(({ q, a }) => (
-          <>
-            <dt>{q}</dt>
-            <dd>{a}</dd>
-          </>
-        ))}
-      </dl>
+      <FaqList items={faqQuestions} />
     </section>
 
     <script>

@@ -100,6 +100,11 @@
   transition: background 0.1s ease;
 }
 
+.ms__cell.is-given {
+  background: #202c27;
+  font-weight: 850;
+}
+
 .ms__cell.is-selected {
   outline: 3px solid var(--ms-accent);
   outline-offset: -3px;

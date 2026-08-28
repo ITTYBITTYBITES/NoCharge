@@ -32,6 +32,13 @@ const MOBILE_VIEWPORTS = [
   { width: 390, height: 844 },
 ] as const;
 
+interface OverflowIssue {
+  path: string;
+  viewport: number;
+  overflow: number;
+  offenders: { tag: string; cls: string; text: string; right: number; width: number }[];
+}
+
 test('every page fits its viewport without horizontal overflow', async ({ page }) => {
   test.setTimeout(600_000);
   const paths = listBuiltPages();
@@ -39,19 +46,85 @@ test('every page fits its viewport without horizontal overflow', async ({ page }
   expect(paths, 'expected built HTML pages in dist/').toContain('/');
   expect(paths.filter((path) => path.startsWith('/games/')).length).toBeGreaterThanOrEqual(4);
 
+  const issues: OverflowIssue[] = [];
   for (const viewport of MOBILE_VIEWPORTS) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     for (const path of paths) {
       await page.goto(path, { waitUntil: 'load' });
-      // Allow layout to settle after images
       await page.waitForTimeout(100);
-      const overflow = await page.evaluate(
-        () => document.documentElement.scrollWidth - window.innerWidth,
-      );
-      expect(
-        overflow,
-        `${path} overflows the ${viewport.width}px viewport by ${overflow}px`,
-      ).toBeLessThanOrEqual(1);
+      const result = await page.evaluate(() => {
+        const doc = document.documentElement;
+        const overflow = doc.scrollWidth - window.innerWidth;
+        const offenders: OverflowIssue['offenders'] = [];
+        document.querySelectorAll('*').forEach((el) => {
+          const r = el.getBoundingClientRect();
+          if (r.right > window.innerWidth + 1 || r.left < -1) {
+            const cls = typeof el.className === 'string' ? el.className : '';
+            offenders.push({
+              tag: el.tagName.toLowerCase(),
+              cls: cls.slice(0, 70),
+              text: (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 50),
+              right: Math.round(r.right),
+              width: Math.round(r.width),
+            });
+          }
+        });
+        return { overflow, offenders: offenders.slice(0, 12) };
+      });
+      if (result.overflow > 1) {
+        issues.push({ path, viewport: viewport.width, overflow: result.overflow, offenders: result.offenders });
+      }
+      // Container-chain diagnostics for the tool page that blew up.
+      if (path === '/tools/nonogram-clue-calculator/' && result.overflow > 1000) {
+        const chain = await page.evaluate(() => {
+          const fields = (sel: string) => {
+            const el = document.querySelector(sel) as HTMLElement | null;
+            if (!el) return null;
+            const cs = getComputedStyle(el);
+            const r = el.getBoundingClientRect();
+            return {
+              left: Math.round(r.left),
+              width: Math.round(r.width),
+              scrollWidth: el.scrollWidth,
+              display: cs.display,
+              gridTemplateColumns: cs.gridTemplateColumns,
+              maxWidth: cs.maxWidth,
+              minWidth: cs.minWidth,
+              overflowX: cs.overflowX,
+            };
+          };
+          return {
+            shell: fields('.site-shell'),
+            main: fields('.site-main'),
+            toolPage: fields('.tool-page'),
+            mainSlot: fields('.tool-page__main'),
+            controls: fields('.calc-controls'),
+            output: fields('.calc-output'),
+            lines: fields('.calc-lines'),
+          };
+        });
+        issues.push({
+          path: `${path}#chain`,
+          viewport: viewport.width,
+          overflow: result.overflow,
+          offenders: Object.entries(chain).map(([k, v]) => ({
+            tag: k,
+            cls: JSON.stringify(v),
+            text: '',
+            right: 0,
+            width: 0,
+          })) as any,
+        });
+      }
     }
   }
+  const detail = issues
+    .map((issue) => {
+      const offenderLines = issue.offenders
+        .map((o) => `      <${o.tag} class="${o.cls}" right=${o.right} width=${o.width}> ${o.text}`)
+        .join('\n');
+      return `  - ${issue.path} overflows ${issue.viewport}px by ${issue.overflow}px\n${offenderLines}`;
+    })
+    .join('\n');
+  expect(issues, `Horizontal overflow detected:\n${detail}`).toEqual([]);
 });

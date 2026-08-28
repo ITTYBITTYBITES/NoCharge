@@ -103,6 +103,11 @@ export function mountFreeCell(root: HTMLElement): GameController {
   /** Last applied geometry, used to avoid a measure/render feedback loop. */
   let geometryKey = '';
   let observer: ResizeObserver | null = null;
+  const pendingTimers = new Set<number>();
+  const defer = (callback: () => void, delay: number) => {
+    const id = window.setTimeout(() => { pendingTimers.delete(id); callback(); }, delay);
+    pendingTimers.add(id);
+  };
   let currentRowHeight = 0;
 
   function cuePlacement() {
@@ -279,9 +284,9 @@ export function mountFreeCell(root: HTMLElement): GameController {
       }
     };
     attemptFocus();
-    window.setTimeout(attemptFocus, 0);
-    window.setTimeout(attemptFocus, 50);
-    window.setTimeout(attemptFocus, 150);
+    defer(attemptFocus, 0);
+    defer(attemptFocus, 50);
+    defer(attemptFocus, 150);
   }
 
   function closeFan(returnFocus = true) {
@@ -297,9 +302,9 @@ export function mountFreeCell(root: HTMLElement): GameController {
         }
       };
       attemptFocus();
-      window.setTimeout(attemptFocus, 0);
-      window.setTimeout(attemptFocus, 50);
-      window.setTimeout(attemptFocus, 150);
+      defer(attemptFocus, 0);
+      defer(attemptFocus, 50);
+      defer(attemptFocus, 150);
     }
   }
 
@@ -636,6 +641,8 @@ export function mountFreeCell(root: HTMLElement): GameController {
 
   return {
     destroy() {
+      pendingTimers.forEach((id) => window.clearTimeout(id));
+      pendingTimers.clear();
       observer?.disconnect();
       observer = null;
       root.removeEventListener('keydown', onKeyDown);

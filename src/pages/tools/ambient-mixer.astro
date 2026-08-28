@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import FaqList from '../../components/FaqList.astro';
 import { AMBIENT_CATALOG } from '../../games/shared/audio/catalog';
 
 const faqs = [
@@ -110,9 +111,7 @@ const schema = [
       </ul>
 
       <h2 id="faq">FAQ — Ambient Mixer</h2>
-      <dl>
-        {faqs.map(({ q, a }) => <><dt>{q}</dt><dd>{a}</dd></>)}
-      </dl>
+      <FaqList items={faqs} />
 
       <h2>Embed this tool</h2>
       <pre><code>&lt;iframe src="https://nocharge.net/tools/ambient-mixer/" width="400" height="600" title="NoCharge procedural soundscape mixer"&gt;&lt;/iframe&gt;
@@ -145,6 +144,19 @@ const schema = [
 
   if (select && volume && status && playButton && stopButton) {
     let resumeAfterVisibility = false;
+
+    // Shareable query parameters set the initial choice/level only; they never
+    // bypass the Play gesture required by browsers for audio.
+    const params = new URLSearchParams(window.location.search);
+    const textureParam = params.get('texture');
+    const volumeParam = params.get('vol');
+    if (textureParam && [...select.options].some((option) => option.value === textureParam)) {
+      select.value = textureParam;
+    }
+    const requestedVolume = Number(volumeParam);
+    if (Number.isFinite(requestedVolume) && requestedVolume >= 0 && requestedVolume <= 100) {
+      volume.value = String(requestedVolume);
+    }
 
     const updateStatus = (message?: string) => {
       const active = getActiveAmbient();

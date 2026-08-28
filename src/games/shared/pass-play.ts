@@ -9,7 +9,7 @@
 
 export type PassPlayPlayer = 1 | 2;
 
-/** The six Pass &amp; Play games, in registry order. */
+/** The Pass &amp; Play games, in registry order. */
 export const PASS_PLAY_GAME_IDS = [
   'tic-tac-toe',
   'dots-and-boxes',
@@ -17,6 +17,9 @@ export const PASS_PLAY_GAME_IDS = [
   'reversi',
   'last-token',
   'pass-the-picture',
+  'gomoku',
+  'nine-mens-morris',
+  'checkers',
 ] as const;
 
 export type PassPlayGameId = (typeof PASS_PLAY_GAME_IDS)[number];
@@ -392,12 +395,13 @@ export function createHandoffScreen(
   };
   // Announce one frame later so screen readers register the new dialog first.
   const view = doc.defaultView;
-  if (view) view.setTimeout(announceTurn, 0);
+  const announceTimer = view?.setTimeout(announceTurn, 0);
 
   let closed = false;
   const close = () => {
     if (closed) return;
     closed = true;
+    if (announceTimer !== undefined) view?.clearTimeout(announceTimer);
     view?.removeEventListener('keydown', onKeydown, true);
     host.remove();
     for (const target of hiddenTargets) target.hidden = false;

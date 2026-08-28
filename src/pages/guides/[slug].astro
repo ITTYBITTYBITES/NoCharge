@@ -4,6 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import GameArtwork from '../../components/GameArtwork.astro';
 import ArticleCard from '../../components/ArticleCard.astro';
+import FaqList from '../../components/FaqList.astro';
 
 export async function getStaticPaths() {
   const games = (await getCollection('games')).filter((game) => !game.data.draft);
@@ -225,9 +226,9 @@ const schema = [
         <Content />
       </div>
 
-      <section class="panel guide-faq" id="common-questions" aria-labelledby="faq-heading">
+      <section class="panel guide-faq" id="guide-faq" aria-labelledby="faq-heading">
         <h2 id="faq-heading">Frequently asked questions about {game.data.title}</h2>
-        <dl>{faqQuestions.map(({ q, a }) => <><dt>{q}</dt><dd>{a}</dd></>)}</dl>
+        <FaqList items={faqQuestions} />
       </section>
 
       <script>
@@ -301,18 +302,23 @@ const schema = [
 <style>
   .guide-page {
     display: grid;
+    /* Clamp the implicit auto column: a wide child (artwork image, table)
+       would otherwise stretch the page past the viewport at 320px. */
+    grid-template-columns: minmax(0, 1fr);
     gap: 2rem;
     max-width: 52rem;
     margin-inline: auto;
   }
 
   .guide-header {
+    min-width: 0;
     padding: 0.75rem 0 1.5rem;
     border-bottom: 1px solid var(--line);
   }
 
   .guide-header--artwork {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     align-items: center;
     gap: 1.25rem 2rem;
   }

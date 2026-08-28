@@ -5,10 +5,16 @@ const pathname = Astro.url.pathname;
 const arcadeCurrent = pathname.startsWith('/arcade/') || pathname.startsWith('/games/');
 const guidesCurrent = pathname.startsWith('/guides/');
 const articlesCurrent = pathname.startsWith('/articles/');
+const toolsCurrent = pathname.startsWith('/tools/');
+const learnCurrent = pathname.startsWith('/learn/');
+const dailyCurrent = pathname.startsWith('/daily/');
 const setupCurrent = pathname.startsWith('/setup/');
 const arcadeAria = pathname === '/arcade/' ? 'page' : arcadeCurrent ? 'location' : undefined;
 const guidesAria = pathname === '/guides/' ? 'page' : guidesCurrent ? 'location' : undefined;
 const articlesAria = pathname === '/articles/' ? 'page' : articlesCurrent ? 'location' : undefined;
+const toolsAria = pathname === '/tools/' ? 'page' : toolsCurrent ? 'location' : undefined;
+const learnAria = pathname === '/learn/' ? 'page' : learnCurrent ? 'location' : undefined;
+const dailyAria = pathname === '/daily/' ? 'page' : dailyCurrent ? 'location' : undefined;
 const setupAria = pathname === '/setup/' ? 'page' : setupCurrent ? 'location' : undefined;
 ---
 
@@ -21,6 +27,9 @@ const setupAria = pathname === '/setup/' ? 'page' : setupCurrent ? 'location' : 
     <a class:list={['nav-link', { 'is-current': arcadeCurrent }]} href="/arcade/" aria-current={arcadeAria}>Arcade</a>
     <a class:list={['nav-link', { 'is-current': guidesCurrent }]} href="/guides/" aria-current={guidesAria}>Guides</a>
     <a class:list={['nav-link', { 'is-current': articlesCurrent }]} href="/articles/" aria-current={articlesAria}>Articles</a>
+    <a class:list={['nav-link', { 'is-current': toolsCurrent }]} href="/tools/" aria-current={toolsAria}>Tools</a>
+    <a class:list={['nav-link', { 'is-current': learnCurrent }]} href="/learn/" aria-current={learnAria}>Learn</a>
+    <a class:list={['nav-link', { 'is-current': dailyCurrent }]} href="/daily/" aria-current={dailyAria}>Daily</a>
     <a class:list={['nav-link', { 'is-current': setupCurrent }]} href="/setup/" aria-current={setupAria}>Setup</a>
   </nav>
 </header>

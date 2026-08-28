@@ -1,8 +1,15 @@
 #!/usr/bin/env node
 
+import { NOINDEX_ROUTES } from './sitemap-policy.mjs';
+
 const DEFAULT_BASE_URL = 'https://nocharge.net';
 const DEFAULT_THRESHOLD_MS = 5_000;
 
+/**
+ * Routes the uptime check fetches and requires to respond 200. This includes
+ * no-index pages like /changelog/ that are served but deliberately absent
+ * from the sitemap.
+ */
 export const expectedRoutes = [
   '/',
   '/arcade/',
@@ -18,6 +25,14 @@ export const expectedRoutes = [
   '/games/color-flip/',
   '/games/beacon-lattice/',
 ];
+
+/**
+ * Routes that must also be present in sitemap.xml. No-index pages are
+ * excluded so this script cannot contradict validate-sitemap.mjs.
+ */
+export const sitemapRequiredRoutes = expectedRoutes.filter(
+  (path) => !NOINDEX_ROUTES.includes(path),
+);
 
 function normaliseBaseUrl(value) {
   const url = new URL(value);
@@ -94,7 +109,7 @@ export async function checkProduction({
       return '';
     }
   });
-  for (const path of expectedRoutes) {
+  for (const path of sitemapRequiredRoutes) {
     if (!sitemapPaths.includes(path)) throw new Error(`/sitemap.xml is missing ${path}`);
   }
   checks.push({ path: '/sitemap.xml', elapsedMs: sitemap.elapsedMs });

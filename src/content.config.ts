@@ -20,6 +20,15 @@ const gameIds = z.enum([
   'tile-garden',
   'word-search',
   'mini-sudoku',
+  'minesweeper',
+  'hangman',
+  'lights-out',
+  'simon',
+  'sudoku-9x9',
+  'gomoku',
+  'nine-mens-morris',
+  'word-loom',
+  'checkers',
 ]);
 
 const games = defineCollection({
@@ -116,4 +125,24 @@ const changelog = defineCollection({
   }),
 });
 
-export const collections = { games, guides, articles, setup, collections: collectionsContent, changelog };
+const learnTopics = z.enum([
+  'quiet-arcade',
+  'pass-and-play',
+  'privacy',
+  'no-account',
+  'pressure',
+  'interface',
+  'network',
+]);
+
+const learn = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/learn' }),
+  schema: z.object({
+    title: z.string(), description: z.string(), published: z.string(), updated: z.string(),
+    topic: learnTopics, readTime: z.number().positive(), order: z.number().default(0),
+    draft: z.boolean().default(false),
+    faqs: z.array(z.object({ q: z.string(), a: z.string() })).default([]),
+  }),
+});
+
+export const collections = { games, guides, articles, setup, collections: collectionsContent, changelog, learn };

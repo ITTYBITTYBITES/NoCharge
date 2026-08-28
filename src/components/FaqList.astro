@@ -1,0 +1,91 @@
+---
+interface FaqItem {
+  q: string;
+  a: string;
+}
+
+interface Props {
+  items: FaqItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<div class="faq-list">
+  {items.map(({ q, a }) => (
+    <details class="faq-list__item">
+      <summary>{q}</summary>
+      <div class="faq-list__answer"><p>{a}</p></div>
+    </details>
+  ))}
+</div>
+
+<style>
+  .faq-list {
+    display: grid;
+    gap: 0.6rem;
+    margin: 0;
+  }
+
+  .faq-list__item {
+    overflow: clip;
+    border: 1px solid var(--line);
+    border-radius: 0.7rem;
+    background: color-mix(in srgb, var(--panel-2) 82%, transparent);
+  }
+
+  .faq-list__item summary {
+    position: relative;
+    padding: 0.8rem 2.5rem 0.8rem 0.9rem;
+    color: var(--text);
+    font-weight: 750;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .faq-list__item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-list__item summary::after {
+    content: '+';
+    position: absolute;
+    top: 50%;
+    right: 0.9rem;
+    translate: 0 -50%;
+    color: var(--accent-strong);
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  .faq-list__item[open] summary::after {
+    content: '−';
+  }
+
+  .faq-list__item summary:focus-visible {
+    outline: 3px solid var(--accent-strong);
+    outline-offset: -3px;
+  }
+
+  .faq-list__answer {
+    padding: 0 0.9rem 0.9rem;
+  }
+
+  .faq-list__answer p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .faq-list__item summary::after {
+      transition: rotate 120ms ease;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .faq-list__item {
+      border-color: CanvasText;
+    }
+  }
+</style>
