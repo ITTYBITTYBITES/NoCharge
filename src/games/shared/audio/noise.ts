@@ -247,6 +247,7 @@ export class ProceduralNoiseVoice {
   private readonly fallback: OverlappingSegmentPlayer;
   private workletNode: AudioWorkletNode | null = null;
   private disposed = false;
+  private stopping = false;
 
   constructor(private readonly context: AudioContext, private readonly options: ProceduralNoiseVoiceOptions) {
     this.output = this.bag.addNode(context.createGain());
@@ -275,7 +276,7 @@ export class ProceduralNoiseVoice {
   }
 
   private installWorklet(): void {
-    if (this.disposed || typeof AudioWorkletNode === 'undefined') return;
+    if (this.disposed || this.stopping || typeof AudioWorkletNode === 'undefined') return;
     try {
       const node = new AudioWorkletNode(this.context, WORKLET_PROCESSOR, {
         numberOfInputs: 0,
@@ -301,6 +302,7 @@ export class ProceduralNoiseVoice {
 
   stop(fadeSeconds = 0.35): void {
     if (this.disposed) return;
+    this.stopping = true;
     const now = this.context.currentTime;
     smoothRamp(this.fallbackGain.gain, 0.0001, now, Math.max(0, fadeSeconds));
     smoothRamp(this.workletGain.gain, 0.0001, now, Math.max(0, fadeSeconds));
