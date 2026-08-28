@@ -13,6 +13,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <p class="eyebrow">404</p>
     <h1 class="page-title">That page slipped away.</h1>
     <p class="lede">The link may be old, or the address may have a typo.</p>
+    <form class="not-found__search" role="search" action="/search/" method="get">
+      <label class="sr-only" for="not-found-q">Search NoCharge</label>
+      <input id="not-found-q" type="search" name="q" placeholder="Search for a game, guide, or tool…" />
+      <button class="btn" type="submit">Search</button>
+    </form>
     <div class="not-found__actions">
       <a class="btn" href="/arcade/">Browse the arcade</a>
       <a class="btn btn--ghost" href="/guides/">Read game guides</a>
@@ -38,5 +43,24 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     display: flex;
     flex-wrap: wrap;
     gap: 0.6rem;
+  }
+
+  .not-found__search {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .not-found__search input {
+    flex: 1 1 14rem;
+    min-width: 0;
+    min-height: 48px;
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--panel-2);
+    color: var(--text);
+    font-size: 1rem;
   }
 </style>

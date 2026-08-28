@@ -14,8 +14,8 @@ const faqs = [
     a: 'The mixer fades and stops its soundscape when the page becomes hidden. If it was playing before the switch, it resumes the selected soundscape when the page becomes visible again. A saved selection that was not playing does not start by itself.',
   },
   {
-    q: 'What is the difference between the soundscapes and lofi?',
-    a: 'The environmental soundscapes are continuously generated layers of colored noise and irregular events. Lofi is a fully procedural composition with a four-chord progression, bass derived from each chord, restrained synthesized drums, bars, swing, and eight-bar changes. It is not a recorded song or a music loop.',
+    q: 'What is the difference between the nature soundscapes and the calm music ones?',
+    a: 'The nature soundscapes pair slow, soft layers of filtered noise — breeze, flowing water, waves, or night air — with sparse generated tones such as birdsong, chimes, crickets, or an owl. The calm music soundscapes (floating pads, kalimba lullaby, singing bowls, and music box drift) are fully procedural compositions built from oscillators: slow chord pads, pentatonic plucks, and long resonant tones. None is a recorded song or a music loop.',
   },
   {
     q: 'Do the game sound controls affect ambient audio?',
@@ -29,7 +29,7 @@ const schema = [
     '@type': 'SoftwareApplication',
     '@id': 'https://nocharge.net/tools/ambient-mixer/#app',
     name: 'NoCharge Ambient Mixer',
-    description: 'A free browser-based mixer with eleven procedural soundscapes and no recorded audio downloads.',
+    description: 'A free browser-based mixer with ten calm procedural nature and music soundscapes and no recorded audio downloads.',
     url: 'https://nocharge.net/tools/ambient-mixer/',
     applicationCategory: 'MultimediaApplication',
     operatingSystem: 'Web',
@@ -60,8 +60,8 @@ const schema = [
 ---
 
 <BaseLayout
-  title="Ambient Mixer — eleven procedural soundscapes"
-  description="Try eleven continuously generated procedural soundscapes: rain, forest, fireplace, ocean, night, soft room murmur, library, white noise, pink noise, brown noise, and lofi."
+  title="Ambient Mixer — ten calm procedural soundscapes"
+  description="Try ten continuously generated calm soundscapes: meadow morning, mountain stream, zen garden, ocean shore, pine forest, summer night, floating pads, kalimba lullaby, singing bowls, and music box drift."
   path="/tools/ambient-mixer/"
   schema={schema}
   showAds={false}
@@ -71,7 +71,7 @@ const schema = [
     <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Tools', href: '/tools/' }, { label: 'Ambient Mixer' }]} />
     <header>
       <p class="eyebrow">Procedural soundscapes</p>
-      <h1>Ambient Mixer — eleven procedural soundscapes</h1>
+      <h1>Ambient Mixer — ten calm procedural soundscapes</h1>
       <p class="lede">Try a continuously generated background soundscape. There are no recordings, music loops, impulse responses, speech, or third-party samples, and sound stops when this page is hidden.</p>
     </header>
 
@@ -107,7 +107,7 @@ const schema = [
         <li>Begin at a low volume and compare the soundscape with silence; louder is not automatically more useful.</li>
         <li>Use Stop before leaving if you do not want a playing soundscape to resume after a tab switch.</li>
         <li>Master mute in a game silences effects and soundscapes. Turning game effects off does not stop a selected soundscape.</li>
-        <li>Rain, forest, fireplace, ocean, night, room murmur, and library are procedural approximations, not field recordings.</li>
+        <li>The nature soundscapes are calm procedural approximations — soft filtered wind, water, and waves with sparse birdsong, chimes, and night creatures — not field recordings, and the music soundscapes are generated, not recorded songs.</li>
       </ul>
 
       <h2 id="faq">FAQ — Ambient Mixer</h2>

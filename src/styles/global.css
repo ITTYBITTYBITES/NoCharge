@@ -203,6 +203,21 @@ p {
   content: '';
 }
 
+/* Search is icon-only in the header (with an accessible name via aria-label)
+   so it adds minimal width. On the narrowest one-row layout it is omitted
+   entirely — Search stays available from the footer and the 404 search box —
+   keeping that header byte-identical in width to the passing baseline. */
+.nav-link--search {
+  justify-content: center;
+  min-width: 44px;
+  padding: 0;
+}
+
+.nav-link__icon {
+  display: block;
+  flex: none;
+}
+
 @media (max-width: 30rem) {
   .site-header {
     flex-wrap: nowrap;
@@ -228,6 +243,10 @@ p {
 
   .nav-link {
     font-size: 0.82rem;
+  }
+
+  .nav-link--search {
+    display: none;
   }
 }
 

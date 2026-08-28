@@ -1,0 +1,243 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { readSearchQuery } from '../lib/search';
+
+const initialQuery = readSearchQuery(Astro.url.searchParams.get('q'));
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': 'https://nocharge.net/#website',
+  url: 'https://nocharge.net/',
+  name: 'NoCharge',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: 'https://nocharge.net/search/?q={search_term_string}',
+    },
+    'query-input': 'required name=search_term_string',
+  },
+};
+---
+
+<BaseLayout
+  title="Site search"
+  description="Search every NoCharge game, guide, article, tool, setup note, and page. The index is a static file and queries never leave your browser."
+  path="/search/"
+  schema={schema}
+  showAds={false}
+>
+  <div class="search-page">
+    <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Search' }]} />
+
+    <header>
+      <p class="eyebrow">Site search</p>
+      <h1 class="page-title">Find a game, guide, article, or tool.</h1>
+      <p class="lede">
+        The search index is built with the site and downloaded once as a static file. Your query is matched in this
+        browser and is never sent to a server or logged.
+      </p>
+    </header>
+
+    <section class="panel search-box" aria-labelledby="search-heading">
+      <h2 id="search-heading" class="sr-only">Search NoCharge</h2>
+      <form id="search-form" role="search" aria-label="Site search">
+        <label for="search-input">Search for</label>
+        <div class="search-row">
+          <input
+            id="search-input"
+            name="q"
+            type="search"
+            value={initialQuery}
+            placeholder="e.g. nonogram, solitaire rules, keyboard, ambient, privacy…"
+            autocomplete="off"
+            enterkeyhint="search"
+            aria-describedby="search-status"
+          />
+          <button class="btn" type="submit">Search</button>
+        </div>
+      </form>
+      <p id="search-status" class="search-status" role="status" aria-live="polite">Start typing to search every page on NoCharge.</p>
+    </section>
+
+    <section class="search-results" aria-labelledby="results-heading">
+      <h2 id="results-heading" class="sr-only">Results</h2>
+      <ul id="results-list" class="results-list"></ul>
+      <p id="no-results" class="no-results" hidden>No pages matched. Try a shorter or different term — for example a game name like “solitaire” or a topic like “keyboard”.</p>
+      <nav class="search-shortcuts" id="search-shortcuts" aria-label="Popular destinations">
+        <p class="section-kicker">Popular destinations</p>
+        <ul>
+          <li><a href="/arcade/">Arcade</a></li>
+          <li><a href="/guides/">Guides</a></li>
+          <li><a href="/tools/ambient-mixer/">Ambient mixer</a></li>
+          <li><a href="/articles/">Articles</a></li>
+          <li><a href="/help/">Help</a></li>
+          <li><a href="/collections/">Collections</a></li>
+        </ul>
+      </nav>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  import { readSearchQuery, searchSite, searchKindLabel, type SearchEntry } from '../lib/search';
+
+  const form = document.querySelector<HTMLFormElement>('#search-form');
+  const input = document.querySelector<HTMLInputElement>('#search-input');
+  const resultsList = document.querySelector<HTMLUListElement>('#results-list');
+  const status = document.querySelector<HTMLElement>('#search-status');
+  const noResults = document.querySelector<HTMLElement>('#no-results');
+  const shortcuts = document.querySelector<HTMLElement>('#search-shortcuts');
+
+  if (form && input && resultsList && status && noResults && shortcuts) {
+    const listEl = resultsList;
+    const statusEl = status;
+    const noResultsEl = noResults;
+    const shortcutsEl = shortcuts;
+    const inputEl = input;
+    const formEl = form;
+
+    let index: SearchEntry[] | null = null;
+    let loadAttempted = false;
+    let debounce: ReturnType<typeof setTimeout> | undefined;
+    let renderedQuery = '';
+
+    async function loadIndex(): Promise<SearchEntry[] | null> {
+      if (index) return index;
+      if (loadAttempted) return null;
+      loadAttempted = true;
+      try {
+        const response = await fetch('/search-index.json');
+        if (!response.ok) throw new Error(`index ${response.status}`);
+        const data = (await response.json()) as { entries?: SearchEntry[] };
+        index = Array.isArray(data.entries) ? data.entries : [];
+        return index;
+      } catch {
+        statusEl.textContent = 'The search index could not be loaded. Check your connection and reload the page.';
+        return null;
+      }
+    }
+
+    function renderResults(query: string, entries: SearchEntry[]): void {
+      const matches = searchSite(entries, query);
+      listEl.replaceChildren();
+      noResultsEl.hidden = true;
+
+      if (query.trim() === '') {
+        statusEl.textContent = 'Start typing to search every page on NoCharge.';
+        shortcutsEl.hidden = false;
+        return;
+      }
+      shortcutsEl.hidden = true;
+
+      if (matches.length === 0) {
+        statusEl.textContent = `No results for “${query}”.`;
+        noResultsEl.hidden = false;
+        return;
+      }
+
+      for (const match of matches) {
+        const { entry } = match;
+        const item = document.createElement('li');
+        item.className = `result-item result-item--${entry.kind}`;
+        const link = document.createElement('a');
+        link.href = entry.url;
+        const kind = document.createElement('span');
+        kind.className = 'result-item__kind';
+        kind.textContent = searchKindLabel(entry.kind);
+        const title = document.createElement('span');
+        title.className = 'result-item__title';
+        title.textContent = entry.title;
+        const description = document.createElement('span');
+        description.className = 'result-item__description';
+        description.textContent = entry.description;
+        link.append(kind, title, description);
+        item.append(link);
+        listEl.append(item);
+      }
+      statusEl.textContent = `${matches.length} result${matches.length === 1 ? '' : 's'} for “${query}”.`;
+    }
+
+    async function run(query: string): Promise<void> {
+      const normalized = readSearchQuery(query);
+      renderedQuery = normalized;
+      if (normalized === '') {
+        listEl.replaceChildren();
+        noResultsEl.hidden = true;
+        shortcutsEl.hidden = false;
+        statusEl.textContent = 'Start typing to search every page on NoCharge.';
+        return;
+      }
+      statusEl.textContent = 'Searching…';
+      const entries = await loadIndex();
+      if (!entries) return;
+      // A faster keystroke may have queued another run; only render the latest.
+      if (renderedQuery !== normalized) return;
+      renderResults(normalized, entries);
+    }
+
+    inputEl.addEventListener('input', () => {
+      clearTimeout(debounce);
+      debounce = setTimeout(() => void run(inputEl.value), 160);
+    });
+
+    formEl.addEventListener('submit', (event) => {
+      event.preventDefault();
+      clearTimeout(debounce);
+      const query = readSearchQuery(inputEl.value);
+      const url = new URL(window.location.href);
+      if (query) url.searchParams.set('q', query);
+      else url.searchParams.delete('q');
+      window.history.replaceState(null, '', url);
+      void run(query);
+      inputEl.focus();
+    });
+
+    if (inputEl.value.trim()) void run(inputEl.value);
+    else inputEl.focus();
+  }
+</script>
+
+<style>
+  .search-page { max-width: 46rem; margin-inline: auto; display: grid; gap: 1.4rem; min-width: 0; }
+  .search-page header { display: grid; gap: 0.6rem; }
+  .search-box { padding: 1.1rem 1.25rem; display: grid; gap: 0.7rem; }
+  .search-box label { font-weight: 600; font-size: 0.9rem; }
+  .search-row { display: grid; grid-template-columns: 1fr auto; gap: 0.6rem; align-items: stretch; }
+  .search-row input {
+    width: 100%; min-width: 0; min-height: 48px; padding: 0.6rem 0.8rem;
+    border-radius: 8px; color: var(--text); background: var(--panel-2);
+    border: 1px solid var(--line); font-size: 1rem;
+  }
+  .search-row input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .search-status { margin: 0; color: var(--muted); font-size: 0.88rem; min-height: 1.2em; }
+  .results-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.6rem; }
+  .result-item a {
+    display: grid; gap: 0.15rem; padding: 0.8rem 1rem; border-radius: 10px;
+    background: var(--panel-2); border: 1px solid var(--line);
+    color: var(--text); text-decoration: none;
+  }
+  .result-item a:hover, .result-item a:focus-visible { border-color: var(--accent); outline: none; }
+  .result-item__kind {
+    justify-self: start; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em;
+    text-transform: uppercase; color: var(--accent);
+    border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    border-radius: 999px; padding: 0.1rem 0.55rem;
+  }
+  .result-item__title { font-weight: 700; font-size: 1.02rem; }
+  .result-item__description { color: var(--muted); font-size: 0.88rem; line-height: 1.45; }
+  .no-results { margin: 0; padding: 0.9rem 1rem; border-radius: 10px; background: var(--panel-2); border: 1px solid var(--line); color: var(--muted); }
+  .search-shortcuts { display: grid; gap: 0.5rem; }
+  .search-shortcuts ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .search-shortcuts a {
+    display: inline-block; padding: 0.45rem 0.85rem; border-radius: 999px;
+    border: 1px solid var(--line); background: var(--panel-2); color: var(--text);
+    text-decoration: none; font-size: 0.88rem;
+  }
+  .search-shortcuts a:hover, .search-shortcuts a:focus-visible { border-color: var(--accent); outline: none; }
+  @media (max-width: 34rem) {
+    .search-row { grid-template-columns: 1fr; }
+  }
+</style>
