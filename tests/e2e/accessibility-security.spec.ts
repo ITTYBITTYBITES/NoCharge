@@ -7,6 +7,7 @@ for (const path of [
   '/',
   '/arcade/',
   '/my-arcade/',
+  '/search/',
   '/guides/',
   '/guides/memory-match/',
   '/guides/word-tile-rush/',

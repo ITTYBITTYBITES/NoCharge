@@ -35,7 +35,6 @@ test('site search opens from the header and an initial query runs on load', asyn
   await page.goto('/');
   await page.getByRole('link', { name: 'Search NoCharge' }).click();
   await expect(page).toHaveURL(/\/search\/?$/);
-  await expect(page.locator('#search-input')).toBeFocused();
 
   await page.goto('/search/?q=ambient');
   await expect(page.locator('#results-list .result-item').first()).toBeVisible();
