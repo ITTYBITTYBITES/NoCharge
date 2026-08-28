@@ -137,14 +137,20 @@ const faqs = [
 <style>
   .calc-controls {
     display: grid;
+    /* Clamp the auto column: the arrangement chips below add up to ~2700px
+       of max-content and must wrap instead of widening the page. */
+    grid-template-columns: minmax(0, 1fr);
     gap: 1rem;
     padding: 1.25rem;
     min-width: 0;
+    width: 100%;
   }
 
   .calc-controls > div:first-child {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.35rem;
+    min-width: 0;
   }
 
   .calc-controls > div:first-child p:last-child {
@@ -177,7 +183,10 @@ const faqs = [
 
   .calc-output {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.7rem;
+    min-width: 0;
+    width: 100%;
   }
 
   .calc-output > p {
@@ -196,6 +205,8 @@ const faqs = [
     display: flex;
     flex-wrap: wrap;
     gap: 0.4rem;
+    max-width: 100%;
+    min-width: 0;
   }
 
   .calc-lines code {

@@ -78,12 +78,14 @@ const faqs = [
 <style>
   .rm-controls {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1rem;
     padding: 1.25rem;
   }
 
   .rm-controls > div:first-child {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.35rem;
   }
 
@@ -124,6 +126,7 @@ const faqs = [
 
   .rm-changes {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.5rem;
     padding-top: 0.8rem;
     border-top: 1px solid var(--line);
@@ -135,6 +138,7 @@ const faqs = [
 
   .rm-changes ul {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.35rem;
     padding-left: 1.2rem;
     color: var(--muted);

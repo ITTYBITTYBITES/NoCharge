@@ -91,6 +91,7 @@ const faqs = [
 <style>
   .random-controls {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1rem;
     padding: 1.25rem;
     justify-items: start;
@@ -98,11 +99,13 @@ const faqs = [
 
   .random-controls > div:first-child {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.35rem;
   }
 
   .random-result {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.4rem;
     min-height: 4rem;
     padding: 0.9rem 1rem;

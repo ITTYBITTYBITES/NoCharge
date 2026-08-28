@@ -96,6 +96,7 @@ const schema = [
 <style>
   .learn-article {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: clamp(1.5rem, 4vw, 2.5rem);
     max-width: 52rem;
     margin-inline: auto;
@@ -135,6 +136,7 @@ const schema = [
   .learn-article__body :global(ul),
   .learn-article__body :global(ol) {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.45rem;
     margin: 0.7rem 0 0;
     padding-left: 1.3rem;
@@ -170,12 +172,14 @@ const schema = [
 
   .learn-article__faq {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1rem;
     padding: 1.25rem;
   }
 
   .learn-article__faq dl {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.9rem;
   }
 

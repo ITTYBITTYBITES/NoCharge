@@ -87,6 +87,7 @@ const schema = {
 <style>
   .learn-page {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: clamp(2rem, 6vw, 4rem);
   }
 
@@ -98,11 +99,13 @@ const schema = {
 
   .learn-grid {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.9rem;
   }
 
   .learn-card {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.5rem;
     padding: 1.2rem;
   }
@@ -136,6 +139,7 @@ const schema = {
   .learn-glossary,
   .learn-related {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1rem 2rem;
     padding: clamp(1.2rem, 4vw, 2rem);
   }
@@ -143,6 +147,7 @@ const schema = {
   .learn-glossary > div:first-child,
   .learn-related > div:first-child {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.4rem;
     align-content: start;
   }
@@ -167,6 +172,7 @@ const schema = {
 
   .learn-related ul {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.9rem;
     margin: 0;
     padding: 0;
@@ -175,6 +181,7 @@ const schema = {
 
   .learn-related li {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.2rem;
     padding-top: 0.8rem;
     border-top: 1px solid var(--line);

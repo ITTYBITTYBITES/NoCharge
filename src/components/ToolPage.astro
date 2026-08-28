@@ -163,6 +163,9 @@ const toolSchema = schema ?? [
 <style>
   .tool-page {
     display: grid;
+    /* Clamp the implicit auto column so wide tool content (code lists,
+       tables, flex rows) cannot stretch the page past the viewport. */
+    grid-template-columns: minmax(0, 1fr);
     gap: 1.5rem;
     max-width: 52rem;
     margin-inline: auto;
@@ -184,6 +187,7 @@ const toolSchema = schema ?? [
 
   .tool-page__main {
     min-width: 0;
+    width: 100%;
   }
 
   .prose {

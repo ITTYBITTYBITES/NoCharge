@@ -123,6 +123,7 @@ const faqs = [
   .contrast-controls,
   .contrast-palette {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1rem;
     padding: 1.25rem;
   }
@@ -130,6 +131,7 @@ const faqs = [
   .contrast-controls > div:first-child,
   .contrast-palette > div:first-child {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.35rem;
   }
 
@@ -142,6 +144,7 @@ const faqs = [
 
   .contrast-form label {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.35rem;
     color: var(--muted);
     font-size: 0.85rem;
@@ -179,6 +182,7 @@ const faqs = [
 
   .contrast-swatch {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     place-items: center;
     width: 3.2rem;
     height: 3.2rem;

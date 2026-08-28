@@ -134,12 +134,14 @@ const faqs = [
 <style>
   .planner-controls {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1rem;
     padding: 1.25rem;
   }
 
   .planner-controls > div:first-child {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.3rem;
   }
 
@@ -151,6 +153,7 @@ const faqs = [
 
   .planner-grid label {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.35rem;
     color: var(--muted);
     font-size: 0.85rem;
@@ -169,6 +172,7 @@ const faqs = [
 
   .planner-results {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.7rem;
   }
 
@@ -179,6 +183,7 @@ const faqs = [
 
   .planner-card {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.3rem;
     padding: 0.9rem;
   }

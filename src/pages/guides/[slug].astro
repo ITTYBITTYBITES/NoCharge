@@ -301,18 +301,23 @@ const schema = [
 <style>
   .guide-page {
     display: grid;
+    /* Clamp the implicit auto column: a wide child (artwork image, table)
+       would otherwise stretch the page past the viewport at 320px. */
+    grid-template-columns: minmax(0, 1fr);
     gap: 2rem;
     max-width: 52rem;
     margin-inline: auto;
   }
 
   .guide-header {
+    min-width: 0;
     padding: 0.75rem 0 1.5rem;
     border-bottom: 1px solid var(--line);
   }
 
   .guide-header--artwork {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     align-items: center;
     gap: 1.25rem 2rem;
   }

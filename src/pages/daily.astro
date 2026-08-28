@@ -186,6 +186,7 @@ const schema = [
 <style>
   .daily-page {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: clamp(2rem, 6vw, 4rem);
     min-width: 0;
   }
@@ -225,23 +226,27 @@ const schema = [
 
   .daily-slots {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1.25rem;
     padding: clamp(1.2rem, 4vw, 2rem);
   }
 
   .daily-slots__heading {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.4rem;
     max-width: 46rem;
   }
 
   .daily-grid {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.85rem;
   }
 
   .daily-card {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.6rem;
     padding: 1.1rem;
     border: 1px solid var(--line);
@@ -315,6 +320,7 @@ const schema = [
 
   .prose {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1rem;
     max-width: 46rem;
   }
@@ -322,12 +328,14 @@ const schema = [
   .prose ol,
   .prose ul {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.5rem;
     padding-left: 1.3rem;
   }
 
   .daily-faq {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.9rem;
   }
 
@@ -342,17 +350,20 @@ const schema = [
 
   .daily-next {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1rem;
     padding: 1.25rem;
   }
 
   .daily-next > div {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.3rem;
   }
 
   .daily-next ul {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.9rem;
     margin: 0;
     padding: 0;
@@ -361,6 +372,7 @@ const schema = [
 
   .daily-next li {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.2rem;
     padding-top: 0.8rem;
     border-top: 1px solid var(--line);
