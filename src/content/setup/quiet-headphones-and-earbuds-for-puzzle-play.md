@@ -21,7 +21,7 @@ affiliateLinks:
 
 > **Bottom line:** Compare lightweight wireless earbuds, open-back headphones, and low-clamping frames for relaxed audio feedback during puzzle sessions. Check paper weight, binding, font size, and answer key placement; pencil first.
 
-Sound design in NoCharge games is built around gentle, procedural audio cues—like the soft click of placing a token in [Dots & Boxes](/games/dots-and-boxes/) or the gentle chime of completing a puzzle in [Beacon Lattice](/games/beacon-lattice/). The platform also provides optional procedural soundscapes (rain, soft room murmur, and white noise) in the game settings menu.
+Sound design in NoCharge games is built around gentle, procedural audio cues—like the soft click of placing a token in [Dots & Boxes](/games/dots-and-boxes/) or the gentle chime of completing a puzzle in [Beacon Lattice](/games/beacon-lattice/). The platform also provides optional calm procedural soundscapes — like mountain stream, ocean shore, and floating pads — in the game settings menu.
 
 Using comfortable headphones or earbuds helps you stay focused on logic puzzles without disturbing others in shared rooms or offices.
 

@@ -43,12 +43,12 @@ test('discovery wheel reads all published games and honors an impossible filter'
   await expect(page.locator('.result-card')).toHaveCount(0);
 });
 
-test('ambient mixer exposes every procedural soundscape and starts lofi from a user action', async ({ page }) => {
+test('ambient mixer exposes every procedural soundscape and starts floating pads from a user action', async ({ page }) => {
   await page.goto('/tools/ambient-mixer/');
-  await expect(page.locator('#ambient-select option')).toHaveCount(12); // None plus eleven soundscapes.
-  await page.locator('#ambient-select').selectOption('lofi');
+  await expect(page.locator('#ambient-select option')).toHaveCount(11); // None plus ten soundscapes.
+  await page.locator('#ambient-select').selectOption('floating-pads');
   await page.getByRole('button', { name: 'Play soundscape' }).click();
-  await expect(page.locator('#status')).toContainText('Lofi — Quiet Arcade playing');
+  await expect(page.locator('#status')).toContainText('Floating pads playing');
   await page.getByRole('button', { name: 'Stop' }).click();
   await expect(page.locator('#status')).toHaveText('Status: stopped.');
 });
@@ -57,12 +57,12 @@ test('game settings save all ambient choices, including the new musical choices'
   await page.goto('/games/memory-match/');
   await page.getByRole('button', { name: 'Game settings' }).click();
   const ambient = page.locator('[data-game-toolbar="ambient"]');
-  await expect(ambient.locator('option')).toHaveCount(12);
-  await ambient.selectOption('room-murmur');
-  expect(await page.evaluate(() => localStorage.getItem('nocharge:pref:ambient-sound'))).toBe('"room-murmur"');
+  await expect(ambient.locator('option')).toHaveCount(11);
+  await ambient.selectOption('singing-bowls');
+  expect(await page.evaluate(() => localStorage.getItem('nocharge:pref:ambient-sound'))).toBe('"singing-bowls"');
   await page.reload();
   await page.getByRole('button', { name: 'Game settings' }).click();
-  await expect(page.locator('[data-game-toolbar="ambient"]')).toHaveValue('room-murmur');
+  await expect(page.locator('[data-game-toolbar="ambient"]')).toHaveValue('singing-bowls');
 });
 
 test('zoom calculator updates dimensions and all tool pages pass axe', async ({ page }) => {

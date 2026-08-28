@@ -63,10 +63,33 @@ interface ToneOptions {
   detuneEnd?: number;
 }
 
+interface ChordOptions {
+  duration: number;
+  level: number;
+  type?: OscillatorType;
+  attack?: number;
+  release?: number;
+  filterFrequency?: number;
+  spread?: number;
+}
+
+/** Major-pentatonic semitone offsets, used for the gentle melodic voices. */
+const PENTATONIC_OFFSETS = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24];
+
+function pentatonicNote(base: number, index: number): number {
+  const offset = PENTATONIC_OFFSETS[((index % PENTATONIC_OFFSETS.length) + PENTATONIC_OFFSETS.length) % PENTATONIC_OFFSETS.length]!;
+  const octave = Math.floor(index / PENTATONIC_OFFSETS.length);
+  return base * Math.pow(2, (offset + octave * 12) / 12);
+}
+
 /**
  * One complete soundscape owns all of its nodes and timers. The controller
  * crossfades this instance as a single stereo stem, while the instance keeps
  * events independent so no short phrase or shared period can repeat.
+ *
+ * The catalogue is deliberately calm: every soundscape leans on slow filter
+ * and gain drift, long attack/release envelopes, and sparse musical events
+ * rather than continuous full-band noise.
  */
 export class ProceduralSoundscape {
   readonly output: GainNode;
@@ -82,7 +105,8 @@ export class ProceduralSoundscape {
     this.bag.addCleanup(() => {
       for (const layer of [...this.layers]) this.disposeLayer(layer);
       for (const cleanup of [...this.ephemeral]) {
-        try { cleanup(); } catch { /* */ }
+        try { cleanup(); } catch { /* */
+        }
       }
       this.ephemeral.clear();
     });
@@ -92,17 +116,16 @@ export class ProceduralSoundscape {
     if (!this.alive) return;
     this.addIntensityDrift();
     switch (this.name) {
-      case 'white-noise': this.setupWhiteNoise(); break;
-      case 'pink-noise': this.setupPinkNoise(); break;
-      case 'brown-noise': this.setupBrownNoise(); break;
-      case 'rainfall': this.setupRain(); break;
-      case 'forest': this.setupForest(); break;
-      case 'fireplace': this.setupFireplace(); break;
-      case 'ocean': this.setupOcean(); break;
-      case 'night': this.setupNight(); break;
-      case 'room-murmur': this.setupRoomMurmur(); break;
-      case 'library': this.setupLibrary(); break;
-      case 'lofi': this.setupLofi(); break;
+      case 'meadow-morning': this.setupMeadowMorning(); break;
+      case 'mountain-stream': this.setupMountainStream(); break;
+      case 'zen-garden': this.setupZenGarden(); break;
+      case 'ocean-shore': this.setupOceanShore(); break;
+      case 'pine-forest': this.setupPineForest(); break;
+      case 'summer-night': this.setupSummerNight(); break;
+      case 'floating-pads': this.setupFloatingPads(); break;
+      case 'kalimba-lullaby': this.setupKalimbaLullaby(); break;
+      case 'singing-bowls': this.setupSingingBowls(); break;
+      case 'music-box-drift': this.setupMusicBoxDrift(); break;
     }
   }
 
@@ -135,10 +158,10 @@ export class ProceduralSoundscape {
   private addIntensityDrift(): void {
     const drift = () => {
       if (!this.alive) return;
-      this.intensity = clamp(this.intensity + randomBetween(-0.16, 0.16), 0.35, 1);
-      this.setTimer(drift, randomBetween(6500, 16000));
+      this.intensity = clamp(this.intensity + randomBetween(-0.14, 0.14), 0.4, 0.95);
+      this.setTimer(drift, randomBetween(9000, 20000));
     };
-    this.setTimer(drift, randomBetween(4000, 9000));
+    this.setTimer(drift, randomBetween(5000, 11000));
   }
 
   private buildNoiseLayer(options: NoiseLayerOptions): NoiseLayer {
@@ -169,9 +192,11 @@ export class ProceduralSoundscape {
       filters,
       baseLevel: options.level,
       dispose: () => {
-        try { voice.dispose(); } catch { /* */ }
+        try { voice.dispose(); } catch { /* */
+        }
         for (const node of [voice.output, ...filters, gain, panner]) {
-          try { node.disconnect(); } catch { /* */ }
+          try { node.disconnect(); } catch { /* */
+          }
         }
       },
     };
@@ -190,423 +215,463 @@ export class ProceduralSoundscape {
       if (!this.alive || !this.layers.has(layer)) return;
       const now = this.context.currentTime;
       setPan(layer.panner, randomBetween(minimum, maximum), now + randomBetween(1.5, 4.5));
-      this.setTimer(drift, randomBetween(4800, 15000));
+      this.setTimer(drift, randomBetween(6000, 17000));
     };
-    this.setTimer(drift, randomBetween(2500, 9000));
+    this.setTimer(drift, randomBetween(3000, 10000));
   }
 
-  private addGainDrift(layer: NoiseLayer, minimum: number, maximum: number, periodMin = 5000, periodMax = 15000): void {
+  private addGainDrift(layer: NoiseLayer, minimum: number, maximum: number, periodMin = 8000, periodMax = 20000): void {
     const drift = () => {
       if (!this.alive || !this.layers.has(layer)) return;
-      const target = randomBetween(minimum, maximum) * (0.78 + this.intensity * 0.34);
+      const target = randomBetween(minimum, maximum) * (0.8 + this.intensity * 0.3);
       const now = this.context.currentTime;
-      safeLinearRamp(layer.gain.gain, Math.max(0.0001, target), now + randomBetween(1.2, 3.2));
+      safeLinearRamp(layer.gain.gain, Math.max(0.0001, target), now + randomBetween(2, 4.5));
       this.setTimer(drift, randomBetween(periodMin, periodMax));
     };
     this.setTimer(drift, randomBetween(periodMin, periodMax));
   }
 
-  private addFilterDrift(layer: NoiseLayer, minimum: number, maximum: number, periodMin = 6500, periodMax = 18000): void {
+  private addFilterDrift(layer: NoiseLayer, minimum: number, maximum: number, periodMin = 9000, periodMax = 22000): void {
     const filter = layer.filters[0];
     if (!filter) return;
     const drift = () => {
       if (!this.alive || !this.layers.has(layer)) return;
       const now = this.context.currentTime;
-      safeLinearRamp(filter.frequency, randomBetween(minimum, maximum), now + randomBetween(1.5, 4));
+      safeLinearRamp(filter.frequency, randomBetween(minimum, maximum), now + randomBetween(2, 5));
       this.setTimer(drift, randomBetween(periodMin, periodMax));
     };
     this.setTimer(drift, randomBetween(periodMin, periodMax));
   }
 
-  private setupWhiteNoise(): void {
-    // No tonal filter: the worklet/fallback itself is the full-band source.
-    this.buildNoiseLayer({ color: 'white', level: 0.24, pan: 0, segmentSeconds: 5.4 });
-  }
+  // ---------------------------------------------------------------- nature --
 
-  private setupPinkNoise(): void {
-    const layer = this.buildNoiseLayer({
+  private setupMeadowMorning(): void {
+    const breeze = this.buildNoiseLayer({
       color: 'pink',
-      level: 0.34,
-      pan: 0,
-      filters: [{ type: 'highpass', frequency: 24, Q: 0.55 }, { type: 'lowpass', frequency: 13500, Q: 0.35 }],
+      level: 0.085,
+      pan: randomBetween(-0.2, 0.2),
+      panMovement: true,
+      filters: [{ type: 'lowpass', frequency: 620, Q: 0.5 }],
+      segmentSeconds: 6.4,
+    });
+    const airy = this.buildNoiseLayer({
+      color: 'white',
+      level: 0.018,
+      pan: randomBetween(-0.55, 0.55),
+      panMovement: true,
+      filters: [{ type: 'bandpass', frequency: 2600, Q: 0.4 }],
       segmentSeconds: 5.2,
     });
-    this.addGainDrift(layer, 0.27, 0.39, 7000, 17000);
-  }
+    this.addGainDrift(breeze, 0.05, 0.12, 9000, 21000);
+    this.addGainDrift(airy, 0.008, 0.028, 7000, 18000);
 
-  private setupBrownNoise(): void {
-    const layer = this.buildNoiseLayer({
-      color: 'brown',
-      level: 0.26,
-      pan: 0,
-      filters: [{ type: 'highpass', frequency: 28, Q: 0.55 }, { type: 'lowpass', frequency: 650, Q: 0.5 }],
-      segmentSeconds: 5.8,
-    });
-    this.addGainDrift(layer, 0.2, 0.3, 8000, 19000);
-  }
-
-  private setupRain(): void {
-    const bed = this.buildNoiseLayer({
-      color: 'pink',
-      level: 0.26,
-      pan: randomBetween(-0.12, 0.12),
-      panMovement: true,
-      filters: [{ type: 'lowpass', frequency: 1550, Q: 0.55 }],
-      segmentSeconds: 5.4,
-    });
-    const roof = this.buildNoiseLayer({
-      color: 'white',
-      level: 0.095,
-      pan: randomBetween(-0.65, 0.65),
-      panMovement: true,
-      filters: [{ type: 'highpass', frequency: 1350, Q: 0.5 }, { type: 'lowpass', frequency: 7600, Q: 0.65 }],
-      segmentSeconds: 3.9,
-    });
-    this.addGainDrift(bed, 0.2, 0.34, 6500, 14500);
-    this.addGainDrift(roof, 0.055, 0.14, 4800, 12000);
-
-    const drops = () => {
+    // Warm open fifths that swell slowly underneath the field.
+    const padChoices: number[][] = [
+      [146.83, 220.0, 293.66], // D3, A3, D4
+      [196.0, 246.94, 392.0], // G3, B3, G4
+      [220.0, 277.18, 329.63], // A3, C#4, E4
+    ];
+    const padLoop = () => {
       if (!this.alive) return;
-      if (Math.random() < 0.76 * this.intensity) this.rainDrop();
-      this.setTimer(drops, randomExponential(210, 45, 1150));
-    };
-    this.setTimer(drops, randomBetween(90, 600));
-
-    const cluster = () => {
-      if (!this.alive) return;
-      if (Math.random() < 0.62 * this.intensity) {
-        const count = randomInt(3, 11);
-        for (let index = 0; index < count; index += 1) {
-          this.setTimer(() => {
-            if (this.alive) this.rainDrop(true);
-          }, randomBetween(0, 1100) + index * randomBetween(35, 180));
-        }
-      }
-      this.setTimer(cluster, randomBetween(9000, 28000));
-    };
-    this.setTimer(cluster, randomBetween(8000, 19000));
-  }
-
-  private rainDrop(heavy = false): void {
-    const duration = randomBetween(0.045, heavy ? 0.42 : 0.27);
-    const frequency = randomBetween(1050, heavy ? 6200 : 4900);
-    const level = (heavy ? randomBetween(0.025, 0.075) : randomBetween(0.008, 0.038)) * (0.68 + this.intensity * 0.45);
-    this.addNoiseBurst({
-      color: Math.random() > 0.45 ? 'white' : 'pink',
-      duration,
-      level,
-      frequency,
-      Q: randomBetween(0.65, heavy ? 4.2 : 2.8),
-      filterType: 'bandpass',
-      pan: randomBetween(-0.92, 0.92),
-      attack: randomBetween(0.002, Math.min(0.04, duration * 0.4)),
-      release: randomBetween(duration * 0.35, duration * 0.82),
-    });
-    if (heavy && Math.random() < 0.38) {
-      this.addTone({
-        startFrequency: frequency * randomBetween(0.78, 1.24),
-        endFrequency: frequency * randomBetween(0.62, 1.08),
-        duration: duration * randomBetween(0.6, 1.6),
-        level: level * randomBetween(0.12, 0.3),
-        type: Math.random() > 0.5 ? 'triangle' : 'sine',
-        filterFrequency: Math.min(7800, frequency * 2.2),
-        Q: randomBetween(1.2, 4),
-        pan: randomBetween(-0.9, 0.9),
-        attack: randomBetween(0.004, 0.025),
-        release: duration * 0.65,
+      const chord = padChoices[randomInt(0, padChoices.length - 1)]!;
+      this.addChord(chord, {
+        duration: randomBetween(18, 26),
+        level: 0.011,
+        attack: 5,
+        release: 9,
+        filterFrequency: 1250,
       });
-    }
-  }
-
-  private setupForest(): void {
-    const wind = this.buildNoiseLayer({
-      color: 'brown',
-      level: 0.16,
-      pan: randomBetween(-0.25, 0.25),
-      panMovement: true,
-      filters: [{ type: 'lowpass', frequency: 620, Q: 0.55 }],
-      segmentSeconds: 6.2,
-    });
-    const highWind = this.buildNoiseLayer({
-      color: 'pink',
-      level: 0.06,
-      pan: randomBetween(-0.6, 0.6),
-      panMovement: true,
-      filters: [{ type: 'bandpass', frequency: 950, Q: 0.45 }],
-      segmentSeconds: 4.8,
-    });
-    this.addGainDrift(wind, 0.11, 0.22, 8500, 19000);
-    this.addGainDrift(highWind, 0.025, 0.085, 6500, 17000);
-    this.addFilterDrift(wind, 330, 980, 9000, 21000);
-
-    const leaves = () => {
-      if (!this.alive) return;
-      if (Math.random() < 0.72 * this.intensity) this.leafRustle();
-      this.setTimer(leaves, randomExponential(2600, 550, 9200));
+      this.setTimer(padLoop, randomBetween(16000, 24000));
     };
-    this.setTimer(leaves, randomBetween(700, 4000));
-    this.scheduleBird(randomBetween(9000, 21000));
+    this.setTimer(padLoop, 1200);
+
+    this.scheduleBirdSong(randomBetween(12000, 26000));
   }
 
-  private leafRustle(): void {
-    const duration = randomBetween(0.18, 1.6);
-    this.addNoiseBurst({
-      color: Math.random() > 0.4 ? 'white' : 'pink',
-      duration,
-      level: randomBetween(0.006, 0.028) * this.intensity,
-      frequency: randomBetween(1200, 4800),
-      Q: randomBetween(0.35, 1.6),
-      filterType: 'bandpass',
-      pan: randomBetween(-0.9, 0.9),
-      attack: randomBetween(0.03, duration * 0.35),
-      release: randomBetween(duration * 0.25, duration * 0.65),
-    });
-  }
-
-  private scheduleBird(delayMs: number): void {
+  private scheduleBirdSong(delayMs: number): void {
     this.setTimer(() => {
       if (!this.alive) return;
-      if (Math.random() < 0.78) this.birdPhrase();
-      // Bird phrases are deliberately separated by tens of seconds, unlike a
-      // UI beep or a regularly ticking event.
-      this.scheduleBird(randomBetween(26000, 68000));
+      if (Math.random() < 0.75) this.birdSong();
+      // Phrases arrive tens of seconds apart, so the field stays open and calm.
+      this.scheduleBirdSong(randomBetween(24000, 60000));
     }, delayMs);
   }
 
-  private birdPhrase(): void {
-    const root = randomBetween(1500, 3300);
-    const ratios = [1, 1.08, 1.16, 1.27, 0.94];
-    const noteCount = randomInt(2, 5);
-    const pan = randomBetween(-0.84, 0.84);
-    let offset = randomBetween(0, 0.16);
+  private birdSong(): void {
+    const root = randomBetween(1900, 3400);
+    const ratios = [1, 1.12, 1.19, 1.33, 0.89];
+    const noteCount = randomInt(2, 4);
+    const pan = randomBetween(-0.8, 0.8);
+    let offset = randomBetween(0, 0.2);
     for (let index = 0; index < noteCount; index += 1) {
-      const duration = randomBetween(0.18, 0.72);
-      const startFrequency = root * ratios[randomInt(0, ratios.length - 1)]!;
-      const movement = randomBetween(0.78, 1.27);
+      const duration = randomBetween(0.22, 0.6);
+      const frequency = root * ratios[randomInt(0, ratios.length - 1)]!;
       this.addTone({
-        startFrequency,
-        endFrequency: startFrequency * movement,
+        startFrequency: frequency,
+        endFrequency: frequency * randomBetween(0.94, 1.12),
         duration,
-        level: randomBetween(0.009, 0.023),
-        type: Math.random() > 0.34 ? 'triangle' : 'sine',
+        level: randomBetween(0.008, 0.018) * (0.7 + this.intensity * 0.4),
+        type: 'sine',
         filterType: 'bandpass',
-        filterFrequency: startFrequency,
-        Q: randomBetween(2.2, 7),
-        pan: clamp(pan + randomBetween(-0.16, 0.16), -1, 1),
+        filterFrequency: frequency,
+        Q: 3,
+        pan: clamp(pan + randomBetween(-0.12, 0.12), -1, 1),
         delay: offset,
-        attack: randomBetween(0.012, 0.07),
-        release: randomBetween(duration * 0.35, duration * 0.72),
-        detune: randomBetween(-10, 10),
+        attack: randomBetween(0.02, 0.08),
+        release: duration * 0.7,
       });
-      offset += duration * randomBetween(0.55, 0.9);
+      offset += duration * randomBetween(0.8, 1.3);
     }
-    this.addNoiseBurst({
-      color: 'white',
-      duration: randomBetween(0.25, 0.75),
-      level: randomBetween(0.002, 0.007),
-      frequency: root * randomBetween(0.8, 1.5),
-      Q: randomBetween(1.2, 3.5),
-      filterType: 'bandpass',
-      pan,
-      delay: 0.02,
-      attack: 0.02,
-      release: 0.55,
-    });
   }
 
-  private setupFireplace(): void {
-    const flame = this.buildNoiseLayer({
+  private setupMountainStream(): void {
+    const body = this.buildNoiseLayer({
       color: 'brown',
-      level: 0.18,
-      pan: randomBetween(-0.22, 0.22),
+      level: 0.075,
+      pan: randomBetween(-0.15, 0.15),
       panMovement: true,
-      filters: [{ type: 'lowpass', frequency: 310, Q: 0.5 }],
-      segmentSeconds: 6.4,
+      filters: [{ type: 'lowpass', frequency: 420, Q: 0.5 }],
+      segmentSeconds: 6.2,
     });
-    const movement = this.buildNoiseLayer({
+    const flow = this.buildNoiseLayer({
       color: 'pink',
-      level: 0.065,
-      pan: randomBetween(-0.6, 0.6),
+      level: 0.085,
+      pan: randomBetween(-0.4, 0.4),
       panMovement: true,
-      filters: [{ type: 'bandpass', frequency: 520, Q: 0.55 }],
-      segmentSeconds: 5.1,
+      filters: [{ type: 'bandpass', frequency: 1150, Q: 0.6 }],
+      segmentSeconds: 4.8,
     });
-    this.addGainDrift(flame, 0.12, 0.24, 6500, 16000);
-    this.addGainDrift(movement, 0.035, 0.09, 4200, 12000);
-    this.addFilterDrift(movement, 260, 860, 7000, 18000);
+    const trickle = this.buildNoiseLayer({
+      color: 'white',
+      level: 0.03,
+      pan: randomBetween(-0.7, 0.7),
+      panMovement: true,
+      filters: [{ type: 'bandpass', frequency: 3100, Q: 0.5 }],
+      segmentSeconds: 4.2,
+    });
+    this.addGainDrift(body, 0.05, 0.1, 10000, 24000);
+    this.addGainDrift(flow, 0.055, 0.12, 5500, 14000);
+    this.addGainDrift(trickle, 0.012, 0.045, 4500, 12000);
+    this.addFilterDrift(flow, 800, 1700, 8000, 20000);
+    this.addFilterDrift(trickle, 2200, 4400, 7000, 18000);
 
-    const crackle = () => {
+    // Occasional clear drips over the continuous bed.
+    const drip = () => {
       if (!this.alive) return;
-      if (Math.random() < 0.62 * this.intensity) {
-        const count = randomInt(2, 8);
-        for (let index = 0; index < count; index += 1) {
-          this.setTimer(() => {
-            if (!this.alive) return;
-            // Cubic weighting means small crackles are common and strong pops
-            // are rare instead of every event having the same loudness.
-            const level = 0.004 + Math.pow(Math.random(), 3.2) * 0.042;
-            this.addNoiseBurst({
-              color: Math.random() > 0.28 ? 'white' : 'pink',
-              duration: randomBetween(0.012, 0.19),
-              level: level * (0.62 + this.intensity * 0.55),
-              frequency: randomBetween(900, 6200),
-              Q: randomBetween(0.45, 3.4),
-              filterType: 'bandpass',
-              pan: randomBetween(-0.88, 0.88),
-              attack: randomBetween(0.001, 0.018),
-              release: randomBetween(0.02, 0.14),
-            });
-          }, randomBetween(0, 750) + index * randomBetween(25, 180));
-        }
-      }
-      this.setTimer(crackle, randomExponential(780, 170, 4300));
-    };
-    this.setTimer(crackle, randomBetween(250, 1800));
-
-    const pop = () => {
-      if (!this.alive) return;
-      if (Math.random() < 0.68 * this.intensity) {
-        const level = 0.012 + Math.pow(Math.random(), 4.1) * 0.09;
-        this.addNoiseBurst({
-          color: 'brown',
-          duration: randomBetween(0.12, 0.65),
-          level,
-          frequency: randomBetween(180, 1700),
-          Q: randomBetween(0.7, 2.7),
+      if (Math.random() < 0.7 * this.intensity) {
+        const frequency = randomBetween(750, 2300);
+        this.addTone({
+          startFrequency: frequency,
+          endFrequency: frequency * 0.92,
+          duration: randomBetween(0.18, 0.5),
+          level: randomBetween(0.005, 0.014),
+          type: 'sine',
           filterType: 'bandpass',
-          pan: randomBetween(-0.88, 0.88),
-          attack: randomBetween(0.003, 0.045),
-          release: randomBetween(0.16, 0.55),
+          filterFrequency: frequency,
+          Q: 4,
+          pan: randomBetween(-0.9, 0.9),
+          attack: 0.008,
+          release: 0.32,
         });
       }
-      this.setTimer(pop, randomBetween(7000, 26000));
+      this.setTimer(drip, randomExponential(2600, 600, 9000));
     };
-    this.setTimer(pop, randomBetween(6500, 18000));
+    this.setTimer(drip, randomBetween(1500, 6000));
   }
 
-  private setupOcean(): void {
-    // Four voices each own their timer and wave duration. None shares a master
-    // oscillator, so overlaps do not reveal an eight-second envelope seam.
-    for (let voice = 0; voice < 4; voice += 1) {
-      this.scheduleWave(randomBetween(0, 6200) + voice * randomBetween(180, 980));
-    }
-    const seaDrift = () => {
+  private setupZenGarden(): void {
+    const breeze = this.buildNoiseLayer({
+      color: 'brown',
+      level: 0.06,
+      pan: 0,
+      panMovement: true,
+      filters: [{ type: 'lowpass', frequency: 380, Q: 0.5 }],
+      segmentSeconds: 7,
+    });
+    this.addGainDrift(breeze, 0.03, 0.09, 12000, 28000);
+
+    // Pentatonic chimes with very long, patient decay. Strikes are sparse and
+    // sometimes arrive as a slow two or three note arpeggio.
+    const base = 261.63; // C4
+    const strike = () => {
       if (!this.alive) return;
-      this.intensity = clamp(this.intensity + randomBetween(-0.11, 0.11), 0.38, 1);
-      this.setTimer(seaDrift, randomBetween(8000, 22000));
+      const noteCount = Math.random() < 0.35 ? randomInt(2, 3) : 1;
+      let offset = 0;
+      let scaleIndex = randomInt(0, 7);
+      for (let index = 0; index < noteCount; index += 1) {
+        scaleIndex += randomInt(1, 3);
+        const frequency = pentatonicNote(base, scaleIndex);
+        const duration = randomBetween(7, 13);
+        const pan = randomBetween(-0.6, 0.6);
+        const level = randomBetween(0.012, 0.022) * (0.75 + this.intensity * 0.35);
+        this.addTone({
+          startFrequency: frequency,
+          duration,
+          level,
+          type: 'triangle',
+          filterType: 'lowpass',
+          filterFrequency: frequency * 3.2,
+          Q: 0.6,
+          pan,
+          delay: offset,
+          attack: 0.01,
+          release: duration * 0.85,
+          detune: randomBetween(-4, 4),
+        });
+        // A quiet octave partial gives the struck tone a bell-like ring.
+        this.addTone({
+          startFrequency: frequency * 2,
+          duration: duration * 0.7,
+          level: level * 0.28,
+          type: 'sine',
+          filterType: 'lowpass',
+          filterFrequency: frequency * 6,
+          Q: 0.6,
+          pan,
+          delay: offset,
+          attack: 0.008,
+          release: duration * 0.6,
+        });
+        offset += randomBetween(0.9, 2.4);
+      }
+      this.setTimer(strike, randomBetween(7000, 17000));
     };
-    this.setTimer(seaDrift, randomBetween(5000, 11000));
+    this.setTimer(strike, randomBetween(3500, 9000));
+  }
+
+  private setupOceanShore(): void {
+    // A calm sub drone under the waves so the shore feels anchored and soft.
+    const droneLoop = () => {
+      if (!this.alive) return;
+      this.addTone({
+        startFrequency: 55,
+        duration: 34,
+        level: 0.02,
+        type: 'sine',
+        filterType: 'lowpass',
+        filterFrequency: 240,
+        Q: 0.5,
+        pan: 0,
+        attack: 9,
+        release: 14,
+      });
+      this.addTone({
+        startFrequency: 82.41,
+        duration: 34,
+        level: 0.012,
+        type: 'sine',
+        filterType: 'lowpass',
+        filterFrequency: 320,
+        Q: 0.5,
+        pan: randomBetween(-0.3, 0.3),
+        attack: 10,
+        release: 14,
+      });
+      this.setTimer(droneLoop, 28000);
+    };
+    this.setTimer(droneLoop, 400);
+
+    for (let voice = 0; voice < 3; voice += 1) {
+      this.scheduleWave(randomBetween(0, 7000) + voice * randomBetween(400, 1400));
+    }
   }
 
   private scheduleWave(delayMs: number): void {
     this.setTimer(() => {
       if (!this.alive) return;
       this.wave();
-      this.scheduleWave(randomBetween(3300, 9300));
+      // Slow, unhurried swell periods keep the sea peaceful rather than busy.
+      this.scheduleWave(randomBetween(6500, 14000));
     }, delayMs);
   }
 
   private wave(): void {
-    const duration = randomBetween(6, 14);
+    const duration = randomBetween(9, 16);
     const start = this.context.currentTime + 0.025;
-    const rise = randomBetween(1.4, 3.4);
-    const crest = randomBetween(duration * 0.46, duration * 0.68);
-    const peak = randomBetween(0.06, 0.14) * (0.64 + this.intensity * 0.54);
+    const rise = randomBetween(2.2, 4.6);
+    const crest = randomBetween(duration * 0.5, duration * 0.7);
+    const peak = randomBetween(0.05, 0.1) * (0.7 + this.intensity * 0.4);
     const body = this.buildNoiseLayer({
-      color: Math.random() > 0.42 ? 'pink' : 'brown',
+      color: 'pink',
       level: 0.0001,
-      pan: randomBetween(-0.88, 0.88),
-      filters: [{ type: 'lowpass', frequency: randomBetween(250, 560), Q: 0.52 }],
+      pan: randomBetween(-0.85, 0.85),
+      filters: [{ type: 'lowpass', frequency: randomBetween(240, 460), Q: 0.52 }],
       segmentSeconds: duration + 1.6,
     });
     const foam = this.buildNoiseLayer({
       color: 'white',
       level: 0.0001,
-      pan: randomBetween(-0.92, 0.92),
-      filters: [{ type: 'highpass', frequency: randomBetween(1100, 2600), Q: 0.5 }, { type: 'lowpass', frequency: randomBetween(5200, 9200), Q: 0.55 }],
+      pan: randomBetween(-0.9, 0.9),
+      filters: [{ type: 'highpass', frequency: randomBetween(1300, 2400), Q: 0.5 }, { type: 'lowpass', frequency: randomBetween(4600, 7600), Q: 0.55 }],
       segmentSeconds: duration + 1.4,
     });
     safeSetParam(body.gain.gain, 0.0001, start);
     safeLinearRamp(body.gain.gain, peak, start + rise);
-    safeLinearRamp(body.gain.gain, peak * randomBetween(0.82, 1.06), start + crest);
+    safeLinearRamp(body.gain.gain, peak * randomBetween(0.85, 1.05), start + crest);
     safeLinearRamp(body.gain.gain, 0.0001, start + duration);
     safeSetParam(foam.gain.gain, 0.0001, start);
-    safeLinearRamp(foam.gain.gain, peak * randomBetween(0.18, 0.42), start + crest - randomBetween(0.25, 0.65));
-    safeLinearRamp(foam.gain.gain, 0.0001, start + Math.min(duration, crest + randomBetween(0.65, 1.6)));
+    safeLinearRamp(foam.gain.gain, peak * randomBetween(0.12, 0.3), start + crest - randomBetween(0.4, 0.9));
+    safeLinearRamp(foam.gain.gain, 0.0001, start + Math.min(duration, crest + randomBetween(1, 2.2)));
     this.setTimer(() => {
       this.disposeLayer(body);
       this.disposeLayer(foam);
-    }, Math.ceil((duration + 0.45) * 1000));
+    }, Math.ceil((duration + 0.6) * 1000));
   }
 
-  private setupNight(): void {
+  private setupPineForest(): void {
+    const windLow = this.buildNoiseLayer({
+      color: 'brown',
+      level: 0.11,
+      pan: randomBetween(-0.25, 0.25),
+      panMovement: true,
+      filters: [{ type: 'lowpass', frequency: 480, Q: 0.55 }],
+      segmentSeconds: 6.6,
+    });
+    const windHigh = this.buildNoiseLayer({
+      color: 'pink',
+      level: 0.04,
+      pan: randomBetween(-0.6, 0.6),
+      panMovement: true,
+      filters: [{ type: 'bandpass', frequency: 780, Q: 0.45 }],
+      segmentSeconds: 5.4,
+    });
+    this.addGainDrift(windLow, 0.07, 0.15, 10000, 24000);
+    this.addGainDrift(windHigh, 0.018, 0.06, 8000, 20000);
+    this.addFilterDrift(windLow, 320, 720, 11000, 26000);
+
+    const padChoices: number[][] = [
+      [98.0, 146.83, 196.0], // G2, D3, G3
+      [87.31, 130.81, 174.61], // F2, C3, F3
+      [110.0, 164.81, 220.0], // A2, E3, A3
+    ];
+    const padLoop = () => {
+      if (!this.alive) return;
+      const chord = padChoices[randomInt(0, padChoices.length - 1)]!;
+      this.addChord(chord, {
+        duration: randomBetween(22, 30),
+        level: 0.009,
+        attack: 6.5,
+        release: 11,
+        filterFrequency: 980,
+      });
+      this.setTimer(padLoop, randomBetween(20000, 28000));
+    };
+    this.setTimer(padLoop, 2000);
+
+    const woodpecker = () => {
+      if (!this.alive) return;
+      if (Math.random() < 0.55 * this.intensity) this.woodpeckerRap();
+      this.setTimer(woodpecker, randomBetween(28000, 75000));
+    };
+    this.setTimer(woodpecker, randomBetween(18000, 45000));
+  }
+
+  private woodpeckerRap(): void {
+    const pan = randomBetween(-0.9, -0.35);
+    const knocks = randomInt(4, 8);
+    const frequency = randomBetween(950, 1500);
+    let offset = randomBetween(0, 0.15);
+    for (let index = 0; index < knocks; index += 1) {
+      this.addNoiseBurst({
+        color: 'white',
+        duration: 0.055,
+        level: 0.011 * (0.6 + this.intensity * 0.5),
+        frequency: frequency + randomBetween(-160, 160),
+        Q: 3.2,
+        filterType: 'bandpass',
+        pan: clamp(pan + randomBetween(-0.05, 0.05), -1, 1),
+        delay: offset,
+        attack: 0.002,
+        release: 0.045,
+      });
+      offset += randomBetween(0.075, 0.13);
+    }
+  }
+
+  private setupSummerNight(): void {
     const floor = this.buildNoiseLayer({
       color: 'brown',
-      level: 0.014,
+      level: 0.016,
       pan: randomBetween(-0.2, 0.2),
       panMovement: true,
-      filters: [{ type: 'highpass', frequency: 55, Q: 0.45 }, { type: 'lowpass', frequency: 900, Q: 0.45 }],
-      segmentSeconds: 6.2,
+      filters: [{ type: 'highpass', frequency: 55, Q: 0.45 }, { type: 'lowpass', frequency: 750, Q: 0.45 }],
+      segmentSeconds: 6.6,
     });
-    this.addGainDrift(floor, 0.009, 0.022, 10000, 24000);
+    this.addGainDrift(floor, 0.01, 0.024, 12000, 28000);
 
-    const insectCount = randomInt(5, 8);
-    for (let index = 0; index < insectCount; index += 1) this.createInsect(randomBetween(0, 6500));
+    // A very quiet moonlit chord breathing slowly under the meadow.
+    const padLoop = () => {
+      if (!this.alive) return;
+      this.addChord([110.0, 164.81, 220.0, 261.63], {
+        duration: randomBetween(26, 36),
+        level: 0.006,
+        attack: 8,
+        release: 14,
+        filterFrequency: 900,
+      });
+      this.setTimer(padLoop, randomBetween(24000, 34000));
+    };
+    this.setTimer(padLoop, 2500);
+
+    for (let index = 0; index < randomInt(4, 6); index += 1) this.createCricket(randomBetween(0, 8000));
+
+    const owl = () => {
+      if (!this.alive) return;
+      if (Math.random() < 0.6) this.owlHoot();
+      this.setTimer(owl, randomBetween(45000, 110000));
+    };
+    this.setTimer(owl, randomBetween(30000, 70000));
   }
 
-  private createInsect(initialDelay: number): void {
+  private createCricket(initialDelay: number): void {
     const oscillator = this.bag.addNode(this.context.createOscillator());
     const filter = this.bag.addNode(this.context.createBiquadFilter());
     const voiceGain = this.bag.addNode(this.context.createGain());
     const pulseGain = this.bag.addNode(this.context.createGain());
-    const panner = this.bag.addNode(createStereoPanner(this.context, randomBetween(-0.93, 0.93)));
-    const carrier = randomBetween(2800, 7600);
-    const pulseShape = Math.random();
-    try { oscillator.type = pulseShape > 0.66 ? 'square' : pulseShape > 0.3 ? 'triangle' : 'sawtooth'; } catch { /* */ }
+    const panner = this.bag.addNode(createStereoPanner(this.context, randomBetween(-0.9, 0.9)));
+    const carrier = randomBetween(3400, 6800);
+    try { oscillator.type = 'sine'; } catch { /* */
+    }
     safeSetParam(oscillator.frequency, carrier);
-    configureFilter(filter, 'bandpass', carrier, randomBetween(3, 13));
-    safeSetParam(voiceGain.gain, randomBetween(0.006, 0.018));
+    configureFilter(filter, 'bandpass', carrier, randomBetween(4, 10));
+    safeSetParam(voiceGain.gain, randomBetween(0.004, 0.01));
     safeSetParam(pulseGain.gain, 0.0001);
     oscillator.connect(filter);
     filter.connect(voiceGain);
     voiceGain.connect(pulseGain);
     pulseGain.connect(panner);
     panner.connect(this.output);
-    try { oscillator.start(); } catch { /* */ }
+    try { oscillator.start(); } catch { /* */
+    }
 
-    const driftCarrier = () => {
+    const drift = () => {
       if (!this.alive) return;
       const now = this.context.currentTime;
-      safeLinearRamp(oscillator.frequency, carrier * randomBetween(0.94, 1.07), now + randomBetween(1.4, 4));
-      setPan(panner, randomBetween(-0.94, 0.94), now + randomBetween(1.5, 4.5));
-      this.setTimer(driftCarrier, randomBetween(6500, 19000));
+      safeLinearRamp(oscillator.frequency, carrier * randomBetween(0.96, 1.05), now + randomBetween(2, 5));
+      setPan(panner, randomBetween(-0.92, 0.92), now + randomBetween(2, 5));
+      this.setTimer(drift, randomBetween(9000, 22000));
     };
-    this.setTimer(driftCarrier, randomBetween(4500, 12000));
+    this.setTimer(drift, randomBetween(6000, 14000));
 
     const cycle = (delay: number) => {
       this.setTimer(() => {
         if (!this.alive) return;
-        const activeFor = randomBetween(4500, 18500);
+        const activeFor = randomBetween(6000, 16000);
         const activeEnd = Date.now() + activeFor;
         const pulse = () => {
           if (!this.alive) return;
           if (Date.now() >= activeEnd) {
             safeSetParam(pulseGain.gain, 0.0001);
-            cycle(randomBetween(5500, 30000));
+            cycle(randomBetween(9000, 34000));
             return;
           }
           const now = this.context.currentTime;
-          const pulseDuration = randomBetween(0.035, pulseShape > 0.5 ? 0.21 : 0.46);
-          const level = randomBetween(0.35, 1) * (0.7 + this.intensity * 0.38);
+          const pulseDuration = randomBetween(0.06, 0.16);
+          const level = randomBetween(0.4, 0.9) * (0.65 + this.intensity * 0.35);
           safeSetParam(pulseGain.gain, 0.0001, now);
-          if (pulseShape > 0.5) {
-            safeLinearRamp(pulseGain.gain, level, now + pulseDuration * 0.12);
-            safeLinearRamp(pulseGain.gain, 0.0001, now + pulseDuration);
-          } else {
-            safeLinearRamp(pulseGain.gain, level, now + pulseDuration * 0.45);
-            safeLinearRamp(pulseGain.gain, 0.0001, now + pulseDuration * 1.7);
-          }
-          this.setTimer(pulse, randomBetween(95, pulseShape > 0.4 ? 520 : 880));
+          safeLinearRamp(pulseGain.gain, level, now + pulseDuration * 0.3);
+          safeLinearRamp(pulseGain.gain, 0.0001, now + pulseDuration * 1.8);
+          this.setTimer(pulse, randomBetween(140, 420));
         };
         pulse();
       }, delay);
@@ -614,301 +679,280 @@ export class ProceduralSoundscape {
     cycle(initialDelay);
   }
 
-  private setupRoomMurmur(): void {
-    const floor = this.buildNoiseLayer({
-      color: 'pink',
-      level: 0.055,
-      pan: randomBetween(-0.18, 0.18),
-      panMovement: true,
-      filters: [{ type: 'lowpass', frequency: 420, Q: 0.5 }],
-      segmentSeconds: 6.1,
-    });
-    this.addGainDrift(floor, 0.035, 0.075, 9000, 22000);
-
-    // These are broad, low-level formant-filtered noise voices rather than
-    // speech or syllables. They never use periodic voice modulation.
-    const formants = [
-      { frequency: 190, Q: 0.55, level: 0.018 },
-      { frequency: 430, Q: 0.7, level: 0.014 },
-      { frequency: 880, Q: 0.6, level: 0.009 },
-      { frequency: 1460, Q: 0.45, level: 0.006 },
-    ];
-    for (const formant of formants) {
-      const layer = this.buildNoiseLayer({
-        color: Math.random() > 0.45 ? 'pink' : 'white',
-        level: formant.level,
-        pan: randomBetween(-0.85, 0.85),
-        panMovement: true,
-        filters: [{ type: 'bandpass', frequency: formant.frequency, Q: formant.Q }],
-        segmentSeconds: randomBetween(4.8, 7.2),
+  private owlHoot(): void {
+    const pan = randomBetween(-0.8, 0.2);
+    const base = randomBetween(235, 300);
+    for (const hoot of [0, 0.85]) {
+      this.addTone({
+        startFrequency: base,
+        endFrequency: base * 0.9,
+        duration: randomBetween(0.4, 0.55),
+        level: 0.014,
+        type: 'sine',
+        filterType: 'lowpass',
+        filterFrequency: base * 3,
+        Q: 1,
+        pan: clamp(pan + randomBetween(-0.08, 0.08), -1, 1),
+        delay: hoot,
+        attack: 0.09,
+        release: 0.3,
       });
-      this.addGainDrift(layer, formant.level * 0.45, formant.level * 1.25, 6500, 19000);
     }
-
-    const object = () => {
-      if (!this.alive) return;
-      if (Math.random() < 0.42 * this.intensity) {
-        this.addNoiseBurst({
-          color: Math.random() > 0.5 ? 'white' : 'pink',
-          duration: randomBetween(0.12, 0.65),
-          level: randomBetween(0.002, 0.009),
-          frequency: randomBetween(420, 1900),
-          Q: randomBetween(1, 4),
-          filterType: 'bandpass',
-          pan: randomBetween(-0.85, 0.85),
-          attack: randomBetween(0.005, 0.08),
-          release: randomBetween(0.12, 0.48),
-        });
-      }
-      this.setTimer(object, randomBetween(14000, 38000));
-    };
-    this.setTimer(object, randomBetween(9000, 24000));
   }
 
-  private setupLibrary(): void {
-    const room = this.buildNoiseLayer({
-      color: 'brown',
-      level: 0.022,
-      pan: randomBetween(-0.16, 0.16),
-      panMovement: true,
-      filters: [{ type: 'highpass', frequency: 38, Q: 0.5 }, { type: 'lowpass', frequency: 460, Q: 0.45 }],
-      segmentSeconds: 6.8,
-    });
-    const ventilation = this.buildNoiseLayer({
-      color: 'pink',
-      level: 0.012,
-      pan: randomBetween(-0.5, 0.5),
-      panMovement: true,
-      filters: [{ type: 'lowpass', frequency: 780, Q: 0.4 }],
-      segmentSeconds: 5.8,
-    });
-    this.addGainDrift(room, 0.014, 0.029, 12000, 28000);
-    this.addGainDrift(ventilation, 0.007, 0.017, 14000, 30000);
+  // ------------------------------------------------------------- music -----
 
-    const page = () => {
-      if (!this.alive) return;
-      if (Math.random() < 0.58) this.pageTurn();
-      this.setTimer(page, randomBetween(20000, 55000));
-    };
-    this.setTimer(page, randomBetween(13000, 32000));
+  private setupFloatingPads(): void {
+    // Pure calm music with no noise bed: soft chords that drift slowly.
+    const roots = [110.0, 87.31, 130.81, 98.0]; // Am, F, C, G
+    const intervals = [
+      [0, 7, 12, 15],
+      [0, 9, 12, 16],
+      [0, 7, 11, 14],
+      [0, 7, 12, 14],
+    ];
+    const chordSeconds = 20;
+    let chordIndex = randomInt(0, roots.length - 1);
 
-    const creak = () => {
+    const loop = () => {
       if (!this.alive) return;
-      if (Math.random() < 0.45) {
+      const root = roots[chordIndex % roots.length]!;
+      const chord = intervals[chordIndex % intervals.length]!.map((interval) => root * Math.pow(2, interval / 12));
+      this.addChord(chord, {
+        duration: chordSeconds + randomBetween(-2, 4),
+        level: 0.013,
+        type: Math.random() > 0.5 ? 'triangle' : 'sine',
+        attack: 5.5,
+        release: 9,
+        filterFrequency: 1350,
+      });
+      // Occasionally a single high note floats above the chord.
+      if (Math.random() < 0.4) {
         this.addTone({
-          startFrequency: randomBetween(130, 260),
-          endFrequency: randomBetween(180, 440),
-          duration: randomBetween(0.35, 1.7),
-          level: randomBetween(0.0015, 0.006),
-          type: 'triangle',
+          startFrequency: root * randomBetween(4, 6),
+          duration: randomBetween(6, 11),
+          level: 0.006,
+          type: 'sine',
           filterType: 'lowpass',
-          filterFrequency: randomBetween(480, 1100),
-          Q: randomBetween(0.6, 2.2),
-          pan: randomBetween(-0.8, 0.8),
-          attack: randomBetween(0.08, 0.35),
-          release: randomBetween(0.45, 1.1),
+          filterFrequency: 2600,
+          Q: 0.5,
+          pan: randomBetween(-0.7, 0.7),
+          attack: 2.5,
+          release: 5,
+          detune: randomBetween(-6, 6),
         });
       }
-      this.setTimer(creak, randomBetween(30000, 85000));
+      chordIndex = (chordIndex + 1) % roots.length;
+      this.setTimer(loop, chordSeconds * 1000 - 4500);
     };
-    this.setTimer(creak, randomBetween(24000, 60000));
+    this.setTimer(loop, 300);
   }
 
-  private pageTurn(): void {
-    const pan = randomBetween(-0.75, 0.75);
-    const strokeCount = randomInt(3, 6);
-    let offset = 0;
-    for (let index = 0; index < strokeCount; index += 1) {
-      const duration = randomBetween(0.24, 1.05);
-      this.addNoiseBurst({
-        color: 'pink',
-        duration,
-        level: randomBetween(0.0012, 0.0052),
-        frequency: randomBetween(620, 3000),
-        Q: randomBetween(0.35, 1.25),
-        filterType: 'bandpass',
-        pan: clamp(pan + randomBetween(-0.14, 0.14), -1, 1),
-        delay: offset,
-        attack: randomBetween(0.08, duration * 0.36),
-        release: randomBetween(duration * 0.3, duration * 0.72),
-      });
-      offset += duration * randomBetween(0.45, 0.84);
-    }
-  }
-
-  private setupLofi(): void {
-    const tape = this.buildNoiseLayer({
-      color: 'pink',
-      level: 0.014,
-      pan: 0,
-      filters: [{ type: 'lowpass', frequency: 6800, Q: 0.3 }],
-      segmentSeconds: 6.6,
-    });
-    this.addGainDrift(tape, 0.009, 0.019, 9000, 21000);
-    this.addFilterDrift(tape, 4200, 8200, 10000, 22000);
-
-    const roots = [130.81, 110, 87.31, 98]; // C minor-seven colour, Am, F, G
-    const chordIntervals = [
-      [0, 3, 7, 10],
-      [0, 3, 7, 10],
-      [0, 4, 7, 11],
-      [0, 4, 7, 10],
+  private setupKalimbaLullaby(): void {
+    const roots = [130.81, 110.0, 87.31, 98.0]; // C, Am, F, G
+    const intervals = [
+      [0, 7, 12, 16],
+      [0, 7, 12, 15],
+      [0, 9, 12, 16],
+      [0, 7, 12, 14],
     ];
-    const beatSeconds = 60 / 72;
-    const barSeconds = beatSeconds * 4;
-    let barIndex = 0;
-    let nextBarTime = this.context.currentTime + 0.12;
+    const chordSeconds = 24;
+    let chordIndex = randomInt(0, roots.length - 1);
 
-    const scheduleBar = () => {
+    const padLoop = () => {
       if (!this.alive) return;
-      const start = Math.max(nextBarTime, this.context.currentTime + 0.035);
-      const chordIndex = barIndex % roots.length;
-      const section = Math.floor(barIndex / 8);
-      const root = roots[chordIndex]!;
-      const intervals = chordIntervals[chordIndex]!;
-      const humanStart = randomBetween(-0.012, 0.012);
+      const root = roots[chordIndex % roots.length]!;
+      const chord = intervals[chordIndex % intervals.length]!.map((interval) => root * Math.pow(2, interval / 12));
+      this.addChord(chord, {
+        duration: chordSeconds + 2,
+        level: 0.007,
+        type: 'triangle',
+        attack: 5,
+        release: 9,
+        filterFrequency: 1100,
+      });
+      chordIndex = (chordIndex + 1) % roots.length;
+      this.setTimer(padLoop, chordSeconds * 1000 - 5000);
+    };
+    this.setTimer(padLoop, 400);
 
-      // Pads sustain across the bar with a long release; progression changes
-      // happen in four-bar phrases and instrumentation changes every eight.
-      for (const interval of intervals) {
-        const frequency = root * Math.pow(2, interval / 12);
+    // Gentle pentatonic plucks in the C5 octave with rests between phrases.
+    const base = 523.25; // C5
+    let scaleIndex = randomInt(0, 6);
+    const noteLoop = () => {
+      if (!this.alive) return;
+      if (Math.random() < 0.72) {
+        scaleIndex = clamp(scaleIndex + randomInt(-3, 3), 0, 9);
+        this.pluck(pentatonicNote(base, scaleIndex), randomBetween(0.014, 0.024), randomBetween(1.6, 2.8), randomBetween(-0.6, 0.6));
+      }
+      this.setTimer(noteLoop, randomBetween(900, 2600));
+    };
+    this.setTimer(noteLoop, 1500);
+  }
+
+  private setupSingingBowls(): void {
+    // A faint airy shimmer sits behind the resonant bowl tones.
+    const air = this.buildNoiseLayer({
+      color: 'white',
+      level: 0.008,
+      pan: 0,
+      filters: [{ type: 'bandpass', frequency: 6200, Q: 0.35 }],
+      segmentSeconds: 6,
+    });
+    this.addGainDrift(air, 0.004, 0.012, 12000, 26000);
+
+    // Low bowl fundamentals (around the 136.1 Hz "om" region) with a harmonic.
+    const bowlFrequencies = [136.1, 174.61, 210.0, 146.83, 196.0];
+    const strike = () => {
+      if (!this.alive) return;
+      const frequency = bowlFrequencies[randomInt(0, bowlFrequencies.length - 1)]!;
+      const duration = randomBetween(26, 40);
+      const pan = randomBetween(-0.45, 0.45);
+      // Two slightly detuned sines create the slow beating of a rubbed bowl.
+      for (const detune of [-4.5, 4.5]) {
         this.addTone({
           startFrequency: frequency,
-          endFrequency: frequency * randomBetween(0.997, 1.003),
-          duration: barSeconds * 1.28,
-          level: section % 2 === 0 ? 0.012 : 0.009,
-          type: 'triangle',
+          duration,
+          level: 0.016,
+          type: 'sine',
           filterType: 'lowpass',
-          filterFrequency: 1450 + section % 3 * 220,
-          Q: 0.45,
-          pan: randomBetween(-0.55, 0.55),
-          delay: Math.max(0, start - this.context.currentTime + humanStart),
-          attack: 0.18,
-          release: 0.95,
-          detune: randomBetween(-7, 7),
-          detuneEnd: randomBetween(-7, 7),
+          filterFrequency: frequency * 6,
+          Q: 0.7,
+          pan,
+          attack: randomBetween(1.4, 2.6),
+          release: duration * 0.62,
+          detune,
         });
       }
-
-      // Bass is always the active chord root or its octave, never a random
-      // pitch set. This keeps the generated music coherent.
       this.addTone({
-        startFrequency: root / 2,
-        endFrequency: root / 2 * randomBetween(0.998, 1.002),
-        duration: beatSeconds * 1.55,
-        level: 0.026,
-        type: 'triangle',
+        startFrequency: frequency * 2.76,
+        duration: duration * 0.6,
+        level: 0.005,
+        type: 'sine',
         filterType: 'lowpass',
-        filterFrequency: 520,
-        Q: 0.55,
-        pan: randomBetween(-0.18, 0.18),
-        delay: Math.max(0, start - this.context.currentTime + humanStart),
-        attack: 0.018,
-        release: 0.72,
-        detune: randomBetween(-4, 4),
-        detuneEnd: randomBetween(-4, 4),
+        filterFrequency: frequency * 8,
+        Q: 0.8,
+        pan,
+        attack: 1.2,
+        release: duration * 0.5,
+        detune: randomBetween(-5, 5),
       });
-      if (barIndex % 4 === 2 || barIndex % 4 === 3) {
-        this.addTone({
-          startFrequency: root,
-          duration: beatSeconds * 0.9,
-          level: 0.012,
-          type: 'triangle',
-          filterType: 'lowpass',
-          filterFrequency: 640,
-          Q: 0.5,
-          pan: randomBetween(-0.22, 0.22),
-          delay: Math.max(0, start - this.context.currentTime + beatSeconds * 2 + randomBetween(-0.01, 0.014)),
-          attack: 0.015,
-          release: 0.42,
-        });
-      }
-
-      const velocity = randomBetween(0.72, 1.08);
-      this.addKick(start, 0.052 * velocity);
-      if (section % 2 === 0 || barIndex % 4 !== 0) this.addKick(start + beatSeconds * 2 + randomBetween(-0.012, 0.012), 0.038 * velocity);
-      this.addSnare(start + beatSeconds + randomBetween(-0.014, 0.014), 0.018 * velocity);
-      this.addSnare(start + beatSeconds * 3 + randomBetween(-0.014, 0.014), 0.02 * velocity);
-
-      // Eighth hats use a small swing offset and randomized omissions. The
-      // timing is grouped into bars rather than a stream of unrelated notes.
-      for (let step = 0; step < 8; step += 1) {
-        if (Math.random() < (section % 2 === 0 ? 0.82 : 0.68)) {
-          const swing = step % 2 === 1 ? beatSeconds * 0.5 * 0.12 : 0;
-          this.addHat(start + step * beatSeconds * 0.5 + swing + randomBetween(-0.012, 0.012), randomBetween(0.004, 0.009));
-        }
-      }
-
-      barIndex += 1;
-      nextBarTime = start + barSeconds;
-      this.setTimer(scheduleBar, Math.max(55, (nextBarTime - this.context.currentTime - 0.075) * 1000));
+      this.setTimer(strike, randomBetween(19000, 38000));
     };
-
-    this.setTimer(scheduleBar, 90);
+    this.setTimer(strike, 2500);
   }
 
-  private addKick(start: number, level: number): void {
-    const oscillator = this.bag.addNode(this.context.createOscillator());
-    const gain = this.bag.addNode(this.context.createGain());
-    const panner = this.bag.addNode(createStereoPanner(this.context, randomBetween(-0.08, 0.08)));
-    try { oscillator.type = 'sine'; } catch { /* */ }
-    safeSetParam(oscillator.frequency, 124, start);
-    safeLinearRamp(oscillator.frequency, 48, start + 0.12);
-    safeSetParam(gain.gain, 0.0001, start);
-    safeLinearRamp(gain.gain, level, start + 0.006);
-    safeLinearRamp(gain.gain, 0.0001, start + 0.22);
-    oscillator.connect(gain);
-    gain.connect(panner);
-    panner.connect(this.output);
-    try {
-      oscillator.start(start);
-      oscillator.stop(start + 0.25);
-    } catch { /* */ }
-    this.releaseEphemeral([oscillator, gain, panner], 360);
+  private setupMusicBoxDrift(): void {
+    const air = this.buildNoiseLayer({
+      color: 'pink',
+      level: 0.012,
+      pan: 0,
+      filters: [{ type: 'lowpass', frequency: 5200, Q: 0.35 }],
+      segmentSeconds: 6.4,
+    });
+    this.addGainDrift(air, 0.006, 0.018, 11000, 25000);
+
+    const roots = [110.0, 130.81, 87.31, 98.0];
+    const intervals = [
+      [0, 7, 12, 15],
+      [0, 7, 11, 14],
+      [0, 9, 12, 16],
+      [0, 7, 12, 14],
+    ];
+    const chordSeconds = 26;
+    let chordIndex = randomInt(0, roots.length - 1);
+
+    const padLoop = () => {
+      if (!this.alive) return;
+      const root = roots[chordIndex % roots.length]!;
+      const chord = intervals[chordIndex % intervals.length]!.map((interval) => root * Math.pow(2, interval / 12));
+      this.addChord(chord, {
+        duration: chordSeconds + 2,
+        level: 0.006,
+        type: 'sine',
+        attack: 6,
+        release: 10,
+        filterFrequency: 1500,
+      });
+      chordIndex = (chordIndex + 1) % roots.length;
+      this.setTimer(padLoop, chordSeconds * 1000 - 6000);
+    };
+    this.setTimer(padLoop, 500);
+
+    // High bell phrases arrive as short, gentle arpeggios with long pauses.
+    const base = 659.25; // E5
+    const phrase = () => {
+      if (!this.alive) return;
+      const noteCount = randomInt(3, 7);
+      let offset = randomBetween(0, 0.3);
+      let scaleIndex = randomInt(2, 8);
+      for (let index = 0; index < noteCount; index += 1) {
+        if (Math.random() < 0.85) {
+          scaleIndex = clamp(scaleIndex + randomInt(-2, 3), 0, 10);
+          const frequency = pentatonicNote(base, scaleIndex);
+          this.pluck(frequency, randomBetween(0.008, 0.016), randomBetween(2.2, 4), randomBetween(-0.7, 0.7), offset);
+        }
+        offset += randomBetween(0.35, 0.85);
+      }
+      this.setTimer(phrase, randomBetween(11000, 24000));
+    };
+    this.setTimer(phrase, randomBetween(4000, 12000));
   }
 
-  private addSnare(start: number, level: number): void {
-    this.addNoiseBurst({
-      color: 'white',
-      duration: 0.16,
+  /** A soft plucked/bell note with a quiet octave partial for music-box timbre. */
+  private pluck(frequency: number, level: number, duration: number, pan: number, delay = 0): void {
+    this.addTone({
+      startFrequency: frequency,
+      duration,
       level,
-      frequency: 2400,
-      Q: 0.55,
-      filterType: 'highpass',
-      pan: randomBetween(-0.2, 0.2),
-      delay: Math.max(0, start - this.context.currentTime),
-      attack: 0.004,
-      release: 0.11,
+      type: 'triangle',
+      filterType: 'lowpass',
+      filterFrequency: Math.min(6800, frequency * 4),
+      Q: 0.7,
+      pan,
+      delay,
+      attack: 0.006,
+      release: duration * 0.8,
+      detune: randomBetween(-5, 5),
     });
     this.addTone({
-      startFrequency: 185,
-      endFrequency: 130,
-      duration: 0.12,
-      level: level * 0.55,
-      type: 'triangle',
-      filterFrequency: 500,
+      startFrequency: frequency * 2,
+      duration: duration * 0.6,
+      level: level * 0.3,
+      type: 'sine',
       filterType: 'lowpass',
-      pan: randomBetween(-0.18, 0.18),
-      delay: Math.max(0, start - this.context.currentTime),
-      attack: 0.003,
-      release: 0.08,
+      filterFrequency: Math.min(9000, frequency * 7),
+      Q: 0.7,
+      pan,
+      delay,
+      attack: 0.004,
+      release: duration * 0.6,
     });
   }
 
-  private addHat(start: number, level: number): void {
-    this.addNoiseBurst({
-      color: 'white',
-      duration: randomBetween(0.035, 0.085),
-      level,
-      frequency: randomBetween(4800, 9000),
-      Q: randomBetween(0.4, 1.1),
-      filterType: 'highpass',
-      pan: randomBetween(-0.5, 0.5),
-      delay: Math.max(0, start - this.context.currentTime),
-      attack: 0.002,
-      release: randomBetween(0.025, 0.065),
-    });
+  /** A sustained, slowly swelling chord; one long tone per chord tone. */
+  private addChord(frequencies: number[], options: ChordOptions): void {
+    const duration = options.duration;
+    for (const frequency of frequencies) {
+      this.addTone({
+        startFrequency: frequency,
+        endFrequency: frequency * randomBetween(0.998, 1.002),
+        duration,
+        level: options.level,
+        type: options.type ?? 'triangle',
+        filterType: 'lowpass',
+        filterFrequency: options.filterFrequency ?? 1300,
+        Q: 0.5,
+        pan: randomBetween(-(options.spread ?? 0.5), options.spread ?? 0.5),
+        attack: options.attack ?? duration * 0.28,
+        release: options.release ?? duration * 0.45,
+        detune: randomBetween(-6, 6),
+        detuneEnd: randomBetween(-6, 6),
+      });
+    }
   }
+
+  // ------------------------------------------------------------- primitives -
 
   private addNoiseBurst(options: BurstOptions): void {
     if (!this.alive || typeof this.context.createBuffer !== 'function') return;
@@ -960,7 +1004,8 @@ export class ProceduralSoundscape {
     const delay = Math.max(0.012, options.delay ?? 0);
     const start = this.context.currentTime + delay;
     const endFrequency = options.endFrequency ?? options.startFrequency;
-    try { oscillator.type = options.type ?? 'triangle'; } catch { /* */ }
+    try { oscillator.type = options.type ?? 'triangle'; } catch { /* */
+    }
     safeSetParam(oscillator.frequency, options.startFrequency, start);
     if (endFrequency !== options.startFrequency) safeLinearRamp(oscillator.frequency, endFrequency, start + options.duration);
     if (options.detune !== undefined) {
@@ -989,7 +1034,8 @@ export class ProceduralSoundscape {
       this.ephemeral.delete(cleanup);
       for (const node of nodes) {
         this.bag.removeNode(node);
-        try { node.disconnect(); } catch { /* */ }
+        try { node.disconnect(); } catch { /* */
+        }
       }
     };
     this.ephemeral.add(cleanup);

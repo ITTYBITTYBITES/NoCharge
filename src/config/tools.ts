@@ -55,7 +55,7 @@ export const TOOLS: ToolEntry[] = [
   {
     slug: 'ambient-mixer',
     title: 'Ambient Mixer',
-    description: 'Try eleven continuously generated procedural soundscapes. Every signal is made with Web Audio; there are no recordings or music loops, and sound stops when the page is hidden.',
+    description: 'Try ten continuously generated calm nature and music soundscapes. Every signal is made with Web Audio; there are no recordings or music loops, and sound stops when the page is hidden.',
     category: 'audio',
     usefulWhen: 'you want to compare a low procedural soundscape with silence.',
   },
