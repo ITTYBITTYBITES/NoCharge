@@ -203,6 +203,26 @@ p {
   content: '';
 }
 
+.nav-link--search {
+  gap: 0.3rem;
+  padding: 0 0.15rem;
+}
+
+.nav-link__icon {
+  display: block;
+  flex: none;
+}
+
+@media (max-width: 30rem) {
+  .nav-link__label {
+    display: none;
+  }
+
+  .nav-link--search {
+    padding: 0 0.1rem;
+  }
+}
+
 @media (max-width: 30rem) {
   .site-header {
     flex-wrap: nowrap;

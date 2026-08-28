@@ -9,6 +9,7 @@ const toolsCurrent = pathname.startsWith('/tools/');
 const learnCurrent = pathname.startsWith('/learn/');
 const dailyCurrent = pathname.startsWith('/daily/');
 const setupCurrent = pathname.startsWith('/setup/');
+const searchCurrent = pathname === '/search' || pathname.startsWith('/search');
 const arcadeAria = pathname === '/arcade/' ? 'page' : arcadeCurrent ? 'location' : undefined;
 const guidesAria = pathname === '/guides/' ? 'page' : guidesCurrent ? 'location' : undefined;
 const articlesAria = pathname === '/articles/' ? 'page' : articlesCurrent ? 'location' : undefined;
@@ -16,6 +17,7 @@ const toolsAria = pathname === '/tools/' ? 'page' : toolsCurrent ? 'location' : 
 const learnAria = pathname === '/learn/' ? 'page' : learnCurrent ? 'location' : undefined;
 const dailyAria = pathname === '/daily/' ? 'page' : dailyCurrent ? 'location' : undefined;
 const setupAria = pathname === '/setup/' ? 'page' : setupCurrent ? 'location' : undefined;
+const searchAria = searchCurrent ? 'page' : undefined;
 ---
 
 <header class="site-header">
@@ -31,5 +33,9 @@ const setupAria = pathname === '/setup/' ? 'page' : setupCurrent ? 'location' : 
     <a class:list={['nav-link', { 'is-current': learnCurrent }]} href="/learn/" aria-current={learnAria}>Learn</a>
     <a class:list={['nav-link', { 'is-current': dailyCurrent }]} href="/daily/" aria-current={dailyAria}>Daily</a>
     <a class:list={['nav-link', { 'is-current': setupCurrent }]} href="/setup/" aria-current={setupAria}>Setup</a>
+    <a class:list={['nav-link', 'nav-link--search', { 'is-current': searchCurrent }]} href="/search/" aria-current={searchAria} aria-label="Search NoCharge">
+      <svg class="nav-link__icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
+      <span class="nav-link__label">Search</span>
+    </a>
   </nav>
 </header>

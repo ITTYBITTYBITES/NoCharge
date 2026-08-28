@@ -39,6 +39,7 @@ Key details:
 ## Games / Arcade
 
 - [Arcade](${new URL('/arcade/', origin).toString()}) — all games with filters, registry dates, and Pass & Play section
+- [Site search](${new URL('/search/', origin).toString()}) — search every game, guide, article, tool, setup note, and page; the static index is at ${new URL('/search-index.json', origin).toString()}
 - Sitemap (machine list): ${new URL('/sitemap.xml', origin).toString()}
 
 ${links(games.map((game) => ({ id: `/games/${game.id}/`, title: game.data.title, extra: game.data.tagline })))}

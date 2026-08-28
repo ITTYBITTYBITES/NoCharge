@@ -47,6 +47,7 @@ export const GET: APIRoute = async ({ site }) => {
     '/advertising/',
     '/privacy/',
     '/accessibility/',
+    '/search/',
   ];
   const urls = paths
     .map((path) => `  <url><loc>${new URL(path, origin).toString()}</loc></url>`)
