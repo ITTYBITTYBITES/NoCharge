@@ -48,7 +48,7 @@ test('ambient mixer exposes every procedural soundscape and starts lofi from a u
   await expect(page.locator('#ambient-select option')).toHaveCount(12); // None plus eleven soundscapes.
   await page.locator('#ambient-select').selectOption('lofi');
   await page.getByRole('button', { name: 'Play soundscape' }).click();
-  await expect(page.locator('#status')).toContainText('lofi playing');
+  await expect(page.locator('#status')).toContainText('Lofi — Quiet Arcade playing');
   await page.getByRole('button', { name: 'Stop' }).click();
   await expect(page.locator('#status')).toHaveText('Status: stopped.');
 });
