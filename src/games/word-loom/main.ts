@@ -189,7 +189,7 @@ export function mountWordLoom(root: HTMLElement): GameController {
     }
   };
 
-  const startNew = (nextMode?: Mode) => {
+  const startNew = (nextMode?: Mode, shouldFocus = false) => {
     if (nextMode) mode = nextMode;
     answer = mode === 'daily' ? wordForSeed(dailySeed()) : wordForSeed(String(Date.now()));
     guesses = [];
@@ -203,7 +203,11 @@ export function mountWordLoom(root: HTMLElement): GameController {
     statusEl.textContent = mode === 'daily'
       ? `Today's loom — streak stays on this device. Guess away.`
       : 'Practice loom — random word, no streak.';
-    inputEl.focus();
+    // Do not focus on the initial mount: on mobile Safari/Chrome this opens
+    // the virtual keyboard as soon as the daily page loads, covering the
+    // board and making the game look unusable. Focus only after an explicit
+    // mode/restart action or after a submitted guess.
+    if (shouldFocus) inputEl.focus();
   };
 
   submitBtn.addEventListener('click', submit);
@@ -214,9 +218,9 @@ export function mountWordLoom(root: HTMLElement): GameController {
     inputEl.value = inputEl.value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, WORD_LENGTH);
   });
   for (const button of modeButtons) {
-    button.addEventListener('click', () => startNew(button.dataset.wlMode === 'practice' ? 'practice' : 'daily'));
+    button.addEventListener('click', () => startNew(button.dataset.wlMode === 'practice' ? 'practice' : 'daily', true));
   }
-  againBtn.addEventListener('click', () => startNew());
+  againBtn.addEventListener('click', () => startNew(undefined, true));
 
   readStreak();
   startNew();
