@@ -17,7 +17,7 @@ export interface ToolEntry {
 
 export const TOOL_CATEGORIES: { id: ToolCategory; label: string; blurb: string }[] = [
   { id: 'play', label: 'Play', blurb: 'Choose, plan, and understand a NoCharge game before you open it.' },
-  { id: 'audio', label: 'Audio', blurb: 'Local, synthesized sound experiments that never leave the device.' },
+  { id: 'audio', label: 'Audio', blurb: 'Local, continuously generated procedural soundscapes that never leave the device.' },
   { id: 'accessibility', label: 'Accessibility', blurb: 'Checks and explainers that use the same standards NoCharge targets.' },
   { id: 'setup', label: 'Setup helpers', blurb: 'Small calculators for the desk, screen, keyboard, and light around your device.' },
   { id: 'learning', label: 'Learning', blurb: 'Rule and scoring explainers tied to the games that use them.' },
@@ -55,9 +55,9 @@ export const TOOLS: ToolEntry[] = [
   {
     slug: 'ambient-mixer',
     title: 'Ambient Mixer',
-    description: 'Try white noise, environmental approximations, sparse generated notes, or a low drone. Audio is synthesized with Web Audio and stops when the page is hidden.',
+    description: 'Try eleven continuously generated procedural soundscapes. Every signal is made with Web Audio; there are no recordings or music loops, and sound stops when the page is hidden.',
     category: 'audio',
-    usefulWhen: 'you want to compare a low background texture with silence.',
+    usefulWhen: 'you want to compare a low procedural soundscape with silence.',
   },
   {
     slug: 'contrast-checker',

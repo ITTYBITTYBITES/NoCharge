@@ -1,5 +1,21 @@
 import { emptyGameController, mountGame } from '../registry';
-import { isMuted, toggleMuted, unlockAudio, isSoundEnabled, setSoundEnabled, getSoundVolume, setSoundVolume, getAmbient, setAmbient, isAmbientName, startAmbient, stopAmbient, updateAmbientVolume } from './audio';
+import {
+  isMuted,
+  toggleMuted,
+  unlockAudio,
+  isSoundEnabled,
+  setSoundEnabled,
+  getSoundVolume,
+  setSoundVolume,
+  getAmbient,
+  setAmbient,
+  isAmbientName,
+  startAmbient,
+  stopAmbient,
+  suspendAmbientForVisibility,
+  resumeAmbientAfterVisibility,
+  updateAmbientVolume,
+} from './audio';
 import {
   addVisibleRecoveryListeners,
   pauseReasonsAfterResumeRequest,
@@ -56,6 +72,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
   let destroyed = false;
   let menu: ShellMenuState = 'closed';
   let lastEnterTrigger: HTMLElement | null = null;
+  let ambientWasPlayingBeforeHidden = false;
 
   const nativeFullscreenSupported =
     typeof document !== 'undefined' &&
@@ -235,17 +252,21 @@ export function mountGameShell(viewport: HTMLElement): () => void {
   const recoverHiddenPauseWhenVisible = () => {
     if (document.visibilityState !== 'visible') return;
     removePauseReason('hidden', 'Game resumed after returning to this tab.');
-    // Restore ambient if the user had it enabled and sound is not muted.
-    if (getAmbient() !== 'none') {
-      try { startAmbient(); } catch { /* */ }
+    // Only resume a soundscape that was actually playing before the tab was
+    // hidden. A saved selection alone is not permission to start audio.
+    if (ambientWasPlayingBeforeHidden) {
+      ambientWasPlayingBeforeHidden = false;
+      try { resumeAmbientAfterVisibility(); } catch { /* */ }
     }
   };
 
   const onVisibilityChange = () => {
     if (document.visibilityState === 'hidden') {
       addPauseReason('hidden');
-      // Stop ambient immediately when multitasking / tab hidden - prevents static continuing in background.
-      try { stopAmbient(); } catch { /* */ }
+      // Fade and stop immediately when multitasking. The controller preserves
+      // the prior running state for a permitted resume, but not a preference
+      // that had never been started.
+      ambientWasPlayingBeforeHidden = suspendAmbientForVisibility();
     } else recoverHiddenPauseWhenVisible();
   };
 

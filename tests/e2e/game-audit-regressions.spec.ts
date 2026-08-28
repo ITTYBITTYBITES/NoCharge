@@ -21,7 +21,7 @@ test('Word Search rejects pointer and keyboard commands while paused', async ({ 
     document.querySelector('[data-game-root]')?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
   });
   expect(await page.locator('[data-ws-status]').textContent()).toBe(before);
-  await expect(page.getByRole('button', { name: 'Resume game' })).toBeVisible();
+  await expect(page.locator('[data-game-pause-resume]')).toBeVisible();
 });
 
 for (const sudoku of [
@@ -64,7 +64,7 @@ test('Simon freezes the current cue for the entire pause', async ({ page }) => {
   await page.getByRole('button', { name: 'Pause game' }).click();
   await page.waitForTimeout(1_200);
   await expect(page.locator(`[data-sn-pad="${pad}"]`)).toHaveClass(/is-active/);
-  await page.getByRole('button', { name: 'Resume game' }).click();
+  await page.locator('[data-game-pause-resume]').click();
   await expect(page.locator(`[data-sn-pad="${pad}"]`)).not.toHaveClass(/is-active/, { timeout: 1_500 });
 });
 
