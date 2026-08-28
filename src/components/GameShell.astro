@@ -2,6 +2,7 @@
 import type { GameArtworkData } from '../types/content';
 import GameArtwork from './GameArtwork.astro';
 import HandoffScreen from './HandoffScreen.astro';
+import { AMBIENT_CATALOG } from '../games/shared/audio/catalog';
 
 interface Props {
   title: string;
@@ -84,16 +85,7 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
         <label class="game-toolbar__ambient">Ambient
           <select data-game-toolbar="ambient" aria-label="Ambient sound">
             <option value="none">None</option>
-            <option value="white-noise">White noise</option>
-            <option value="rainfall">Rainfall</option>
-            <option value="forest">Forest</option>
-            <option value="fireplace">Fireplace</option>
-            <option value="ocean">Ocean</option>
-            <option value="night">Night</option>
-            <option value="cafe">Cafe</option>
-            <option value="library">Library</option>
-            <option value="lofi">Lofi — Quiet Arcade</option>
-            <option value="drone">Drone pad</option>
+            {AMBIENT_CATALOG.map((texture) => <option value={texture.id}>{texture.label}</option>)}
           </select>
         </label>
         <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="focus-in-menu" aria-pressed="false">
