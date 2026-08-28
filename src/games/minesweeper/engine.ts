@@ -75,7 +75,12 @@ export function neighbours(board: Board, row: number, col: number): { row: numbe
   return result;
 }
 
-function seed(board: Board, mines: number, safe: { row: number; col: number }): void {
+function seed(
+  board: Board,
+  mines: number,
+  safe: { row: number; col: number },
+  random: () => number = Math.random,
+): void {
   const rows = board.length;
   const cols = board[0]!.length;
   const protectedCells = new Set<string>([`${safe.row},${safe.col}`]);
@@ -93,7 +98,7 @@ function seed(board: Board, mines: number, safe: { row: number; col: number }): 
   }
   // Fisher–Yates and take the first `mines`.
   for (let index = candidates.length - 1; index > 0; index -= 1) {
-    const swap = Math.floor(Math.random() * (index + 1));
+    const swap = Math.floor(random() * (index + 1));
     [candidates[index], candidates[swap]] = [candidates[swap]!, candidates[index]!];
   }
   for (let index = 0; index < mines && index < candidates.length; index += 1) {
@@ -116,7 +121,7 @@ export function newGame(difficulty: Difficulty, random = Math.random): GameState
   // reveal before seeding never exposes a mine; revealCell reseeds properly.
   const safeRow = 0;
   const safeCol = 0;
-  seed(board, difficulty.mines, { row: safeRow, col: safeCol });
+  seed(board, difficulty.mines, { row: safeRow, col: safeCol }, random);
   return {
     difficulty,
     board,
@@ -137,7 +142,7 @@ export function revealCell(state: GameState, row: number, col: number, random = 
   let board = state.board;
   if (!state.firstRevealDone) {
     board = makeEmptyBoard(state.difficulty);
-    seed(board, state.difficulty.mines, { row, col });
+    seed(board, state.difficulty.mines, { row, col }, random);
   }
 
   const cell = board[row]![col]!;

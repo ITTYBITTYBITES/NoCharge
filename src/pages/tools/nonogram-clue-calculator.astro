@@ -67,7 +67,6 @@ const faqs = [
     const total = runs.reduce((sum, run) => sum + run, 0) + (runs.length - 1);
     const free = lineLength - total;
     if (free < 0) return results;
-    const positions = runs.length;
     const place = (start: number, index: number, cells: (0 | 1 | 2)[]) => {
       if (index >= runs.length) {
         results.push(cells.map((cell) => (cell === 1 ? 'X' : cell === 0 ? '.' : '.')).join(''));
@@ -101,7 +100,6 @@ const faqs = [
       return;
     }
     const limited = result.slice(0, 200);
-    const first = limited[0]!;
     const forced = Array.from({ length: lineLength }, (_, index) => {
       const values = limited.map((line) => line[index]);
       const allX = values.every((value) => value === 'X');

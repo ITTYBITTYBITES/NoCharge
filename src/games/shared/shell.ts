@@ -1,4 +1,4 @@
-import { mountGame } from '../registry';
+import { emptyGameController, mountGame } from '../registry';
 import { isMuted, toggleMuted, unlockAudio, isSoundEnabled, setSoundEnabled, getSoundVolume, setSoundVolume, getAmbient, setAmbient, isAmbientName, startAmbient, stopAmbient, updateAmbientVolume } from './audio';
 import {
   addVisibleRecoveryListeners,
@@ -23,8 +23,15 @@ export function mountGameShell(viewport: HTMLElement): () => void {
   const gameId = root?.dataset.gameRoot;
   if (!root || !gameId) return () => {};
 
-  const controller = mountGame(gameId, root);
-  root.classList.add('is-game-mounted');
+  let controller = emptyGameController();
+  const listenerController = new AbortController();
+  const listenerOptions = { signal: listenerController.signal };
+  const pendingTimers = new Set<number>();
+  const defer = (callback: () => void, delay = 0) => {
+    const id = window.setTimeout(() => { pendingTimers.delete(id); callback(); }, delay);
+    pendingTimers.add(id);
+  };
+  root.setAttribute('aria-busy', 'true');
   const pauseButton = viewport.querySelector<HTMLButtonElement>('[data-game-toolbar="pause"]');
   const muteButton = viewport.querySelector<HTMLButtonElement>('[data-game-toolbar="mute"]');
   const soundButton = viewport.querySelector<HTMLButtonElement>('[data-game-toolbar="sound"]');
@@ -160,7 +167,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
 
     if (resumeControllerIfReady(controller, wasPaused, pauseReasons)) {
       updatePaused('Game resumed.');
-      window.setTimeout(() => pauseButton?.focus({ preventScroll: true }), 0);
+      defer(() => pauseButton?.focus({ preventScroll: true }));
       return;
     }
 
@@ -177,7 +184,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     announce('Focus mode exited.');
     if (returnFocus) {
       const target = lastEnterTrigger || playButton || fullscreenButton;
-      window.setTimeout(() => target?.focus({ preventScroll: true }), 0);
+      defer(() => target?.focus({ preventScroll: true }));
     }
   };
 
@@ -256,7 +263,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     } else if (!immersive) {
       announce('Full screen exited.');
       const target = lastEnterTrigger || fullscreenButton || playButton;
-      window.setTimeout(() => target?.focus({ preventScroll: true }), 0);
+      defer(() => target?.focus({ preventScroll: true }));
     }
   };
 
@@ -289,13 +296,13 @@ export function mountGameShell(viewport: HTMLElement): () => void {
   };
 
   const onMeaningfulInteraction = () => recordRecentlyPlayed(getBrowserStorage(), gameId);
-  root.addEventListener('nocharge:meaningful-game-interaction', onMeaningfulInteraction);
+  root.addEventListener('nocharge:meaningful-game-interaction', onMeaningfulInteraction, listenerOptions);
 
   pauseButton?.addEventListener('click', () => {
     if (pauseReasons.size > 0 || controller.isPaused()) resumeFromSharedControl();
     else addPauseReason('player');
-  });
-  overlayResume?.addEventListener('click', resumeFromSharedControl);
+  }, listenerOptions);
+  overlayResume?.addEventListener('click', resumeFromSharedControl, listenerOptions);
   muteButton?.addEventListener('click', () => {
     unlockAudio();
     const muted = toggleMuted();
@@ -303,17 +310,17 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     else if (getAmbient() !== 'none') startAmbient();
     updateMute();
     announce(muted ? 'Game sound muted.' : 'Game sound unmuted.');
-  });
+  }, listenerOptions);
   soundButton?.addEventListener('click', () => {
     unlockAudio();
     setSoundEnabled(!isSoundEnabled());
     updateMute();
     announce(isSoundEnabled() ? 'Sound enabled.' : 'Sound disabled.');
-  });
+  }, listenerOptions);
   volumeInput?.addEventListener('input', () => {
     setSoundVolume(Number(volumeInput.value));
     try { updateAmbientVolume(); } catch { /* */ }
-  });
+  }, listenerOptions);
   ambientInput?.addEventListener('change', () => {
     unlockAudio();
     const value = ambientInput.value;
@@ -322,16 +329,16 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     if (value === 'none') stopAmbient();
     else startAmbient(value);
     updateMute();
-  });
+  }, listenerOptions);
   playButton?.addEventListener('click', () => {
     unlockAudio();
     void requestFullscreen(playButton);
-  });
-  fullscreenButton?.addEventListener('click', () => void requestFullscreen(fullscreenButton));
+  }, listenerOptions);
+  fullscreenButton?.addEventListener('click', () => void requestFullscreen(fullscreenButton), listenerOptions);
   focusInMenu?.addEventListener('click', () => {
     setMenu('close');
     void requestFullscreen(focusInMenu);
-  });
+  }, listenerOptions);
   const restartGame = () => {
     if (!controller.restart) return;
     unlockAudio();
@@ -340,10 +347,10 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     // shared controls stay reachable and focus never moves into hidden UI.
     announce('New game started.');
   };
-  restartButton?.addEventListener('click', restartGame);
-  restartInMenuButton?.addEventListener('click', restartGame);
-  settingsButton?.addEventListener('click', () => setMenu('toggle'));
-  settingsCatch?.addEventListener('click', () => setMenu('close'));
+  restartButton?.addEventListener('click', restartGame, listenerOptions);
+  restartInMenuButton?.addEventListener('click', restartGame, listenerOptions);
+  settingsButton?.addEventListener('click', () => setMenu('toggle'), listenerOptions);
+  settingsCatch?.addEventListener('click', () => setMenu('close'), listenerOptions);
 
   const removeVisibleRecoveryListeners = addVisibleRecoveryListeners(
     window,
@@ -358,17 +365,40 @@ export function mountGameShell(viewport: HTMLElement): () => void {
   window.addEventListener('orientationchange', onViewportResize);
   window.addEventListener('resize', onViewportResize);
 
-  restartButton?.toggleAttribute('hidden', !controller.restart);
-  restartInMenuButton?.toggleAttribute('hidden', !controller.restart);
+  restartButton?.setAttribute('hidden', '');
+  restartInMenuButton?.setAttribute('hidden', '');
   updateMute();
   updatePaused();
   updateFullscreen();
   if (document.visibilityState === 'hidden') addPauseReason('hidden');
 
+  void mountGame(gameId, root)
+    .then((mountedController) => {
+      if (destroyed) {
+        mountedController.destroy();
+        return;
+      }
+      controller = mountedController;
+      root.classList.add('is-game-mounted');
+      root.removeAttribute('aria-busy');
+      restartButton?.toggleAttribute('hidden', !controller.restart);
+      restartInMenuButton?.toggleAttribute('hidden', !controller.restart);
+      if (pauseReasons.size > 0) controller.pause([...pauseReasons][0]);
+      updatePaused();
+    })
+    .catch((error) => {
+      console.error(`Unable to finish mounting game "${gameId}".`, error);
+      root.removeAttribute('aria-busy');
+      root.textContent = 'This game could not start. Reload the page and try again.';
+    });
+
   return () => {
     if (destroyed) return;
     destroyed = true;
     exitImmersive(false);
+    listenerController.abort();
+    pendingTimers.forEach((id) => window.clearTimeout(id));
+    pendingTimers.clear();
     removeVisibleRecoveryListeners();
     document.removeEventListener('visibilitychange', onVisibilityChange);
     window.removeEventListener('nocharge:modalchange', onPlatformModal as EventListener);
@@ -377,7 +407,6 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     window.removeEventListener('pagehide', onPageHide);
     window.removeEventListener('orientationchange', onViewportResize);
     window.removeEventListener('resize', onViewportResize);
-    root.removeEventListener('nocharge:meaningful-game-interaction', onMeaningfulInteraction);
     controller.destroy();
   };
 }

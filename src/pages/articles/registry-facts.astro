@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import FaqList from '../../components/FaqList.astro';
 import { getCollection } from 'astro:content';
 import { buildGameFacts, REGISTRY_REVIEW_DATE } from '../../lib/game-catalog';
 import { TOOLS } from '../../config/tools';
@@ -165,14 +166,7 @@ const schema = [
 
     <section class="prose" aria-labelledby="faq">
       <h2 id="faq">FAQ</h2>
-      <dl class="facts-faq">
-        {faqs.map(({ q, a }) => (
-          <>
-            <dt>{q}</dt>
-            <dd>{a}</dd>
-          </>
-        ))}
-      </dl>
+      <FaqList items={faqs} />
     </section>
 
     <section class="facts-next panel" aria-labelledby="facts-next-heading">

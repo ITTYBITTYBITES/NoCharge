@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import FaqList from '../../components/FaqList.astro';
 
 const faqs = [
   {
@@ -123,9 +124,7 @@ const schema = [
       </ul>
 
       <h2 id="faq">FAQ — Zoom Viewport Calculator</h2>
-      <dl>
-        {faqs.map(({ q, a }) => <><dt>{q}</dt><dd>{a}</dd></>)}
-      </dl>
+      <FaqList items={faqs} />
 
       <h2>Embed this tool</h2>
       <pre><code>&lt;iframe src="https://nocharge.net/tools/zoom-visualizer/" width="400" height="560" title="Browser zoom viewport calculator"&gt;&lt;/iframe&gt;

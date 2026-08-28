@@ -96,6 +96,7 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
             <option value="drone">Drone pad</option>
           </select>
         </label>
+        <p class="game-toolbar__audio-note">Generated live in your browser — no audio files or streams.</p>
         <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="focus-in-menu" aria-pressed="false">
           Focus mode
         </button>
@@ -265,6 +266,12 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
 
   .game-toolbar__volume input { width: 6rem; accent-color: var(--accent); }
   .game-toolbar__ambient select { max-width: 8rem; }
+  .game-toolbar__audio-note {
+    max-width: 16rem;
+    color: var(--muted);
+    font-size: 0.72rem;
+    line-height: 1.4;
+  }
 
   /* Desktop retains a quick restart; the mobile compact toolbar keeps it in
      Game settings. Opening settings also replaces the desktop shortcut with

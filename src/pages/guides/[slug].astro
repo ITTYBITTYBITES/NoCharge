@@ -4,6 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import GameArtwork from '../../components/GameArtwork.astro';
 import ArticleCard from '../../components/ArticleCard.astro';
+import FaqList from '../../components/FaqList.astro';
 
 export async function getStaticPaths() {
   const games = (await getCollection('games')).filter((game) => !game.data.draft);
@@ -227,7 +228,7 @@ const schema = [
 
       <section class="panel guide-faq" id="guide-faq" aria-labelledby="faq-heading">
         <h2 id="faq-heading">Frequently asked questions about {game.data.title}</h2>
-        <dl>{faqQuestions.map(({ q, a }) => <><dt>{q}</dt><dd>{a}</dd></>)}</dl>
+        <FaqList items={faqQuestions} />
       </section>
 
       <script>

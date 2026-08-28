@@ -9,8 +9,7 @@ import { buildGameFacts } from '../lib/game-catalog';
  * Brand definition, free-model FAQ answers, full game list with one-line each,
  * tool list, and key trust article summaries. Still markdown, still honest.
  */
-export const GET: APIRoute = async ({ site }) => {
-  const origin = site ?? new URL('https://nocharge.net');
+export const GET: APIRoute = async () => {
   const games = (await getCollection('games')).filter((game) => !game.data.draft).sort((a, b) => a.data.order - b.data.order);
   const guides = (await getCollection('guides')).filter((guide) => !guide.data.draft).sort((a, b) => a.data.order - b.data.order);
   const collections = (await getCollection('collections')).filter((collection) => !collection.data.draft).sort((a, b) => a.data.order - b.data.order);

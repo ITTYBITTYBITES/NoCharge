@@ -1,76 +1,67 @@
-import { mountBeaconLattice } from './beacon-lattice/main';
-import { mountMemoryMatch } from './memory-match/main';
-import { mountWordTileRush } from './word-tile-rush/main';
-import { mountColorFlip } from './color-flip/main';
-import { mountTicTacToe } from './tic-tac-toe/main';
-import { mountDotsAndBoxes } from './dots-and-boxes/main';
-import { mountFourInARow } from './four-in-a-row/main';
-import { mountReversi } from './reversi/main';
-import { mountLastToken } from './last-token/main';
-import { mountPassThePicture } from './pass-the-picture/main';
-import { mountKlondike } from './klondike/main';
-import { mountFreeCell } from './freecell/main';
-import { mountNonogram } from './nonogram/main';
-import { mountTwentyFortyEight } from './twenty-forty-eight/main';
-import { mountTileGarden } from './tile-garden/main';
-import { mountWordSearch } from './word-search/main';
-import { mountMiniSudoku } from './mini-sudoku/main';
-import { mountMinesweeper } from './minesweeper/main';
-import { mountHangman } from './hangman/main';
-import { mountLightsOut } from './lights-out/main';
-import { mountSimon } from './simon/main';
-import { mountSudoku9x9 } from './sudoku-9x9/main';
-import { mountGomoku } from './gomoku/main';
-import { mountNineMensMorris } from './nine-mens-morris/main';
-import { mountWordLoom } from './word-loom/main';
-import { mountCheckers } from './checkers/main';
 import type { GameController } from './shared/types';
 
 export interface GameModule {
   mount(root: HTMLElement): GameController;
 }
 
-const registry: Record<string, GameModule> = {
-  'memory-match': { mount: mountMemoryMatch },
-  'word-tile-rush': { mount: mountWordTileRush },
-  'color-flip': { mount: mountColorFlip },
-  'beacon-lattice': { mount: mountBeaconLattice },
-  'tic-tac-toe': { mount: mountTicTacToe },
-  'dots-and-boxes': { mount: mountDotsAndBoxes },
-  'four-in-a-row': { mount: mountFourInARow },
-  reversi: { mount: mountReversi },
-  'last-token': { mount: mountLastToken },
-  'pass-the-picture': { mount: mountPassThePicture },
-  klondike: { mount: mountKlondike },
-  freecell: { mount: mountFreeCell },
-  nonogram: { mount: mountNonogram },
-  'twenty-forty-eight': { mount: mountTwentyFortyEight },
-  'tile-garden': { mount: mountTileGarden },
-  'word-search': { mount: mountWordSearch },
-  'mini-sudoku': { mount: mountMiniSudoku },
-  minesweeper: { mount: mountMinesweeper },
-  hangman: { mount: mountHangman },
-  'lights-out': { mount: mountLightsOut },
-  simon: { mount: mountSimon },
-  'sudoku-9x9': { mount: mountSudoku9x9 },
-  gomoku: { mount: mountGomoku },
-  'nine-mens-morris': { mount: mountNineMensMorris },
-  'word-loom': { mount: mountWordLoom },
-  checkers: { mount: mountCheckers },
+type GameLoader = () => Promise<GameModule>;
+
+/**
+ * Route-level loaders keep each game's JavaScript and CSS in its own Vite
+ * chunk. A visitor downloads the shared shell plus only the game they open.
+ */
+const registry: Record<string, GameLoader> = {
+  'memory-match': async () => ({ mount: (await import('./memory-match/main')).mountMemoryMatch }),
+  'word-tile-rush': async () => ({ mount: (await import('./word-tile-rush/main')).mountWordTileRush }),
+  'color-flip': async () => ({ mount: (await import('./color-flip/main')).mountColorFlip }),
+  'beacon-lattice': async () => ({ mount: (await import('./beacon-lattice/main')).mountBeaconLattice }),
+  'tic-tac-toe': async () => ({ mount: (await import('./tic-tac-toe/main')).mountTicTacToe }),
+  'dots-and-boxes': async () => ({ mount: (await import('./dots-and-boxes/main')).mountDotsAndBoxes }),
+  'four-in-a-row': async () => ({ mount: (await import('./four-in-a-row/main')).mountFourInARow }),
+  reversi: async () => ({ mount: (await import('./reversi/main')).mountReversi }),
+  'last-token': async () => ({ mount: (await import('./last-token/main')).mountLastToken }),
+  'pass-the-picture': async () => ({ mount: (await import('./pass-the-picture/main')).mountPassThePicture }),
+  klondike: async () => ({ mount: (await import('./klondike/main')).mountKlondike }),
+  freecell: async () => ({ mount: (await import('./freecell/main')).mountFreeCell }),
+  nonogram: async () => ({ mount: (await import('./nonogram/main')).mountNonogram }),
+  'twenty-forty-eight': async () => ({ mount: (await import('./twenty-forty-eight/main')).mountTwentyFortyEight }),
+  'tile-garden': async () => ({ mount: (await import('./tile-garden/main')).mountTileGarden }),
+  'word-search': async () => ({ mount: (await import('./word-search/main')).mountWordSearch }),
+  'mini-sudoku': async () => ({ mount: (await import('./mini-sudoku/main')).mountMiniSudoku }),
+  minesweeper: async () => ({ mount: (await import('./minesweeper/main')).mountMinesweeper }),
+  hangman: async () => ({ mount: (await import('./hangman/main')).mountHangman }),
+  'lights-out': async () => ({ mount: (await import('./lights-out/main')).mountLightsOut }),
+  simon: async () => ({ mount: (await import('./simon/main')).mountSimon }),
+  'sudoku-9x9': async () => ({ mount: (await import('./sudoku-9x9/main')).mountSudoku9x9 }),
+  gomoku: async () => ({ mount: (await import('./gomoku/main')).mountGomoku }),
+  'nine-mens-morris': async () => ({ mount: (await import('./nine-mens-morris/main')).mountNineMensMorris }),
+  'word-loom': async () => ({ mount: (await import('./word-loom/main')).mountWordLoom }),
+  checkers: async () => ({ mount: (await import('./checkers/main')).mountCheckers }),
 };
 
-export function mountGame(id: string, root: HTMLElement): GameController {
-  const empty = {
+export function emptyGameController(): GameController {
+  return {
     destroy() {},
     pause() {},
     resume() {},
     isPaused: () => false,
   };
+}
+
+export async function mountGame(id: string, root: HTMLElement): Promise<GameController> {
+  const load = registry[id];
+  if (!load) {
+    root.textContent = 'This game is not available.';
+    return emptyGameController();
+  }
+
   try {
-    return registry[id]?.mount(root) ?? empty;
+    const module = await load();
+    return module.mount(root);
   } catch (error) {
-    root.textContent = error instanceof Error ? error.message : String(error);
-    return empty;
+    console.error(`Unable to mount game "${id}".`, error);
+    root.textContent = 'This game could not start. Reload the page and try again.';
+    return emptyGameController();
   }
 }
 

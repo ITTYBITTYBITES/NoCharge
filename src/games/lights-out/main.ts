@@ -1,4 +1,4 @@
-import { play } from '../shared/audio';
+import { play, unlockAudio } from '../shared/audio';
 import { signalMeaningfulGameInteraction } from '../shared/recently-played';
 import type { GameController, PauseReason } from '../shared/types';
 import { applyPress, cellName, isSolved, litCount, newGame, type LightsState } from './engine';
@@ -111,6 +111,7 @@ export function mountLightsOut(root: HTMLElement): GameController {
   };
 
   const activate = (row: number, col: number) => {
+    unlockAudio();
     if (paused || state.status === 'won') return;
     state = applyPress(state, row, col);
     void play('flip');

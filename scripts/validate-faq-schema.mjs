@@ -48,6 +48,10 @@ for (const file of htmlFiles) {
     faqPages += 1;
     const entities = Array.isArray(faq.mainEntity) ? faq.mainEntity : [];
     if (!entities.length) failures.push(`${relative(dist, file)}: FAQPage has no questions`);
+    const disclosureCount = (html.match(/<details\b/gi) ?? []).length;
+    if (disclosureCount < entities.length) {
+      failures.push(`${relative(dist, file)}: FAQ answers must use collapsed, user-expandable details (${disclosureCount} details for ${entities.length} questions)`);
+    }
     for (const entity of entities) {
       questions += 1;
       const question = normalize(entity?.name ?? '');

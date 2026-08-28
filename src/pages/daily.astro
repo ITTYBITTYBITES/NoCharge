@@ -1,7 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
-import { DAILY_DATE_MODEL, DAILY_SLOTS, DAILY_HUB_STORAGE_KEYS } from '../config/dailies';
+import FaqList from '../components/FaqList.astro';
+import { DAILY_DATE_MODEL, DAILY_SLOTS } from '../config/dailies';
 import { REGISTRY_REVIEW_DATE } from '../lib/game-catalog';
 
 const liveCount = DAILY_SLOTS.filter((slot) => slot.status === 'live').length;
@@ -149,14 +150,7 @@ const schema = [
 
     <section class="prose" aria-labelledby="faq">
       <h2 id="faq">FAQ</h2>
-      <dl class="daily-faq">
-        {faqs.map(({ q, a }) => (
-          <>
-            <dt>{q}</dt>
-            <dd>{a}</dd>
-          </>
-        ))}
-      </dl>
+      <FaqList items={faqs} />
     </section>
 
     <section class="daily-next panel" aria-labelledby="daily-next-heading">

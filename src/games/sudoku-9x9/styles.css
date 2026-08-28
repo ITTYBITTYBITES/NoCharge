@@ -70,6 +70,11 @@
   font-weight: 700;
 }
 
+.s9__cell.is-given {
+  background: color-mix(in srgb, var(--panel-2) 78%, var(--accent));
+  font-weight: 850;
+}
+
 .s9__cell--box-bottom {
   border-bottom: 2px solid #4a5852;
 }

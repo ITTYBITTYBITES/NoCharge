@@ -3,15 +3,12 @@ import { signalMeaningfulGameInteraction } from '../shared/recently-played';
 import {
   createHandoffScreen,
   getPlayerNames,
-  passPlayMatchKey,
   playerName,
   savePassPlayMatchRecord,
   type HandoffScreenController,
 } from '../shared/pass-play';
 import type { GameController, PauseReason } from '../shared/types';
 import {
-  hasAnyMove,
-  legalTargets,
   moveStone,
   newGame,
   otherPlayer,
@@ -26,7 +23,6 @@ import '../shared/pass-play-chrome.css';
 import './styles.css';
 
 const GAME_ID = 'nine-mens-morris';
-const MATCH_KEY = passPlayMatchKey(GAME_ID);
 
 function getBrowserStorage(): Storage | undefined {
   try {
@@ -81,41 +77,17 @@ export function mountNineMensMorris(root: HTMLElement): GameController {
   let game: MorrisGame = newGame();
   let handoff: HandoffScreenController | null = null;
 
-  // Board geometry: 3 concentric squares (8 points each) with a middle ring.
-  const geometry = (() => {
-    const cells: { x: number; y: number }[] = [];
-    // Outer ring points 0..7 top-left to top-right, clockwise.
-    const outer = [0, 1, 2, 3, 4, 5, 6, 7];
-    const middle = [8, 9, 10, 11, 12, 13, 14, 15];
-    const inner = [16, 17, 18, 19, 20, 21, 22, 23];
-    const points: Record<number, { x: number; y: number }> = {};
-    const square = (ring: number[], offset: number, isMiddle: boolean) => {
-      const corners = [
-        [offset + 3, offset + 3],
-        [21 - offset, offset + 3],
-        [21 - offset, 21 - offset],
-        [offset + 3, 21 - offset],
-      ];
-      ring.forEach((point, index) => {
-        const position = index < 2 ? [offset + 3 + (index === 1 ? 9 : 0), offset + 3] : undefined;
-        // Simple layout: corners and edge midpoints for outer/inner; middle ring offsets.
-        points[point] = isMiddle
-          ? { x: offset + 3, y: offset + 3 }
-          : { x: corners[index % 4]![0], y: corners[index % 4]![1] };
-        void position;
-      });
-    };
-    // Use explicit positions for clarity.
-    const pos = (x: number, y: number) => ({ x, y });
-    points[0] = pos(3, 3); points[1] = pos(12, 3); points[2] = pos(21, 3);
-    points[3] = pos(21, 12); points[4] = pos(21, 21); points[5] = pos(12, 21); points[6] = pos(3, 21); points[7] = pos(3, 12);
-    points[8] = pos(6, 6); points[9] = pos(12, 6); points[10] = pos(18, 6);
-    points[11] = pos(18, 12); points[12] = pos(18, 18); points[13] = pos(12, 18); points[14] = pos(6, 18); points[15] = pos(6, 12);
-    points[16] = pos(9, 9); points[17] = pos(12, 9); points[18] = pos(15, 9);
-    points[19] = pos(15, 12); points[20] = pos(15, 15); points[21] = pos(12, 15); points[22] = pos(9, 15); points[23] = pos(9, 12);
-    cells.push(...Object.values(points));
-    return { cells, points };
-  })();
+  // Board geometry: 3 concentric squares (8 points each).
+  const pos = (x: number, y: number) => ({ x, y });
+  const points: Record<number, { x: number; y: number }> = {
+    0: pos(3, 3), 1: pos(12, 3), 2: pos(21, 3), 3: pos(21, 12),
+    4: pos(21, 21), 5: pos(12, 21), 6: pos(3, 21), 7: pos(3, 12),
+    8: pos(6, 6), 9: pos(12, 6), 10: pos(18, 6), 11: pos(18, 12),
+    12: pos(18, 18), 13: pos(12, 18), 14: pos(6, 18), 15: pos(6, 12),
+    16: pos(9, 9), 17: pos(12, 9), 18: pos(15, 9), 19: pos(15, 12),
+    20: pos(15, 15), 21: pos(12, 15), 22: pos(9, 15), 23: pos(9, 12),
+  };
+  const geometry = { points };
 
   const buttons = () => [...boardEl.querySelectorAll<HTMLButtonElement>('[data-nmm-point]')];
 
@@ -277,7 +249,6 @@ export function mountNineMensMorris(root: HTMLElement): GameController {
     if (!step) return;
     event.preventDefault();
     const [dx, dy] = step;
-    const current = geometry.points[index]!;
     if (dx === 0 && dy === 0) {
       activate(index);
       return;

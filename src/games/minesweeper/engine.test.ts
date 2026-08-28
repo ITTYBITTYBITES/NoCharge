@@ -16,6 +16,15 @@ describe('minesweeper engine', () => {
     }
   });
 
+  it('uses the injected random source for reproducible boards', () => {
+    const difficulty = DIFFICULTIES[0]!;
+    const mineIndexes = (random: () => number) =>
+      newGame(difficulty, random).board.flat().flatMap((cell, index) => (cell.mine ? [index] : []));
+
+    expect(mineIndexes(() => 0)).toEqual(mineIndexes(() => 0));
+    expect(mineIndexes(() => 0)).not.toEqual(mineIndexes(() => 0.999999));
+  });
+
   it('never explodes on the first reveal', () => {
     for (const difficulty of DIFFICULTIES) {
       const state = newGame(difficulty);
