@@ -112,7 +112,7 @@ const schema = [
                 </p>
                 {slot.status === 'live' ? (
                   <p class="daily-card__actions">
-                    <a class="btn" href={href}>Play today’s {slot.title.toLowerCase()}</a>
+                    <a class="btn" href={href}>Play today’s {slot.title.toLowerCase()}</a>{' '}
                     <a href={`/games/${slot.slug}/`}>Open the game</a>
                   </p>
                 ) : (
