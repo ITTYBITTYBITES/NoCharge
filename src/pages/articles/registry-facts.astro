@@ -217,10 +217,12 @@ const schema = [
 
   .facts-table table {
     width: 100%;
-    min-width: 24rem;
     display: block;
     overflow-x: auto;
     border-collapse: collapse;
+    /* As a grid child the table must be allowed to shrink below its content
+       width so overflow-x scrolls instead of stretching the page. */
+    min-width: 0;
   }
 
   .facts-table th,
