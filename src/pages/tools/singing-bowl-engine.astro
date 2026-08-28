@@ -1,0 +1,205 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import FaqList from '../../components/FaqList.astro';
+
+const faqs = [
+  {
+    q: 'Does the singing bowl engine download audio files?',
+    a: 'No. Every tone is synthesized in real time using the Web Audio API. There are no MP3, WAV, or impulse-response files. The audio context is unlocked only after your first tap or click.',
+  },
+  {
+    q: 'What is the difference between bronze and quartz bowls?',
+    a: 'Bronze bowls use harmonic partials at ratios 1.0, 2.76, 5.18, and 8.22 with a warm triangle-wave overtone and decay from 1.2 to 5.0 seconds. Quartz bowls use cleaner sine partials at 1.0, 2.0, 3.01, and 4.12 with longer decays from 2.0 to 7.0 seconds.',
+  },
+  {
+    q: 'What do the dashed lines between bowls mean?',
+    a: 'A green dashed line connects two bowls tuned to an octave interval (2:1 frequency ratio). A blue dashed line connects bowls at a perfect fifth (3:2 ratio). These are the most consonant musical intervals.',
+  },
+  {
+    q: 'How do I change the pitch of a bowl?',
+    a: 'Hover over a bowl and use the mouse scroll wheel to shift its frequency between 100 Hz and 880 Hz. Each scroll step moves 10 Hz.',
+  },
+  {
+    q: 'Can I share a bowl arrangement?',
+    a: 'Yes. Bowl positions and frequencies are encoded in the URL hash as a compact Base64 string. Share the URL or use the Embed button to generate an iframe snippet.',
+  },
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    '@id': 'https://nocharge.net/tools/singing-bowl-engine/#app',
+    name: 'NoCharge Singing Bowl Engine',
+    description: 'A free browser-based physical singing bowl synthesizer with additive synthesis, harmonic connection lines, and shareable arrangements.',
+    url: 'https://nocharge.net/tools/singing-bowl-engine/',
+    applicationCategory: 'MultimediaApplication',
+    operatingSystem: 'Web',
+    isAccessibleForFree: true,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    publisher: { '@type': 'Organization', name: 'NoCharge', url: 'https://nocharge.net/' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    '@id': 'https://nocharge.net/tools/singing-bowl-engine/#faq',
+    mainEntity: faqs.map(({ q, a }) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://nocharge.net/' },
+      { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://nocharge.net/tools/' },
+      { '@type': 'ListItem', position: 3, name: 'Singing Bowl Engine', item: 'https://nocharge.net/tools/singing-bowl-engine/' },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="Singing Bowl Engine — interactive additive synthesis"
+  description="Place and strike singing bowls on a canvas. Bronze and quartz profiles with harmonic partials, organic pitch drift, and dashed connection lines for perfect fifths and octaves. All audio is synthesized in the browser."
+  path="/tools/singing-bowl-engine/"
+  schema={schema}
+  showAds={false}
+>
+  <div class="tool-page">
+    <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Tools', href: '/tools/' }, { label: 'Singing Bowl Engine' }]} />
+    <header>
+      <p class="eyebrow">Interactive synthesis</p>
+      <h1>Singing Bowl Engine</h1>
+      <p class="lede">Tap the canvas to place a bowl, tap a bowl to strike it, drag to move, and scroll to tune. Dashed lines connect bowls at consonant intervals. All audio is synthesized in real time — no downloads.</p>
+    </header>
+
+    <blockquote>
+      <p><strong>How to play:</strong> Tap an empty area to spawn a bowl (220–520 Hz). Tap a bowl to hear it ring. Drag to reposition. Mouse wheel over a bowl shifts its pitch (100–880 Hz). Green lines = octave, blue lines = perfect fifth.</p>
+    </blockquote>
+
+    <section class="engine-section" aria-labelledby="engine-heading">
+      <h2 id="engine-heading" class="sr-only">Singing bowl canvas</h2>
+      <singing-bowl-engine></singing-bowl-engine>
+    </section>
+
+    <section class="prose">
+      <h2>Synthesis profiles</h2>
+      <table>
+        <thead>
+          <tr><th>Profile</th><th>Partials (ratios)</th><th>Waveforms</th><th>Decay range</th><th>Character</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Bronze</td>
+            <td>1.0, 2.76, 5.18, 8.22</td>
+            <td>sine, triangle, sine, sine</td>
+            <td>1.2 – 5.0s</td>
+            <td>Warm, complex overtones with a metallic shimmer</td>
+          </tr>
+          <tr>
+            <td>Quartz</td>
+            <td>1.0, 2.0, 3.01, 4.12</td>
+            <td>sine, sine, sine, sine</td>
+            <td>2.0 – 7.0s</td>
+            <td>Clear, sustained, almost glass-like purity</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Harmonic connections</h2>
+      <p>When two bowls are tuned to a <strong>perfect fifth</strong> (frequency ratio ≈ 1.5) or an <strong>octave</strong> (ratio ≈ 2.0), a dashed line appears between them. These are the most consonant intervals in Western tuning and produce a stable, pleasant resonance when struck together.</p>
+
+      <h2>Audio architecture</h2>
+      <ul>
+        <li><strong>Additive synthesis:</strong> Each bowl voice combines 4 oscillators at inharmonic or harmonic partial ratios.</li>
+        <li><strong>Organic drift:</strong> Each partial has a slow LFO modulating its detune by ±3 cents for a living, breathing quality.</li>
+        <li><strong>Strike transient:</strong> A short bandpass-filtered noise burst adds the mallet attack.</li>
+        <li><strong>Synthetic reverb:</strong> A 3.0-second exponential-decay algorithmic convolver (generated impulse response, no audio files).</li>
+      </ul>
+
+      <h2>Sharing and embedding</h2>
+      <p>Your bowl arrangement is encoded into the URL hash as a compact Base64 payload. Refreshing the page restores your layout. Use the <strong>Embed</strong> button to generate an iframe snippet for your own site.</p>
+
+      <h2 id="faq">FAQ — Singing Bowl Engine</h2>
+      <FaqList items={faqs} />
+
+      <h2>Embed this tool</h2>
+      <pre><code>&lt;iframe src="https://nocharge.net/embed/sound-engine/" width="600" height="400" title="NoCharge Singing Bowl Engine" sandbox="allow-scripts allow-same-origin"&gt;&lt;/iframe&gt;
+&lt;p&gt;Source: &lt;a href="https://nocharge.net/tools/singing-bowl-engine/"&gt;NoCharge Singing Bowl Engine&lt;/a&gt;&lt;/p&gt;</code></pre>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  import '../../components/SoundEngine/SoundEngine.js';
+</script>
+
+<style>
+  .tool-page {
+    max-width: 56rem;
+    margin-inline: auto;
+    display: grid;
+    gap: 1.5rem;
+    min-width: 0;
+    padding-inline: 1rem;
+  }
+
+  .engine-section {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .prose {
+    display: grid;
+    gap: 1rem;
+    max-width: 48rem;
+    min-width: 0;
+  }
+
+  .prose table {
+    width: 100%;
+    display: block;
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-collapse: collapse;
+  }
+
+  .prose th, .prose td {
+    border: 1px solid var(--line);
+    padding: 0.5rem;
+    font-size: 0.84rem;
+    min-width: 0;
+    word-break: break-word;
+  }
+
+  .prose blockquote {
+    border-left: 4px solid var(--accent);
+    background: color-mix(in srgb, var(--accent) 8%, var(--panel-2));
+    padding: 0.8rem 1rem;
+    border-radius: 6px;
+  }
+
+  blockquote {
+    border-left: 4px solid var(--accent);
+    background: color-mix(in srgb, var(--accent) 8%, var(--panel-2));
+    padding: 0.8rem 1rem;
+    border-radius: 6px;
+    margin: 0;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>
