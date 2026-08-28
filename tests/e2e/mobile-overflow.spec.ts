@@ -51,7 +51,6 @@ test('every page fits its viewport without horizontal overflow', async ({ page }
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     for (const path of paths) {
       await page.goto(path, { waitUntil: 'load' });
-      // Allow layout to settle after images
       await page.waitForTimeout(100);
       const result = await page.evaluate(() => {
         const doc = document.documentElement;
@@ -72,9 +71,50 @@ test('every page fits its viewport without horizontal overflow', async ({ page }
         });
         return { overflow, offenders: offenders.slice(0, 12) };
       });
-      // Allow layout to settle after images
       if (result.overflow > 1) {
         issues.push({ path, viewport: viewport.width, overflow: result.overflow, offenders: result.offenders });
+      }
+      // Container-chain diagnostics for the tool page that blew up.
+      if (path === '/tools/nonogram-clue-calculator/' && result.overflow > 1000) {
+        const chain = await page.evaluate(() => {
+          const fields = (sel: string) => {
+            const el = document.querySelector(sel) as HTMLElement | null;
+            if (!el) return null;
+            const cs = getComputedStyle(el);
+            const r = el.getBoundingClientRect();
+            return {
+              left: Math.round(r.left),
+              width: Math.round(r.width),
+              scrollWidth: el.scrollWidth,
+              display: cs.display,
+              gridTemplateColumns: cs.gridTemplateColumns,
+              maxWidth: cs.maxWidth,
+              minWidth: cs.minWidth,
+              overflowX: cs.overflowX,
+            };
+          };
+          return {
+            shell: fields('.site-shell'),
+            main: fields('.site-main'),
+            toolPage: fields('.tool-page'),
+            mainSlot: fields('.tool-page__main'),
+            controls: fields('.calc-controls'),
+            output: fields('.calc-output'),
+            lines: fields('.calc-lines'),
+          };
+        });
+        issues.push({
+          path: `${path}#chain`,
+          viewport: viewport.width,
+          overflow: result.overflow,
+          offenders: Object.entries(chain).map(([k, v]) => ({
+            tag: k,
+            cls: JSON.stringify(v),
+            text: '',
+            right: 0,
+            width: 0,
+          })) as any,
+        });
       }
     }
   }
