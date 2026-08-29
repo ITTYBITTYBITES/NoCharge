@@ -487,7 +487,7 @@ export function mountFreeCell(root: HTMLElement): GameController {
       } else {
         el.innerHTML = '<div class="fc__card fc__card--empty" aria-hidden="true"></div>';
       }
-      el.setAttribute('aria-label', `Foundation ${['spades', 'hearts', 'diamonds', 'clubs'][i]}, ${pile.length} cards`);
+      el.setAttribute('aria-label', `Foundation ${['spades', 'hearts', 'diamonds', 'clubs'][i]}, ${pile.length} cards${pile.length > 0 ? `, top: ${cardName(pile[pile.length - 1]!)}` : ''}`);
     });
 
     // The fan replaces the tableau inside the same fixed stage; it never
