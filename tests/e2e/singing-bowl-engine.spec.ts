@@ -1,6 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
 import { denyOptionalServices } from './helpers/consent';
-import { stubGameSounds } from './helpers/sounds';
 
 // The singing bowl component renders its controls in a Shadow DOM. Playwright's
 // CSS engine pierces open shadow roots, so a descendant combinator descends into
@@ -11,9 +10,73 @@ async function shadow(page: Page, selector: string) {
   return page.locator(`${ELEMENT} ${selector}`);
 }
 
+/**
+ * Install a complete AudioContext stub for the singing-bowl engine. The engine
+ * lazily builds a full graph on the first gesture (master gain, dry/wet buses,
+ * a Convolver, oscillators, biquad filters), so the stub must provide every
+ * factory the graph touches or the unlock gesture throws and the
+ * tap-to-start overlay never dismisses.
+ */
+async function stubBowlAudio(page: Page) {
+  await page.addInitScript(() => {
+    class FakeParam {
+      value = 0;
+      setValueAtTime() {}
+      linearRampToValueAtTime() {}
+      exponentialRampToValueAtTime() {}
+      cancelScheduledValues() {}
+      setTargetAtTime() {}
+    }
+    class FakeNode {
+      type = 'sine';
+      frequency = new FakeParam();
+      gain = new FakeParam();
+      Q = new FakeParam();
+      detune = new FakeParam();
+      buffer: unknown = null;
+      connect() {
+        return this;
+      }
+      disconnect() {}
+      start() {}
+      stop() {}
+    }
+    class FakeAudioContext {
+      sampleRate = 44100;
+      currentTime = 0;
+      state = 'running';
+      destination = new FakeNode();
+      resume() {
+        this.state = 'running';
+        return Promise.resolve();
+      }
+      createGain() {
+        return new FakeNode();
+      }
+      createConvolver() {
+        return new FakeNode();
+      }
+      createOscillator() {
+        return new FakeNode();
+      }
+      createBiquadFilter() {
+        return new FakeNode();
+      }
+      createBuffer() {
+        return { getChannelData: () => new Float32Array(8) };
+      }
+      createBufferSource() {
+        return new FakeNode();
+      }
+    }
+    Object.defineProperty(window, 'AudioContext', { configurable: true, writable: true, value: FakeAudioContext });
+    Object.defineProperty(window, 'webkitAudioContext', { configurable: true, writable: true, value: FakeAudioContext });
+  });
+}
+
 test.beforeEach(async ({ page }) => {
   await denyOptionalServices(page);
-  await stubGameSounds(page);
+  await stubBowlAudio(page);
 });
 
 test('shows the tap-to-start overlay before audio is unlocked and dismisses it on tap', async ({ page }) => {
