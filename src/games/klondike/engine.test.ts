@@ -6,6 +6,7 @@ import {
   moveWasteToFoundation,
   moveTableau,
   moveTableauToFoundation,
+  tapFoundation,
   autoMoveToFoundation,
   undo,
   canPlaceOnTableau,
@@ -158,5 +159,39 @@ describe('Klondike engine', () => {
     const game2 = createGame(42);
     expect(game1.tableau[0]![0]!.id).toBe(game2.tableau[0]![0]!.id);
     expect(game1.stock[0]!.id).toBe(game2.stock[0]!.id);
+  });
+});
+
+describe('Klondike foundation taps', () => {
+  it('moves the selected waste card to its suit foundation', () => {
+    const game = createGame(12345);
+    game.waste = [{ suit: 'hearts', rank: 1, faceUp: true, id: 90 }];
+    const next = tapFoundation(game, { type: 'waste' });
+    expect(next).not.toBeNull();
+    expect(next!.foundations[1]!.length).toBe(1);
+    expect(next!.waste.length).toBe(0);
+    expect(next!.moves).toBe(1);
+  });
+
+  it('moves a selected tableau top card, but never a mid-run card', () => {
+    const game = createGame(12345);
+    game.tableau[0] = [
+      { suit: 'hearts', rank: 5, faceUp: false, id: 1 },
+      { suit: 'spades', rank: 1, faceUp: true, id: 2 },
+    ];
+    // Selecting a covered/mid-run card must not send the top card up instead.
+    expect(tapFoundation(game, { type: 'tableau', col: 0, cardIndex: 0 })).toBeNull();
+    const next = tapFoundation(game, { type: 'tableau', col: 0, cardIndex: 1 });
+    expect(next).not.toBeNull();
+    expect(next!.foundations[0]!.length).toBe(1);
+    expect(next!.tableau[0]!.length).toBe(1);
+  });
+
+  it('is a no-op with nothing selected or when the card cannot go up', () => {
+    const game = createGame(12345);
+    expect(tapFoundation(game, null)).toBeNull();
+    game.waste = [{ suit: 'hearts', rank: 5, faceUp: true, id: 9 }];
+    expect(tapFoundation(game, { type: 'waste' })).toBeNull();
+    expect(game.waste.length).toBe(1);
   });
 });

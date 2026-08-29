@@ -225,6 +225,55 @@ export function moveTableauToFoundation(
   return { ...state, tableau, foundations, history: hist, moves: state.moves + 1, won };
 }
 
+/**
+ * What the player has tapped once: the pending source of the next move.
+ * Kept next to the engine so tap resolution is pure and testable without DOM.
+ */
+export type FreeCellSelection =
+  | { type: 'cell'; idx: number }
+  | { type: 'tableau'; col: number; cardIndex: number };
+
+/**
+ * Move the selected tableau card to a free cell.
+ *
+ * Only the top card of a column may sit in a free cell. Tapping a cell while
+ * a mid-run card is selected must not teleport the column's top card away, so
+ * the guard lives here where it can be unit tested.
+ */
+export function moveSelectedToFreeCell(
+  state: FreeCellState,
+  selection: FreeCellSelection | null,
+): FreeCellState | null {
+  if (selection?.type !== 'tableau') return null;
+  const column = state.tableau[selection.col]!;
+  if (selection.cardIndex !== column.length - 1) return null;
+  return moveToFreeCell(state, selection.col);
+}
+
+/**
+ * Resolve a tap on a foundation pile against the current selection.
+ *
+ * Tapping a foundation is the tap-then-tap destination for the selected card —
+ * the same move a second tap on the card itself performs. A tap with nothing
+ * selected, or with a mid-run card that cannot go up yet, is a no-op rather
+ * than a move of the wrong card. The engine routes the card to its suit pile,
+ * so every foundation pile accepts the tap.
+ */
+export function tapFoundation(
+  state: FreeCellState,
+  selection: FreeCellSelection | null,
+): FreeCellState | null {
+  if (selection?.type === 'cell') {
+    return moveFreeCellToFoundation(state, selection.idx);
+  }
+  if (selection?.type === 'tableau') {
+    const column = state.tableau[selection.col]!;
+    if (selection.cardIndex !== column.length - 1) return null;
+    return moveTableauToFoundation(state, selection.col);
+  }
+  return null;
+}
+
 /** Undo the last move. */
 export function undo(state: FreeCellState): FreeCellState | null {
   if (state.history.length === 0) return null;

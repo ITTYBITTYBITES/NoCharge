@@ -3,12 +3,14 @@ import type { GameController } from '../shared/types';
 import { signalMeaningfulGameInteraction } from '../shared/recently-played';
 import {
   type FreeCellState,
+  type FreeCellSelection,
   createGame,
-  moveToFreeCell,
   moveFreeCellToTableau,
   moveFreeCellToFoundation,
+  moveSelectedToFreeCell,
   moveTableau,
   moveTableauToFoundation,
+  tapFoundation,
   undo as engineUndo,
 } from './engine';
 import {
@@ -92,7 +94,7 @@ export function mountFreeCell(root: HTMLElement): GameController {
 
   let state: FreeCellState;
   let paused = false;
-  let selected: { type: 'cell'; idx: number } | { type: 'tableau'; col: number; cardIndex: number } | null = null;
+  let selected: FreeCellSelection | null = null;
   let gamesWon = loadInt(GAMES_WON_KEY);
   let heardDeal = false;
   /** Column shown in the detail fan, or null when the tableau is on screen. */
@@ -368,7 +370,7 @@ export function mountFreeCell(root: HTMLElement): GameController {
         cardEl.classList.add('is-selected');
       }
       const pick = () => handleTableauCardClick(col, index);
-      cardEl.addEventListener('pointerdown', (e) => { e.preventDefault(); e.stopPropagation(); pick(); });
+      cardEl.addEventListener('click', pick);
       cardEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
       cardsEl.appendChild(cardEl);
     });
@@ -406,7 +408,6 @@ export function mountFreeCell(root: HTMLElement): GameController {
       expand.setAttribute('aria-expanded', String(tooTall));
       expand.setAttribute('aria-label', `Open column ${col + 1} detail: ${column.length} cards`);
       expand.textContent = tooTall ? '▼' : '⤢';
-      expand.addEventListener('pointerdown', (e) => { e.preventDefault(); e.stopPropagation(); });
       expand.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -426,7 +427,7 @@ export function mountFreeCell(root: HTMLElement): GameController {
         empty.setAttribute('role', 'button');
         empty.setAttribute('tabindex', '0');
         empty.setAttribute('aria-label', `Column ${col + 1}, empty`);
-        empty.addEventListener('pointerdown', (e) => { e.preventDefault(); handleColumnClick(col); });
+        empty.addEventListener('click', () => handleColumnClick(col));
         empty.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleColumnClick(col); } });
         pile.appendChild(empty);
       }
@@ -441,11 +442,7 @@ export function mountFreeCell(root: HTMLElement): GameController {
         cardEl.setAttribute('role', 'button');
         cardEl.setAttribute('tabindex', '0');
         const pickCard = () => handleTableauCardClick(col, i);
-        cardEl.addEventListener('pointerdown', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          pickCard();
-        });
+        cardEl.addEventListener('click', pickCard);
         cardEl.addEventListener('keydown', (e) => {
           if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); pickCard(); }
         });
@@ -523,8 +520,9 @@ export function mountFreeCell(root: HTMLElement): GameController {
     }
 
     if (selected?.type === 'tableau') {
-      // Move selected tableau card to this cell
-      const result = moveToFreeCell(state, selected.col);
+      // Only the selected top card may move to a cell; a mid-run selection
+      // must not teleport the column's top card away.
+      const result = moveSelectedToFreeCell(state, selected);
       if (result) { state = result; selected = null; cuePlacement(); render(); return; }
     }
 
@@ -569,6 +567,21 @@ export function mountFreeCell(root: HTMLElement): GameController {
     render();
   }
 
+  /** Tapping a foundation sends the selected card up, like a second tap on the card itself. */
+  function handleFoundationClick() {
+    if (paused) return;
+    unlockAudio();
+    signalMeaningfulGameInteraction(root);
+    if (!selected) return;
+    const result = tapFoundation(state, selected);
+    if (result) {
+      state = result;
+      selected = null;
+      cuePlacement();
+      render();
+    }
+  }
+
   function handleColumnClick(col: number) {
     if (paused) return;
     const column = state.tableau[col]!;
@@ -594,9 +607,18 @@ export function mountFreeCell(root: HTMLElement): GameController {
     if (result) { state = result; selected = null; render(); }
   }
 
+  // Event bindings.
+  //
+  // Card input uses native `click` rather than `pointerdown`: a touch that
+  // turns into a scroll must not move cards, and `click` only fires when the
+  // pointer stays put. `touch-action: manipulation` keeps taps delay-free.
   cellEls.forEach((el, i) => {
-    el.addEventListener('pointerdown', (e) => { e.preventDefault(); handleCellClick(i); });
+    el.addEventListener('click', () => handleCellClick(i));
     el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCellClick(i); } });
+  });
+  foundationEls.forEach((el) => {
+    el.addEventListener('click', handleFoundationClick);
+    el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleFoundationClick(); } });
   });
 
   undoBtn.addEventListener('click', handleUndo);

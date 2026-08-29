@@ -91,6 +91,16 @@
   max-height: 44px;
 }
 
+/* The waste fans its last few cards to the right inside the fixed slot. The
+   cards are absolutely stacked — in normal flow they would pile downward out
+   of the short top row and over the tableau on a phone. The fan only reaches
+   into the empty spacer column, never the foundations. */
+.kl__waste > .kl__card {
+  position: absolute;
+  top: 0;
+  left: calc(var(--kl-waste-i, 0) * 16%);
+}
+
 .kl__card {
   width: 100%;
   height: 100%;
@@ -185,6 +195,7 @@
 }
 
 .kl__expand {
+  position: relative;
   min-width: 28px;
   min-height: 24px;
   padding: 0 4px;
@@ -195,6 +206,14 @@
   border: 1px solid var(--line, #2a3530);
   border-radius: 4px;
   cursor: pointer;
+}
+
+/* The fan control is the only way into a tall pile's detail view on a phone,
+   so its touch target reaches the 44px minimum via a transparent halo. */
+.kl__expand::after {
+  content: '';
+  position: absolute;
+  inset: -10px;
 }
 
 .kl__expand:hover,

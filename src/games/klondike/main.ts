@@ -4,12 +4,14 @@ import type { GameController } from '../shared/types';
 import { signalMeaningfulGameInteraction } from '../shared/recently-played';
 import {
   type KlondikeState,
+  type KlondikeSelection,
   createGame,
   drawFromStock,
   moveWasteToTableau,
   moveWasteToFoundation,
   moveTableau,
   moveTableauToFoundation,
+  tapFoundation,
   undo as engineUndo,
   autoMoveToFoundation,
 } from './engine';
@@ -105,7 +107,7 @@ export function mountKlondike(root: HTMLElement): GameController {
 
   let state: KlondikeState;
   let paused = false;
-  let selected: { type: 'waste' } | { type: 'tableau'; col: number; cardIndex: number } | null = null;
+  let selected: KlondikeSelection | null = null;
   /** Column shown in the detail fan, or null when the tableau is on screen. */
   let fanColumn: number | null = null;
   let fanPage = 0;
@@ -353,7 +355,7 @@ export function mountKlondike(root: HTMLElement): GameController {
           cardEl.classList.add('is-selected');
         }
         const pick = () => handleTableauCardClick(col, index);
-        cardEl.addEventListener('pointerdown', (e) => { e.preventDefault(); e.stopPropagation(); pick(); });
+        cardEl.addEventListener('click', pick);
         cardEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
       }
       cardsEl.appendChild(cardEl);
@@ -381,7 +383,6 @@ export function mountKlondike(root: HTMLElement): GameController {
       expand.setAttribute('aria-expanded', 'false');
       expand.setAttribute('aria-label', `Open column ${col + 1} detail: ${column.length} cards`);
       expand.textContent = '⤢';
-      expand.addEventListener('pointerdown', (e) => { e.preventDefault(); e.stopPropagation(); });
       expand.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -404,7 +405,7 @@ export function mountKlondike(root: HTMLElement): GameController {
         empty.setAttribute('role', 'button');
         empty.setAttribute('tabindex', '0');
         empty.setAttribute('aria-label', `Column ${col + 1}, empty`);
-        empty.addEventListener('pointerdown', (e) => { e.preventDefault(); handleColumnClick(col); });
+        empty.addEventListener('click', () => handleColumnClick(col));
         empty.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleColumnClick(col); } });
         pile.appendChild(empty);
       }
@@ -433,11 +434,7 @@ export function mountKlondike(root: HTMLElement): GameController {
           cardEl.setAttribute('role', 'button');
           cardEl.setAttribute('tabindex', '0');
           const pickCard = () => handleTableauCardClick(col, i);
-          cardEl.addEventListener('pointerdown', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            pickCard();
-          });
+          cardEl.addEventListener('click', pickCard);
           cardEl.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); pickCard(); }
           });
@@ -466,13 +463,17 @@ export function mountKlondike(root: HTMLElement): GameController {
     }
     stockEl.setAttribute('aria-label', `Stock pile, ${state.stock.length} cards remaining. Click to draw.`);
 
-    // Waste - show top 3 cards max
+    // Waste - show top 3 cards max. The under-cards stay face up and fan to
+    // the right inside the fixed slot (see styles.css), so the pile never
+    // stacks downward over the tableau on a phone.
     wasteEl.innerHTML = '';
     const visibleWaste = state.waste.slice(-3);
     for (let i = 0; i < visibleWaste.length; i++) {
       const card = visibleWaste[i]!;
-      const el = renderCard(card, i === visibleWaste.length - 1);
-      if (i === visibleWaste.length - 1 && selected?.type === 'waste') {
+      const isTop = i === visibleWaste.length - 1;
+      const el = renderCard(card, true);
+      el.style.setProperty('--kl-waste-i', String(i));
+      if (isTop && selected?.type === 'waste') {
         el.classList.add('is-selected');
       }
       wasteEl.appendChild(el);
@@ -487,12 +488,12 @@ export function mountKlondike(root: HTMLElement): GameController {
       el.innerHTML = '';
       const pile = state.foundations[i]!;
       if (pile.length > 0) {
-        const card = pile[pile.length - 1]!;
-        el.appendChild(renderCard(card, false));
+        // The top card stays visible so the player can read each pile's rank.
+        el.appendChild(renderCard(pile[pile.length - 1]!, true));
       } else {
         el.innerHTML = '<div class="kl__card kl__card--empty" aria-hidden="true"></div>';
       }
-      el.setAttribute('aria-label', `Foundation ${['spades', 'hearts', 'diamonds', 'clubs'][i]}, ${pile.length} cards`);
+      el.setAttribute('aria-label', `Foundation ${['spades', 'hearts', 'diamonds', 'clubs'][i]}, ${pile.length} cards${pile.length > 0 ? `, top: ${cardName(pile[pile.length - 1]!)}` : ''}`);
     });
 
     // The fan replaces the tableau inside the same fixed stage.
@@ -547,6 +548,21 @@ export function mountKlondike(root: HTMLElement): GameController {
 
     selected = { type: 'waste' };
     render();
+  }
+
+  /** Tapping a foundation sends the selected card up, like a second tap on the card itself. */
+  function handleFoundationClick() {
+    if (paused) return;
+    unlockAudio();
+    signalMeaningfulGameInteraction(root);
+    if (!selected) return;
+    const result = tapFoundation(state, selected);
+    if (result) {
+      state = result;
+      selected = null;
+      void play('move');
+      render();
+    }
   }
 
   function handleTableauCardClick(col: number, cardIndex: number) {
@@ -655,11 +671,19 @@ export function mountKlondike(root: HTMLElement): GameController {
     render();
   }
 
-  // Event bindings
-  stockEl.addEventListener('pointerdown', (e) => { e.preventDefault(); handleStockClick(); });
+  // Event bindings.
+  //
+  // Card input uses native `click` rather than `pointerdown`: a touch that
+  // turns into a scroll must not move cards, and `click` only fires when the
+  // pointer stays put. `touch-action: manipulation` keeps taps delay-free.
+  stockEl.addEventListener('click', handleStockClick);
   stockEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleStockClick(); } });
-  wasteEl.addEventListener('pointerdown', (e) => { e.preventDefault(); handleWasteClick(); });
+  wasteEl.addEventListener('click', handleWasteClick);
   wasteEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleWasteClick(); } });
+  foundationEls.forEach((el) => {
+    el.addEventListener('click', handleFoundationClick);
+    el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleFoundationClick(); } });
+  });
 
   undoBtn.addEventListener('click', handleUndo);
   drawToggle.addEventListener('click', handleDrawToggle);
