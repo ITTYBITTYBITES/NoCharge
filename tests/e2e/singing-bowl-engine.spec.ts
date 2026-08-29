@@ -2,12 +2,13 @@ import { expect, test, type Page } from '@playwright/test';
 import { denyOptionalServices } from './helpers/consent';
 import { stubGameSounds } from './helpers/sounds';
 
-// The singing bowl component renders its controls in a Shadow DOM, so we query
-// into it via the custom element.
+// The singing bowl component renders its controls in a Shadow DOM. Playwright's
+// CSS engine pierces open shadow roots, so a descendant combinator descends into
+// the host's shadow tree to find the element.
 const ELEMENT = 'singing-bowl-engine';
 
 async function shadow(page: Page, selector: string) {
-  return page.locator(`${ELEMENT}${selector}`);
+  return page.locator(`${ELEMENT} ${selector}`);
 }
 
 test.beforeEach(async ({ page }) => {
