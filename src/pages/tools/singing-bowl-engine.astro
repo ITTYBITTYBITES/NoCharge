@@ -18,11 +18,19 @@ const faqs = [
   },
   {
     q: 'How do I change the pitch of a bowl?',
-    a: 'Hover over a bowl and use the mouse scroll wheel to shift its frequency between 100 Hz and 880 Hz. Each scroll step moves 10 Hz.',
+    a: 'Hover over a bowl and use the mouse scroll wheel to shift its frequency between 100 Hz and 880 Hz. On a touch screen, long-press a bowl to open a tuning overlay with a slider and −10 Hz / +10 Hz step buttons. Each step moves 10 Hz.',
+  },
+  {
+    q: 'What is rim singing?',
+    a: 'Rim singing is a sustained friction drone. Drag your pointer in a circle around the rim of a bowl and the bowl will resonate continuously. The faster you rotate, the louder and richer the tone becomes; it fades out smoothly when you stop.',
+  },
+  {
+    q: 'Are there preset harmonic scales?',
+    a: 'Yes. The Harmonic Presets menu spawns pre-tuned bowls snapped to the Pentatonic Scale (C4–A4), the Solfeggio Frequencies (396–852 Hz), or the Chakra Tones (256–480 Hz). Selecting a preset clears the canvas, lays out the bowls, and updates the shareable URL.',
   },
   {
     q: 'Can I share a bowl arrangement?',
-    a: 'Yes. Bowl positions and frequencies are encoded in the URL hash as a compact Base64 string. Share the URL or use the Embed button to generate an iframe snippet.',
+    a: 'Yes. Bowl positions and frequencies are encoded in the URL hash as a compact Base64 string. Share the URL or use the Embed button to generate an iframe snippet. Opening a shared link restores the visual layout immediately — audio only starts after your first tap.',
   },
 ];
 
@@ -64,7 +72,7 @@ const schema = [
 
 <BaseLayout
   title="Singing Bowl Engine — interactive additive synthesis"
-  description="Place and strike singing bowls on a canvas. Bronze and quartz profiles with harmonic partials, organic pitch drift, and dashed connection lines for perfect fifths and octaves. All audio is synthesized in the browser."
+  description="Place and strike singing bowls, circle a rim to sustain a friction drone, tune on touch, and load pentatonic, solfeggio, or chakra presets. Bronze and quartz profiles with harmonic partials, organic pitch drift, and dashed connection lines for perfect fifths and octaves. All audio is synthesized in the browser."
   path="/tools/singing-bowl-engine/"
   schema={schema}
   showAds={false}
@@ -74,11 +82,11 @@ const schema = [
     <header>
       <p class="eyebrow">Interactive synthesis</p>
       <h1>Singing Bowl Engine</h1>
-      <p class="lede">Tap the canvas to place a bowl, tap a bowl to strike it, drag to move, and scroll to tune. Dashed lines connect bowls at consonant intervals. All audio is synthesized in real time — no downloads.</p>
+      <p class="lede">Tap the canvas to place a bowl, tap a bowl to strike it, drag to move, circle the rim to sing, and scroll or long-press to tune. Dashed lines connect bowls at consonant intervals. All audio is synthesized in real time — no downloads.</p>
     </header>
 
     <blockquote>
-      <p><strong>How to play:</strong> Tap an empty area to spawn a bowl (220–520 Hz). Tap a bowl to hear it ring. Drag to reposition. Mouse wheel over a bowl shifts its pitch (100–880 Hz). Green lines = octave, blue lines = perfect fifth.</p>
+      <p><strong>How to play:</strong> Tap an empty area to spawn a bowl (220–520 Hz). Tap a bowl to hear it ring. Drag to reposition. Circle a bowl's rim to sustain a drone. Mouse wheel (or long-press on touch) tunes its pitch (100–880 Hz). Green lines = octave, blue lines = perfect fifth. The <strong>Harmonic Presets</strong> menu spawns pentatonic, solfeggio, or chakra-tuned bowls.</p>
     </blockquote>
 
     <section class="engine-section" aria-labelledby="engine-heading">
@@ -120,6 +128,21 @@ const schema = [
         <li><strong>Strike transient:</strong> A short bandpass-filtered noise burst adds the mallet attack.</li>
         <li><strong>Synthetic reverb:</strong> A 3.0-second exponential-decay algorithmic convolver (generated impulse response, no audio files).</li>
       </ul>
+
+      <h2>Rim singing (friction drone)</h2>
+      <p>Drag your pointer in a circle around a bowl's rim to sing it continuously. The engine tracks your pointer's rotational velocity: faster rotation raises the drone's volume and opens a low-pass filter for a richer, brighter resonance. When the circular motion stops, the drone fades out over half a second.</p>
+
+      <h2>Mobile tuning</h2>
+      <p>Long-press a bowl on a touch screen to open a tuning overlay above it. Drag the slider across the full 100–880 Hz range or tap the <strong>−10 Hz</strong> / <strong>+10 Hz</strong> buttons for precise adjustments without a scroll wheel.</p>
+
+      <h2>Harmonic presets</h2>
+      <p>The <strong>Harmonic Presets</strong> menu in the toolbar clears the canvas and spawns pre-tuned bowls in a grid, snapping each to a harmonic frequency:</p>
+      <ul>
+        <li><strong>Pentatonic Scale:</strong> C4 261.63 Hz, D4 293.66 Hz, E4 329.63 Hz, G4 392.00 Hz, A4 440.00 Hz.</li>
+        <li><strong>Solfeggio Frequencies:</strong> 396, 417, 528, 639, 741, 852 Hz.</li>
+        <li><strong>Chakra Tones:</strong> 256, 288, 320, 341.3, 384, 426.7, 480 Hz.</li>
+      </ul>
+      <p>Choosing a preset also updates the shareable URL hash so the layout can be sent to others.</p>
 
       <h2>Sharing and embedding</h2>
       <p>Your bowl arrangement is encoded into the URL hash as a compact Base64 payload. Refreshing the page restores your layout. Use the <strong>Embed</strong> button to generate an iframe snippet for your own site.</p>

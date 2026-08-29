@@ -62,9 +62,9 @@ export const TOOLS: ToolEntry[] = [
   {
     slug: 'singing-bowl-engine',
     title: 'Singing Bowl Engine',
-    description: 'Place and strike singing bowls on an interactive canvas. Bronze and quartz additive synthesis profiles with harmonic connection lines, organic pitch drift, and synthetic reverb. All audio is generated in the browser.',
+    description: 'Place and strike singing bowls on an interactive canvas, circle a rim to sing a sustained drone, tune on touch, and load pentatonic, solfeggio, or chakra presets. Bronze and quartz additive synthesis with harmonic connection lines, organic pitch drift, and synthetic reverb. All audio is generated in the browser.',
     category: 'audio',
-    usefulWhen: 'you want to explore consonant intervals and additive synthesis hands-on.',
+    usefulWhen: 'you want to explore consonant intervals, additive synthesis, and sustained rim singing hands-on.',
   },
   {
     slug: 'contrast-checker',

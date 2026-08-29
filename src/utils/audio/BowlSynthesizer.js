@@ -1,10 +1,11 @@
 /**
  * BowlSynthesizer — Additive synthesis voice for singing bowls.
- * Bronze and Quartz profiles with organic pitch drift.
+ * Bronze and Quartz profiles with organic pitch drift, plus a sustained
+ * rim-singing (friction drone) mode with dynamic gain and a BiquadFilter.
  * Zero dependencies.
  */
 
-import { getAudioContext, getDryBus, getWetBus } from './AudioContextManager.js';
+import { getCurrentContext, getDryBus, getWetBus } from './AudioContextManager.js';
 
 /**
  * @typedef {'bronze' | 'quartz'} BowlProfile
@@ -47,7 +48,7 @@ function computeDecay(frequency, decayRange) {
  * @returns {{ stop: () => void }} Handle to stop early
  */
 export function strikeBowl(frequency, profile = 'bronze', velocity = 1.0) {
-  const ctx = getAudioContext();
+  const ctx = getCurrentContext();
   if (!ctx) return { stop() {} };
 
   const config = PROFILES[profile] || PROFILES.bronze;
@@ -146,4 +147,124 @@ export function strikeBowl(frequency, profile = 'bronze', velocity = 1.0) {
       }
     },
   };
+}
+
+// ---------------------------------------------------------------------------
+// Continuous rim singing (friction drone)
+// ---------------------------------------------------------------------------
+
+/** Active rim voices keyed by bowl id. */
+const _rimVoices = new Map();
+
+/**
+ * Start a sustained rim-singing drone for a bowl. Continuous oscillators run
+ * through a shared BiquadFilterNode into a dynamic GainNode. Begins silent;
+ * feed `updateRim` with pointer rotational velocity to shape it.
+ * @param {number|string} key - Bowl identifier
+ * @param {number} frequency - Fundamental frequency in Hz
+ * @param {BowlProfile} [profile='bronze']
+ */
+export function startRim(key, frequency, profile = 'bronze') {
+  const ctx = getCurrentContext();
+  if (!ctx) return;
+  stopRim(key);
+
+  const config = PROFILES[profile] || PROFILES.bronze;
+  const masterGain = ctx.createGain();
+  masterGain.gain.value = 0.0;
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.value = Math.max(100, Math.min(20000, frequency * 2));
+  filter.Q.value = 4;
+
+  filter.connect(masterGain);
+  masterGain.connect(getDryBus());
+  masterGain.connect(getWetBus());
+
+  const now = ctx.currentTime;
+  const oscillators = [];
+  for (let i = 0; i < config.ratios.length; i++) {
+    const osc = ctx.createOscillator();
+    osc.type = config.types[i];
+    osc.frequency.value = frequency * config.ratios[i];
+    osc.connect(filter);
+    osc.start(now);
+    oscillators.push(osc);
+  }
+
+  _rimVoices.set(key, {
+    ctx,
+    masterGain,
+    filter,
+    oscillators,
+    config,
+    baseFreq: frequency,
+    active: true,
+  });
+
+  // Shape from silence.
+  updateRim(key, 0.001, frequency);
+}
+
+/**
+ * Update an active rim drone's loudness + cutoff from pointer rotational
+ * velocity. Faster rotation => louder + richer resonance.
+ * @param {number|string} key - Bowl identifier
+ * @param {number} intensity - 0–1 rotational velocity mapping
+ * @param {number} [frequency] - Optionally retune the drone's base frequency
+ */
+export function updateRim(key, intensity, frequency) {
+  const voice = _rimVoices.get(key);
+  if (!voice || !voice.active) return;
+  const ctx = voice.ctx;
+  const now = ctx.currentTime;
+
+  if (typeof frequency === 'number' && frequency !== voice.baseFreq) {
+    voice.baseFreq = frequency;
+    for (let i = 0; i < voice.oscillators.length; i++) {
+      voice.oscillators[i].frequency.setTargetAtTime(
+        frequency * voice.config.ratios[i],
+        now,
+        0.03,
+      );
+    }
+  }
+
+  const clamped = Math.max(0, Math.min(1, intensity));
+  const gain = 0.05 + clamped * 0.45;
+  const cutoff = 300 + clamped * 2400;
+  voice.masterGain.gain.setTargetAtTime(gain, now, 0.03);
+  voice.filter.frequency.setTargetAtTime(cutoff, now, 0.03);
+}
+
+/**
+ * Fade an active rim drone out smoothly with a 0.5s exponential ramp and stop it.
+ * @param {number|string} key - Bowl identifier
+ */
+export function stopRim(key) {
+  const voice = _rimVoices.get(key);
+  if (!voice) return;
+  _rimVoices.delete(key);
+  voice.active = false;
+  const ctx = voice.ctx;
+  const now = ctx.currentTime;
+  try {
+    voice.masterGain.gain.cancelScheduledValues(now);
+    voice.masterGain.gain.setValueAtTime(Math.max(voice.masterGain.gain.value, 0.0001), now);
+    voice.masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+  } catch (_) {
+    /* ignore param scheduling errors */
+  }
+  const stopTime = now + 0.55;
+  for (const osc of voice.oscillators) {
+    try { osc.stop(stopTime); } catch (_) { /* already stopped */ }
+  }
+}
+
+/** Stop all active rim drones (used on clear / destroy). */
+export function stopAllRims() {
+  for (const key of Array.from(_rimVoices.keys())) {
+    stopRim(key);
+  }
 }
