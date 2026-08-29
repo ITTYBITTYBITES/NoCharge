@@ -164,7 +164,6 @@
 }
 
 .fc__expand {
-  position: relative;
   min-width: 28px;
   min-height: 24px;
   padding: 0 4px;
@@ -175,14 +174,6 @@
   border: 1px solid var(--line, #2a3530);
   border-radius: 4px;
   cursor: pointer;
-}
-
-/* The fan control is the only way into a tall pile's detail view on a phone,
-   so its touch target reaches the 44px minimum via a transparent halo. */
-.fc__expand::after {
-  content: '';
-  position: absolute;
-  inset: -10px;
 }
 
 .fc__expand:hover,

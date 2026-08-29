@@ -23,6 +23,7 @@ Check Android Chrome and iOS Safari, portrait and landscape.
 - Foundations show their top card face up and stay keyboard-operable (Tab + Enter/Space).
 - The Klondike waste fans its last cards to the right inside the slot; under-cards stay face up and never stack down over the tableau.
 - In FreeCell, tapping a free cell while a mid-run card is selected does nothing — it never carries the column's top card away.
+- The column expand (⤢/▼) control stays compact: enlarging it to 44px either overflows the fixed board or covers tappable cards/foundations, and the 44px rule applies "when space allows".
 
 ## Shared chrome
 

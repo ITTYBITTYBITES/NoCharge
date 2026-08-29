@@ -30,6 +30,7 @@ test('FreeCell taps select a card and send it to a foundation on a phone', async
   // FreeCell has no deal-time auto-move, so an ace on a column top waits for
   // the player. Re-deal until one shows up so the foundation assertion is
   // deterministic no matter the shuffle.
+  const moves = page.locator('[data-fc="moves"]');
   const readAces = () =>
     page.locator('[data-fc-col]').evaluateAll((columns) => {
       const labels = columns.map((column) => column.getAttribute('aria-label') ?? '');
@@ -40,18 +41,19 @@ test('FreeCell taps select a card and send it to a foundation on a phone', async
   let ace = await readAces();
   let deals = 1;
   while (!ace && deals < 25) {
-    await page.getByRole('button', { name: 'Game settings' }).click();
+    const settings = page.getByRole('button', { name: 'Game settings' });
+    await settings.click();
     await page.locator('[data-game-toolbar="restart-in-menu"]').click();
-    await page.keyboard.press('Escape');
+    await settings.click();
+    await expect(page.locator('[data-game-settings-panel]')).toBeHidden();
     ace = await readAces();
     deals += 1;
   }
   expect(ace, 'a deal with an ace on a column top').not.toBeNull();
 
-  const moves = page.locator('[data-fc="moves"]');
-
   // Tap the ace (the bottom card of its column) — it becomes the selection.
   const aceCard = page.locator(`[data-fc-col="${ace!.col}"] .fc__card`).last();
+  await aceCard.scrollIntoViewIfNeeded();
   await aceCard.tap();
   await expect(page.locator(`[data-fc-col="${ace!.col}"] .fc__card.is-selected`).last()).toBeVisible();
   await expect(moves).toHaveText('0');
