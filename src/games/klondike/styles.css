@@ -91,6 +91,16 @@
   max-height: 44px;
 }
 
+/* The waste fans its last few cards to the right inside the fixed slot. The
+   cards are absolutely stacked — in normal flow they would pile downward out
+   of the short top row and over the tableau on a phone. The fan only reaches
+   into the empty spacer column, never the foundations. */
+.kl__waste > .kl__card {
+  position: absolute;
+  top: 0;
+  left: calc(var(--kl-waste-i, 0) * 16%);
+}
+
 .kl__card {
   width: 100%;
   height: 100%;

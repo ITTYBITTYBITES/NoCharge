@@ -16,6 +16,15 @@ Check Android Chrome and iOS Safari, portrait and landscape.
 - Wide solitaire boards scroll horizontally inside the game board, not the page.
 - The document does not scroll sideways.
 
+## Klondike and FreeCell
+
+- Scrolling the page with a finger that starts on a card never selects or moves it (card input is native `click`, not `pointerdown`).
+- Tapping a foundation after selecting a card sends the card up; a tap with nothing selected is a no-op.
+- Foundations show their top card face up and stay keyboard-operable (Tab + Enter/Space).
+- The Klondike waste fans its last cards to the right inside the slot; under-cards stay face up and never stack down over the tableau.
+- In FreeCell, tapping a free cell while a mid-run card is selected does nothing — it never carries the column's top card away.
+- The column expand (⤢/▼) control stays compact: enlarging it to 44px either overflows the fixed board or covers tappable cards/foundations, and the 44px rule applies "when space allows".
+
 ## Shared chrome
 
 - Compact bar: Pause/Resume, one Mute control, Game settings.

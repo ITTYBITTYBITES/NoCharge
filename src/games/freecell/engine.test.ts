@@ -4,8 +4,10 @@ import {
   moveToFreeCell,
   moveFreeCellToTableau,
   moveFreeCellToFoundation,
+  moveSelectedToFreeCell,
   moveTableau,
   moveTableauToFoundation,
+  tapFoundation,
   autoMoveToFoundation,
   undo,
   canPlaceOnTableau,
@@ -161,5 +163,50 @@ describe('FreeCell engine', () => {
     const game1 = createGame(42);
     const game2 = createGame(42);
     expect(game1.tableau[0]![0]!.id).toBe(game2.tableau[0]![0]!.id);
+  });
+});
+
+describe('FreeCell taps', () => {
+  it('moves a selected free-cell card to its suit foundation', () => {
+    const game = createGame(12345);
+    game.freeCells[0] = { suit: 'clubs', rank: 1, faceUp: true, id: 90 };
+    const next = tapFoundation(game, { type: 'cell', idx: 0 });
+    expect(next).not.toBeNull();
+    expect(next!.foundations[3]!.length).toBe(1);
+    expect(next!.freeCells[0]).toBeNull();
+    expect(next!.moves).toBe(1);
+  });
+
+  it('moves a selected tableau top card to the foundation, but never a mid-run card', () => {
+    const game = createGame(12345);
+    game.tableau[0] = [
+      { suit: 'hearts', rank: 6, faceUp: true, id: 1 },
+      { suit: 'diamonds', rank: 1, faceUp: true, id: 2 },
+    ];
+    expect(tapFoundation(game, { type: 'tableau', col: 0, cardIndex: 0 })).toBeNull();
+    const next = tapFoundation(game, { type: 'tableau', col: 0, cardIndex: 1 });
+    expect(next).not.toBeNull();
+    expect(next!.foundations[2]!.length).toBe(1);
+    expect(next!.tableau[0]!.length).toBe(1);
+  });
+
+  it('moveSelectedToFreeCell only takes the selected top card', () => {
+    const game = createGame(12345);
+    game.tableau[0] = [
+      { suit: 'hearts', rank: 6, faceUp: true, id: 1 },
+      { suit: 'spades', rank: 5, faceUp: true, id: 2 },
+    ];
+    // A mid-run selection must not teleport the column's top card into a cell.
+    expect(moveSelectedToFreeCell(game, { type: 'tableau', col: 0, cardIndex: 0 })).toBeNull();
+    expect(game.tableau[0]!.length).toBe(2);
+    const next = moveSelectedToFreeCell(game, { type: 'tableau', col: 0, cardIndex: 1 });
+    expect(next).not.toBeNull();
+    expect(next!.tableau[0]!.length).toBe(1);
+    expect(next!.freeCells[0]).toEqual({ suit: 'spades', rank: 5, faceUp: true, id: 2 });
+  });
+
+  it('foundation taps are a no-op with nothing selected', () => {
+    const game = createGame(12345);
+    expect(tapFoundation(game, null)).toBeNull();
   });
 });

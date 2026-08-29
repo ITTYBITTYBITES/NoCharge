@@ -273,6 +273,38 @@ export function moveTableauToFoundation(
   };
 }
 
+/**
+ * What the player has tapped once: the pending source of the next move.
+ * Kept next to the engine so tap resolution is pure and testable without DOM.
+ */
+export type KlondikeSelection =
+  | { type: 'waste' }
+  | { type: 'tableau'; col: number; cardIndex: number };
+
+/**
+ * Resolve a tap on a foundation pile against the current selection.
+ *
+ * Tapping a foundation is the tap-then-tap destination for the selected card —
+ * the same move a second tap on the card itself performs. A tap with nothing
+ * selected, or with a mid-run card that cannot go up yet, is a no-op rather
+ * than a move of the wrong card. The engine routes the card to its suit pile,
+ * so every foundation pile accepts the tap.
+ */
+export function tapFoundation(
+  state: KlondikeState,
+  selection: KlondikeSelection | null,
+): KlondikeState | null {
+  if (selection?.type === 'waste') {
+    return moveWasteToFoundation(state);
+  }
+  if (selection?.type === 'tableau') {
+    const column = state.tableau[selection.col]!;
+    if (selection.cardIndex !== column.length - 1) return null;
+    return moveTableauToFoundation(state, selection.col);
+  }
+  return null;
+}
+
 /** Undo the last move. Returns null if no history. */
 export function undo(state: KlondikeState): KlondikeState | null {
   if (state.history.length === 0) return null;
