@@ -1,10 +1,18 @@
 /**
  * SoundCanvas — Canvas rendering engine and gesture handler for singing bowls.
  * High-DPI, 60 FPS loop, PointerEvents, haptic feedback, harmonic connection lines.
+ *
+ * Features:
+ *  - Tap empty space to spawn a bowl.
+ *  - Tap a bowl to strike it.
+ *  - Drag to reposition.
+ *  - Circular friction around a bowl sustains a rim drone (rotational velocity
+ *    drives loudness + cutoff).
+ *  - Long-press a bowl (touch or pointer) to open the mobile tuning overlay.
  */
 
 import { unlockAudioContext, isAudioUnlocked, suspendAudio, resumeAudio } from '../../utils/audio/AudioContextManager.js';
-import { strikeBowl } from '../../utils/audio/BowlSynthesizer.js';
+import { strikeBowl, startRim, updateRim, stopRim } from '../../utils/audio/BowlSynthesizer.js';
 import { pushStateToHash } from '../../utils/StateSerializer.js';
 
 const MIN_FREQ = 100;
@@ -19,6 +27,16 @@ const PERFECT_FIFTH = 1.5;
 const OCTAVE = 2.0;
 const RATIO_TOLERANCE = 0.04;
 
+/** Long-press duration (ms) that selects a bowl for tuning. */
+const LONG_PRESS_MS = 480;
+/** Pointer travel (px²) beyond which a press is treated as a drag. */
+const MOVE_THRESHOLD_SQ = 25;
+
+/** Rotational velocity thresholds (rad/s) for the rim drone. */
+const RIM_ACTIVATE_ANGVEL = 2.5;
+const RIM_STOP_ANGVEL = 1.0;
+const RIM_MAX_ANGVEL = 14;
+
 /**
  * @typedef {{ id: number, x: number, y: number, freq: number, profile: 'bronze'|'quartz', ripple: number, rippleAlpha: number }} Bowl
  */
@@ -26,7 +44,7 @@ const RATIO_TOLERANCE = 0.04;
 export class SoundCanvas {
   /**
    * @param {HTMLCanvasElement} canvas
-   * @param {{ onStateChange?: () => void }} [options]
+   * @param {{ onStateChange?: () => void, onSelect?: (bowl: Bowl|null, pos?: {x:number,y:number}) => void }} [options]
    */
   constructor(canvas, options = {}) {
     this.canvas = canvas;
@@ -38,8 +56,19 @@ export class SoundCanvas {
     this._nextId = 1;
     this._animId = null;
     this._running = false;
-    this._dragging = null; // { bowlId, offsetX, offsetY }
+    this._dragging = null; // { bowlId, offsetX, offsetY, moved }
     this._pointerDown = null; // { x, y, time, bowlId | null }
+    this._selectedBowlId = null;
+
+    this._longPressTimer = null;
+    this._longPressFired = false;
+
+    // Rim (friction drone) tracking state per active gesture
+    this._rimTrack = null; // { lastAngle, lastTime, angVel } relative to rim center
+    this._rimCenter = null; // frozen bowl center while rim singing
+    this._rimMode = false; // true while the current gesture is rim singing
+    this._rimAngVel = 0; // latest smoothed rotational velocity
+    this._rimActive = new Set(); // bowl ids currently droning
 
     this._resizeObserver = null;
     this._visibilityHandler = null;
@@ -104,13 +133,28 @@ export class SoundCanvas {
     return null;
   }
 
+  _clearLongPress() {
+    if (this._longPressTimer !== null) {
+      clearTimeout(this._longPressTimer);
+      this._longPressTimer = null;
+    }
+    this._longPressFired = false;
+  }
+
   _onPointerDown(e) {
     e.preventDefault();
     this.canvas.setPointerCapture(e.pointerId);
+    // Resume + initialize the audio graph strictly inside this user gesture.
     unlockAudioContext();
+    resumeAudio();
 
     const pos = this._getPos(e);
     const hit = this._hitTest(pos.x, pos.y);
+
+    // Any press outside a bowl dismisses an open tuning overlay.
+    if (!hit && this._selectedBowlId !== null) {
+      this._selectBowl(null);
+    }
 
     this._pointerDown = {
       x: pos.x,
@@ -119,6 +163,12 @@ export class SoundCanvas {
       bowlId: hit ? hit.id : null,
     };
 
+    this._clearLongPress();
+    this._rimTrack = null;
+    this._rimCenter = hit ? { x: hit.x, y: hit.y } : null;
+    this._rimMode = false;
+    this._rimAngVel = 0;
+
     if (hit) {
       this._dragging = {
         bowlId: hit.id,
@@ -126,6 +176,14 @@ export class SoundCanvas {
         offsetY: pos.y - hit.y,
         moved: false,
       };
+
+      // Long-press selects the bowl for mobile tuning.
+      this._longPressTimer = setTimeout(() => {
+        this._longPressFired = true;
+        this._selectBowl(hit, { x: pos.x, y: pos.y });
+      }, LONG_PRESS_MS);
+    } else {
+      this._dragging = null;
     }
 
     // Haptic feedback on touch
@@ -142,29 +200,107 @@ export class SoundCanvas {
     const bowl = this.bowls.find((b) => b.id === this._dragging.bowlId);
     if (!bowl) return;
 
-    // Only start dragging after a threshold
     const dx = pos.x - this._pointerDown.x;
     const dy = pos.y - this._pointerDown.y;
-    if (dx * dx + dy * dy > 25) {
-      this._dragging.moved = true;
+    const distSq = dx * dx + dy * dy;
+
+    // --- Rim singing mode: bowl frozen, rotational velocity drives the drone ---
+    if (this._rimMode) {
+      const angVel = this._trackAngVel(pos, this._rimCenter);
+      this._rimAngVel = angVel;
+      if (angVel < RIM_STOP_ANGVEL) {
+        // Circular motion stopped -> fade out and return to drag control.
+        if (this._rimActive.has(bowl.id)) {
+          stopRim(bowl.id);
+          this._rimActive.delete(bowl.id);
+        }
+        this._rimMode = false;
+        this._rimTrack = null;
+        return;
+      }
+      const intensity = Math.min(1, angVel / RIM_MAX_ANGVEL);
+      updateRim(bowl.id, intensity, bowl.freq);
+      return;
     }
 
-    if (this._dragging.moved) {
+    // A press that has not moved yet can still cancel a pending long-press.
+    if (distSq > MOVE_THRESHOLD_SQ && this._longPressTimer !== null) {
+      clearTimeout(this._longPressTimer);
+      this._longPressTimer = null;
+      this._longPressFired = false;
+    }
+
+    // Detect circular friction around the frozen rim center before dragging.
+    if (distSq > 9) {
+      const angVel = this._trackAngVel(pos, this._rimCenter);
+      if (angVel > RIM_ACTIVATE_ANGVEL) {
+        this._rimMode = true;
+        this._rimAngVel = angVel;
+        // Freeze the bowl at its grab center so the finger rotates around it.
+        bowl.x = this._rimCenter.x;
+        bowl.y = this._rimCenter.y;
+        this._dragging.moved = true;
+        if (!this._rimActive.has(bowl.id)) {
+          startRim(bowl.id, bowl.freq, bowl.profile);
+          this._rimActive.add(bowl.id);
+        }
+        const intensity = Math.min(1, angVel / RIM_MAX_ANGVEL);
+        updateRim(bowl.id, intensity, bowl.freq);
+        return;
+      }
+    }
+
+    // Otherwise it's a normal drag (move the bowl).
+    if (distSq > MOVE_THRESHOLD_SQ) {
+      this._dragging.moved = true;
       bowl.x = Math.max(BOWL_RADIUS, Math.min(this.logicalWidth - BOWL_RADIUS, pos.x - this._dragging.offsetX));
       bowl.y = Math.max(BOWL_RADIUS, Math.min(this.logicalHeight - BOWL_RADIUS, pos.y - this._dragging.offsetY));
     }
   }
 
+  /**
+   * Track pointer rotation around a fixed center and return the smoothed
+   * rotational velocity (rad/s). Mutates `this._rimTrack`.
+   * @param {{x:number,y:number}} pos
+   * @param {{x:number,y:number}} center
+   * @returns {number}
+   */
+  _trackAngVel(pos, center) {
+    const now = performance.now();
+    const relX = pos.x - center.x;
+    const relY = pos.y - center.y;
+    const angle = Math.atan2(relY, relX);
+
+    if (!this._rimTrack) {
+      this._rimTrack = { lastAngle: angle, lastTime: now, angVel: 0 };
+      return 0;
+    }
+
+    let dTheta = angle - this._rimTrack.lastAngle;
+    if (dTheta > Math.PI) dTheta -= 2 * Math.PI;
+    if (dTheta < -Math.PI) dTheta += 2 * Math.PI;
+
+    const dt = (now - this._rimTrack.lastTime) / 1000;
+    if (dt > 0.001) {
+      const angularVelocity = Math.abs(dTheta) / dt;
+      // Smoothed estimate (exponential moving average)
+      this._rimTrack.angVel = this._rimTrack.angVel * 0.8 + angularVelocity * 0.2;
+    }
+    this._rimTrack.lastAngle = angle;
+    this._rimTrack.lastTime = now;
+    return this._rimTrack.angVel;
+  }
+
   _onPointerUp(e) {
     const pos = this._getPos(e);
 
-    if (this._dragging && !this._dragging.moved) {
+    if (this._dragging && !this._dragging.moved && !this._longPressFired) {
       // It was a tap on an existing bowl — strike it
       const bowl = this.bowls.find((b) => b.id === this._dragging.bowlId);
       if (bowl) {
         this._strikeBowl(bowl);
       }
-    } else if (!this._dragging && this._pointerDown) {
+    } else if (!this._dragging && this._pointerDown && !this._longPressFired) {
       // Tap on empty space — spawn a new bowl
       const elapsed = performance.now() - this._pointerDown.time;
       const dx = pos.x - this._pointerDown.x;
@@ -178,6 +314,19 @@ export class SoundCanvas {
       this._notifyStateChange();
     }
 
+    // End rim drone for any bowl touched during this gesture.
+    if (this._rimActive.size > 0) {
+      for (const id of Array.from(this._rimActive)) {
+        stopRim(id);
+      }
+      this._rimActive.clear();
+    }
+    this._rimTrack = null;
+    this._rimCenter = null;
+    this._rimMode = false;
+    this._rimAngVel = 0;
+
+    this._clearLongPress();
     this._dragging = null;
     this._pointerDown = null;
 
@@ -191,9 +340,15 @@ export class SoundCanvas {
     if (!bowl) return;
 
     const delta = -Math.sign(e.deltaY) * 10;
-    bowl.freq = Math.max(MIN_FREQ, Math.min(MAX_FREQ, bowl.freq + delta));
-    this._strikeBowl(bowl);
-    this._notifyStateChange();
+    this.setBowlFreq(bowl.id, bowl.freq + delta);
+  }
+
+  /** Open the tuning overlay for a bowl (or close it when bowl is null). */
+  _selectBowl(bowl, pos) {
+    this._selectedBowlId = bowl ? bowl.id : null;
+    if (this.options.onSelect) {
+      this.options.onSelect(bowl, pos);
+    }
   }
 
   _spawnBowl(x, y) {
@@ -218,6 +373,69 @@ export class SoundCanvas {
     strikeBowl(bowl.freq, bowl.profile, 0.8);
     bowl.ripple = BOWL_RADIUS;
     bowl.rippleAlpha = 0.7;
+  }
+
+  /**
+   * Set a bowl's frequency (clamped to the 100–880Hz range), preview it, and
+   * keep any active rim drone in tune.
+   * @param {number} id
+   * @param {number} freq
+   */
+  setBowlFreq(id, freq) {
+    const bowl = this.bowls.find((b) => b.id === id);
+    if (!bowl) return;
+    bowl.freq = Math.round(Math.max(MIN_FREQ, Math.min(MAX_FREQ, freq)));
+    this._strikeBowl(bowl);
+    if (this._rimActive.has(id)) {
+      const intensity = Math.min(1, this._rimAngVel / RIM_MAX_ANGVEL);
+      updateRim(id, intensity, bowl.freq);
+    }
+    this._notifyStateChange();
+  }
+
+  /**
+   * Replace current bowls with pre-tuned bowls snapped to the given harmonic
+   * frequencies, laid out in a grid. Updates the Base64 URL hash.
+   * @param {number[]} frequencies
+   */
+  loadPreset(frequencies) {
+    this._stopAllAudio();
+    this._selectBowl(null);
+    this.bowls = [];
+
+    const n = frequencies.length;
+    if (n === 0) {
+      this._notifyStateChange();
+      return;
+    }
+    const cols = Math.ceil(Math.sqrt(n));
+    const rows = Math.ceil(n / cols);
+    const cellW = this.logicalWidth / cols;
+    const cellH = this.logicalHeight / rows;
+
+    frequencies.forEach((freq, i) => {
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+      this.bowls.push({
+        id: this._nextId++,
+        x: Math.max(BOWL_RADIUS, Math.min(this.logicalWidth - BOWL_RADIUS, cellW * (col + 0.5))),
+        y: Math.max(BOWL_RADIUS, Math.min(this.logicalHeight - BOWL_RADIUS, cellH * (row + 0.5))),
+        freq: Math.round(freq),
+        profile: i % 2 === 0 ? 'quartz' : 'bronze',
+        ripple: 0,
+        rippleAlpha: 0,
+      });
+    });
+
+    this._notifyStateChange();
+  }
+
+  _stopAllAudio() {
+    this._rimActive.clear();
+    this._rimTrack = null;
+    this._rimCenter = null;
+    this._rimMode = false;
+    this._rimAngVel = 0;
   }
 
   _notifyStateChange() {
@@ -342,6 +560,15 @@ export class SoundCanvas {
         ctx.stroke();
       }
 
+      // Selection highlight
+      if (this._selectedBowlId === bowl.id) {
+        ctx.beginPath();
+        ctx.arc(bowl.x, bowl.y, BOWL_RADIUS + 7, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+
       // Outer glow
       ctx.beginPath();
       ctx.arc(bowl.x, bowl.y, BOWL_RADIUS + 4, 0, Math.PI * 2);
@@ -389,12 +616,13 @@ export class SoundCanvas {
       ctx.textBaseline = 'middle';
       ctx.fillText('Tap anywhere to place a singing bowl', w / 2, h / 2 - 10);
       ctx.font = '400 11px Inter, system-ui, sans-serif';
-      ctx.fillText('Tap a bowl to strike · Drag to move · Scroll to tune', w / 2, h / 2 + 12);
+      ctx.fillText('Tap to strike · Drag to move · Circle the rim to sing · Long-press to tune', w / 2, h / 2 + 12);
     }
   }
 
   /**
-   * Hydrate bowls from an array of state objects.
+   * Hydrate bowls from an array of state objects (no audio — visual only until
+   * the user's first gesture unlocks the audio graph).
    * @param {Array<{x: number, y: number, freq: number, profile: string}>} states
    */
   hydrate(states) {
@@ -423,12 +651,16 @@ export class SoundCanvas {
 
   /** Clear all bowls. */
   clear() {
+    this._stopAllAudio();
+    this._selectBowl(null);
     this.bowls = [];
     this._notifyStateChange();
   }
 
   /** Destroy the canvas engine and clean up. */
   destroy() {
+    this._clearLongPress();
+    this._stopAllAudio();
     this._stopLoop();
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
