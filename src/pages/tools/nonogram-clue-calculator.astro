@@ -16,7 +16,7 @@ const faqs = [
   },
   {
     q: 'Can it handle large lines?',
-    a: 'Lines up to 25 cells with a handful of runs are instant; the tool caps output at 200 arrangements and says so.',
+    a: 'Lines are limited to 25 cells. The tool enumerates all valid arrangements, displays at most 200, and states when the display is shortened. Forced-cell comparisons still use the full set; large sets can take longer to calculate.',
   },
 ];
 ---
@@ -53,6 +53,21 @@ const faqs = [
     </div>
     <div class="calc-output" data-calc-output aria-live="polite"></div>
   </section>
+  <Fragment slot="how">
+    <p>Each clue number is a filled run. Neighboring runs need at least one empty cell between them, so the minimum span is the sum of the runs plus the number of separating gaps. The calculator enumerates placements in a single line and compares every valid arrangement for cells that always agree.</p>
+    <h3>Worked example</h3>
+    <p>For a five-cell line with clue 3, the arrangements are <code>XXX..</code>, <code>.XXX.</code>, and <code>..XXX</code>. X means filled and a dot means empty. The third cell is filled in all three arrangements, giving <code>??X??</code>; the question marks remain unresolved.</p>
+    <p>Clues 2,2 need 2 + 1 + 2 = 5 cells. In a five-cell line only <code>XX.XX</code> fits. In a four-cell line no arrangement exists. This minimum-span check explains an impossible input before any whole-grid reasoning is needed.</p>
+  </Fragment>
+
+  <Fragment slot="limits">
+    <ul>
+      <li>The tool handles one line of 1–25 cells and positive whole-number runs. It does not accept pre-marked cells or a zero clue for an entirely empty line.</li>
+      <li>Forced cells use all valid arrangements. At most 200 arrangement strings are displayed; the display limit does not narrow the deduction to those first 200.</li>
+      <li>It does not combine crossing rows and columns, prove a full puzzle has a unique solution, or reveal a saved NoCharge puzzle.</li>
+      <li>Large sets take more work to enumerate. Calculations run in this page and are not uploaded or stored.</li>
+    </ul>
+  </Fragment>
 </ToolPage>
 
 <script>
@@ -87,11 +102,15 @@ const faqs = [
   }
 
   const render = () => {
-    const lineLength = Math.max(1, Math.min(25, Number(lengthInput?.value) || 1));
-    const runs = (runsInput?.value ?? '').split(',').map((value) => Number(value.trim())).filter((value) => Number.isInteger(value) && value > 0);
+    const lineLength = Number(lengthInput?.value);
+    const runs = (runsInput?.value ?? '').split(',').map((value) => Number(value.trim()));
     output.replaceChildren();
-    if (runs.length === 0) {
-      output.textContent = 'Enter at least one positive run.';
+    if (!Number.isInteger(lineLength) || lineLength < 1 || lineLength > 25) {
+      output.textContent = 'Enter a whole-number line length from 1 to 25.';
+      return;
+    }
+    if (runs.some((value) => !Number.isInteger(value) || value <= 0)) {
+      output.textContent = 'Enter positive whole-number runs separated by commas, for example 2,1.';
       return;
     }
     const result = arrangements(lineLength, runs);
@@ -101,7 +120,8 @@ const faqs = [
     }
     const limited = result.slice(0, 200);
     const forced = Array.from({ length: lineLength }, (_, index) => {
-      const values = limited.map((line) => line[index]);
+      // The display cap must never turn a partial sample into a false deduction.
+      const values = result.map((line) => line[index]);
       const allX = values.every((value) => value === 'X');
       const allDot = values.every((value) => value === '.');
       return allX ? 'X' : allDot ? '.' : '?';

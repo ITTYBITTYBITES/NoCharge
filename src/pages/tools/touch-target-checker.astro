@@ -4,19 +4,19 @@ import ToolPage from '../../components/ToolPage.astro';
 const faqs = [
   {
     q: 'What sizes should targets be?',
-    a: 'WCAG 2.5.8 minimum is 24 × 24 CSS px; 2.5.5 (AAA) recommends 44 × 44. NoCharge boards aim for generous targets, and this tool helps you verify your own buttons.',
+    a: 'WCAG 2.2 criterion 2.5.8 uses 24 × 24 CSS px at AA, and criterion 2.5.5 uses 44 × 44 at AAA, subject to their exceptions. This demo compares size only, not the complete criteria.',
   },
   {
     q: 'Why is spacing mentioned?',
-    a: 'Two 44 px targets 2 px apart are harder to hit than two 36 px targets 12 px apart. Both numbers matter; NoCharge documents spacing for its shared boards.',
+    a: 'Spacing can affect accidental activation and is part of some target-size exceptions. This demo does not compute gaps or evaluate those exceptions; it only compares the drawn width and height.',
   },
   {
     q: 'Does the checker measure my page?',
-    a: 'No. It measures the block you draw in this demo, using CSS pixels at your current zoom. Measuring a real page needs DevTools or an accessibility audit — the links below point to both.',
+    a: 'No. It measures the block you draw in this demo, using CSS pixels at your current zoom. Measuring a real page needs its rendered geometry and a separate accessibility review.',
   },
   {
     q: 'What does "physical size" mean?',
-    a: 'CSS px are logical; the physical size in mm matters less than the device pixel ratio and zoom. The tool reports CSS px and explains that because that is what WCAG counts.',
+    a: 'CSS pixels are logical units. Their physical size depends on zoom and the display. This tool does not convert its measurements to millimeters or evaluate how a particular person uses a device.',
   },
 ];
 ---
@@ -24,10 +24,10 @@ const faqs = [
 <ToolPage
   title="Touch target size checker"
   eyebrow="CSS pixels, honestly reported"
-  description="Draw and measure a target, add neighbors to check spacing, and compare against WCAG minimums and NoCharge's generous defaults."
+  description="Draw a rectangle, read its rounded CSS-pixel dimensions, and compare them with the 24 px and 44 px target-size thresholds. This demo does not measure spacing or audit another page."
   path="/tools/touch-target-checker/"
   category="Accessibility"
-  bottomLine="Drag to draw a button and see its exact CSS-pixel width and height against the 24 px minimum and 44 px AAA target. Add neighboring targets to check the gaps. It is a measurement demo for your own design, not an audit of any page."
+  bottomLine="Drag a rectangle to compare its rounded width and height with 24 × 24 and 44 × 44 CSS pixels. The two reference squares are static; spacing, exceptions, and full accessibility conformance are not calculated."
   faqs={faqs}
   embedCode={`<iframe src="https://nocharge.net/tools/touch-target-checker/" width="400" height="640" title="NoCharge touch target checker"></iframe>`}
   nextActions={[
@@ -54,6 +54,21 @@ const faqs = [
       <li>44 × 44 px — AAA recommendation, and NoCharge's default target size</li>
     </ul>
   </section>
+  <Fragment slot="how">
+    <p>Drag inside the drawing area to define opposite corners of a rectangle. The demo subtracts the pointer's start and current positions, takes the absolute width and height, and rounds each to the nearest CSS pixel for the readout. It compares both dimensions with 24 and 44; area alone is not the test.</p>
+    <h3>Worked example</h3>
+    <p>A drag from local position (10, 20) to (54, 64) produces 44 × 44 CSS pixels and reaches the larger size threshold in both directions. A 100 × 30 rectangle reaches 24 in both directions, but it does not reach 44 in height, even though its area is larger.</p>
+    <p>The two fixed Aa squares are visual references, not adjustable neighbors. The readout measures the rectangle you draw; it does not calculate their separation or inspect controls elsewhere on the page.</p>
+  </Fragment>
+
+  <Fragment slot="limits">
+    <ul>
+      <li>This checks drawn dimensions only, not complete WCAG conformance. Target-size criteria include exceptions and spacing considerations that this demo does not evaluate.</li>
+      <li>CSS pixels are logical units, not millimeters or a count of physical screen pixels. Zoom and device density affect physical appearance.</li>
+      <li>The displayed dimensions are rounded. For boundary decisions, inspect unrounded geometry in developer tools rather than relying on a value rounded up to 24 or 44.</li>
+      <li>Drawing requires pointer or touch input. The example is not an automatic audit of your site, and it does not save the rectangle.</li>
+    </ul>
+  </Fragment>
 </ToolPage>
 
 <script>

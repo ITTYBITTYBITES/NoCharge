@@ -36,35 +36,24 @@ session: 3–8 min
 order: 6
 ---
 
-Dots &amp; Boxes is a Pass &amp; Play game for two people sharing one screen. Players alternate drawing single lines between neighboring dots. Drawing the fourth side of a box claims that box — and by the standard rule, completing a box grants another line right away, so a single move can start a chain. When every box is claimed, the player with the most boxes wins; an exact tie is a draw.
+Dots & Boxes makes the fourth side of a square more important than its first three. Two people share one screen, and closing a box lets the same player draw again.
 
-Choose the quick 4×4 board (16 boxes) or the longer 6×6 board (36 boxes). The current player is always highlighted, claimed boxes flash once when they close (respecting reduced-motion preferences), and every line works with touch, pointer, or arrow keys plus Enter. There is no timer, no computer opponent, and no account — the most recent result stays on this device in My Arcade.
+## Objective and win/loss conditions
 
-
-## Quick answer
-
-This game opens directly in the browser without an account. Scores or progress stay in this browser's localStorage.
+Claim more boxes than your opponent by the time every box is enclosed. Equal totals produce a draw. The small board contains 4×4 boxes, or 16 in total; the larger board contains 6×6 boxes, or 36. There is no timer and no computer opponent.
 
 ## How it plays
 
-The board, controls, and session length are documented on the game page and in its definitive guide. No special hardware is required beyond what the guide lists. The game supports the inputs documented for that title.
+Choose an undrawn horizontal or vertical edge between neighboring dots. If the edge finishes no box, the turn passes. If it finishes one or two boxes, those boxes become yours and you keep the turn. It does not matter who drew the other three sides.
 
-## Controls at a glance
+For example, two neighboring boxes can each have three sides with their shared middle edge still missing. Drawing that one edge claims both boxes, adds two points, and grants another move. Continue playing until you draw an edge that finishes no box or the board ends.
 
-Check the game page for pointer, touch, and keyboard alternatives. Most actions have a keyboard path and a pointer path. Fullscreen or focus mode depends on browser permission and can be exited with Escape.
+## Scoring and strategy
 
-## Local storage and session
+Every claimed box is worth one point. On a 16-box board, a final 9–7 count wins by two boxes; the number of lines each player drew does not decide the winner.
 
-Best results, win counts, or puzzle progress are kept in this browser only. A different browser, profile, private window, or device will not share them. Clearing site data removes them. My Arcade reads these local values to show a private dashboard.
+Before adding a third side, inspect what your opponent could claim next. Several nearly closed boxes can form a chain that one player takes using consecutive extra moves. When only risky openings remain, compare the lengths of the chains you would release rather than treating each edge as an isolated decision.
 
-## Accessibility and options
+## Local save data
 
-Sound on/off and mute are separate preferences. Volume and ambient are local choices. Focus outlines remain visible and no board uses transform scale to force fit. Reduced motion affects animation, not sound.
-
-## What NoCharge did not evaluate
-
-This description is based on current game code and tests. We did not measure long-term durability, evaluate every screen reader combination, or promise compatibility with every device. The game is general-audience and not directed to children.
-
-## Next step
-
-Open the game, play one run with the controls documented, and check the guide for the full rule set if needed. Use Privacy page to clear local data when you want.
+`nocharge:passplay:match:dots-and-boxes` records the latest completed board size, each player's box count, result, and date. It stores neither the drawn-edge layout nor player names. Reloading will not resume a half-finished board. My Arcade reads this single browser-local result rather than maintaining a public score table.

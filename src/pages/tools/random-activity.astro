@@ -35,7 +35,7 @@ const faqs = [
   },
   {
     q: 'Does it write anything?',
-    a: 'No. The tool stores nothing and sends nothing. Reloading the page resets the seed.',
+    a: 'No. The selection stays in page memory. Reloading clears the displayed pick; this tool does not save a random seed or browsing history.',
   },
 ];
 ---
@@ -43,7 +43,7 @@ const faqs = [
 <ToolPage
   title="Random calm activity"
   eyebrow="A quiet pick"
-  description="Press once for a random NoCharge game, article, or tool. No weighting, no claims, no algorithm telling you what to do next."
+  description="Press once for a random NoCharge game, article, or tool. No personalization, weighting, or saved pick history."
   path="/tools/random-activity/"
   category="Play"
   bottomLine="One press returns one random item — a game to open, an article to read, or a tool to try. Equal probability for every item, no health claims, and nothing stored. If you do not like the pick, press again (or don't)."
@@ -65,6 +65,21 @@ const faqs = [
       <p>Press the button. If the result is not what you want, that is fine — there is no score for picking again.</p>
     </div>
   </section>
+  <Fragment slot="how">
+    <p>The pool combines all published games with a selected set of reading links and three other tools. This build contains {items.length} entries. Each press draws a browser-generated random number between 0 and 1, multiplies it by the pool size, and rounds down to choose an entry.</p>
+    <h3>Worked example</h3>
+    <p>With a hypothetical four-entry pool, the intervals 0–0.25, 0.25–0.5, 0.5–0.75, and 0.75–1 choose entries one through four. A random value of 0.62 gives floor(0.62 × 4) = 2, which is the third entry because array positions start at zero.</p>
+    <p>Each entry has the same selection interval. Categories do not: a pool containing more games than tools will return games more often. Each press is a new draw, so the same item can appear twice in a row.</p>
+  </Fragment>
+
+  <Fragment slot="limits">
+    <ul>
+      <li>This is a random selection, not personalized advice about mood, health, difficulty, or available time.</li>
+      <li>It does not sample every article and tool on the site; only the entries in this page's pool are eligible.</li>
+      <li>No repeat-avoidance queue or saved history is used. Equal selection intervals do not guarantee an even distribution over a few presses.</li>
+      <li>The browser's pseudorandom generator is suitable for casual discovery, not cryptographic draws, prizes, or audited lotteries.</li>
+    </ul>
+  </Fragment>
 </ToolPage>
 
 <script>

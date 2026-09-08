@@ -37,35 +37,24 @@ featured: false
 order: 15
 ---
 
-Tile Garden is a calm merge game built around four growth tiers: seed, sprout, bloom, and flower. Place seed tiles on an 8×8 grid. When four same-species tiles form a 2×2 block, they merge into one tile of the next tier at the top-left of that block.
+Tile Garden grows plants by combining matching 2×2 blocks on an 8×8 board. Each new seed has one of six species, and a successful merge frees three cells for later placements.
 
-Three modes: Garden (standard rules, win with a flower at center), Meadow (endless play, no win condition), and Sketch (creative mode with free placement, no required merges). There are no lives, no timer, no energy system, and no "buy more moves." New seeds appear at a calm rate.
+## Objective and win/loss conditions
 
-
-## Quick answer
-
-This game opens directly in the browser without an account. Scores or progress stay in this browser's localStorage.
+In Garden mode, make a Flower on one of the four center cells to finish. Meadow uses the same merge rules without that finish condition. Sketch disables automatic merges and lets you remove placed tiles. There is no timer or life counter; a full board can leave no placement available, so use Undo or begin another garden.
 
 ## How it plays
 
-The board, controls, and session length are documented on the game page and in its definitive guide. No special hardware is required beyond what the guide lists. The game supports the inputs documented for that title.
+Place the displayed next seed in an empty cell. Four tiles merge only when they share both a species and a tier and fill a 2×2 square. The result occupies that square's top-left cell; the other three cells clear. The tiers are Seed → Sprout → Bloom → Flower, and Flowers do not merge further.
 
-## Controls at a glance
+For example, three matching Seeds at row 1 column 1, row 1 column 2, and row 2 column 1 need a fourth matching Seed at row 2 column 2. That placement creates one Sprout at row 1 column 1. Four Sprouts of the same species can later make a Bloom; four Blooms can make a Flower.
 
-Check the game page for pointer, touch, and keyboard alternatives. Most actions have a keyboard path and a pointer path. Fullscreen or focus mode depends on browser permission and can be exited with Escape.
+## Scoring and strategy
 
-## Local storage and session
+Best tier records how far a plant has grown rather than a points score. The placement counter tracks actions during the current garden. A Garden win is about a Flower's position, not just creating one anywhere on the board.
 
-Best results, win counts, or puzzle progress are kept in this browser only. A different browser, profile, private window, or device will not share them. Clearing site data removes them. My Arcade reads these local values to show a private dashboard.
+Plan where a merge's top-left result will land before completing the square. Group related species while leaving open cells for the next seed; a line of four matching plants does not qualify as a 2×2 block. In Sketch, arrange freely without expecting the normal chain reactions.
 
-## Accessibility and options
+## Local save data
 
-Sound on/off and mute are separate preferences. Volume and ambient are local choices. Focus outlines remain visible and no board uses transform scale to force fit. Reduced motion affects animation, not sound.
-
-## What NoCharge did not evaluate
-
-This description is based on current game code and tests. We did not measure long-term durability, evaluate every screen reader combination, or promise compatibility with every device. The game is general-audience and not directed to children.
-
-## Next step
-
-Open the game, play one run with the controls documented, and check the guide for the full rule set if needed. Use Privacy page to clear local data when you want.
+`nocharge:tile-garden:best-tier` stores the highest tier reached. The current grid, mode, next seed, and Undo history are not restored from localStorage. A new visit begins another layout while retaining the best-tier record until you clear browser game data.

@@ -5,4 +5,11 @@
  * agree on this list. Routes here are intentionally absent from sitemap.xml
  * (no-index or alias pages), but may still be served and HTTP-checked.
  */
-export const NOINDEX_ROUTES = Object.freeze(['/my-arcade/', '/changelog/', '/privacy-policy/', '/404.html']);
+export const NOINDEX_ROUTES = Object.freeze([
+  '/my-arcade/',
+  '/changelog/',
+  '/privacy-policy/',
+  '/search/',
+  '/embed/sound-engine/',
+  '/404.html',
+]);

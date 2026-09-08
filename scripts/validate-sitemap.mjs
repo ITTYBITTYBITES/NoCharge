@@ -53,9 +53,17 @@ for (const path of required) {
 }
 
 for (const location of locations) {
-  const pathname = new URL(location).pathname;
+  const url = new URL(location);
+  const pathname = url.pathname;
+  if (url.search || url.hash) throw new Error(`Sitemap must not contain query or fragment variants: ${location}`);
   const output = pathname === '/' ? join(dist, 'index.html') : join(dist, pathname.replace(/^\//, ''), 'index.html');
   if (!existsSync(output)) throw new Error(`Sitemap route has no generated page: ${pathname}`);
+  const html = readFileSync(output, 'utf8');
+  const canonical = html.match(/<link\b(?=[^>]*\brel="canonical")[^>]*\bhref="([^"]+)"/i)?.[1];
+  if (canonical !== location) throw new Error(`Sitemap entry differs from its page canonical: ${location} → ${canonical}`);
+  if (/<meta\b(?=[^>]*\bname="robots")(?=[^>]*\bcontent="[^"]*\bnoindex\b)[^>]*>/i.test(html)) {
+    throw new Error(`Sitemap contains a noindex page: ${location}`);
+  }
 }
 
 for (const excluded of NOINDEX_ROUTES) {

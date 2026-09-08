@@ -36,35 +36,24 @@ session: 5–12 min
 order: 8
 ---
 
-Reversi is the classic two-disc game, played here by two people on one device. The game starts from the standard four center discs — black on d5 and e4, white on d4 and e5 — and black places first. Every move must outflank at least one opponent disc in a straight line, and every outflanked disc flips to your color. A player with no legal move passes; the game ends when the board is full or neither player can move, and the player with the most discs wins.
+Reversi begins with four center discs on an 8×8 board. A legal placement changes existing discs as well as adding a new one, so the visible lead can change sharply near the end.
 
-Playable squares are marked by default and the arrow keys move only between squares that are legal, so keyboard turns are never refused. Flips animate once for motion-tolerant players and never for reduced-motion players. There is no timer, no computer opponent, and no account; the most recent result stays on this device in My Arcade.
+## Objective and win/loss conditions
 
-
-## Quick answer
-
-This game opens directly in the browser without an account. Scores or progress stay in this browser's localStorage.
+Finish with more discs of your color than the other player. Black moves first. Play ends when the board is full or neither player can make a legal move; equal disc counts are a draw. If only one player is unable to move, that player passes automatically rather than losing immediately.
 
 ## How it plays
 
-The board, controls, and session length are documented on the game page and in its definitive guide. No special hardware is required beyond what the guide lists. The game supports the inputs documented for that title.
+Place on an empty square that brackets at least one opposing disc between your new disc and another of your own. The bracket must be an unbroken horizontal, vertical, or diagonal line. All bracketed enemy discs flip, including lines in several directions from the same placement.
 
-## Controls at a glance
+For example, a row segment Black, White, White, empty lets Black play the empty square and flip both White discs. An empty gap between those White discs would break the bracket. You cannot place a disc merely because the square is empty; at least one flip is required.
 
-Check the game page for pointer, touch, and keyboard alternatives. Most actions have a keyboard path and a pointer path. Fullscreen or focus mode depends on browser permission and can be exited with Escape.
+## Scoring and strategy
 
-## Local storage and session
+The score is the number of discs currently showing each color. Only the final comparison decides the result. Flipping many discs early can expose useful moves to your opponent rather than secure a lasting advantage.
 
-Best results, win counts, or puzzle progress are kept in this browser only. A different browser, profile, private window, or device will not share them. Clearing site data removes them. My Arcade reads these local values to show a private dashboard.
+Inspect the legal moves your placement leaves behind. An owned corner cannot be outflanked, so avoid offering one without understanding the trade. Near the end, count empty spaces and consider automatic passes: the same player can sometimes take consecutive turns when the opponent has no legal placement.
 
-## Accessibility and options
+## Local save data
 
-Sound on/off and mute are separate preferences. Volume and ambient are local choices. Focus outlines remain visible and no board uses transform scale to force fit. Reduced motion affects animation, not sound.
-
-## What NoCharge did not evaluate
-
-This description is based on current game code and tests. We did not measure long-term durability, evaluate every screen reader combination, or promise compatibility with every device. The game is general-audience and not directed to children.
-
-## Next step
-
-Open the game, play one run with the controls documented, and check the guide for the full rule set if needed. Use Privacy page to clear local data when you want.
+`nocharge:passplay:match:reversi` keeps the last completed 8×8 result, final Black and White disc totals, and date. It is not a move log or a restored board. Player names stay out of the record, and nothing is synchronized between browsers. My Arcade displays the locally saved outcome.

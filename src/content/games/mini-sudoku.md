@@ -36,38 +36,24 @@ presentation:
       description: Check highlights wrong cells; Reveal fills only the selected cell.
 ---
 
-Mini Sudoku uses a 6×6 grid divided into six 3×2 boxes. Every digit from 1 to 6 appears once in each row, column, and box. Difficulty is described only by the number of removed cells; there is no timer, score, or claim of cognitive benefit.
+Mini Sudoku uses digits 1–6 on a 6×6 board with boxes three columns wide and two rows high. It keeps the row, column, and box constraints of Sudoku in a smaller space.
 
+## Objective and win/loss conditions
 
-## Quick answer
-
-This game opens directly in the browser without an account. Scores or progress stay in this browser's localStorage.
+Fill every editable cell so each row, column, and box contains 1 through 6 exactly once. Given clues cannot be changed. There is no timer or loss after a fixed number of mistakes; you can clear entries, undo, check the board, or reveal the selected cell.
 
 ## How it plays
 
-The board, controls, and session length are documented on the game page and in its definitive guide. No special hardware is required beyond what the guide lists. The game supports the inputs documented for that title.
+Select a cell with a tap or the keyboard cursor, then use the digit pad or keys 1–6. Marks mode adds or removes candidate notes instead of placing a final digit. Clear removes an entry or notes, while Reveal supplies the selected cell's solution digit.
 
-## Controls at a glance
+If a row already contains 1, 2, 3, 4, and 6, its remaining cell must be 5. For a less direct step, collect the digits missing from the row and remove any already used in its column or 3×2 box. A note records a possibility; it does not prove that digit belongs there.
 
-Check the game page for pointer, touch, and keyboard alternatives. Most actions have a keyboard path and a pointer path. Fullscreen or focus mode depends on browser permission and can be exited with Escape.
+## Scoring and strategy
 
-## Local storage and session
+Mini Sudoku has no points score. Easy, Medium, and Hard describe removing 12, 16, and 20 cells respectively, rather than a measured rating of solving skill. The local result is a completed-puzzle count.
 
-Best results, win counts, or puzzle progress are kept in this browser only. A different browser, profile, private window, or device will not share them. Clearing site data removes them. My Arcade reads these local values to show a private dashboard.
+Inspect the most nearly completed row or box first. After placing a digit, revisit notes in the crossing row, column, and box. Check compares current entries with the generated solution, so use it deliberately if you want to work without answer feedback.
 
-## Accessibility and options
+## Local save data
 
-Sound on/off and mute are separate preferences. Volume and ambient are local choices. Focus outlines remain visible and no board uses transform scale to force fit. Reduced motion affects animation, not sound.
-
-## What NoCharge did not evaluate
-
-This description is based on current game code and tests. We did not measure long-term durability, evaluate every screen reader combination, or promise compatibility with every device. The game is general-audience and not directed to children.
-
-## Next step
-
-Open the game, play one run with the controls documented, and check the guide for the full rule set if needed. Use Privacy page to clear local data when you want.
-
-
-## Comparative notes
-
-Compare this game's session length, input methods, and storage with other NoCharge titles. For example, Memory Match is untimed and retains best moves, while Word Tile Rush is timed and retains best score. Check the guide for the full control list and accessibility specifics. No purchase is needed to play.
+`nocharge:sudoku:current-puzzle` stores difficulty, seed, and entered board digits for restoration when the saved data passes validation. `nocharge:sudoku:puzzles-solved` counts completions. The Marks on/off preference uses `nocharge:pref:sudoku-pencil-marks`, shared with Sudoku 9×9. Individual pencil notes and the undo history are not saved with the board. No data is synchronized to another device.

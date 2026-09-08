@@ -1,9 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
-import { readSearchQuery } from '../lib/search';
-
-const initialQuery = readSearchQuery(Astro.url.searchParams.get('q'));
 
 const schema = {
   '@context': 'https://schema.org',
@@ -24,9 +21,10 @@ const schema = {
 
 <BaseLayout
   title="Site search"
-  description="Search every NoCharge game, guide, article, tool, setup note, and page. The index is a static file and queries never leave your browser."
+  description="Search every NoCharge game, guide, article, tool, setup note, and page. The index is a static file and matching runs in your browser, with shareable search URLs."
   path="/search/"
   schema={schema}
+  noIndex={true}
   showAds={false}
 >
   <div class="search-page">
@@ -36,8 +34,9 @@ const schema = {
       <p class="eyebrow">Site search</p>
       <h1 class="page-title">Find a game, guide, article, or tool.</h1>
       <p class="lede">
-        The search index is built with the site and downloaded once as a static file. Your query is matched in this
-        browser and is never sent to a server or logged.
+        The search index is built with the site and downloaded as a static file. Matching runs in this browser,
+        without a search API request. Submitting adds the query to the URL for sharing; reloading or sharing that
+        URL can send the query to the hosting service, so avoid sensitive information.
       </p>
     </header>
 
@@ -50,7 +49,7 @@ const schema = {
             id="search-input"
             name="q"
             type="search"
-            value={initialQuery}
+            value=""
             placeholder="e.g. nonogram, solitaire rules, keyboard, ambient, privacy…"
             autocomplete="off"
             enterkeyhint="search"
@@ -195,6 +194,10 @@ const schema = {
       inputEl.focus();
     });
 
+    // Static output has no request-time query. Read shared URLs in the browser,
+    // rather than expecting the build-time input value to contain ?q=.
+    const queryFromUrl = readSearchQuery(new URLSearchParams(window.location.search).get('q'));
+    if (queryFromUrl) inputEl.value = queryFromUrl;
     if (inputEl.value.trim()) void run(inputEl.value);
     else inputEl.focus();
   }

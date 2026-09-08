@@ -30,7 +30,7 @@ const featuredArticles = (await getCollection('articles'))
 
 <BaseLayout
   title="NoCharge — Free Browser Games"
-  description="Play 17 browser games at no charge and without an account. Explore puzzle, card, word, and Pass & Play games with documented local-only results."
+  description={`Play ${allGames.length} free browser games: ${allGames.length - passPlayGames.length} solo and ${passPlayGames.length} Pass & Play games. No account required; clear guides and browser-local results.`}
   path="/"
   feedHref="/feed.xml"
 >
@@ -40,7 +40,7 @@ const featuredArticles = (await getCollection('articles'))
         <p class="eyebrow">Free browser games — no account</p>
         <h1 class="page-title" id="home-title">Quick games.<br />Clear guides. No clutter.</h1>
         <p class="lede">
-          NoCharge has 17 browser games available at no charge, including solo puzzles, card games, word games, and six Pass &amp; Play choices for two people on one device. Documented results stay in this browser, and optional ambient audio stops when the page is hidden.
+          NoCharge has {allGames.length} browser games available at no charge: {allGames.length - passPlayGames.length} solo games and {passPlayGames.length} Pass &amp; Play games for two people on one device. Choose puzzles, card games, word games, or shared-screen board games. Documented results stay in this browser, and optional ambient audio stops when the page is hidden.
         </p>
         <div class="home-hero__actions">
           <a class="btn" href="/arcade/">Enter the arcade</a>

@@ -36,32 +36,26 @@ presentation:
       description: The run completes at 12 pads. There is no timer while you decide.
 ---
 
-Simon shows a growing sequence of four pads. After the display, repeat it from the start; a wrong pad ends the run, and 12 correctly remembered pads complete it. Calm pattern is a settings change, not an easier game: it replaces flashing with a static highlight and pad-name announcements so the state never depends on flicker or colour alone.
+Simon presents a growing sequence using four named pads: circle, triangle, square, and star. You repeat the whole pattern after each playback, rather than pressing only its newest addition.
 
-## Quick answer
+## Objective and win/loss conditions
 
-This game opens directly in the browser without an account. Best remembered length and the calm-pattern preference stay in this browser's localStorage.
+Repeat sequences correctly until you complete the 12-pad target. The first wrong pad ends the run. During your input turn there is no deadline for deciding which pad to press; playback timing is separate from the guessing rules.
 
 ## How it plays
 
-The board, controls, and session length are documented on the game page and in its definitive guide. No special hardware is required beyond what the guide lists. The game supports the inputs documented for that title.
+Start pattern shows the first pad. After a successful repetition, one random pad is appended and the longer sequence plays from its beginning. Repeated pads are possible.
 
-## Controls at a glance
+If one round shows circle, star, triangle, your response must be circle, star, triangle in that order. If the next round adds another star, you repeat all four pads, not just star. Input during playback is not a substitute for waiting for your turn.
 
-Check the game page for pointer, touch, and keyboard alternatives. Most actions have a keyboard path and a pointer path. Fullscreen or focus mode depends on browser permission and can be exited with Escape.
+Calm pattern changes the presentation to slower, longer-held highlights and named cues. It does not shorten the pattern, remove repeated pads, or change the target of 12.
 
-## Local storage and session
+## Scoring and strategy
 
-Best results, win counts, or puzzle progress are kept in this browser only. A different browser, profile, private window, or device will not share them. Clearing site data removes them. My Arcade reads these local values to show a private dashboard.
+Best remembered measures the longest sequence you fully completed. Remembering the first three pads of a failed four-pad round does not count as completing four. There is no bonus for rapid responses.
 
-## Accessibility and options
+Try grouping a longer pattern into short named chunks. A repeated pair such as star, star can be remembered as a pair without losing its two required presses. Choose the presentation you find easier to follow, and keep using the pad names when color alone is not useful.
 
-Sound on/off and mute are separate preferences. Volume and ambient are local choices. Focus outlines remain visible and no board uses transform scale to force fit. Reduced motion affects animation, not sound.
+## Local save data
 
-## What NoCharge did not evaluate
-
-This description is based on current game code and tests. We did not measure long-term durability, evaluate every screen reader combination, or promise compatibility with every device. The game is general-audience and not directed to children.
-
-## Next step
-
-Open the game, play one run with the controls documented, and check the guide for the full rule set if needed. Use Privacy page to clear local data when you want.
+`nocharge:simon:best-length` stores the longest completed sequence, and `nocharge:pref:simon-calm` remembers Calm pattern. Neither the current generated sequence nor your partial response is a saved session. Closing the page ends that run, while the best-length record remains in the same browser until cleared.

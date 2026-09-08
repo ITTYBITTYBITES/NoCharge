@@ -38,32 +38,24 @@ presentation:
       description: Easy 42 givens, Medium 34, Hard 28 — labels describe the given count, and every puzzle has exactly one solution.
 ---
 
-Sudoku 9×9 uses the classic grid: nine rows, nine columns, and nine 3×3 boxes, each containing digits 1–9 exactly once. Difficulty is the number of given cells, and the generator verifies uniqueness before publishing a puzzle. There is no timer.
+Sudoku 9×9 expands the puzzle to nine rows, nine columns, and nine 3×3 boxes. Every placement has to satisfy all three units, so a digit that fits a row can still be ruled out by its box.
 
-## Quick answer
+## Objective and win/loss conditions
 
-This game opens directly in the browser without an account. Puzzles solved and the current in-progress board stay in this browser's localStorage.
+Complete the grid with digits 1–9, each occurring once in every row, column, and box. Original clues are fixed. Incorrect attempts do not use lives and there is no countdown; Clear, Undo, Check, and a selected-cell Reveal are separate controls.
 
 ## How it plays
 
-The board, controls, and session length are documented on the game page and in its definitive guide. No special hardware is required beyond what the guide lists. The game supports the inputs documented for that title.
+Choose an editable square and enter a digit with the keyboard or number pad. Turn on Marks to keep candidate notes in an empty cell. Those notes are your working list rather than an automatic solution.
 
-## Controls at a glance
+Suppose a cell's row is missing 2, 7, and 9. If its column already contains 7 and its box already contains 9, only 2 remains. Conversely, if a digit is a candidate in only one empty square of a box, that box forces its location even when the square has other candidates. Check tests entered digits against the solution; Reveal fills only the selected cell.
 
-Check the game page for pointer, touch, and keyboard alternatives. Most actions have a keyboard path and a pointer path. Fullscreen or focus mode depends on browser permission and can be exited with Escape.
+## Scoring and strategy
 
-## Local storage and session
+There is no speed score. The current presets request 42, 34, or 28 givens for Easy, Medium, or Hard, with the generator preserving a unique solution. Clue count is not a promise that one puzzle needs a particular solving technique or amount of time.
 
-Best results, win counts, or puzzle progress are kept in this browser only. A different browser, profile, private window, or device will not share them. Clearing site data removes them. My Arcade reads these local values to show a private dashboard.
+Start with constrained units and cross-reference their candidates. When a placement changes a row or box, update your notes there before adding more. Keeping notes consistent is more useful than filling every empty square with all nine digits.
 
-## Accessibility and options
+## Local save data
 
-Sound on/off and mute are separate preferences. Volume and ambient are local choices. Focus outlines remain visible and no board uses transform scale to force fit. Reduced motion affects animation, not sound.
-
-## What NoCharge did not evaluate
-
-This description is based on current game code and tests. We did not measure long-term durability, evaluate every screen reader combination, or promise compatibility with every device. The game is general-audience and not directed to children.
-
-## Next step
-
-Open the game, play one run with the controls documented, and check the guide for the full rule set if needed. Use Privacy page to clear local data when you want.
+`nocharge:sudoku9:current-puzzle` holds the difficulty, seed, and board digits. Valid saved boards can resume on reload; individual notes and Undo history are not restored. `nocharge:sudoku9:puzzles-solved` counts completed grids, while `nocharge:pref:sudoku-pencil-marks` remembers the Marks toggle shared with Mini Sudoku. Clearing local game data removes these browser-only records.

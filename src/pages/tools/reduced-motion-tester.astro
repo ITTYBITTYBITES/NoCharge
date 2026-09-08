@@ -15,8 +15,8 @@ const faqs = [
     a: 'No. It only reads the browser\'s live media query and demonstrates its effect. Changing the setting happens in your browser or operating system accessibility menu.',
   },
   {
-    q: 'Why does my answer show "unsupported"?',
-    a: 'Very old browsers do not implement the query. NoCharge still ships calm defaults, no flashing, and no auto-playing media, so those pages remain usable.',
+    q: 'Does a non-matching query mean motion is safe?',
+    a: 'No. It means the browser did not report prefers-reduced-motion: reduce. An older browser without support can also return a non-match. This tool does not diagnose a person or determine whether an animation is appropriate.',
   },
 ];
 ---
@@ -59,6 +59,21 @@ const faqs = [
       <p>The tester reports the browser's setting and its demonstration effect. It is not a medical recommendation and does not assess photosensitivity for any person.</p>
     </div>
   </section>
+  <Fragment slot="how">
+    <p>The status reads <code>matchMedia('(prefers-reduced-motion: reduce)').matches</code>. A matching CSS media query stops the demonstration dot's animation. The page listens for preference changes so the status can update without a reload.</p>
+    <h3>Worked example</h3>
+    <p>With no reduced-motion preference reported, the query returns false and the dot pulses. Enable reduced motion in the operating system or emulate it in browser developer tools: the query returns true, the status reports that reduction is on, and the dot stays still.</p>
+    <p>This is a two-state preference check, not an animation-speed calculation. It does not infer a percentage of motion to remove. A separate in-game choice such as Simon's Calm pattern can change that game's presentation independently of this page.</p>
+  </Fragment>
+
+  <Fragment slot="limits">
+    <ul>
+      <li>The page cannot change the operating-system setting, inspect why you chose it, or test whether another site honors it.</li>
+      <li>A false result means this query did not match. It does not prove that animation is appropriate for a person; an unsupported media feature can also fail to match.</li>
+      <li>Motion preference is separate from audio volume, flashing-content assessment, game difficulty, and keyboard access.</li>
+      <li>The result is read live, not saved as a NoCharge preference or used as a health assessment.</li>
+    </ul>
+  </Fragment>
 </ToolPage>
 
 <script>

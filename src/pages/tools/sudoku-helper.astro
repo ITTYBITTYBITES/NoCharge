@@ -4,11 +4,11 @@ import ToolPage from '../../components/ToolPage.astro';
 const faqs = [
   {
     q: 'Does the helper solve the puzzle?',
-    a: 'No. It shows the candidates for one selected cell, which is the first step of a solving method. The puzzle remains yours; the tool is a notepad with reasoning, not an autopilot.',
+    a: 'By default it lists candidates for the selected cell without filling answers. The explicitly labeled Reveal button can search for one complete solution to a consistent entered grid; it does not establish uniqueness.',
   },
   {
     q: 'What is "hidden single"?',
-    a: 'A digit that can only go in one cell of a row, column, or box even though other cells show it as a candidate. The helper explains the term when it applies.',
+    a: 'A digit that can only go in one cell of a row, column, or box even though other cells show it as a candidate. The worked explanation distinguishes it from a naked single; the helper does not automatically detect hidden singles.',
   },
   {
     q: 'Why does it default to non-spoiler?',
@@ -24,10 +24,10 @@ const faqs = [
 <ToolPage
   title="Sudoku pencil-mark helper"
   eyebrow="Candidates, not answers"
-  description="Enter a grid, see candidates for a selected cell, and learn hidden-single logic. Optional full solve is labeled clearly and off by default."
+  description="Enter a 6×6 or 9×9 grid, inspect one cell's candidates, and learn the elimination rule. An optional full solve is clearly labeled; hidden singles are not automatically detected."
   path="/tools/sudoku-helper/"
   category="Learning"
-  bottomLine="Type a Sudoku grid (6×6 or 9×9) and select a cell to see its candidates, plus a note when a hidden single exists in its row, column, or box. It is educational: non-spoiler by default, with an explicitly labeled reveal if you choose it."
+  bottomLine="Type a 6×6 or 9×9 grid and select an empty cell to list the digits not already used in its row, column, or box. Candidates are not answers. Reveal is an explicit optional spoiler and does not prove the puzzle has only one solution."
   faqs={faqs}
   embedCode={`<iframe src="https://nocharge.net/tools/sudoku-helper/" width="400" height="640" title="NoCharge sudoku pencil-mark helper"></iframe>`}
   nextActions={[
@@ -54,9 +54,24 @@ const faqs = [
     <div class="helper-grid" data-helper-grid></div>
     <p class="helper-status" data-helper-status aria-live="polite">Select a cell to see its candidates.</p>
     <div class="helper-note">
-      <p>Enter digits with the keyboard or a tap. The helper computes candidates from what you typed — if a digit is wrong, the candidates reflect your mistake, not a hidden answer.</p>
+      <p>Click or tap to select a cell, then enter digits with the keyboard. The helper computes candidates from what you typed — if a digit is wrong, the candidates reflect your mistake, not a hidden answer.</p>
     </div>
   </section>
+  <Fragment slot="how">
+    <p>Select an empty square and enter board digits with the keyboard. Its candidates are the allowed digits, 1–6 or 1–9, minus every digit already present in the same row, column, or box. Boxes are three columns wide and either two or three rows high, depending on the grid size.</p>
+    <h3>Worked example</h3>
+    <p>On a 6×6 grid, suppose the selected cell's row uses 1 and 4, its column uses 2, and its box uses 1 and 3. The combined exclusions are 1, 2, 3, and 4, leaving candidates 5 and 6. If another square in that box is then filled with 5, only 6 remains for the selected square.</p>
+    <p>One remaining candidate is a naked single. A hidden single is different: a digit has only one possible location across a whole row, column, or box. This helper lists one cell's candidates; it does not automatically search all units for hidden singles. Reveal is an explicit spoiler that tries backtracking to fill a complete grid consistent with the entered digits.</p>
+  </Fragment>
+
+  <Fragment slot="limits">
+    <ul>
+      <li>Candidates describe your entries, not a hidden authoritative answer. A wrong but locally consistent entry can still lead to an incorrect or impossible puzzle.</li>
+      <li>Reveal checks for contradictory digits and searches for a completion, but it does not prove uniqueness, grade difficulty, or explain each solving step.</li>
+      <li>This is separate from the playable Sudoku games. It neither imports their boards nor changes their saved progress.</li>
+      <li>Clicking selects a square; digit entry in this helper uses the keyboard. Clear, changing size, or reloading discards the typed grid; it is not saved.</li>
+    </ul>
+  </Fragment>
 </ToolPage>
 
 <script>
@@ -87,6 +102,7 @@ const faqs = [
   };
 
   const render = () => {
+    const hadGridFocus = grid.contains(document.activeElement);
     grid.replaceChildren();
     grid.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
     for (let index = 0; index < size * size; index += 1) {
@@ -107,6 +123,9 @@ const faqs = [
       }
       button.addEventListener('click', () => { selected = index; render(); });
       grid.append(button);
+    }
+    if (hadGridFocus) {
+      grid.querySelectorAll<HTMLButtonElement>('button')[selected]?.focus({ preventScroll: true });
     }
     if (status) {
       const row = Math.floor(selected / size);
@@ -140,6 +159,26 @@ const faqs = [
     // fill it if a solution exists. No claim about uniqueness or game state.
     if (!status) return;
     const input = values.map((row) => row.slice());
+    // Backtracking must not treat a fully filled but contradictory grid as solved.
+    for (let row = 0; row < size; row += 1) {
+      for (let col = 0; col < size; col += 1) {
+        const digit = input[row]![col]!;
+        if (digit === 0) continue;
+        const boxRows = size === 9 ? 3 : 2;
+        const conflict = input.some((cells, r) => cells.some((value, c) =>
+          (r !== row || c !== col) && value === digit && (
+            r === row || c === col || (
+              Math.floor(r / boxRows) === Math.floor(row / boxRows) &&
+              Math.floor(c / 3) === Math.floor(col / 3)
+            )
+          )
+        ));
+        if (!Number.isInteger(digit) || digit < 1 || digit > size || conflict) {
+          status.textContent = 'The entered grid contains conflicting digits. Correct them before using Reveal.';
+          return;
+        }
+      }
+    }
     const solve = (): boolean => {
       let best: [number, number, number[]] | null = null;
       for (let r = 0; r < size; r += 1) {
@@ -178,7 +217,7 @@ const faqs = [
   });
 
   grid?.addEventListener('keydown', (event) => {
-    if (/^[1-9]$/.test(event.key)) {
+    if (/^[1-9]$/.test(event.key) && Number(event.key) <= size) {
       const row = Math.floor(selected / size);
       const col = selected % size;
       values[row]![col] = Number(event.key);

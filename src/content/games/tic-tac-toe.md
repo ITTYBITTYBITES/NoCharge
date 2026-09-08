@@ -36,37 +36,24 @@ session: 1–3 min per round
 order: 5
 ---
 
-Tic-Tac-Toe is the first Pass &amp; Play game at NoCharge: two people take turns on one device, and the game keeps track of whose move it is so nobody has to.
+Tic-Tac-Toe is a two-player, shared-device game with 3×3, 4×4, and Match modes. The required line length changes with the board, so a three-mark threat means something different on each size.
 
-Choose the classic 3×3 board (three in a row wins), the larger 4×4 board (four in a row wins), or Match mode — a series of 3×3 rounds where the first player to win three rounds takes the match, best of five. The player who moves first alternates every round, so neither player keeps the opening advantage.
+## Objective and win/loss conditions
 
-After every move, a handoff screen covers the board and offers the device to the other player. Edit Player 1 and Player 2 names right there; names last only for the current browser session and are never stored. There is no timer, no computer opponent, and no account. Match results stay on this device and appear in My Arcade as the single most recent record for this game.
-
-
-## Quick answer
-
-This game opens directly in the browser without an account. Scores or progress stay in this browser's localStorage.
+Complete a horizontal, vertical, or diagonal line before the other player: three marks on 3×3, four on 4×4. A full board without a line is a draw. Match uses 3×3 rounds and ends at three round wins or after five rounds. If neither player has reached three wins at that limit, this edition records the match as a draw.
 
 ## How it plays
 
-The board, controls, and session length are documented on the game page and in its definitive guide. No special hardware is required beyond what the guide lists. The game supports the inputs documented for that title.
+Place one mark in an empty square, then hand over the device. An occupied square cannot replace a mark or spend the turn. X and O alternate moves, and the opening mark alternates between rounds. The Continue control releases the handoff screen for the next player.
 
-## Controls at a glance
+For example, on 3×3 a row containing X, X, empty is an immediate winning move for X. O must fill that empty square to block it unless O can win elsewhere immediately. On 4×4, two adjacent X marks still need two more marks in that line.
 
-Check the game page for pointer, touch, and keyboard alternatives. Most actions have a keyboard path and a pointer path. Fullscreen or focus mode depends on browser permission and can be exited with Escape.
+## Scoring and strategy
 
-## Local storage and session
+A won Match round adds one to that player's tally; a drawn round uses one of the five rounds but adds no win. There are no points for taking a center square or making a partial line.
 
-Best results, win counts, or puzzle progress are kept in this browser only. A different browser, profile, private window, or device will not share them. Clearing site data removes them. My Arcade reads these local values to show a private dashboard.
+Check your own immediate winning moves and your opponent's threats before building a new line. A fork creates two distinct winning destinations, but an apparent fork is only useful if the opponent cannot end the game first.
 
-## Accessibility and options
+## Local save data
 
-Sound on/off and mute are separate preferences. Volume and ambient are local choices. Focus outlines remain visible and no board uses transform scale to force fit. Reduced motion affects animation, not sound.
-
-## What NoCharge did not evaluate
-
-This description is based on current game code and tests. We did not measure long-term durability, evaluate every screen reader combination, or promise compatibility with every device. The game is general-audience and not directed to children.
-
-## Next step
-
-Open the game, play one run with the controls documented, and check the guide for the full rule set if needed. Use Privacy page to clear local data when you want.
+`nocharge:passplay:match:tic-tac-toe` stores one latest result with mode, round-win tally, and completion date. It is replaced by a later completed result, not extended into a match history. The board and ongoing series are not saved, and player names are never written into this localStorage record.

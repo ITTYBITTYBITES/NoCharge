@@ -36,32 +36,24 @@ presentation:
       description: The shared handoff screen names the next player between turns; the open board stays visible.
 ---
 
-Nine Men's Morris is a two-phase board game. In placement, players take turns putting one of nine stones on any of 24 points. Forming three in a line (a mill) lets you remove an opponent stone. After all stones are placed, players move stones one step along the lines; with only three stones left, a player may fly to any empty point. A player with no legal move — or fewer than three stones — loses.
+Nine Men's Morris uses nine stones per player on a 24-point board of three nested squares. Placement, movement, and stone removal are distinct actions, and the current phase determines which buttons can make a move.
 
-## Quick answer
+## Objective and win/loss conditions
 
-This game opens directly in the browser without an account. The most recent match result stays in this browser's localStorage.
+Form mills to remove opposing stones or leave the other player unable to move. In this edition, a removal ends the game immediately when fewer than three opponent stones remain on the board; that count is checked during placement as well as movement. A blocked player in the movement phase also loses. There is no timer or automatic repetition-draw counter.
 
 ## How it plays
 
-The board, controls, and session length are documented on the game page and in its definitive guide. No special hardware is required beyond what the guide lists. The game supports the inputs documented for that title.
+Start by placing stones on empty points. During movement, select one of your stones and choose an adjacent empty point along a connecting line. With three stones remaining, you may fly to any empty point.
 
-## Controls at a glance
+A recognized mill lets you remove one opposing stone before the turn passes. For example, occupying outer-ring markers A, B, and C completes the top side. Opponent stones outside mills must be removed first; mill stones are available only when all remaining opponent stones are in mills.
 
-Check the game page for pointer, touch, and keyboard alternatives. Most actions have a keyboard path and a pointer path. Fullscreen or focus mode depends on browser permission and can be exited with Escape.
+The current implementation recognizes the three points along each side of a square as mill lines. Cross-ring connectors allow movement but are not additional mill triples in this edition. These boundaries matter if you are familiar with another Morris ruleset.
 
-## Local storage and session
+## Scoring and strategy
 
-Best results, win counts, or puzzle progress are kept in this browser only. A different browser, profile, private window, or device will not share them. Clearing site data removes them. My Arcade reads these local values to show a private dashboard.
+Mills earn removals, not numerical points. Watch both an opponent's unfinished lines and your own mobility: a stone that completes a mill may also block a route you need later. Keeping a removable stone outside your existing mills changes which capture choices your opponent receives. The status message distinguishes selecting a stone, moving it, and making the required removal.
 
-## Accessibility and options
+## Local save data
 
-Sound on/off and mute are separate preferences. Volume and ambient are local choices. Focus outlines remain visible and no board uses transform scale to force fit. Reduced motion affects animation, not sound.
-
-## What NoCharge did not evaluate
-
-This description is based on current game code and tests. We did not measure long-term durability, evaluate every screen reader combination, or promise compatibility with every device. The game is general-audience and not directed to children.
-
-## Next step
-
-Open the game, play one run with the controls documented, and check the guide for the full rule set if needed. Use Privacy page to clear local data when you want.
+`nocharge:passplay:match:nine-mens-morris` keeps the latest mode, winner, and finish date. The shared 0–0 score fields are not stone counts. Positions, stones in hand, pending removals, and names are not a saved game. The record is local to this browser and is replaced by the next completed result.

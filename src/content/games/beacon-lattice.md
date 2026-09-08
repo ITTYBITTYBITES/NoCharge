@@ -48,40 +48,24 @@ featured: true
 order: 4
 ---
 
-Beacon Lattice is an untimed exact-coverage puzzle. Place Cross, Diagonal, Horizontal, and Vertical beacons so every required lattice cell has coverage **exactly 1**. A 0 is a gap. A 2 or higher is an overlap. Cells outside the lattice are void. Blocked obstacles appear later and are not the same as void cells.
+Beacon Lattice is an untimed exact-coverage puzzle built from shaped grids, four beacon patterns, and limited inventories. The coverage numbers explain why a placement helps or conflicts.
 
-Twenty-four curated puzzles teach the four patterns, then add inventory limits, restricted cells, locked beacons, blocked obstacles, and 7×7 boards. Your solved puzzles and best beacon counts stay in local storage on this device.
+## Objective and win/loss conditions
 
-
-## Quick answer
-
-This game opens directly in the browser without an account. Scores or progress stay in this browser's localStorage.
+Every required cell must have coverage exactly 1. A 0 is a gap; 2 or more means overlapping coverage. Trying an overlap does not lose a life or end the puzzle: remove a beacon or undo and keep working. Void cells outside the lattice and blocked obstacles do not need coverage and cannot hold a beacon.
 
 ## How it plays
 
-The board, controls, and session length are documented on the game page and in its definitive guide. No special hardware is required beyond what the guide lists. The game supports the inputs documented for that title.
+A Cross covers its own cell and its four orthogonal neighbors. A Diagonal covers its center and four diagonal neighbors. Horizontal and Vertical beacons cover their center plus the two neighbors along the named axis. Offsets outside the eligible lattice are skipped, so an edge placement can cover fewer cells than an interior placement.
 
-## Controls at a glance
+On the opening First plus puzzle, placing a Cross at row 3, column 3 covers all five required cells exactly once. Adding coverage to one of those cells would make it an overlap, not a better solution. Later puzzles introduce restricted placement cells, locked beacons, and larger boards. Locked beacons cannot be removed.
 
-Check the game page for pointer, touch, and keyboard alternatives. Most actions have a keyboard path and a pointer path. Fullscreen or focus mode depends on browser permission and can be exited with Escape.
+## Scoring and strategy
 
-## Local storage and session
+The completed result is the number of beacons on the solved board; fewer is better for that puzzle. Par is the count in its authored solution, not a universal proof of optimality. Unused inventory is allowed.
 
-Best results, win counts, or puzzle progress are kept in this browser only. A different browser, profile, private window, or device will not share them. Clearing site data removes them. My Arcade reads these local values to show a private dashboard.
+Start with isolated cells that have only one possible covering pattern. Check each proposed beacon's entire footprint before placing it: filling one gap is not useful if the same beacon doubles coverage elsewhere. Undo carries no permanent score penalty.
 
-## Accessibility and options
+## Local save data
 
-Sound on/off and mute are separate preferences. Volume and ambient are local choices. Focus outlines remain visible and no board uses transform scale to force fit. Reduced motion affects animation, not sound.
-
-## What NoCharge did not evaluate
-
-This description is based on current game code and tests. We did not measure long-term durability, evaluate every screen reader combination, or promise compatibility with every device. The game is general-audience and not directed to children.
-
-## Next step
-
-Open the game, play one run with the controls documented, and check the guide for the full rule set if needed. Use Privacy page to clear local data when you want.
-
-
-## Comparative notes
-
-Compare this game's session length, input methods, and storage with other NoCharge titles. For example, Memory Match is untimed and retains best moves, while Word Tile Rush is timed and retains best score. Check the guide for the full control list and accessibility specifics. No purchase is needed to play.
+`nocharge:pref:beacon-lattice-progress` stores the selected puzzle ID, completed IDs, best beacon counts, and each puzzle's last solved count. The shared `nocharge:beacon-lattice:high` value records completed-puzzle count. Partial beacon placements are not a saved board. All progress is browser-local and can be removed through Clear game data.

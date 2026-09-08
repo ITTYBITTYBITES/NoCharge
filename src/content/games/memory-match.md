@@ -44,40 +44,24 @@ featured: true
 order: 1
 ---
 
-Memory Match is a compact 4×4 concentration game with eight pairs to find. Every two-card attempt counts as one move, so careful recall matters more than speed.
+Memory Match is a 4×4 concentration board with eight pairs of symbols. The challenge is remembering where a card appeared, not racing a countdown.
 
-Play with a mouse, touch screen, or keyboard. Your best move count stays in local storage on this device—there is no account, leaderboard, or score upload.
+## Objective and win/loss conditions
 
-
-## Quick answer
-
-This game opens directly in the browser without an account. Scores or progress stay in this browser's localStorage.
+Reveal all eight matching pairs to complete the board. There is no move limit or timed loss: a mismatch leaves both cards available for another attempt. New game abandons the current layout and shuffles a fresh board.
 
 ## How it plays
 
-The board, controls, and session length are documented on the game page and in its definitive guide. No special hardware is required beyond what the guide lists. The game supports the inputs documented for that title.
+Choose one hidden card, then a different hidden card. Identical symbols stay face up and leave the active card controls. Different symbols remain visible briefly before turning over again; wait for that reveal to finish before choosing another pair.
 
-## Controls at a glance
+For example, suppose you see a blue diamond at the top-left and a yellow circle at the bottom-right. That attempt is one move, even though it does not match. If a later reveal shows another blue diamond, pair it with the remembered top-left card rather than exploring two unknown positions.
 
-Check the game page for pointer, touch, and keyboard alternatives. Most actions have a keyboard path and a pointer path. Fullscreen or focus mode depends on browser permission and can be exited with Escape.
+## Scoring and strategy
 
-## Local storage and session
+Each two-card attempt adds one move. Lower completed move counts are better; eight moves is the mathematical minimum, because there are eight pairs. A 12-move finish improves a previous best of 15, while a 17-move finish does not replace it.
 
-Best results, win counts, or puzzle progress are kept in this browser only. A different browser, profile, private window, or device will not share them. Clearing site data removes them. My Arcade reads these local values to show a private dashboard.
+Use row-and-column locations to remember cards, scan new positions in a consistent order, and clear known pairs before taking another guess. The brief mismatch animation is not a speed bonus or penalty.
 
-## Accessibility and options
+## Local save data
 
-Sound on/off and mute are separate preferences. Volume and ambient are local choices. Focus outlines remain visible and no board uses transform scale to force fit. Reduced motion affects animation, not sound.
-
-## What NoCharge did not evaluate
-
-This description is based on current game code and tests. We did not measure long-term durability, evaluate every screen reader combination, or promise compatibility with every device. The game is general-audience and not directed to children.
-
-## Next step
-
-Open the game, play one run with the controls documented, and check the guide for the full rule set if needed. Use Privacy page to clear local data when you want.
-
-
-## Comparative notes
-
-Compare this game's session length, input methods, and storage with other NoCharge titles. For example, Memory Match is untimed and retains best moves, while Word Tile Rush is timed and retains best score. Check the guide for the full control list and accessibility specifics. No purchase is needed to play.
+The displayed best is stored at `nocharge:memory-match:best-moves` in browser localStorage. The shared arcade score also stores `max(0, 1000 − 10 × moves)` under `nocharge:memory-match:high`; it is a compatibility score, not the move count shown on the board. The shuffled cards and an unfinished round are not saved. Browser site-data controls or Clear game data remove these records.

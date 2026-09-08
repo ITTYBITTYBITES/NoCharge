@@ -85,7 +85,8 @@ const structuredData = schema ?? defaultStructuredData;
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
 {feedHref && <link rel="alternate" type="application/rss+xml" title={feedTitle} href={new URL(feedHref, site).toString()} />}
-{noIndex && <meta name="robots" content="noindex,nofollow" />}
+<!-- Indexing and link discovery are separate: noIndex must not imply nofollow. -->
+{noIndex && <meta name="robots" content="noindex" />}
 <meta property="og:type" content={ogType} />
 <meta property="og:locale" content="en_US" />
 <meta property="og:site_name" content="NoCharge" />

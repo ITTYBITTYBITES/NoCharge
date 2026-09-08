@@ -36,35 +36,24 @@ session: 2–6 min
 order: 7
 ---
 
-Four in a Row is NoCharge's take on the classic column-dropping game, built for two people sharing one device. Choose a column and your disc falls to the lowest empty cell. The first player to line up four discs — horizontally, vertically, or diagonally — wins; if the board fills with no line, the game is a draw. The player who opens each game alternates.
+Four in a Row is a gravity-based board game for two people on one device. You choose a column, not a free square, which makes the height of a potential winning cell part of the tactic.
 
-Play the standard 7×6 board or the quicker 6×5 board. Every move works with touch, pointer, or the left and right arrow keys plus Enter, and after each drop the handoff screen offers the device to the other player. There is no timer, no computer opponent, and no account; the most recent result stays on this device in My Arcade.
+## Objective and win/loss conditions
 
-
-## Quick answer
-
-This game opens directly in the browser without an account. Scores or progress stay in this browser's localStorage.
+Connect at least four of your discs horizontally, vertically, or diagonally. The standard board has seven columns and six rows; the smaller board has six columns and five rows. A full board with no winning line is a draw. The starting player alternates between games.
 
 ## How it plays
 
-The board, controls, and session length are documented on the game page and in its definitive guide. No special hardware is required beyond what the guide lists. The game supports the inputs documented for that title.
+Choose a column button to drop a disc into its lowest empty space. Full columns cannot accept another disc. After the drop and any win check, the handoff screen gives the next move to the other player.
 
-## Controls at a glance
+For example, three discs at the bottom of columns 1, 2, and 3 can be completed by a disc at the bottom of column 4 if that cell is open. A line of three higher up is not immediately finishable if the space below its fourth cell is empty: your drop will stop below the intended winning position.
 
-Check the game page for pointer, touch, and keyboard alternatives. Most actions have a keyboard path and a pointer path. Fullscreen or focus mode depends on browser permission and can be exited with Escape.
+## Scoring and strategy
 
-## Local storage and session
+The outcome is a win or draw, not points for individual discs. A vertical stack of three is an immediate threat when the next space in that column is open. Horizontal and diagonal threats require checking the landing height.
 
-Best results, win counts, or puzzle progress are kept in this browser only. A different browser, profile, private window, or device will not share them. Clearing site data removes them. My Arcade reads these local values to show a private dashboard.
+Before dropping beneath an opponent's open line, inspect the space your disc will support. Filling the lower cell can make their winning cell reachable on the very next turn. Central columns participate in many possible lines, but an immediate block or win takes precedence over a general preference for the center.
 
-## Accessibility and options
+## Local save data
 
-Sound on/off and mute are separate preferences. Volume and ambient are local choices. Focus outlines remain visible and no board uses transform scale to force fit. Reduced motion affects animation, not sound.
-
-## What NoCharge did not evaluate
-
-This description is based on current game code and tests. We did not measure long-term durability, evaluate every screen reader combination, or promise compatibility with every device. The game is general-audience and not directed to children.
-
-## Next step
-
-Open the game, play one run with the controls documented, and check the guide for the full rule set if needed. Use Privacy page to clear local data when you want.
+`nocharge:passplay:match:four-in-a-row` stores the latest board size, winner or draw, a 1–0/0–1 result tally (0–0 for a draw), and completion date. It does not save disc positions or an ongoing game. The result stays on this browser only and can be removed through Clear game data.

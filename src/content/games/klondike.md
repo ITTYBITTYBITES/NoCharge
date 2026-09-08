@@ -37,40 +37,24 @@ featured: false
 order: 11
 ---
 
-Klondike Solitaire is the classic patience card game with seven tableau columns, four foundations, and a stock pile. Build foundations by suit from ace to king; build tableau columns in alternating colors descending.
+Klondike Solitaire starts with seven tableau columns, a stock, a waste pile, and four suit foundations. Hidden cards make opening a column a different decision from simply moving a visible card.
 
-Toggle between draw-1 and draw-3 at any time. Your win count and best move count stay in local storage on this device—there is no account, timer, or leaderboard.
+## Objective and win/loss conditions
 
-
-## Quick answer
-
-This game opens directly in the browser without an account. Scores or progress stay in this browser's localStorage.
+Complete all four foundations from ace through king, one suit per pile, to win. There is no timer, points target, or automatic claim that a deal is solvable. If no useful move remains, undo a decision, recycle the stock, or start a new deal.
 
 ## How it plays
 
-The board, controls, and session length are documented on the game page and in its definitive guide. No special hardware is required beyond what the guide lists. The game supports the inputs documented for that title.
+Build tableau sequences downward in rank and alternate red and black. A black 7 can move onto a red 8, but not another 7 or a black 8. Empty tableau columns accept a king or a king-led sequence. Exposing the last face-down card in a column turns it over.
 
-## Controls at a glance
+Draw-one exposes one stock card; draw-three exposes up to three, with only the top waste card playable. When the stock is empty, another draw recycles the waste. Changing the draw setting starts a new deal in the selected mode. Foundations build upward in the same suit: the 2 of hearts follows the ace of hearts, not the ace of diamonds.
 
-Check the game page for pointer, touch, and keyboard alternatives. Most actions have a keyboard path and a pointer path. Fullscreen or focus mode depends on browser permission and can be exited with Escape.
+## Scoring and strategy
 
-## Local storage and session
+The game tracks moves and wins rather than a points score. Draws and successful card transfers count as moves; the lowest move total from a completed deal becomes the best.
 
-Best results, win counts, or puzzle progress are kept in this browser only. A different browser, profile, private window, or device will not share them. Clearing site data removes them. My Arcade reads these local values to show a private dashboard.
+Prefer a transfer that exposes a face-down card when two otherwise similar moves are available. Before clearing a column, locate a king that can use the space. Foundation transfers are not ordinary reversible tableau moves, so consider whether a card is still useful for building; Undo can reverse recent actions.
 
-## Accessibility and options
+## Local save data
 
-Sound on/off and mute are separate preferences. Volume and ambient are local choices. Focus outlines remain visible and no board uses transform scale to force fit. Reduced motion affects animation, not sound.
-
-## What NoCharge did not evaluate
-
-This description is based on current game code and tests. We did not measure long-term durability, evaluate every screen reader combination, or promise compatibility with every device. The game is general-audience and not directed to children.
-
-## Next step
-
-Open the game, play one run with the controls documented, and check the guide for the full rule set if needed. Use Privacy page to clear local data when you want.
-
-
-## Comparative notes
-
-Compare this game's session length, input methods, and storage with other NoCharge titles. For example, Memory Match is untimed and retains best moves, while Word Tile Rush is timed and retains best score. Check the guide for the full control list and accessibility specifics. No purchase is needed to play.
+Completed-deal count is saved as `nocharge:klondike:games-won`, the lowest winning move count as `nocharge:klondike:best-moves`, and draw preference as `nocharge:pref:klondike-draw-mode`. The current stock order and unfinished tableau are not restored after a reload. These localStorage records are not an account or cloud save.

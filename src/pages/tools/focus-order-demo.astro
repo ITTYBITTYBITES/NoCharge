@@ -16,7 +16,7 @@ const faqs = [
   },
   {
     q: 'What makes a keyboard trap?',
-    a: 'A control or modal that captures focus so Tab cannot leave it without Escape or a specific button. NoCharge\'s shared shell Escape path and settings panels are tested against that in CI.',
+    a: 'A keyboard trap prevents users from moving focus away using standard keys or a clearly documented exit. A dialog may contain Tab while open, but it must offer a usable way to close and restore focus. This demo has no dialog.',
   },
 ];
 ---
@@ -44,16 +44,31 @@ const faqs = [
     </div>
     <div class="focus-grid" data-focus-grid>
       {['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3'].map((label) => (
-        <button type="button" class="focus-cell" data-focus-cell aria-label={`Cell ${label}`}>{label}</button>
+        <button type="button" class="focus-cell" data-focus-cell={label} aria-label={`Cell ${label}`}>{label}</button>
       ))}
     </div>
     <p class="focus-status" data-focus-status aria-live="polite">Tab through the grid to follow the focus order.</p>
     <ol class="focus-lessons">
-      <li><strong>Visible focus:</strong> a 2-pixel outline that cannot be removed by CSS alone.</li>
+      <li><strong>Visible focus:</strong> an outline identifies the focused control; do not suppress it without a visible alternative.</li>
       <li><strong>Logical order:</strong> reading order is the tab order; no element jumps.</li>
-      <li><strong>No traps:</strong> both Tab and Shift+Tab move freely, and Escape closes any dialog.</li>
+      <li><strong>No traps:</strong> both Tab and Shift+Tab can leave this sample grid; dialogs need separate exit checks.</li>
     </ol>
   </section>
+  <Fragment slot="how">
+    <p>These nine native buttons are written into the HTML in row order. Without positive tabindex values or a scripted focus trap, the browser's Tab sequence follows that document order. The small script updates the status when a button receives focus; it does not choose the next button.</p>
+    <h3>Worked example</h3>
+    <p>Focus Cell A1 and press Tab three times: focus visits A2, then A3, then B1. Shift+Tab from B1 returns to A3. Pressing Enter or Space activates the focused button but does not move to a new square or create a game score.</p>
+    <p>Continue past C3 to check that focus can leave the grid. The outline identifies the active control. This demo uses ordinary Tab order; a game with roving tabindex may instead expose one grid stop and use arrow keys internally.</p>
+  </Fragment>
+
+  <Fragment slot="limits">
+    <ul>
+      <li>The demo observes its own buttons, not the focus order of another website, embedded frame, or browser extension.</li>
+      <li>A logical Tab sequence does not certify an accessible name, sufficient contrast, suitable target size, or compatibility with every screen reader.</li>
+      <li>There is no modal dialog here. Real dialogs need separate checks for initial focus, an available close action, and focus restoration.</li>
+      <li>Visual CSS rearrangement can differ from document order; this fixed example does not detect that problem in other layouts. No focus history is saved.</li>
+    </ul>
+  </Fragment>
 </ToolPage>
 
 <script>

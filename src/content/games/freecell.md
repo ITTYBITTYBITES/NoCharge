@@ -37,40 +37,24 @@ featured: false
 order: 12
 ---
 
-FreeCell deals all 52 cards face-up into eight columns. Four free cells at the top provide temporary storage. Build foundations by suit from ace to king; build tableau columns in alternating colors descending.
+FreeCell deals all 52 cards face up across eight columns. Four single-card free cells provide temporary workspace, so the available empty space determines which sequences you can move.
 
-Multi-card moves are allowed when enough free cells and empty columns are available. Your win count stays in local storage on this device—there is no account, timer, or leaderboard.
+## Objective and win/loss conditions
 
-
-## Quick answer
-
-This game opens directly in the browser without an account. Scores or progress stay in this browser's localStorage.
+Move every card to four foundations, building each suit from ace to king. There is no countdown or points requirement. A blocked position does not trigger a timed loss; use Undo or start another deal. The deal generator does not certify that every arrangement is winnable.
 
 ## How it plays
 
-The board, controls, and session length are documented on the game page and in its definitive guide. No special hardware is required beyond what the guide lists. The game supports the inputs documented for that title.
+Tableau columns descend in alternating colors. A red 6 can rest on a black 7. A free cell can hold one exposed card, while an empty tableau column can receive any card or a legal sequence, not only a king. Foundation cards follow their own suit in ascending order.
 
-## Controls at a glance
+Moving a whole sequence requires enough workspace. Capacity is **(empty free cells + 1) × 2^(spare empty columns)**, excluding an empty destination column from the spare-column count. With two empty free cells and one other empty column, up to six cards can move together. If that empty column is the destination instead, the same position supports only three.
 
-Check the game page for pointer, touch, and keyboard alternatives. Most actions have a keyboard path and a pointer path. Fullscreen or focus mode depends on browser permission and can be exited with Escape.
+## Scoring and strategy
 
-## Local storage and session
+The board displays a move count, but the persistent game metric is completed deals, not a points score or a best-time table. Inspect the location of aces and low cards before filling the free cells. Parking one blocker may expose a useful foundation card; parking all four can leave no workspace for the next sequence.
 
-Best results, win counts, or puzzle progress are kept in this browser only. A different browser, profile, private window, or device will not share them. Clearing site data removes them. My Arcade reads these local values to show a private dashboard.
+Use the capacity calculation before committing a move. An empty column is especially valuable because it can double the size of a transferable sequence when it is available as spare workspace.
 
-## Accessibility and options
+## Local save data
 
-Sound on/off and mute are separate preferences. Volume and ambient are local choices. Focus outlines remain visible and no board uses transform scale to force fit. Reduced motion affects animation, not sound.
-
-## What NoCharge did not evaluate
-
-This description is based on current game code and tests. We did not measure long-term durability, evaluate every screen reader combination, or promise compatibility with every device. The game is general-audience and not directed to children.
-
-## Next step
-
-Open the game, play one run with the controls documented, and check the guide for the full rule set if needed. Use Privacy page to clear local data when you want.
-
-
-## Comparative notes
-
-Compare this game's session length, input methods, and storage with other NoCharge titles. For example, Memory Match is untimed and retains best moves, while Word Tile Rush is timed and retains best score. Check the guide for the full control list and accessibility specifics. No purchase is needed to play.
+`nocharge:freecell:games-won` stores completed-deal count in this browser's localStorage. The tableau, contents of the free cells, move counter, and undo stack remain in page memory and are lost on reload. Clearing the site's game data removes the win record without affecting another browser's results.
