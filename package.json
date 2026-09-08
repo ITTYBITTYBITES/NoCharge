@@ -48,7 +48,8 @@
     "validate:brand-media": "node scripts/validate-brand-media.mjs",
     "kit:media": "node scripts/generate-media-kit.mjs",
     "inspect:favicons": "node scripts/inspect-favicons.mjs",
-    "verify:build": "npm run validate:html && npm run check:links && npm run check:spacing && npm run validate:sitemap && npm run inspect:structured-data && npm run validate:faq && npm run check:assets && npm run validate:setup && npm run validate:feed && npm run validate:brand && npm run validate:brand-media && npm run inspect:favicons"
+    "verify:build": "npm run validate:html && npm run check:links && npm run check:spacing && npm run validate:sitemap && npm run validate:game-tools && npm run inspect:structured-data && npm run validate:faq && npm run check:assets && npm run validate:setup && npm run validate:feed && npm run validate:brand && npm run validate:brand-media && npm run inspect:favicons",
+    "validate:game-tools": "node scripts/validate-game-tool-content.mjs"
   },
   "engines": {
     "node": ">=22.12.0"

@@ -38,32 +38,24 @@ presentation:
       description: Beginner 9×9 with 10 mines, Intermediate 16×16 with 40, Expert 16×30 with 99.
 ---
 
-Minesweeper is played on a grid where some cells contain mines. The first reveal is always safe; afterward, numbers show how many mines touch that cell. Reveal every non-mine cell to clear the board without a countdown. Time is recorded only as a metric after a win, never shown as pressure.
+Minesweeper asks you to distinguish safe squares from mines using the numbers on the border of the revealed area. NoCharge removes the countdown, but a later incorrect reveal can still end the board.
 
-## Quick answer
+## Objective and win/loss conditions
 
-This game opens directly in the browser without an account. Wins and best completion time stay in this browser's localStorage.
+Reveal every non-mine cell to win. Revealing a mine loses; flagging all mines without uncovering the remaining safe cells is not enough. The first reveal is protected from mines. The presets are Beginner 9×9 with 10 mines, Intermediate 16×16 with 40, and Expert 16×30 with 99.
 
 ## How it plays
 
-The board, controls, and session length are documented on the game page and in its definitive guide. No special hardware is required beyond what the guide lists. The game supports the inputs documented for that title.
+A revealed number counts adjacent mines, including diagonals. A zero expands the connected safe area. Toggle Flag mode or use F on the focused cell to mark a suspected mine; flagged squares are protected from ordinary reveals.
 
-## Controls at a glance
+For example, a 1 with exactly one still-covered neighbor identifies that neighbor as a mine. Once its one mine is correctly flagged, the other covered neighbors are safe. A chord opens unflagged neighbors when the surrounding flag count equals the number. **The chord checks the count, not whether your flags are correct:** a wrong flag can leave a real mine unflagged and cause a loss.
 
-Check the game page for pointer, touch, and keyboard alternatives. Most actions have a keyboard path and a pointer path. Fullscreen or focus mode depends on browser permission and can be exited with Escape.
+## Scoring and strategy
 
-## Local storage and session
+The persistent metrics are completed clears and the fastest winning time. Elapsed play time is recorded after a win, not shown as a countdown or used to force a move. A failed board does not add a win.
 
-Best results, win counts, or puzzle progress are kept in this browser only. A different browser, profile, private window, or device will not share them. Clearing site data removes them. My Arcade reads these local values to show a private dashboard.
+Work from numbered boundaries, compare neighboring clues, and flag deductions rather than guesses. When a deduction is unavailable, the first-click guarantee does not protect later guesses. Chording is a shortcut for applying known information, not a hint that verifies flags.
 
-## Accessibility and options
+## Local save data
 
-Sound on/off and mute are separate preferences. Volume and ambient are local choices. Focus outlines remain visible and no board uses transform scale to force fit. Reduced motion affects animation, not sound.
-
-## What NoCharge did not evaluate
-
-This description is based on current game code and tests. We did not measure long-term durability, evaluate every screen reader combination, or promise compatibility with every device. The game is general-audience and not directed to children.
-
-## Next step
-
-Open the game, play one run with the controls documented, and check the guide for the full rule set if needed. Use Privacy page to clear local data when you want.
+`nocharge:minesweeper:games-won` and `nocharge:minesweeper:best-time` hold your records. `nocharge:pref:minesweeper-last-size` remembers the selected preset. Mines, revealed cells, flags, and an unfinished timer are not restored after closing the page. Records stay in this browser and are removable with Clear game data.

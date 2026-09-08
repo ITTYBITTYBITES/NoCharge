@@ -37,40 +37,24 @@ featured: false
 order: 14
 ---
 
-Twenty Forty-Eight is a sliding tile puzzle on a 4×4 grid. Slide all tiles in one direction to merge equal neighbors. New tiles appear after each move (usually 2, sometimes 4).
+Twenty Forty-Eight slides number tiles across a 4×4 board. Equal values combine, but the direction of a move determines which pairs meet first.
 
-Reach the 2048 tile to complete the game, or continue past it for higher tiles. Your best tile stays in local storage on this device—there is no timer, daily challenge, or leaderboard. We display "Best: 1024" when you have one; we never claim any tile value is good or optimal.
+## Objective and win/loss conditions
 
-
-## Quick answer
-
-This game opens directly in the browser without an account. Scores or progress stay in this browser's localStorage.
+Build a 2048 tile to reach the target; larger tiles remain possible if you continue. The board is over when it is full and no horizontal or vertical neighboring pair can merge. A move that changes nothing does not spawn a new tile.
 
 ## How it plays
 
-The board, controls, and session length are documented on the game page and in its definitive guide. No special hardware is required beyond what the guide lists. The game supports the inputs documented for that title.
+Slide with arrow keys, WASD, or a swipe. All tiles travel as far as they can in that direction. Equal neighbors merge once per move. After a successful slide, a new tile appears in an empty cell: 2 with 90% probability or 4 with 10%.
 
-## Controls at a glance
+For example, before the new tile spawns, sliding the row 2, 2, 2, 2 left produces 4, 4, empty, empty. It does not produce 8 in one move because newly merged tiles cannot merge again until the next slide. A row of 2, 2, 4, empty similarly becomes 4, 4, empty, empty.
 
-Check the game page for pointer, touch, and keyboard alternatives. Most actions have a keyboard path and a pointer path. Fullscreen or focus mode depends on browser permission and can be exited with Escape.
+## Scoring and strategy
 
-## Local storage and session
+Each merge adds the value of its resulting tile to the current score. The four-twos example earns 4 + 4 = 8 points. The persistent best, however, is the largest tile reached, not the run's point total.
 
-Best results, win counts, or puzzle progress are kept in this browser only. A different browser, profile, private window, or device will not share them. Clearing site data removes them. My Arcade reads these local values to show a private dashboard.
+Keeping a large tile near one corner can make a descending chain easier to maintain. Before changing direction, check whether the slide separates a useful pair or traps a smaller tile behind a larger one. Random spawns mean this is a planning habit, not a guarantee of reaching 2048. Undo can restore a previous board.
 
-## Accessibility and options
+## Local save data
 
-Sound on/off and mute are separate preferences. Volume and ambient are local choices. Focus outlines remain visible and no board uses transform scale to force fit. Reduced motion affects animation, not sound.
-
-## What NoCharge did not evaluate
-
-This description is based on current game code and tests. We did not measure long-term durability, evaluate every screen reader combination, or promise compatibility with every device. The game is general-audience and not directed to children.
-
-## Next step
-
-Open the game, play one run with the controls documented, and check the guide for the full rule set if needed. Use Privacy page to clear local data when you want.
-
-
-## Comparative notes
-
-Compare this game's session length, input methods, and storage with other NoCharge titles. For example, Memory Match is untimed and retains best moves, while Word Tile Rush is timed and retains best score. Check the guide for the full control list and accessibility specifics. No purchase is needed to play.
+`nocharge:2048:best-tile` remembers the highest tile reached in this browser's localStorage. It does not store the current score, full grid, or undo sequence. Reloading begins a new board with the saved best tile still available as a personal reference.

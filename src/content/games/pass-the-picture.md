@@ -38,37 +38,22 @@ session: 2–5 min
 order: 10
 ---
 
-Pass the Picture is a cooperative drawing game for two people sharing one device. The canvas belongs to both of you: on each pass one player adds a single stroke with a finger, pen, or mouse, then the handoff screen offers the device to the other player — and unlike the competitive Pass &amp; Play games, the drawing stays visible during the handoff, because it is shared rather than secret.
+Pass the Picture gives two players alternating strokes on one shared canvas. It is cooperative drawing rather than a guessing contest: the picture remains visible while the device changes hands.
 
-Pick from an eight-color palette at one stroke width, undo the last stroke if a line went wrong, and choose 2–5 passes per player (3 by default). When the final pass ends, the whole picture is shown with a <strong>Download this picture</strong> button that saves a PNG file straight from your browser — nothing is uploaded, and no account is involved. There is no timer and no scoring: the finished picture is the result, and only its most recent record (passes and strokes drawn) stays on this device in My Arcade.
+## Objective and win/loss conditions
 
-Drawing is pointer-based by nature. Color choice, undo, and every other control are keyboard-operable, but strokes themselves cannot be drawn with a keyboard, and this page says so plainly rather than implying otherwise.
-
-
-## Quick answer
-
-This game opens directly in the browser without an account. Scores or progress stay in this browser's localStorage.
+Finish a picture using the selected passes per player. Choose two, three, four, or five passes each; three each is the default. After the final stroke, the drawing is complete and can be downloaded. Neither player wins or loses, and there is no time limit or judged drawing score.
 
 ## How it plays
 
-The board, controls, and session length are documented on the game page and in its definitive guide. No special hardware is required beyond what the guide lists. The game supports the inputs documented for that title.
+Choose a color, press on the canvas, and drag to make a stroke. Lifting the finger, pen, or mouse ends that pass and offers the next one to the other player. Changing palette color before drawing does not use a pass. Undo last stroke removes the newest stroke and returns its pass to the player who drew it.
 
-## Controls at a glance
+For example, three passes each allow six strokes total. Player 1 might outline a hill, Player 2 add a tree trunk, and the remaining passes extend the scene. One continuous outline can include several bends, but lifting and starting again uses a new pass. Keyboard controls operate the palette and buttons; drawing strokes requires a pointer or touch.
 
-Check the game page for pointer, touch, and keyboard alternatives. Most actions have a keyboard path and a pointer path. Fullscreen or focus mode depends on browser permission and can be exited with Escape.
+## Scoring and strategy
 
-## Local storage and session
+The displayed counts describe strokes contributed, not artistic quality. Agreeing on a subject can help the first few marks leave space for each other. Try one clear shape per stroke and use Undo when a mark prevents the next player from continuing the idea. The tool does not identify objects, grade the picture, or infer what either person intended.
 
-Best results, win counts, or puzzle progress are kept in this browser only. A different browser, profile, private window, or device will not share them. Clearing site data removes them. My Arcade reads these local values to show a private dashboard.
+## Local save data
 
-## Accessibility and options
-
-Sound on/off and mute are separate preferences. Volume and ambient are local choices. Focus outlines remain visible and no board uses transform scale to force fit. Reduced motion affects animation, not sound.
-
-## What NoCharge did not evaluate
-
-This description is based on current game code and tests. We did not measure long-term durability, evaluate every screen reader combination, or promise compatibility with every device. The game is general-audience and not directed to children.
-
-## Next step
-
-Open the game, play one run with the controls documented, and check the guide for the full rule set if needed. Use Privacy page to clear local data when you want.
+`nocharge:passplay:match:pass-the-picture` records the latest shared completion, passes setting, stroke count for each player, and date. The actual drawing is not stored there. Download this picture creates a PNG in your browser; save it before leaving if you want to keep the artwork. No drawing is uploaded to NoCharge.

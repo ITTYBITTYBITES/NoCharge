@@ -46,37 +46,24 @@ featured: true
 order: 3
 ---
 
-Color Flip is a calm tile puzzle built around four clearly labeled colors. In visual mode, pick one color at the start of each round, then tap adjacent tiles to step through the grid. Matching your color to the tile scores a point. There is no timer and no reflex pressure — take your time to plan each step.
+Color Flip offers a spatial tap-to-step board and a separate turn-based color-matching mode. Both use letters alongside color: G for green, B for blue, A for amber, and R for rose.
 
-Color rotation adds variety: toggle between Never (calmest), Every 10 steps, or Every 5 steps to change your color during a round. Every color has a letter label: **G** for green, **B** for blue, **A** for amber, and **R** for rose. Labels and symbols appear on tiles and the player circle so color is never the sole indicator.
+## Objective and win/loss conditions
 
-Arrow keys step the player; G, B, A, R pick a color at round start. Turn-based mode keeps its untimed **Cycle color** and **Step forward** controls and announces each upcoming tile.
-
-
-## Quick answer
-
-This game opens directly in the browser without an account. Scores or progress stay in this browser's localStorage.
+Build a run of correct-color steps. A matching destination adds a point; stepping onto a different color ends the round. There is no target score to finish and no countdown in either mode. The visual board also offers a one-step undo for reconsidering the last move.
 
 ## How it plays
 
-The board, controls, and session length are documented on the game page and in its definitive guide. No special hardware is required beyond what the guide lists. The game supports the inputs documented for that title.
+In visual mode, choose your color at the start, then move one tile up, down, left, or right. Diagonal moves are not allowed. The 5×5 viewport shifts after a step to keep the player centered and brings new tiles into view.
 
-## Controls at a glance
+With rotation set to Never, your chosen color stays fixed. Every 5 steps or Every 10 steps rotates it through Green → Blue → Amber → Rose. For example, with Every 5 steps enabled, your fifth successful green step scores before your color becomes blue; inspect the blue destinations before moving again.
 
-Check the game page for pointer, touch, and keyboard alternatives. Most actions have a keyboard path and a pointer path. Fullscreen or focus mode depends on browser permission and can be exited with Escape.
+Turn-based mode instead announces one upcoming tile. Use Cycle color until the player matches it, then Step forward. It does not use the spatial grid.
 
-## Local storage and session
+## Scoring and strategy
 
-Best results, win counts, or puzzle progress are kept in this browser only. A different browser, profile, private window, or device will not share them. Clearing site data removes them. My Arcade reads these local values to show a private dashboard.
+One correct step equals one point, with separate bests for the two modes. In visual play, inspect the next adjacent options rather than assuming every direction remains available after the grid shifts. Near a rotation boundary, plan for the next color as well as the current one. In turn-based play, compare the named current color and next tile before stepping.
 
-## Accessibility and options
+## Local save data
 
-Sound on/off and mute are separate preferences. Volume and ambient are local choices. Focus outlines remain visible and no board uses transform scale to force fit. Reduced motion affects animation, not sound.
-
-## What NoCharge did not evaluate
-
-This description is based on current game code and tests. We did not measure long-term durability, evaluate every screen reader combination, or promise compatibility with every device. The game is general-audience and not directed to children.
-
-## Next step
-
-Open the game, play one run with the controls documented, and check the guide for the full rule set if needed. Use Privacy page to clear local data when you want.
+localStorage holds the visual best at `nocharge:color-flip:high`, the turn-based best at `nocharge:color-flip-turn-based:high`, and the rotation choice at `nocharge:pref:color-flip-rotation`. It does not restore the current grid or an unfinished run. These records are specific to the browser where you played.

@@ -34,32 +34,24 @@ presentation:
       description: Play again picks a new word from the same theme.
 ---
 
-Hangman is a guess-the-word game with a real end condition: reveal every letter before six wrong guesses complete the figure. Words are common and calm, chosen from four themes, and the round has no timer. Only letter guessing matters.
+Hangman chooses a word from Nature, Quiet games, Kitchen, or Calm colors. The word is hidden, but its length and every revealed occurrence of a guessed letter stay visible throughout the round.
 
-## Quick answer
+## Objective and win/loss conditions
 
-This game opens directly in the browser without an account. Rounds solved and the last theme stay in this browser's localStorage.
+Reveal every letter before making six wrong guesses. The sixth miss completes the figure, ends the round, and reveals the answer. There is no time limit. Guessing a letter you already tried does not spend another attempt.
 
 ## How it plays
 
-The board, controls, and session length are documented on the game page and in its definitive guide. No special hardware is required beyond what the guide lists. The game supports the inputs documented for that title.
+Use the alphabet buttons or type a single A–Z letter. A correct guess reveals that letter everywhere it occurs, not just in one position. A letter absent from the word adds one to the wrong-guess count.
 
-## Controls at a glance
+For example, if the Kitchen answer is TEAPOT, guessing T reveals both the first and last letters: T _ _ _ _ T. Guessing S would leave the pattern unchanged and add one miss. Selecting another theme starts a new word from that theme rather than continuing the previous answer with a different label.
 
-Check the game page for pointer, touch, and keyboard alternatives. Most actions have a keyboard path and a pointer path. Fullscreen or focus mode depends on browser permission and can be exited with Escape.
+## Scoring and strategy
 
-## Local storage and session
+The game records won rounds, not points for individual letters. Read the six-miss budget separately from the number of blank positions: one successful letter may fill several blanks.
 
-Best results, win counts, or puzzle progress are kept in this browser only. A different browser, profile, private window, or device will not share them. Clearing site data removes them. My Arcade reads these local values to show a private dashboard.
+Try letters that distinguish plausible words in the selected theme, then use the revealed pattern to narrow your next choice. Common vowels and consonants can be useful opening guesses, but a theme word can defeat any fixed guessing order. Already-used letters are marked so you do not need to remember the whole guess history unaided.
 
-## Accessibility and options
+## Local save data
 
-Sound on/off and mute are separate preferences. Volume and ambient are local choices. Focus outlines remain visible and no board uses transform scale to force fit. Reduced motion affects animation, not sound.
-
-## What NoCharge did not evaluate
-
-This description is based on current game code and tests. We did not measure long-term durability, evaluate every screen reader combination, or promise compatibility with every device. The game is general-audience and not directed to children.
-
-## Next step
-
-Open the game, play one run with the controls documented, and check the guide for the full rule set if needed. Use Privacy page to clear local data when you want.
+`nocharge:hangman:games-solved` counts won rounds and `nocharge:pref:hangman-last-theme` remembers the vocabulary theme. The answer, guessed letters, and current miss count remain in page memory only. Reloading keeps the recorded wins and theme but starts another round; clearing browser game data resets them.

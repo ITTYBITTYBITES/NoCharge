@@ -1,11 +1,18 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { isPassPlayGameId } from '../games/shared/pass-play';
+import { TOOLS } from '../config/tools';
+
+const games = (await getCollection('games')).filter((game) => !game.data.draft);
+const passPlayCount = games.filter((game) => isPassPlayGameId(game.id)).length;
+const soloCount = games.length - passPlayCount;
 ---
 
 <BaseLayout
   title="About NoCharge"
-  description="About NoCharge: 17 free browser games, complete player guides, browser-local results, practical editorial, and no account requirement."
+  description={`About NoCharge: ${games.length} free browser games (${soloCount} solo and ${passPlayCount} Pass & Play), ${TOOLS.length} browser tools, player guides, and no account requirement.`}
   path="/about/"
   showAds={false}
 >
@@ -15,18 +22,18 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
       <p class="eyebrow">About NoCharge</p>
       <h1 class="page-title">A quiet place for free browser games and practical guides.</h1>
       <p class="lede">
-        NoCharge is a one-word brand for a library of 17 browser games available at no charge and without an account. It pairs the arcade with complete game guides, focused articles, reviewed collections, and Quiet Setup editorial. Documented results stay on the device where they were played.
+        NoCharge is a library of {games.length} free browser games: {soloCount} solo games and {passPlayCount} Pass &amp; Play games for two people sharing one device. Alongside the arcade are complete game guides, {TOOLS.length} browser tools, focused articles, reviewed collections, and Quiet Setup editorial. No account is required, and saved game results stay on the device where they were played.
       </p>
     </header>
 
     <section aria-labelledby="about-what">
       <h2 id="about-what">What NoCharge is</h2>
       <p>
-        NoCharge is a browser-game and guide library. The current arcade catalog holds seventeen games: eleven solo
-        titles — Memory Match, Word Tile Rush, Color Flip, Beacon Lattice, Klondike, FreeCell, Nonogram, 2048, Tile
-        Garden, Word Search, and Mini Sudoku — and six Pass &amp; Play games for two players on one device, listed in
-        full on the <a href="/arcade/">Arcade page</a>. Each title is
-        available in the browser without an account, installation, or profile setup.
+        The <a href="/arcade/">Arcade</a> brings together memory and word games, solitaire, number puzzles,
+        and turn-taking board games. Solo choices include Memory Match, Minesweeper, Word Search, Mini Sudoku,
+        and Sudoku 9×9. Pass &amp; Play includes games such as Reversi, Gomoku, Checkers, and the cooperative
+        drawing game Pass the Picture. Each title opens without an account, installation, or profile setup;
+        its page explains the rules, supported controls, and which results it saves locally.
       </p>
       <p>
         The site’s Quiet Arcade approach favors clear controls, readable pages, practical game information, and
@@ -46,6 +53,22 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
       <p>
         We update guides and supporting articles when a documented game behavior changes. The{' '}
         <a href="/changelog/">changelog</a> records verified public platform updates.
+      </p>
+    </section>
+
+    <section aria-labelledby="about-tools">
+      <h2 id="about-tools">Browser tools with worked examples</h2>
+      <p>
+        The <a href="/tools/">tool library</a> currently contains {TOOLS.length} utilities and demonstrations.
+        Game Finder filters the published catalog; the Session planner estimates runs from session labels.
+        The Nonogram clue calculator explains line arrangements, the Sudoku helper lists candidates, and the
+        contrast checker compares color luminance. Audio tools include the Ambient Mixer and Singing Bowl Engine.
+      </p>
+      <p>
+        Tool pages explain their inputs, show concrete examples, and state what their results cannot establish.
+        A contrast ratio is not a complete accessibility audit, and a suggested session length is not a promise
+        about how quickly someone will finish. Calculations use the current browser rather than an uploaded
+        player profile.
       </p>
     </section>
 
@@ -82,9 +105,15 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
     <section aria-labelledby="about-operator">
       <h2 id="about-operator">Publisher and contact</h2>
       <p>
-        The publisher and operator identity currently available on this site is <strong>NoCharge</strong>. For a
-        question, accessibility report, privacy concern, or problematic advertisement report, contact{' '}
-        <a href="mailto:hello@nocharge.net">hello@nocharge.net</a>.
+        <strong>NoCharge</strong> publishes and operates this game, tool, and guide library at nocharge.net.
+        The site's contact address is <a href="mailto:hello@nocharge.net">hello@nocharge.net</a> for support,
+        accessibility reports, privacy questions, advertising concerns, and corrections to published rules or examples.
+        Please include the relevant page URL and a description of the issue, without passwords or sensitive personal information.
+      </p>
+      <p>
+        Game pages describe NoCharge's implementations rather than claiming every rule matches every physical-game
+        variant. Quiet Setup articles carry an evidence label to distinguish editorial research from personal use
+        or hands-on testing. A correction can be reported through the <a href="/contact/">Contact page</a>.
       </p>
     </section>
   </article>

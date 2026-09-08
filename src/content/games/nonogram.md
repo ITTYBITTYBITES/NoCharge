@@ -37,40 +37,24 @@ featured: false
 order: 13
 ---
 
-Nonogram (also called Picross) is a picture-logic puzzle. Row and column clues describe groups of filled cells. Mark each cell as filled or empty to reveal the hidden picture.
+Nonogram turns row and column clues into a hidden picture. NoCharge's library offers 5×5 and 10×10 boards; filled cells must satisfy both the horizontal and vertical clues.
 
-Choose between 5×5 and 10×10 grids from a curated library of 24 puzzles themed around animals, food, shapes, and objects. There is no timer, no fail state, and no streak mechanic. Your puzzle count stays in local storage on this device.
+## Objective and win/loss conditions
 
-
-## Quick answer
-
-This game opens directly in the browser without an account. Scores or progress stay in this browser's localStorage.
+Reveal the picture by filling its intended cells without filling background cells. The completion check accepts background cells that are empty or still unknown; you do not have to mark every background square explicitly. There is no timer, lives counter, or penalty that locks you out for trying a mark.
 
 ## How it plays
 
-The board, controls, and session length are documented on the game page and in its definitive guide. No special hardware is required beyond what the guide lists. The game supports the inputs documented for that title.
+Each clue number describes a consecutive filled run. Multiple numbers appear in order with at least one empty cell between runs. On a five-cell line, clue 3 can be XXX.., .XXX., or ..XXX, where X is filled and a dot is empty. The middle cell is filled in all three arrangements, so it is a safe deduction.
 
-## Controls at a glance
+A pointer tap cycles unknown → filled → empty → unknown. Keyboard controls let you move the cursor and mark filled or empty directly. Undo restores an earlier marking state. The text-clue view lists the row and column clues without requiring you to read numbers around the visual board.
 
-Check the game page for pointer, touch, and keyboard alternatives. Most actions have a keyboard path and a pointer path. Fullscreen or focus mode depends on browser permission and can be exited with Escape.
+## Scoring and strategy
 
-## Local storage and session
+There is no points score or speed bonus. The persistent metric counts puzzle completions. Start with full-length runs and lines whose minimum span nearly fills the available space. A clue of 2,2 already needs five cells: two filled, one gap, and two filled.
 
-Best results, win counts, or puzzle progress are kept in this browser only. A different browser, profile, private window, or device will not share them. Clearing site data removes them. My Arcade reads these local values to show a private dashboard.
+After solving part of a row, inspect the crossing columns rather than guessing the rest of the picture from its apparent shape. Empty marks are useful working notes even though the final completion check does not require every one.
 
-## Accessibility and options
+## Local save data
 
-Sound on/off and mute are separate preferences. Volume and ambient are local choices. Focus outlines remain visible and no board uses transform scale to force fit. Reduced motion affects animation, not sound.
-
-## What NoCharge did not evaluate
-
-This description is based on current game code and tests. We did not measure long-term durability, evaluate every screen reader combination, or promise compatibility with every device. The game is general-audience and not directed to children.
-
-## Next step
-
-Open the game, play one run with the controls documented, and check the guide for the full rule set if needed. Use Privacy page to clear local data when you want.
-
-
-## Comparative notes
-
-Compare this game's session length, input methods, and storage with other NoCharge titles. For example, Memory Match is untimed and retains best moves, while Word Tile Rush is timed and retains best score. Check the guide for the full control list and accessibility specifics. No purchase is needed to play.
+`nocharge:nonogram:puzzles-revealed` stores the completion count locally. It is not a list of distinct solved puzzle IDs, and it does not save the current marking grid. Reloading or choosing another puzzle starts a fresh board while retaining that count until browser data is cleared.

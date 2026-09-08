@@ -36,35 +36,24 @@ session: 1–2 min per round
 order: 9
 ---
 
-Last Token is a small take-away game for two people sharing one device. On your turn, remove one, two, or three tokens from a single pile. The catch is in the name: the player who takes the very last token loses the round.
+Last Token is a take-away game in which removing the last piece is the losing move. It is played by two people taking turns on the same device, with no hidden information.
 
-Rounds are quick. Choose the three-pile 3-4-5 preset, the longer four-pile 1-3-5-7, or the quick two-pile 3-5, and the opening player alternates every round. Every take is a labeled button, so turns work identically with touch, pointer, or keyboard. There is no timer, no computer opponent, and no account; the most recent result stays on this device in My Arcade.
+## Objective and win/loss conditions
 
-
-## Quick answer
-
-This game opens directly in the browser without an account. Scores or progress stay in this browser's localStorage.
+Leave your opponent to take the final token. A round ends as soon as every pile is empty, and the player who made that last take loses. Choose piles of 3–4–5, 1–3–5–7, or 3–5; the opening player alternates each round. There is no timer or draw from running out of turns.
 
 ## How it plays
 
-The board, controls, and session length are documented on the game page and in its definitive guide. No special hardware is required beyond what the guide lists. The game supports the inputs documented for that title.
+On a turn, remove one, two, or three tokens from exactly one pile. You cannot split a take between piles, take zero, or remove more than that pile holds. The available Take buttons show which choices are legal, and the handoff follows a completed take.
 
-## Controls at a glance
+For example, if the only remaining pile has four tokens, take three and leave one. Your opponent then has no choice but to take the last token and lose. If just one token is left at the start of your turn, taking it is mandatory; there is no pass button to avoid the result.
 
-Check the game page for pointer, touch, and keyboard alternatives. Most actions have a keyboard path and a pointer path. Fullscreen or focus mode depends on browser permission and can be exited with Escape.
+## Scoring and strategy
 
-## Local storage and session
+The result is one winner per round, not points for the number of tokens removed. Large takes are not automatically good: compare the position you leave rather than the amount you clear.
 
-Best results, win counts, or puzzle progress are kept in this browser only. A different browser, profile, private window, or device will not share them. Clearing site data removes them. My Arcade reads these local values to show a private dashboard.
+When every remaining pile contains one token, each turn removes one entire pile. An odd number of such piles leaves the player to move taking the last token under forced play; an even number leaves that task to the opponent. Earlier positions with larger piles need separate analysis because one turn can remove several tokens from a single pile.
 
-## Accessibility and options
+## Local save data
 
-Sound on/off and mute are separate preferences. Volume and ambient are local choices. Focus outlines remain visible and no board uses transform scale to force fit. Reduced motion affects animation, not sound.
-
-## What NoCharge did not evaluate
-
-This description is based on current game code and tests. We did not measure long-term durability, evaluate every screen reader combination, or promise compatibility with every device. The game is general-audience and not directed to children.
-
-## Next step
-
-Open the game, play one run with the controls documented, and check the guide for the full rule set if needed. Use Privacy page to clear local data when you want.
+`nocharge:passplay:match:last-token` stores the last preset, winning player slot, 1–0 or 0–1 outcome tally, and finish date. The remaining piles and earlier rounds are not saved. This is a single localStorage result without names, an account, or a public ranking.

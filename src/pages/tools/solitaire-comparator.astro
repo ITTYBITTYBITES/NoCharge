@@ -8,7 +8,7 @@ const faqs = [
   },
   {
     q: 'Does NoCharge have Spider yet?',
-    a: 'Not yet. The comparator lists Spider as a planned ruleset with its 1/2/4-suit variants described from the classic rules; the row becomes a play link when the game ships.',
+    a: 'Not yet. Spider is a planned reference column, not a playable NoCharge game. It describes common 1/2/4-suit rules without promising a release date or final implementation.',
   },
   {
     q: 'What is the difference between draw-one and draw-three?',
@@ -48,23 +48,38 @@ const faqs = [
         </thead>
         <tbody>
           <tr><td>Decks</td><td>1 (52 cards)</td><td>1 (52 cards)</td><td>2 decks (104); 1, 2, or 4 suits</td></tr>
-          <tr><td>Tableau</td><td>7 columns, increasing; top card face-up</td><td>8 columns, all face-up</td><td>10 columns, all face-up</td></tr>
+          <tr><td>Tableau</td><td>7 columns, increasing; top card face-up</td><td>8 columns, all face-up</td><td>10 columns; hidden cards with exposed top cards</td></tr>
           <tr><td>Draw</td><td>Stock to waste, draw-one or draw-three</td><td>No stock; cards are already distributed</td><td>One card dealt to each column per turn; no waste</td></tr>
-          <tr><td>Foundations</td><td>4 foundations, Ace-up by suit</td><td>4 foundations, Ace-up by suit</td><td>13 foundation piles, King-down by suit sequence</td></tr>
+          <tr><td>Foundations</td><td>4 foundations, Ace-up by suit</td><td>4 foundations, Ace-up by suit</td><td>8 completed King-to-Ace sequences, 13 cards each</td></tr>
           <tr><td>Key skill</td><td>Ordering with limited knowledge</td><td>Planning with complete knowledge</td><td>Building descending sequences within suits</td></tr>
-          <tr><td>Local metric</td><td>Games won, best moves, draw preference</td><td>Games won</td><td>Games won (planned)</td></tr>
-          <tr><td>Guide</td><td><a href="/guides/klondike/">Klondike guide</a></td><td><a href="/guides/freecell/">FreeCell guide</a></td><td>Live with Spider</td></tr>
+          <tr><td>Local metric</td><td>Games won, best moves, draw preference</td><td>Games won</td><td>No NoCharge metric; not playable</td></tr>
+          <tr><td>Guide</td><td><a href="/guides/klondike/">Klondike guide</a></td><td><a href="/guides/freecell/">FreeCell guide</a></td><td>Not yet available</td></tr>
         </tbody>
       </table>
     </section>
-    <p class="comparator-note">Spider rows describe the classic ruleset NoCharge will implement when it ships; the do-not-claim section of each guide will state any differences from physical play.</p>
+    <p class="comparator-note">Spider rows are a reference to common rules, not a specification or release promise. Read the live Klondike and FreeCell pages for their exact implemented rules.</p>
     <h3>Comparison reading</h3>
     <ul>
-      <li><strong>Klondike</strong> is the familiar guessing game: some cards are hidden, and the draw mode changes your options.</li>
-      <li><strong>FreeCell</strong> removes luck from the tableau: every card is visible, so a bad position is a planning problem, not a coin flip.</li>
-      <li><strong>Spider</strong> (planned) uses two decks and builds down by suit; 1-suit is more forgiving than 4-suit, and NoCharge will document the difference as a label, not a difficulty claim.</li>
+      <li><strong>Klondike</strong> combines visible moves with hidden tableau cards; draw mode changes which waste cards are available.</li>
+      <li><strong>FreeCell</strong> exposes the whole deal from the start. Planning uses complete card information, but deals still vary and solvability is not guaranteed.</li>
+      <li><strong>Spider</strong> (planned) uses two decks and removes complete descending same-suit sequences. Suit count changes the sorting task, not the total of 104 cards.</li>
     </ul>
   </section>
+  <Fragment slot="how">
+    <p>This is a static rule reference, not a deal simulator. Read across a row to compare the same feature: card count, hidden information, stock behavior, or foundation goal. Klondike and FreeCell link to playable NoCharge implementations; Spider is a reference for a planned, not currently playable, game.</p>
+    <h3>Worked example</h3>
+    <p>In both Klondike and FreeCell, a black 7 can sit on a red 8 in the tableau, while a foundation needs the same suit in ascending order. An empty tableau column differs: Klondike needs a king, but FreeCell accepts any card.</p>
+    <p>FreeCell's sequence capacity is (empty free cells + 1) × 2 to the power of the spare empty columns. With one free cell and one spare empty column, the capacity is (1 + 1) × 2 = 4 cards. An empty destination column is not also counted as spare workspace. Klondike does not use this free-cell capacity rule.</p>
+  </Fragment>
+
+  <Fragment slot="limits">
+    <ul>
+      <li>The table does not inspect a live deal, certify solvability, suggest a move, or rank the games by difficulty.</li>
+      <li>Classic solitaire has variants. The linked NoCharge guides and game-page rules describe the shipped implementations; the Spider column is not a promise about a future release.</li>
+      <li>Seeing all FreeCell cards removes hidden information, not variation between deals. It does not mean every random deal is solvable.</li>
+      <li>This comparison has no saved choices or metrics and remains readable without JavaScript.</li>
+    </ul>
+  </Fragment>
 </ToolPage>
 
 <style>

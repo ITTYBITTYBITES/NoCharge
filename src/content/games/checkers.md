@@ -36,32 +36,26 @@ presentation:
       description: "English draughts, simple capture rule: any legal jump may be taken; the game does not force the longest sequence. No flying kings."
 ---
 
-Checkers (English draughts) is the classic 8×8 game: twelve pieces each, men step one square forward diagonally, kings move in any diagonal direction, and jumps are mandatory when available. A capture chain continues with the same turn until no further jump exists. NoCharge's variant is documented on the guide: the simple capture rule, no flying kings, and no AI opponent.
+Checkers is a two-player 8×8 board game played on the dark squares, with twelve pieces per side. Captures are mandatory, so choosing a quiet move is not always an available option.
 
-## Quick answer
+## Objective and win/loss conditions
 
-This game opens directly in the browser without an account. The most recent match result stays in this browser's localStorage.
+Win by removing every opponent piece or leaving the opponent with no legal move. Player 1 starts each fresh board. There is no timer or automatic draw counter for repeated positions in this edition.
 
 ## How it plays
 
-The board, controls, and session length are documented on the game page and in its definitive guide. No special hardware is required beyond what the guide lists. The game supports the inputs documented for that title.
+An ordinary piece moves one diagonal square forward into an empty square. To capture, jump an adjacent opponent into the empty square immediately beyond it. Kings can move or capture in either diagonal direction, but they do not slide across multiple empty squares.
 
-## Controls at a glance
+If any capture is available, a non-capturing move is refused. Multiple available captures do not impose a longest-sequence rule: choose a legal jump, then continue the selected piece's chain when another jump is available. Promotion occurs on reaching the far row; in this implementation the newly crowned king can continue a capture chain if it has another jump.
 
-Check the game page for pointer, touch, and keyboard alternatives. Most actions have a keyboard path and a pointer path. Fullscreen or focus mode depends on browser permission and can be exited with Escape.
+For example, if your piece faces an adjacent opponent with an empty landing square beyond, that jump is legal. If your second piece could instead move quietly, the mandatory-capture rule prevents choosing that quiet move for this turn.
 
-## Local storage and session
+## Scoring and strategy
 
-Best results, win counts, or puzzle progress are kept in this browser only. A different browser, profile, private window, or device will not share them. Clearing site data removes them. My Arcade reads these local values to show a private dashboard.
+Captured pieces change the board, not a points balance. Check the landing square after each prospective jump: taking one piece can place yours where it is captured in reply. Keep supporting pieces close enough to recapture, and consider whether a trade opens a route to promotion.
 
-## Accessibility and options
+The short-range king rule and promotion behavior are specific to this implementation; do not assume every rule from another draughts variant applies.
 
-Sound on/off and mute are separate preferences. Volume and ambient are local choices. Focus outlines remain visible and no board uses transform scale to force fit. Reduced motion affects animation, not sound.
+## Local save data
 
-## What NoCharge did not evaluate
-
-This description is based on current game code and tests. We did not measure long-term durability, evaluate every screen reader combination, or promise compatibility with every device. The game is general-audience and not directed to children.
-
-## Next step
-
-Open the game, play one run with the controls documented, and check the guide for the full rule set if needed. Use Privacy page to clear local data when you want.
+`nocharge:passplay:match:checkers` stores the latest winner, mode label, and completion date. The shared 0–0 score fields are placeholders, not the number of remaining pieces. Piece positions, a continuing jump sequence, and player names stay in memory only, so reloading cannot resume the match.

@@ -21,8 +21,8 @@ const faqs = [
     a: 'No. They are estimated ranges from typical play in the catalog. A session planner can suggest a count; it cannot promise how long any player will take.',
   },
   {
-    q: 'What does "1–2 games" mean?',
-    a: 'The planner divides your minutes by the midpoint of each listed range and rounds down, so the count is a starting point, not a schedule.',
+    q: 'How is the run estimate calculated?',
+    a: 'It rounds the session midpoint to a whole minute, divides your available minutes by that value, rounds down, and displays at least one run. A displayed run is not a guarantee it will fit; the planner does not exclude games based on your time budget.',
   },
   {
     q: 'Does it save my answers?',
@@ -73,6 +73,22 @@ const faqs = [
     </div>
     <div id="planner-results" class="planner-results" data-games={JSON.stringify(facts)} aria-live="polite"></div>
   </section>
+  <Fragment slot="how">
+    <p>The planner first filters by players and supported input. It sorts matching games by the upper end of their session range, then by title, and displays at most 12 cards. Minutes change the run estimate; they do not remove a game from the list.</p>
+    <h3>Worked example</h3>
+    <p>Memory Match is labeled 2–5 minutes. Its midpoint is (2 + 5) ÷ 2 = 3.5, rounded to 4 minutes. With 10 minutes available, the estimate is floor(10 ÷ 4) = 2 runs. The remaining 2 minutes are not allocated to setup, pauses, or switching games.</p>
+    <p>In general, the displayed count is the available minutes divided by the rounded midpoint, rounded down, with a minimum of one. Inputs are limited to 1–240 minutes. A one-minute budget can therefore still display one run of a longer game; check the session label alongside the count.</p>
+  </Fragment>
+
+  <Fragment slot="limits">
+    <ul>
+      <li>This is an estimate, not a timer, reservation, or proof that the displayed runs fit your break.</li>
+      <li>The calculation does not use your personal completion history or allow time for reading rules and taking turns.</li>
+      <li>Only the first 12 sorted matches are displayed even when the summary counts more candidates.</li>
+      <li>A supported-input flag does not necessarily mean every action is possible with that input alone. Use Game Finder's keyboard-complete filter for that stricter requirement.</li>
+      <li>Changing these controls does not save a schedule, start a reminder, or modify any game.</li>
+    </ul>
+  </Fragment>
 </ToolPage>
 
 <script>

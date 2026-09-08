@@ -101,6 +101,21 @@ const questions = [
     </div>
     <div id="finder-results" class="finder-results" data-games={JSON.stringify(facts)} aria-live="polite"></div>
   </section>
+  <Fragment slot="how">
+    <p>The finder applies all selected constraints to the published catalog: session length, player mode, pace, input, and genre. A game must pass every selected check. Unanswered questions and “Any” choices leave that constraint open. Matches are sorted by title, not by a recommendation score.</p>
+    <h3>Worked example</h3>
+    <p>Choose 5 minutes, Just me, Untimed, Keyboard, and Memory. Memory Match qualifies: its listed session is 2–5 minutes, it is solo and untimed, and its full card-matching loop supports the keyboard. Other games meeting those same checks remain in the result; this is not a one-answer quiz.</p>
+    <p>The time check uses the upper end of the catalog range. A game labeled 2–6 minutes fails a 5-minute limit even though some rounds could finish sooner. Broaden one answer if you would rather see those possibilities.</p>
+  </Fragment>
+
+  <Fragment slot="limits">
+    <ul>
+      <li>Session labels are estimates, not measurements of your pace or a guarantee that you will finish.</li>
+      <li>Keyboard filtering uses the catalog's keyboard-complete flag; it does not test your hardware or assistive technology. The “Mouse or touch” option currently checks the pointer-input flag.</li>
+      <li>The finder does not score enjoyment, inspect past play, test a game's difficulty, or connect two devices for multiplayer.</li>
+      <li>Only the catalog bundled with this build is searched. Answers and results stay in page memory and are not saved.</li>
+    </ul>
+  </Fragment>
 </ToolPage>
 
 <script>

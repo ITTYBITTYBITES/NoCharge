@@ -46,40 +46,24 @@ featured: true
 order: 2
 ---
 
-Word Tile Rush mixes word finding with a rising-grid timer. Connect adjacent letters—including diagonals—to submit words of three or more letters, clear space, and build a higher score.
+Word Tile Rush combines connected-letter paths with a rising stack on a six-column, eight-row board. Clearing useful space matters as much as finding a long word.
 
-The timer begins with your first selected letter. The word list runs locally, keyboard players can select tiles and press Submit, and your best score never leaves the device.
+## Objective and win/loss conditions
 
-
-## Quick answer
-
-This game opens directly in the browser without an account. Scores or progress stay in this browser's localStorage.
+Keep removing words before the letters reach the top. There is no fixed winning score. The run ends if a top-row cell is occupied when the next row is due to rise. The rise timer starts with your first selected letter and waits while a word path is actively selected.
 
 ## How it plays
 
-The board, controls, and session length are documented on the game page and in its definitive guide. No special hardware is required beyond what the guide lists. The game supports the inputs documented for that title.
+Connect at least three adjacent letters. Horizontal, vertical, and diagonal neighbors are allowed, but a tile cannot appear twice in the same word. Backtracking to the previous tile shortens the path. Submit checks the word against the bundled list; a word outside that list is rejected without removing tiles.
 
-## Controls at a glance
+An accepted word disappears, the remaining letters in each column fall down, and later rises add letters at the bottom. For example, clearing three letters high in one column can give that column breathing room even if a longer word is available near the bottom.
 
-Check the game page for pointer, touch, and keyboard alternatives. Most actions have a keyboard path and a pointer path. Fullscreen or focus mode depends on browser permission and can be exited with Escape.
+## Scoring and strategy
 
-## Local storage and session
+An accepted word scores **10 × length²**: three letters earn 90, four earn 160, and five earn 250 points. Two three-letter words total 180, less than one five-letter word, but the shorter paths may clear a dangerous area sooner.
 
-Best results, win counts, or puzzle progress are kept in this browser only. A different browser, profile, private window, or device will not share them. Clearing site data removes them. My Arcade reads these local values to show a private dashboard.
+Read diagonal neighbors and check whether a final letter can extend into a common ending before submitting. When the stack is high, prioritize removing top letters over chasing a particular score. No bonus depends on how quickly you drag a path.
 
-## Accessibility and options
+## Local save data
 
-Sound on/off and mute are separate preferences. Volume and ambient are local choices. Focus outlines remain visible and no board uses transform scale to force fit. Reduced motion affects animation, not sound.
-
-## What NoCharge did not evaluate
-
-This description is based on current game code and tests. We did not measure long-term durability, evaluate every screen reader combination, or promise compatibility with every device. The game is general-audience and not directed to children.
-
-## Next step
-
-Open the game, play one run with the controls documented, and check the guide for the full rule set if needed. Use Privacy page to clear local data when you want.
-
-
-## Comparative notes
-
-Compare this game's session length, input methods, and storage with other NoCharge titles. For example, Memory Match is untimed and retains best moves, while Word Tile Rush is timed and retains best score. Check the guide for the full control list and accessibility specifics. No purchase is needed to play.
+`nocharge:word-tile-rush:high` keeps the highest run score in this browser's localStorage. The current grid, selected letters, and submitted-word history are not persisted or uploaded. Reloading starts a new run without erasing the stored best; Clear game data resets that best.

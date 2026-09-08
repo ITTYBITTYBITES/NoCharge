@@ -41,6 +41,13 @@ const {
   showAds = false,
 } = Astro.props;
 
+// A working widget is not a substitute for an explanation in the initial HTML.
+for (const name of ['how', 'limits']) {
+  if (!Astro.slots.has(name)) {
+    throw new Error(`${path} must supply its own ${name} slot.`);
+  }
+}
+
 const toolSchema = schema ?? [
   {
     '@context': 'https://schema.org',
@@ -96,26 +103,22 @@ const toolSchema = schema ?? [
       <p><strong>Bottom line:</strong> {bottomLine}</p>
     </blockquote>
 
+    <noscript>
+      <p>JavaScript is off. The worked examples and reference information below are still available.</p>
+    </noscript>
+
     <div class="tool-page__main">
       <slot />
     </div>
 
     <section class="prose" aria-labelledby="how-it-works-heading">
       <h2 id="how-it-works-heading">How it works</h2>
-      <slot name="how">
-        <p>Everything on this page runs in the current browser. Values you enter are used only by this page and are not sent to NoCharge or any other server.</p>
-      </slot>
+      <slot name="how" />
     </section>
 
     <section class="prose" aria-labelledby="tool-limits-heading">
       <h2 id="tool-limits-heading">What it cannot do</h2>
-      <slot name="limits">
-        <ul>
-          <li>It does not measure or guarantee any real-world outcome.</li>
-          <li>It does not replace an eye exam, an ergonomics assessment, or a device manual.</li>
-          <li>It does not upload your input or save a preference without telling you.</li>
-        </ul>
-      </slot>
+      <slot name="limits" />
     </section>
 
     {
@@ -131,8 +134,8 @@ const toolSchema = schema ?? [
       embedCode && (
         <section class="prose" aria-labelledby="tool-embed-heading">
           <h2 id="tool-embed-heading">Embed this tool</h2>
-          <pre><code>{embedCode}
-&lt;p&gt;Source: &lt;a href="https://nocharge.net${path}"&gt;{embedSourceLabel}&lt;/a&gt;&lt;/p&gt;</code></pre>
+          <pre><code>{`${embedCode}
+<p>Source: <a href="https://nocharge.net${path}">${embedSourceLabel}</a></p>`}</code></pre>
         </section>
       )
     }

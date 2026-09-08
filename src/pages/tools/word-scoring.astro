@@ -4,11 +4,11 @@ import ToolPage from '../../components/ToolPage.astro';
 const faqs = [
   {
     q: 'What is the Word Tile Rush formula?',
-    a: 'NoCharge Word Tile Rush scores a word by the sum of its letter length terms: each tile contributes a base plus a length bonus, so longer words score more per tile. The exact constants are in the guide.',
+    a: 'The playable game scores an accepted word as 10 × length squared: 3 letters earn 90, 4 earn 160, and 5 earn 250 points. It also requires a valid adjacent path and a word from its bundled list.',
   },
   {
     q: 'Why is the calculator "generic length-squared"?',
-    a: 'It illustrates the principle with a simple function — points grow with word length (and length squared in one view) — so you can see why a 5-letter word is worth more than two 3-letter words. It is education about the formula family, not a claim about NoCharge\'s exact numbers.',
+    a: 'The quadratic demo uses round(1.5 × length squared), not the game formula. Five letters produce 38 versus 28 for two three-letter words. The linear demo gives 13 versus 14, showing why the chosen formula matters.',
   },
   {
     q: 'Does it affect my game score?',
@@ -57,8 +57,23 @@ const faqs = [
         <tbody data-scorer-rows></tbody>
       </table>
     </section>
-    <p class="scorer-note">Both formulas assume a base of 1 point per tile. They are models for understanding why long words dominate — NoCharge Word Tile Rush uses its own documented formula, which the guide states exactly.</p>
+    <p class="scorer-note">The linear demo is n + 2 × (n − 1); the quadratic demo is round(1.5 × n²). Neither is the live Word Tile Rush formula of 10 × n². Compare the worked values below before applying a model to game points.</p>
   </section>
+  <Fragment slot="how">
+    <p>The two demo curves use word length n, not letter rarity. The linear model is <code>n + 2 × (n − 1)</code>; the quadratic model is <code>round(1.5 × n²)</code>. The bars compare those values on the same scale, and the table lists lengths 2 through 10.</p>
+    <h3>Worked example</h3>
+    <p>At four letters, the linear result is 4 + 2 × 3 = 10 points. The quadratic result is round(1.5 × 16) = 24. At five letters they become 13 and 38 respectively. Two three-letter words total 14 in the linear model and 28 in the quadratic model, so the benefit of one longer word depends on the formula.</p>
+    <p>The playable Word Tile Rush uses a different, exact rule: <strong>10 × n²</strong>. Its four-letter word is worth 160, its five-letter word 250, and two three-letter words 180. These demo curves illustrate scaling; they are not a prediction of the game's displayed points.</p>
+  </Fragment>
+
+  <Fragment slot="limits">
+    <ul>
+      <li>The input is a whole-number length from 2 to 10, not a submitted word. The tool does not check spelling, dictionary membership, adjacency, or whether tiles form a legal game path.</li>
+      <li>The demo accepts length 2, but Word Tile Rush requires at least three letters. The game also has a rising board that this calculation does not simulate.</li>
+      <li>Higher arithmetic reward does not prove that searching for a long word is the best move when the board is nearly full.</li>
+      <li>No points are awarded to a game, saved as a record, or sent to a server by this explainer.</li>
+    </ul>
+  </Fragment>
 </ToolPage>
 
 <script>
@@ -74,7 +89,7 @@ const faqs = [
 
   const render = () => {
     if (!lengthInput || !barLinear || !barSquared || !valueLinear || !valueSquared) return;
-    const length = Math.max(2, Math.min(10, Number(lengthInput.value) || 4));
+    const length = Math.max(2, Math.min(10, Math.trunc(Number(lengthInput.value) || 4)));
     const l = linear(length);
     const s = squared(length);
     const max = squared(10);

@@ -36,41 +36,24 @@ presentation:
       description: Start a fresh grid at any time; theme or size changes ask first if you have progress.
 ---
 
-Word Search is untimed and has no score, streak, or leaderboard. Choose a theme, trace a horizontal, vertical, or diagonal word, and keep found words highlighted. A hint can identify a starting letter without interrupting the puzzle.
+Word Search is an untimed hunt for listed words on an 8×8 or 10×10 letter grid. Themes change the vocabulary, while the selection rule stays the same: a word must follow one straight line.
 
+## Objective and win/loss conditions
 
-## Quick answer
-
-This game opens directly in the browser without an account. Scores or progress stay in this browser's localStorage.
+Find every word in the current puzzle's list. A selection that is not a listed word does not cost a life, reduce a score, or end the puzzle. There is no countdown. Starting another puzzle resets found words, with a confirmation when you have already begun selecting or finding words.
 
 ## How it plays
 
-The board, controls, and session length are documented on the game page and in its definitive guide. No special hardware is required beyond what the guide lists. The game supports the inputs documented for that title.
+Choose the first and last letters of a word by tapping, dragging, or using the keyboard cursor and Enter or Space. Horizontal, vertical, and diagonal lines are valid in either direction; a path that bends is not.
 
-## Controls at a glance
+For example, if CLOUD runs diagonally from row 1, column 1 to row 5, column 5, those endpoints select its five letters. A word on the same diagonal can also be selected from the opposite end. Found words stay highlighted. Show word list reveals the words to look for, and Hint marks a starting cell for an unfound word without tracing the whole answer.
 
-Check the game page for pointer, touch, and keyboard alternatives. Most actions have a keyboard path and a pointer path. Fullscreen or focus mode depends on browser permission and can be exited with Escape.
+## Scoring and strategy
 
-## Local storage and session
+The game counts completed puzzles, not points, speed, or consecutive days. Scan for an uncommon first letter, then inspect all eight directions for its next letter. Long words often have fewer possible placements near an edge, which can make them useful starting points.
 
-Best results, win counts, or puzzle progress are kept in this browser only. A different browser, profile, private window, or device will not share them. Clearing site data removes them. My Arcade reads these local values to show a private dashboard.
+Do not count every word you happen to see in the random filler: only words in the puzzle's own list count toward completion. A hint carries no score deduction.
 
-## Accessibility and options
+## Local save data
 
-Sound on/off and mute are separate preferences. Volume and ambient are local choices. Focus outlines remain visible and no board uses transform scale to force fit. Reduced motion affects animation, not sound.
-
-## What NoCharge did not evaluate
-
-This description is based on current game code and tests. We did not measure long-term durability, evaluate every screen reader combination, or promise compatibility with every device. The game is general-audience and not directed to children.
-
-## Next step
-
-Open the game, play one run with the controls documented, and check the guide for the full rule set if needed. Use Privacy page to clear local data when you want.
-
-
-## Comparative notes
-
-Compare this game's session length, input methods, and storage with other NoCharge titles. For example, Memory Match is untimed and retains best moves, while Word Tile Rush is timed and retains best score. Check the guide for the full control list and accessibility specifics. No purchase is needed to play.
-
-
-This game remains playable without an account and respects reduced-motion preferences for animation.
+The solved counter uses `nocharge:word-search:puzzles-solved`. The last selected theme is saved through the preference key `nocharge:pref:word-search-last-list` and is reused on a later visit. The generated letters, selected endpoints, and found-word highlights are not a saved puzzle; reload creates a new grid. Browser site-data controls can remove both records.

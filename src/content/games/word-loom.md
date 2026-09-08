@@ -36,32 +36,24 @@ presentation:
       description: On-device only, stored under nocharge:daily:word-loom:streak. Missing a day restarts it.
 ---
 
-Word Loom is NoCharge's original five-letter word game: six guesses, five letters, and feedback that is never color-only. Daily mode is seeded by the device-local date; practice mode is always available and never touches the streak. The rules and name are NoCharge's own — this is not a clone of any third-party word game.
+Word Loom is a daily-or-practice word puzzle with six rows of letter feedback. The symbols ✓, ~, and ✗ communicate the result alongside color, so each tile has a readable meaning.
 
-## Quick answer
+## Objective and win/loss conditions
 
-This game opens directly in the browser without an account. The streak and solved date stay in this browser's localStorage.
+Submit the hidden five-letter word within six accepted guesses. A correct guess finishes the round; using all six without solving reveals the answer. A guess with the wrong length or outside the game's internal word list is rejected rather than consuming a row. There is no input timer.
 
 ## How it plays
 
-The board, controls, and session length are documented on the game page and in its definitive guide. No special hardware is required beyond what the guide lists. The game supports the inputs documented for that title.
+A ✓ means the letter is in the correct position. A ~ means it appears elsewhere in the answer. A ✗ means there is no remaining occurrence to assign to that guessed copy. Correct positions are evaluated before misplaced copies, so duplicate letters cannot claim more occurrences than the answer contains.
 
-## Controls at a glance
+For example, with APPLE as the answer and PAPER as the guess, the feedback is ~, ~, ✓, ~, ✗. The P in position 3 is correct; the other P is present because APPLE contains a second P. R is absent. Use both position and duplicate-letter information for the next guess.
 
-Check the game page for pointer, touch, and keyboard alternatives. Most actions have a keyboard path and a pointer path. Fullscreen or focus mode depends on browser permission and can be exited with Escape.
+## Scoring and strategy
 
-## Local storage and session
+There are no letter points. A daily solve records its guess count and updates a device-local streak; Practice counts wins only while the page is open. Daily targets are chosen from the local calendar date, so people in different time zones can be on different dates.
 
-Best results, win counts, or puzzle progress are kept in this browser only. A different browser, profile, private window, or device will not share them. Clearing site data removes them. My Arcade reads these local values to show a private dashboard.
+Keep confirmed positions and test plausible placements for present letters. The internal list is a limited vocabulary, not a general spelling dictionary, so a rejected word is not a judgment about whether that word exists in English.
 
-## Accessibility and options
+## Local save data
 
-Sound on/off and mute are separate preferences. Volume and ambient are local choices. Focus outlines remain visible and no board uses transform scale to force fit. Reduced motion affects animation, not sound.
-
-## What NoCharge did not evaluate
-
-This description is based on current game code and tests. We did not measure long-term durability, evaluate every screen reader combination, or promise compatibility with every device. The game is general-audience and not directed to children.
-
-## Next step
-
-Open the game, play one run with the controls documented, and check the guide for the full rule set if needed. Use Privacy page to clear local data when you want.
+`nocharge:daily:word-loom:streak` stores a count and last solved date. `nocharge:daily:word-loom:solved` stores the latest solved date and number of guesses. Practice does not write those keys. Submitted words, partial rows, and a resumable attempt are not saved; these records are not a synchronized leaderboard or a server-enforced daily result.

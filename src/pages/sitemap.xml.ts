@@ -1,7 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
 import { TOOLS } from '../config/tools';
-import { DAILY_SLOTS } from '../config/dailies';
 
 export const GET: APIRoute = async ({ site }) => {
   const origin = site ?? new URL('https://nocharge.net');
@@ -23,7 +22,6 @@ export const GET: APIRoute = async ({ site }) => {
     '/',
     '/arcade/',
     ...games.map((game) => `/games/${game.id}/`),
-    ...DAILY_SLOTS.filter((slot) => slot.status === 'live').map((slot) => `/games/${slot.slug}/?daily=1`),
     '/daily/',
     '/guides/',
     ...guides.map((guide) => `/guides/${guide.id}/`),
@@ -47,7 +45,6 @@ export const GET: APIRoute = async ({ site }) => {
     '/advertising/',
     '/privacy/',
     '/accessibility/',
-    '/search/',
   ];
   const urls = paths
     .map((path) => `  <url><loc>${new URL(path, origin).toString()}</loc></url>`)
