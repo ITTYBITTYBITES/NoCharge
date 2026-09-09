@@ -1,0 +1,393 @@
+/*
+ * Lab section styles.
+ *
+ * Loaded only by Lab routes. The calm site never ships this file, which is the
+ * first and most important rule of the separation: a visitor who never opts in
+ * does not pay for a single byte of it.
+ *
+ * Structure of this file:
+ *   1. Theme tokens (three candidate identities)
+ *   2. Layout frame — stage + ad containers
+ *   3. Canvas
+ *   4. HUD
+ *   5. Orientation variants
+ *
+ * Layout contract
+ * ---------------
+ * The stage is a CSS Grid with three named areas. Advertisements can only ever
+ * occupy `ad-bottom` and `ad-rail`, never `stage` — so it is structurally
+ * impossible for a banner to overlap the playfield or the touch controls, no
+ * matter what size the network's creative decides to be.
+ *
+ *   ┌──────────────────────────┬───────────┐
+ *   │                          │           │
+ *   │          stage           │  ad-rail  │   desktop landscape
+ *   │                          │           │
+ *   ├──────────────────────────┴───────────┤
+ *   │              ad-bottom               │
+ *   └──────────────────────────────────────┘
+ */
+
+/* ------------------------------------------------------- 1. theme tokens -- */
+
+/*
+ * Three identities, all reachable by setting `data-lab-theme` on <html>.
+ * Each is deliberately non-emerald: the calm site's green is the one colour the
+ * Lab must not borrow, because the fastest way to dilute the Quiet Arcade is to
+ * make the loud section look like it.
+ */
+
+/* The Lab — instrument panel. Sodium/amber on near-black, like bench equipment. */
+[data-lab-theme='lab'] {
+  --lab-bg: #0a0a0c;
+  --lab-panel: #14141a;
+  --lab-text: #f2ede4;
+  --lab-muted: #9a938a;
+  --lab-accent: #ffb020;
+  --lab-accent-ink: #1a1204;
+  --lab-line: rgba(255, 176, 32, 0.18);
+  --lab-hud-bg: rgba(10, 10, 12, 0.72);
+}
+
+/* Overdrive — full intensity. Hot magenta, the furthest thing from calm. */
+[data-lab-theme='overdrive'] {
+  --lab-bg: #08060d;
+  --lab-panel: #16101c;
+  --lab-text: #fdeaf4;
+  --lab-muted: #a58fa0;
+  --lab-accent: #ff2d6f;
+  --lab-accent-ink: #14020a;
+  --lab-line: rgba(255, 45, 111, 0.22);
+  --lab-hud-bg: rgba(8, 6, 13, 0.72);
+}
+
+/* Raw Engine — debug build. Acid lime hairlines, monospace, wireframe. */
+[data-lab-theme='raw'] {
+  --lab-bg: #000000;
+  --lab-panel: #0c0c0c;
+  --lab-text: #e8ffd0;
+  --lab-muted: #7d8a68;
+  --lab-accent: #c9ff2e;
+  --lab-accent-ink: #0d1400;
+  --lab-line: rgba(201, 255, 46, 0.24);
+  --lab-hud-bg: rgba(0, 0, 0, 0.78);
+}
+
+/* ------------------------------------------------------- 2. layout frame -- */
+
+.lab-frame {
+  /*
+   * dvw/dvh, not vw/vh. On mobile the URL bar is part of the viewport for vh
+   * but not for dvh, so a 100vh stage is either clipped or scrollable during
+   * the rotation animation. dvw avoids the horizontal-scrollbar overflow that
+   * 100vw causes on desktop when a scrollbar is present.
+   */
+  width: 100vw;
+  width: 100dvw;
+  height: 100vh;
+  height: 100dvh;
+
+  display: grid;
+  grid-template-areas:
+    'stage'
+    'ad-bottom';
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
+
+  /* Safe-area padding for notches and home indicators. */
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px)
+    env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+
+  background: var(--lab-bg);
+  color: var(--lab-text);
+  overflow: hidden;
+  /* No rubber-banding and no pull-to-refresh mid-game. */
+  overscroll-behavior: none;
+  /* Stop the double-tap zoom that would otherwise fire on rapid taps. */
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  /* Pin the Lab to its own layer so compositing does not fight the renderer. */
+  isolation: isolate;
+}
+
+.lab-stage {
+  grid-area: stage;
+  position: relative;
+  /* min-width/height:0 lets the track shrink instead of overflowing the frame.
+     Without it, a canvas with a large intrinsic size forces the grid to grow. */
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/*
+ * Ad containers.
+ *
+ * Both are reserved grid tracks with explicit min-height, so a creative that
+ * fills late cannot shift the stage (Lighthouse CLS budget is 0.1). If the slot
+ * stays empty the track keeps its space and the stage is simply a little
+ * shorter than it could be — never reflowed.
+ */
+.lab-ad {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--lab-panel);
+  border-top: 1px solid var(--lab-line);
+}
+
+.lab-ad[hidden] {
+  display: none;
+}
+
+.lab-ad--bottom {
+  grid-area: ad-bottom;
+  /* 320×50 mobile banner plus a little breathing room. */
+  min-height: calc(50px + env(safe-area-inset-bottom, 0px));
+}
+
+.lab-ad--rail {
+  grid-area: ad-rail;
+  display: none;
+  border-top: 0;
+  border-left: 1px solid var(--lab-line);
+}
+
+/* The label stays visible even when the slot is empty, so an ad never appears
+   to be unexplained site content. */
+.lab-ad__label {
+  color: var(--lab-muted);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* -------------------------------------------------------------- 3. canvas -- */
+
+.lab-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* The backing store is sized in JS (see src/lab/loop/canvas-stage.ts); CSS
+     only controls the layout box. */
+  background: var(--lab-bg);
+  /* Suppress the long-press callout and the iOS tap highlight so fast
+     repeated taps register as taps, not as text selection. */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  /* The game reads raw pointers; let nothing else interpret them. */
+  touch-action: none;
+}
+
+.lab-canvas:focus-visible {
+  outline: 3px solid var(--lab-accent);
+  outline-offset: -3px;
+}
+
+/*
+ * Virtual touch controls live in a dedicated band at the bottom of the stage.
+ * `--lab-touch-band` is the contract: the stage never draws interactive
+ * controls below this line in portrait, so the bottom banner can sit flush
+ * beneath it without stealing a thumb.
+ */
+.lab-stage {
+  --lab-touch-band: 0px;
+}
+
+.lab-stage[data-touch-controls='true'] {
+  --lab-touch-band: 34%;
+}
+
+.lab-touch-controls {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: var(--lab-touch-band);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-content: end;
+  padding: 0 max(1rem, env(safe-area-inset-left, 0px)) 1rem
+    max(1rem, env(safe-area-inset-right, 0px));
+  pointer-events: none;
+}
+
+.lab-touch-controls > button {
+  pointer-events: auto;
+  /* 44px is the WCAG 2.5.5 minimum and the calm site's own touch-target rule. */
+  min-width: 64px;
+  min-height: 64px;
+  color: var(--lab-text);
+  border: 1px solid var(--lab-line);
+  border-radius: 999px;
+  background: var(--lab-hud-bg);
+  font-size: 1.25rem;
+}
+
+/* ----------------------------------------------------------------- 4. HUD -- */
+
+.lab-hud {
+  position: absolute;
+  z-index: 20;
+  top: max(0.5rem, env(safe-area-inset-top, 0px));
+  right: max(0.5rem, env(safe-area-inset-right, 0px));
+  left: max(0.5rem, env(safe-area-inset-left, 0px));
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  /* The HUD floats over the stage; only its controls take pointer events, or
+     it would block gameplay across the whole top of the screen. */
+  pointer-events: none;
+}
+
+.lab-hud > * {
+  pointer-events: auto;
+}
+
+.lab-hud__exit,
+.lab-hud__mute {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  padding: 0 0.85rem;
+  border: 1px solid var(--lab-line);
+  border-radius: 999px;
+  background: var(--lab-hud-bg);
+  color: var(--lab-text);
+  font-size: 0.875rem;
+  font-weight: 650;
+  text-decoration: none;
+  backdrop-filter: blur(6px);
+}
+
+.lab-hud__exit {
+  border-color: var(--lab-accent);
+  color: var(--lab-accent);
+}
+
+.lab-hud__exit:hover,
+.lab-hud__mute:hover {
+  border-color: var(--lab-accent);
+}
+
+.lab-hud__fps {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 0.7rem;
+  border: 1px solid var(--lab-line);
+  border-radius: 999px;
+  background: var(--lab-hud-bg);
+  color: var(--lab-muted);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8125rem;
+}
+
+/* Fade, don't slide: movement in the corner of a fast game is far more
+   distracting than a slow change in opacity. */
+.lab-hud {
+  transition: opacity 240ms ease;
+}
+
+.lab-hud.is-hud-idle {
+  opacity: 0.18;
+}
+
+/* A HUD that contains focus is never dimmed (WCAG 2.4.7). */
+.lab-hud.is-hud-idle:focus-within {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab-hud {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------- 5. orientation variants -- */
+
+/*
+ * Desktop and tablet landscape: there is room for a side rail, and there is
+ * also room for the touch band to be irrelevant because there is a keyboard.
+ * The rail sits in its own grid column so it can never overlap the stage.
+ */
+@media (orientation: landscape) and (min-width: 64rem) {
+  .lab-frame {
+    grid-template-areas:
+      'stage ad-rail'
+      'ad-bottom ad-bottom';
+    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) 300px;
+  }
+
+  .lab-ad--rail {
+    display: grid;
+    /* 300×600 half-page, or 160×600 where only that fills. Reserved either
+       way so an empty slot costs no reflow. */
+    min-width: 300px;
+  }
+
+  .lab-ad--bottom {
+    /* 728×90 leaderboard. */
+    min-height: 90px;
+  }
+
+  /* On a pointer device the touch band is dead weight. */
+  .lab-stage[data-touch-controls='true'] {
+    --lab-touch-band: 0px;
+  }
+}
+
+/*
+ * Mobile landscape — the hardest case and the one most sites get wrong.
+ * A 812×375 viewport has 375px of height; a 90px leaderboard plus a 50px
+ * banner plus safe areas leaves almost nothing. The rule: in landscape the
+ * bottom banner is dropped entirely and the rail is dropped entirely. Ads do
+ * not get to make an action game unplayable.
+ */
+@media (orientation: landscape) and (max-height: 30rem) {
+  .lab-ad--bottom,
+  .lab-ad--rail {
+    display: none;
+  }
+
+  .lab-frame {
+    grid-template-areas: 'stage';
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Controls move to the left and right edges, clear of the centre playfield,
+     and out of the thumb zones entirely. */
+  .lab-stage[data-touch-controls='true'] {
+    --lab-touch-band: 0px;
+  }
+
+  .lab-touch-controls {
+    inset: 0;
+    height: 100%;
+    grid-template-columns: 1fr 1fr;
+    align-content: center;
+    justify-items: stretch;
+    padding: 0 0.5rem;
+  }
+
+  .lab-touch-controls > button {
+    justify-self: center;
+    align-self: end;
+    margin-bottom: 0.5rem;
+  }
+
+  .lab-hud {
+    top: 0.25rem;
+  }
+
+  .lab-hud__exit,
+  .lab-hud__mute,
+  .lab-hud__fps {
+    min-height: 36px;
+    font-size: 0.75rem;
+  }
+}
