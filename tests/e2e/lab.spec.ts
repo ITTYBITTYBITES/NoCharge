@@ -66,6 +66,11 @@ test.describe('Lab section separation', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/lab/pulse-runner/');
 
+    // Wait for the deterministic mount signal rather than racing the dynamic
+    // import: an unsized canvas is 300x150 by default, which would make the
+    // backing-store assertion below fail intermittently on a loaded runner.
+    await expect(page.locator('[data-lab-frame].is-lab-mounted')).toBeVisible();
+
     const canvas = page.locator('[data-pulse-canvas]');
     await expect(canvas).toBeVisible();
 
@@ -105,7 +110,7 @@ test.describe('site mode preference', () => {
     await expect(calm).toBeVisible();
   });
 
-  test('opting in persists across a reload', async ({ page, context }) => {
+  test('opting in persists across a reload', async ({ page }) => {
     await blockGoogleEndpoints(page);
     await page.goto('/');
 
@@ -122,7 +127,6 @@ test.describe('site mode preference', () => {
     // And the bootstrap must have applied it before first paint, with no flash.
     const applied = await page.evaluate(() => document.documentElement.dataset.sitePreference);
     expect(applied).toBe('lab');
-    await context.close();
   });
 
   test('a malformed preference falls back to calm', async ({ page }) => {

@@ -76,6 +76,34 @@ describe('site mode preference', () => {
     expect(writeSiteMode(hostile, 'lab')).toBe('calm');
   });
 
+  test('a localStorage global that throws on property access is survived', () => {
+    // A browser blocking storage can throw a SecurityError merely on *touching*
+    // the property, and `typeof` on a throwing accessor still throws. This is
+    // the state /my-arcade/ shows an explanatory panel for; an uncaught error
+    // from resolving storage would break that page entirely.
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      get(): Storage {
+        throw new DOMException('The operation is insecure.', 'SecurityError');
+      },
+    });
+
+    try {
+      const root = fakeRoot();
+      const controller = createSiteModeController({ root, document: fakeDoc() });
+
+      // No throw, and the safe default.
+      expect(controller.get()).toBe('calm');
+      expect(root.dataset.sitePreference).toBe('calm');
+
+      // The choice still applies for this session even though it cannot be kept.
+      expect(controller.set('lab')).toBe('lab');
+      expect(root.dataset.sitePreference).toBe('lab');
+    } finally {
+      Reflect.deleteProperty(globalThis, 'localStorage');
+    }
+  });
+
   test('write then read round-trips, and is reflected on the root element', () => {
     const storage = memoryStorage();
     const root = fakeRoot();

@@ -97,7 +97,11 @@ const { title, tagline, touchControls, controls } = entry.data;
     const root = document.querySelector<HTMLElement>('[data-lab-frame]');
     if (root) {
       const id = location.pathname.replace(/^\/lab\//, '').replace(/\/$/, '');
-      void mountLabPrototype(id, root);
+      // The marker lets tests wait for a deterministic signal instead of
+      // racing the dynamic import that pulls in the prototype's chunk.
+      void mountLabPrototype(id, root).then(() => {
+        root.classList.add('is-lab-mounted');
+      });
     }
   </script>
 

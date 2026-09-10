@@ -97,8 +97,27 @@ export interface SiteModeController {
  * browser follows the link, so the destination renders with the right nav on
  * the very first paint.
  */
+/**
+ * Read the `localStorage` global without ever letting it throw.
+ *
+ * A browser that blocks storage does not merely fail on reads — in some
+ * configurations **touching the property at all** throws a `SecurityError`, and
+ * `typeof` on a throwing accessor still throws. So the reference has to be
+ * resolved inside a `try`, not just the method call.
+ *
+ * `/my-arcade/` has a "blocked storage" state that must keep working with
+ * storage denied, and an uncaught error here would take that page down with it.
+ */
+function defaultStorage(): Storage | null {
+  try {
+    return typeof localStorage === 'undefined' ? null : localStorage;
+  } catch {
+    return null;
+  }
+}
+
 export function createSiteModeController(options: SiteModeControllerOptions = {}): SiteModeController {
-  const storage = options.storage ?? (typeof localStorage === 'undefined' ? null : localStorage);
+  const storage = options.storage ?? defaultStorage();
   const root = options.root ?? (typeof document === 'undefined' ? null : document.documentElement);
   const doc = options.document ?? (typeof document === 'undefined' ? null : document);
 
