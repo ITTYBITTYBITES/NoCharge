@@ -34,6 +34,32 @@ interface Props {
    * visitor choose?". See src/lab/mode/mode-toggle.ts.
    */
   siteMode?: 'calm' | 'lab';
+  /**
+   * Narrowly-scoped Content-Security-Policy additions.
+   *
+   * The Lab section may need to load a non-Google ad network. Those hosts are
+   * added here, per route, so the calm site's policy is never widened to
+   * accommodate a section a given visitor may never open. Sources are host
+   * names only — no scheme wildcards, no 'unsafe-eval'.
+   */
+  /**
+   * Lab identity token set. Applied as `data-lab-theme` on <html>; see
+   * src/styles/lab.css for the three candidate identities.
+   */
+  labTheme?: 'lab' | 'overdrive' | 'raw';
+  /**
+   * Drop the site header, footer, and ad banner and let the page fill the
+   * viewport. Used by Lab prototypes, which supply their own HUD and exit
+   * control — the same reasoning as the calm site's Game Mode, where page
+   * chrome is out of view during play.
+   */
+  fullBleed?: boolean;
+  extraCsp?: {
+    scriptSrc?: readonly string[];
+    frameSrc?: readonly string[];
+    imgSrc?: readonly string[];
+    connectSrc?: readonly string[];
+  };
 }
 
 const {
@@ -53,14 +79,50 @@ const {
   feedHref,
   additionalImages = [],
   siteMode = 'calm',
+  extraCsp,
+  labTheme,
+  fullBleed = false,
 } = Astro.props;
 
 const isProd = import.meta.env.PROD;
+
+/**
+ * Build the Content-Security-Policy. Identical to the calm site's policy
+ * unless `extraCsp` widens a specific directive for this route.
+ */
+const sources = (base: string, added: readonly string[] | undefined) =>
+  added && added.length ? `${base} ${added.join(' ')}` : base;
+
+const CONTENT_SECURITY_POLICY = [
+  `default-src 'self'`,
+  `base-uri 'self'`,
+  `object-src 'none'`,
+  sources(
+    `script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com https://fundingchoicesmessages.google.com`,
+    extraCsp?.scriptSrc,
+  ),
+  `style-src 'self' 'unsafe-inline'`,
+  sources(
+    `img-src 'self' data: https://www.google-analytics.com https://*.google-analytics.com https://pagead2.googlesyndication.com https://tpc.googlesyndication.com https://googleads.g.doubleclick.net https://securepubads.g.doubleclick.net https://www.google.com`,
+    extraCsp?.imgSrc,
+  ),
+  `font-src 'self'`,
+  `media-src 'self'`,
+  sources(
+    `connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://securepubads.g.doubleclick.net https://tpc.googlesyndication.com https://fundingchoicesmessages.google.com https://www.google.com https://*.adtrafficquality.google`,
+    extraCsp?.connectSrc,
+  ),
+  sources(
+    `frame-src 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com https://fundingchoicesmessages.google.com`,
+    extraCsp?.frameSrc,
+  ),
+  `form-action 'self'`,
+].join(';');
 const release = import.meta.env.PUBLIC_RELEASE ?? '1.0.0';
 ---
 
 <!doctype html>
-<html lang="en" data-release={release} data-site-mode={siteMode}>
+<html lang="en" data-release={release} data-site-mode={siteMode} data-lab-theme={labTheme}>
   <head>
     <meta charset="utf-8" />
     <!--
@@ -97,10 +159,7 @@ const release = import.meta.env.PUBLIC_RELEASE ?? '1.0.0';
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="theme-color" content="#121212" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com https://fundingchoicesmessages.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.google-analytics.com https://*.google-analytics.com https://pagead2.googlesyndication.com https://tpc.googlesyndication.com https://googleads.g.doubleclick.net https://securepubads.g.doubleclick.net https://www.google.com; font-src 'self'; media-src 'self'; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://securepubads.g.doubleclick.net https://tpc.googlesyndication.com https://fundingchoicesmessages.google.com https://www.google.com https://*.adtrafficquality.google; frame-src 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com https://fundingchoicesmessages.google.com; form-action 'self'"
-    />
+    <meta http-equiv="Content-Security-Policy" content={CONTENT_SECURITY_POLICY} />
     {
       isProd && (
         <>
@@ -185,14 +244,22 @@ const release = import.meta.env.PUBLIC_RELEASE ?? '1.0.0';
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to main content</a>
-    <div class="site-shell">
-      <Header />
-      <main class="site-main" id="main-content">
-        <slot />
-      </main>
-      {isProd && showAds && <AdSenseBanner />}
-      <Footer />
-    </div>
+    {
+      fullBleed ? (
+        <main class="site-main site-main--bleed" id="main-content">
+          <slot />
+        </main>
+      ) : (
+        <div class="site-shell">
+          <Header />
+          <main class="site-main" id="main-content">
+            <slot />
+          </main>
+          {isProd && showAds && <AdSenseBanner />}
+          <Footer />
+        </div>
+      )
+    }
     <ConsentManager />
     <script>
       import { startPrivacyAwareErrorReporting } from '../lib/error-monitoring';

@@ -1,0 +1,208 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AdSlots from '../../lab/ads/adslots.astro';
+import { ADSTERRA_CSP_SOURCES, ADSTERRA_ENABLED } from '../../config/adsterra';
+import '../../styles/lab.css';
+
+export async function getStaticPaths() {
+  const prototypes = (await getCollection('lab')).filter((entry) => !entry.data.draft);
+  return prototypes.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const { title, tagline, touchControls, controls } = entry.data;
+---
+
+<BaseLayout
+  title={`${title} — Lab`}
+  description={tagline}
+  path={`/lab/${entry.id}/`}
+  siteMode="lab"
+  labTheme="lab"
+  showAds={false}
+  noIndex={true}
+  fullBleed={true}
+  extraCsp={ADSTERRA_ENABLED ? ADSTERRA_CSP_SOURCES : undefined}
+>
+  <div class="lab-frame" data-lab-frame>
+    <div class="lab-stage" data-touch-controls={String(touchControls)}>
+      <div class="lab-hud" data-lab-hud>
+        <a class="lab-hud__exit" data-lab-hud="exit" href="/">Return to calm</a>
+        <button class="lab-hud__mute" type="button" data-lab-hud="mute" aria-pressed="false">Mute</button>
+        <p class="lab-hud__fps"><span data-lab-hud="fps">—</span> fps</p>
+        <p class="sr-only" data-lab-hud="status" role="status" aria-live="polite"></p>
+      </div>
+
+      <!-- A bare <canvas> has no accessible name. role="img" makes the label
+           valid and announces the playfield as a single graphic. -->
+      <canvas
+        class="lab-canvas"
+        data-pulse-canvas
+        role="img"
+        aria-label={`${title} playfield. Use the left and right controls to steer.`}
+      ></canvas>
+
+      {
+        touchControls && (
+          <div class="lab-touch-controls">
+            <button type="button" data-pulse-dir="left" aria-label="Move left">◀</button>
+            <button type="button" data-pulse-dir="right" aria-label="Move right">▶</button>
+          </div>
+        )
+      }
+
+      <div class="lab-overlay" data-pulse-overlay hidden>
+        <div class="lab-overlay__card panel">
+          <p class="lab-overlay__label">Run ended</p>
+          <p class="lab-overlay__score">Score <strong data-pulse-score>0</strong></p>
+          <button class="btn btn--primary" type="button" data-pulse-restart>New run</button>
+          <button class="btn btn--ghost" type="button" data-pulse-continue hidden>
+            Continue
+          </button>
+          <a class="lab-overlay__exit" href="/lab/">Lab home</a>
+        </div>
+      </div>
+    </div>
+
+    <AdSlots />
+  </div>
+
+  <div class="lab-notes">
+    <h1>{title}</h1>
+    <p class="lab-notes__tagline">{tagline}</p>
+    {
+      controls.length > 0 && (
+        <section aria-labelledby="lab-controls">
+          <h2 id="lab-controls">Controls</h2>
+          <dl class="lab-notes__controls">
+            {controls.map((control) => (
+              <div>
+                <dt>{control.label}</dt>
+                <dd>{control.description}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )
+    }
+    <Content />
+    <p class="lab-notes__back"><a href="/lab/">← All prototypes</a> · <a href="/arcade/">Quiet Arcade</a></p>
+  </div>
+
+  <script>
+    import { mountLabPrototype } from '../../lab/registry';
+
+    const root = document.querySelector<HTMLElement>('[data-lab-frame]');
+    if (root) {
+      const id = location.pathname.replace(/^\/lab\//, '').replace(/\/$/, '');
+      void mountLabPrototype(id, root);
+    }
+  </script>
+
+  <style>
+    .lab-overlay {
+      position: absolute;
+      z-index: 15;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 1rem;
+      background: rgba(10, 10, 12, 0.72);
+    }
+
+    .lab-overlay[hidden] {
+      display: none;
+    }
+
+    .lab-overlay__card {
+      display: grid;
+      gap: 0.7rem;
+      justify-items: center;
+      max-width: 22rem;
+      padding: 1.4rem;
+      text-align: center;
+    }
+
+    .lab-overlay__label {
+      color: var(--lab-accent);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .lab-overlay__score {
+      color: var(--lab-muted);
+      font-size: 0.9rem;
+    }
+
+    .lab-overlay__score strong {
+      color: var(--lab-text);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .lab-overlay__exit {
+      color: var(--lab-muted);
+      font-size: 0.85rem;
+      text-decoration: underline;
+    }
+
+    /* Below-the-fold notes keep the page useful without indexing pressure and
+       without crowding the stage. */
+    .lab-notes {
+      display: grid;
+      gap: 0.9rem;
+      max-width: 46rem;
+      margin-inline: auto;
+      padding: 2rem 1.25rem 3rem;
+      color: var(--lab-text);
+      background: var(--lab-bg);
+    }
+
+    .lab-notes h1 {
+      font-size: 1.6rem;
+    }
+
+    .lab-notes h2 {
+      margin-top: 0.6rem;
+      font-size: 1.1rem;
+    }
+
+    .lab-notes p,
+    .lab-notes li {
+      color: var(--lab-muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    .lab-notes__controls {
+      display: grid;
+      gap: 0.5rem;
+      margin: 0.6rem 0 0;
+    }
+
+    .lab-notes__controls dt {
+      color: var(--lab-text);
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .lab-notes__controls dd {
+      margin: 0;
+      color: var(--lab-muted);
+      font-size: 0.88rem;
+    }
+
+    .lab-notes__back {
+      padding-top: 1rem;
+      border-top: 1px solid var(--lab-line);
+    }
+
+    .lab-notes a {
+      color: var(--lab-accent);
+      text-decoration: underline;
+    }
+  </style>
+</BaseLayout>

@@ -404,9 +404,24 @@ be settled on real traffic rather than argued about in advance.
 
 `/lab/` carries **no AdSense**. Not a different slot — none. The AdSense tag is
 already gated by `isProd && showAds` in `BaseLayout`; Lab routes pass
-`showAds={false}`. The existing e2e test that asserts ad-free paths
-(`tests/e2e/adsense.spec.ts`) should gain the `/lab/` routes so this is enforced
-rather than remembered.
+`showAds={false}`.
+
+That is now enforced rather than remembered: `/lab/` and `/lab/pulse-runner/`
+were added to `AD_FREE_PATHS` in `tests/e2e/adsense.spec.ts`, so a future change
+that re-enables `showAds` on a Lab route fails the build. Verified against the
+built output — no `adsbygoogle` tag and no `pagead2` script tag on either page
+(the only `pagead2` string left in the markup is the CSP allowlist, which is
+intentional).
+
+Two deliberate consequences worth naming:
+
+- The Google consent platform tag still loads on Lab pages. That is correct: it
+  is the site-wide consent mechanism and the footer's revocation link depends on
+  it. It serves no AdSense slot there.
+- Because there is no ad currently configured, the two Lab routes also pass the
+  "no non-Google third-party request" assertion in `tests/e2e/lab.spec.ts`, which
+  will fail the moment a network is wired up without a consent basis. That is the
+  intended tripwire for §5.4.
 
 ### 5.2 The blocking gap: Adsterra has no rewarded video
 
@@ -468,7 +483,7 @@ these **fails the build** today:
 
 | Location | Assertion | Effect |
 |---|---|---|
-| `tests/e2e/adsense.spec.ts` — *"no Adsterra or Smartlink implementation artifacts remain"* | scans `/`, `/games/memory-match/`, `/privacy/`, `/advertising/` for `highperformanceformat`, `harryinspectionlucy`, `adsterra.com`, `atoptions`; also `.ad-slot` count 0 and `[data-ad-banner] iframe` count 0 | Network script on those four paths fails the build. **Lab paths are not yet in the scan list — they must be, or the guard silently stops meaning what it says.** |
+| `tests/e2e/adsense.spec.ts` — *"no Adsterra or Smartlink implementation artifacts remain"* | scans `/`, `/games/memory-match/`, `/privacy/`, `/advertising/` for `highperformanceformat`, `harryinspectionlucy`, `adsterra.com`, `atoptions`; also `.ad-slot` count 0 and `[data-ad-banner] iframe` count 0 | Network script on those four paths fails the build. **Leave this list alone.** It is a calm-site guard; adding Lab paths to it would ban the network exactly where it is meant to run. |
 | `tests/e2e/adsense.spec.ts` — *"the old Adsterra ad-host routes are gone"* | `/ads/*` must 404 | Do not reintroduce sandboxed ad-host pages. |
 | `tests/e2e/adsense.spec.ts` — *"public/ads.txt is the exact AdSense line"* | `lines).toEqual([ADS_TXT_LINE])` — exactly one record | **Adding an Adsterra `ads.txt` entry breaks this.** The test must become "exactly one AdSense record plus an allow-list", not "exactly one line". |
 | `tests/e2e/consent.spec.ts` | `'advertising' in stored` must be false; modal must contain exactly one checkbox | Reintroducing a site-owned advertising toggle breaks the analytics-only consent model. |
@@ -500,7 +515,16 @@ site keeps its zero and the Lab gets an explicit, defended allowance:
 ```
 
 `.lighthouseci` also needs `/lab/` URLs added — today it only collects the calm
-pages, so a Lab regression would ship unnoticed.
+pages, so a Lab regression would ship unnoticed. **Not yet done**; it needs the
+budget re-scope above to land first or Lighthouse will fail on the third-party
+count.
+
+**Second budget, found while building:** `scripts/check-asset-budget.mjs`
+enforces a **350 KB total JavaScript budget across the whole site**, and the
+build is currently at 345,802 bytes — about **12 KB of headroom**. One prototype
+plus the mode-toggle script consumed most of what was left. This is a
+site-global limit, so the Lab cannot scale under it. It needs the same
+per-path treatment as the third-party count, or an explicit, defended raise.
 
 ### 5.6 Ad container specification
 
@@ -657,16 +681,40 @@ network at all. Step 5 gates everything commercial, and step 9 gates launch.
 | `src/lab/ads/providers.ts` | done (null providers only) |
 | `src/lab/ads/gates.ts` | done |
 | `src/lab/ads/lifecycle.ts` + tests | done, 6 tests |
+| `src/lab/ads/consent-gate.ts` | done — **fails closed, always false until resolved** |
+| `src/lab/ads/mount-slots.ts` + `adslots.astro` | done |
+| `src/lab/ads/providers/adsterra-banner.ts` | done, inert without `PUBLIC_*` keys |
+| `src/config/adsterra.ts` | done — env-driven, no ids in the repo |
 | `src/lab/mode/mode-toggle.ts` + tests | done, 11 tests |
-| `src/components/ModeToggle.astro` | done |
+| `src/components/ModeToggle.astro` + `Header.astro` | done |
 | `src/styles/lab.css` | done (3 themes, 3 layouts) |
+| `src/lab/registry.ts` | done |
+| `src/lab/prototypes/pulse-runner/` | done — engine + tests (12) + host integration |
+| `src/pages/lab/index.astro`, `[slug].astro` | done — `noIndex`, `showAds={false}`, full-bleed |
 | `src/games/shared/types.ts` | `PauseReason` gains `'ad'` |
 | `src/games/shared/pause-recovery.ts` | ad-specific blocked message |
-| `src/layouts/BaseLayout.astro` | mode bootstrap in `<head>` |
-| `/lab/` routes | **not started** — blocked on step 4 |
-| Ad provider adapters | **not started** — blocked on step 5 |
+| `src/layouts/BaseLayout.astro` | bootstrap, `labTheme`, `fullBleed`, `extraCsp` |
+| `tests/e2e/adsense.spec.ts` | `/lab/` added to `AD_FREE_PATHS` |
+| `tests/e2e/lab.spec.ts` | new — separation, no-index, canvas sizing, opt-in |
 
-34 unit tests pass; `astro check` reports 0 errors, 0 warnings.
+540 unit tests pass; `astro check` reports 0 errors, 0 warnings; the full
+`verify:build` gate passes across 371 pages.
+
+Not done, and why:
+
+- **`budget.json` re-scope and Lighthouse URLs.** Needs a decision on the
+  third-party allowance before it can be written honestly.
+- **A rewarded provider.** Blocked on §5.2. `pulse-runner` already calls
+  `playRewarded` through the interface; with the null provider the continue
+  button correctly stays hidden, because offering a reward you cannot honour is
+  worse than offering nothing.
+- **The EEA consent basis.** Blocked on §5.4. The consent gate returns false, so
+  nothing loads.
+
+**Not verifiable in this environment:** `tests/e2e/lab.spec.ts` typechecks but
+has not been executed — the sandbox cannot download a Playwright browser
+(`cdn.playwright.dev` is unreachable). It will run on CI, which uses the
+runners' own Chrome via `channel: 'chrome'`.
 
 ---
 

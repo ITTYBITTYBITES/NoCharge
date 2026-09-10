@@ -1,0 +1,158 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ModeToggle from '../../components/ModeToggle.astro';
+
+const prototypes = (await getCollection('lab'))
+  .filter((entry) => !entry.data.draft)
+  .sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout
+  title="Lab — NoCharge"
+  description="Experimental, high-intensity browser prototypes. Loud on purpose, separate from the Quiet Arcade, and never shown to visitors who did not ask for them."
+  path="/lab/"
+  siteMode="lab"
+  labTheme="lab"
+  showAds={false}
+  noIndex={true}
+>
+  <div class="lab-page">
+    <header class="lab-page__head">
+      <p class="eyebrow">NoCharge · Lab</p>
+      <h1 class="page-title">The Lab</h1>
+      <p class="lede">Experimental prototypes. Loud on purpose. Kept in a separate room so the Quiet Arcade stays quiet.</p>
+      <ModeToggle current="lab" calmHref="/arcade/" />
+    </header>
+
+    <section class="lab-page__notice" aria-labelledby="lab-different">
+      <h2 id="lab-different">This section plays by different rules</h2>
+      <p>The Quiet Arcade is built around calm defaults: untimed modes where the genre allows, optional sound, local-only scores, and no pressure mechanics. Lab prototypes do not make that promise. They are fast, they are timed, and they are unfinished by design.</p>
+      <p>What does not change: no account, no purchase, no tracking beyond what you have already allowed, and scores that stay in this browser. The Lab carries no Google advertising at all — its own advertising, if any, is separate and labelled, and nothing loads without a consent basis.</p>
+    </section>
+
+    <section aria-labelledby="lab-prototypes">
+      <h2 id="lab-prototypes">Prototypes</h2>
+      <ul class="lab-grid">
+        {
+          prototypes.map((entry) => (
+            <li class="lab-card panel">
+              <p class="lab-card__status">{entry.data.status}</p>
+              <h3 class="lab-card__title">
+                <a href={`/lab/${entry.id}/`}>{entry.data.title}</a>
+              </h3>
+              <p class="lab-card__tagline">{entry.data.tagline}</p>
+              <p class="lab-card__description">{entry.data.description}</p>
+              <a class="btn btn--primary lab-card__play" href={`/lab/${entry.id}/`}>
+                Open {entry.data.title}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <footer class="lab-page__foot">
+      <p>Prototypes are not indexed by search engines and are not part of the arcade catalog. They may change or disappear without notice.</p>
+      <p><a href="/arcade/">Back to the Quiet Arcade</a> · <a href="/learn/what-is-quiet-arcade/">What Quiet Arcade means</a></p>
+    </footer>
+  </div>
+</BaseLayout>
+
+<style>
+  .lab-page {
+    display: grid;
+    gap: 1.5rem;
+    max-width: 52rem;
+    margin-inline: auto;
+    padding: 1rem 0 2rem;
+  }
+
+  .lab-page__head {
+    display: grid;
+    gap: 0.6rem;
+    justify-items: start;
+  }
+
+  .lab-page__head .eyebrow {
+    color: var(--accent);
+  }
+
+  .lab-page__notice {
+    display: grid;
+    gap: 0.7rem;
+    padding: 1.1rem;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius);
+    background: var(--panel);
+  }
+
+  .lab-page__notice h2,
+  .lab-page [aria-labelledby='lab-prototypes'] h2 {
+    font-size: 1.15rem;
+  }
+
+  .lab-grid {
+    display: grid;
+    gap: 1rem;
+    margin: 0.9rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 40rem) {
+    .lab-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .lab-card {
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+    padding: 1.1rem;
+  }
+
+  .lab-card__status {
+    color: var(--muted);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .lab-card__title {
+    font-size: 1.2rem;
+  }
+
+  .lab-card__tagline {
+    color: var(--text);
+    font-size: 0.95rem;
+  }
+
+  .lab-card__description {
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+
+  .lab-card__play {
+    justify-self: start;
+    margin-top: 0.35rem;
+    min-height: 44px;
+  }
+
+  .lab-page__foot {
+    display: grid;
+    gap: 0.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  .lab-page__foot a {
+    color: var(--accent-strong);
+    text-decoration: underline;
+  }
+</style>

@@ -29,6 +29,10 @@ const AD_FREE_PATHS = [
   '/about/',
   '/changelog/',
   '/404.html',
+  // The Lab carries its own advertising and must never carry AdSense. These are
+  // asserted here so the separation is enforced by the build, not remembered.
+  '/lab/',
+  '/lab/pulse-runner/',
 ] as const;
 
 test.beforeEach(async ({ page }) => {

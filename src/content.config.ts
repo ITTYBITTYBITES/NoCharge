@@ -117,6 +117,22 @@ const setup = defineCollection({
   }),
 });
 
+const lab = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/lab' }),
+  schema: z.object({
+    title: z.string(),
+    tagline: z.string(),
+    description: z.string(),
+    status: z.enum(['prototype', 'playable', 'archived']).default('prototype'),
+    touchControls: z.boolean().default(true),
+    controls: z
+      .array(z.object({ label: z.string(), description: z.string() }))
+      .default([]),
+    order: z.number().default(0),
+    draft: z.boolean().default(false),
+  }),
+});
+
 const changelog = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/changelog' }),
   schema: z.object({
@@ -145,4 +161,4 @@ const learn = defineCollection({
   }),
 });
 
-export const collections = { games, guides, articles, setup, collections: collectionsContent, changelog, learn };
+export const collections = { games, guides, articles, setup, collections: collectionsContent, changelog, learn, lab };

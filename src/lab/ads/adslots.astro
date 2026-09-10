@@ -1,0 +1,45 @@
+---
+/**
+ * Reserved advertisement containers for the Lab stage.
+ *
+ * Both are in-flow grid areas with a reserved minimum size, so a creative that
+ * fills late cannot shift the stage (the Lighthouse CLS budget is 0.1). If a
+ * slot stays empty — no consent, no configuration, no demand — the track keeps
+ * its space and the stage is simply shorter than it could be. It is never
+ * reflowed.
+ *
+ * These containers are structurally incapable of overlapping the playfield: the
+ * stage is a different grid area. See src/styles/lab.css.
+ *
+ * `mountLabAdSlots` decides which single slot to fill. Nothing is injected
+ * unless a real advertising consent basis has been wired up — see
+ * ./consent-gate.ts.
+ */
+interface Props {
+  /** Show the desktop side rail. Off for short landscape. */
+  rail?: boolean;
+}
+
+const { rail = true } = Astro.props;
+---
+
+<div class="lab-ad lab-ad--bottom" data-lab-ad="bottom">
+  <p class="lab-ad__label">Advertisement</p>
+</div>
+{rail && (
+  <div class="lab-ad lab-ad--rail" data-lab-ad="rail">
+    <p class="lab-ad__label">Advertisement</p>
+  </div>
+)}
+
+<script>
+  import { mountLabAdSlots } from './mount-slots';
+
+  const scope = document.querySelector<HTMLElement>('[data-lab-frame]') ?? document;
+  const controller = mountLabAdSlots({
+    bottom: scope.querySelector<HTMLElement>('[data-lab-ad="bottom"]'),
+    rail: scope.querySelector<HTMLElement>('[data-lab-ad="rail"]'),
+  });
+
+  document.addEventListener('astro:before-swap', () => controller.destroy(), { once: true });
+</script>
