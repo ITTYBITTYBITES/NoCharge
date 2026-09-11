@@ -129,6 +129,18 @@ test.describe('site mode preference', () => {
     expect(applied).toBe('lab');
   });
 
+  test('a Lab page shows the switch, so a deep link can opt in', async ({ page }) => {
+    // The switch is hidden on calm pages for visitors who never opted in, which
+    // keeps the header identical to the pre-Lab markup. A Lab page is the
+    // opt-in surface, so both options appear there regardless of preference.
+    await blockGoogleEndpoints(page);
+    await page.goto('/lab/');
+
+    await expect(page.locator('[data-mode-switch]')).toBeVisible();
+    await expect(page.locator('[data-mode-option="calm"]')).toBeVisible();
+    await expect(page.locator('[data-mode-option="lab"]')).toBeVisible();
+  });
+
   test('a malformed preference falls back to calm', async ({ page }) => {
     await blockGoogleEndpoints(page);
     await page.goto('/');

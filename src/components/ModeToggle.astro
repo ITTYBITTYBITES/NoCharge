@@ -51,7 +51,8 @@ const { current, calmHref = '/', labHref = '/lab/' } = Astro.props;
 
 <style>
   .mode-switch {
-    display: inline-flex;
+    /* Hidden by default; see the opt-in rules below. */
+    display: none;
     align-items: center;
     gap: 0.25rem;
     padding: 0.2rem;
@@ -95,15 +96,39 @@ const { current, calmHref = '/', labHref = '/lab/' } = Astro.props;
   }
 
   /*
-   * The Lab option is opt-in. It is in the DOM for every visitor — so it can be
-   * announced, linked, and discovered by turning the preference on — but it
-   * occupies no space until the preference says so.
+   * The Lab is opt-in, and the switch itself is part of what stays out of the
+   * way until then.
+   *
+   * The whole control is hidden for a visitor who has not opted in, not just
+   * the Lab option. Anything else would add an element to the header of every
+   * page on the site — which is precisely the dilution this section is meant to
+   * avoid, and it measurably breaks the header's compact-height budget at 200%
+   * zoom by adding a third wrapped row.
+   *
+   * So the switch appears when either is true:
+   *  - `data-site-mode="lab"` — you are on a Lab page, so this is the surface
+   *    where you opt in (or leave).
+   *  - `data-site-preference="lab"` — you opted in, so it persists everywhere.
+   *
+   * A visitor who never opts in gets a header identical to the one before the
+   * Lab existed, at every width and zoom level.
+   */
+  :global(html[data-site-preference='lab']) .mode-switch,
+  :global(html[data-site-mode='lab']) .mode-switch {
+    display: inline-flex;
+  }
+
+  /*
+   * The Lab option is opt-in too. It stays in the DOM so it can be linked and
+   * discovered, but takes no space until the preference allows it. On a Lab
+   * page both options show, so opting in is possible from a deep link.
    */
   .mode-switch__option--lab {
     display: none;
   }
 
-  :global(html[data-site-preference='lab']) .mode-switch__option--lab {
+  :global(html[data-site-preference='lab']) .mode-switch__option--lab,
+  :global(html[data-site-mode='lab']) .mode-switch__option--lab {
     display: inline-flex;
   }
 
