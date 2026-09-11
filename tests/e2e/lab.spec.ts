@@ -106,8 +106,11 @@ test.describe('site mode preference', () => {
     const lab = page.locator('[data-mode-option="lab"]');
     await expect(lab, 'Lab must be hidden by default').toBeHidden();
 
+    // The whole switch is hidden, not just the Lab option — otherwise it would
+    // add an element to every header on the site and break the compact-height
+    // budget at 200% zoom.
     const calm = page.locator('[data-mode-option="calm"]');
-    await expect(calm).toBeVisible();
+    await expect(calm, 'the switch stays out of the header until opt-in').toBeHidden();
   });
 
   test('opting in persists across a reload', async ({ page }) => {
@@ -136,9 +139,17 @@ test.describe('site mode preference', () => {
     await blockGoogleEndpoints(page);
     await page.goto('/lab/');
 
-    await expect(page.locator('[data-mode-switch]')).toBeVisible();
-    await expect(page.locator('[data-mode-option="calm"]')).toBeVisible();
-    await expect(page.locator('[data-mode-option="lab"]')).toBeVisible();
+    // The header owns the single mode switch on every non-full-bleed page, so
+    // there is exactly one and it must reflect the Lab as the current section.
+    const modeSwitch = page.locator('[data-mode-switch]');
+    await expect(modeSwitch).toHaveCount(1);
+    await expect(modeSwitch).toBeVisible();
+    await expect(modeSwitch.locator('[data-mode-option="calm"]')).toBeVisible();
+    await expect(modeSwitch.locator('[data-mode-option="lab"]')).toBeVisible();
+    await expect(
+      modeSwitch.locator('[data-mode-option="lab"]'),
+      'the current section is marked for assistive technology',
+    ).toHaveAttribute('aria-current', 'true');
   });
 
   test('a malformed preference falls back to calm', async ({ page }) => {

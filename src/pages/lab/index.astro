@@ -1,7 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import ModeToggle from '../../components/ModeToggle.astro';
 
 const prototypes = (await getCollection('lab'))
   .filter((entry) => !entry.data.draft)
@@ -22,7 +21,6 @@ const prototypes = (await getCollection('lab'))
       <p class="eyebrow">NoCharge · Lab</p>
       <h1 class="page-title">The Lab</h1>
       <p class="lede">Experimental prototypes. Loud on purpose. Kept in a separate room so the Quiet Arcade stays quiet.</p>
-      <ModeToggle current="lab" calmHref="/arcade/" />
     </header>
 
     <section class="lab-page__notice" aria-labelledby="lab-different">
