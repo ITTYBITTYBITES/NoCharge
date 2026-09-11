@@ -552,3 +552,17 @@ p {
 .footer-controls { display: flex; flex-wrap: wrap; gap: .75rem 1.25rem; }
 @media (max-width: 40rem) { .footer-groups { grid-template-columns: repeat(2, minmax(0, 1fr)); } .footer-groups nav:last-child { grid-column: 1 / -1; } }
 @media (max-width: 20rem) { .footer-groups { grid-template-columns: 1fr; } .footer-groups nav:last-child { grid-column: auto; } }
+
+/*
+ * Full-bleed main region.
+ *
+ * Used by Lab prototypes, which render their own HUD and exit control instead
+ * of the site header and footer. The page must be able to fill the viewport
+ * without the centred `.site-shell` width constraint or its grid rows.
+ */
+.site-main--bleed {
+  display: block;
+  min-width: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+}

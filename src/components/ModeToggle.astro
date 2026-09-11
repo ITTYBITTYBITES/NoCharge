@@ -1,0 +1,148 @@
+---
+/**
+ * Site-mode switch (calm ⇄ lab).
+ *
+ * Renders as two real links so it navigates with JavaScript disabled; the
+ * controller in `src/lab/mode/mode-toggle.ts` only adds persistence by writing
+ * the choice to `localStorage` before the browser follows the href.
+ *
+ * The Lab option is hidden until the visitor opts in. That is the whole point:
+ * the calm navigation stays exactly as calm as it was before the Lab existed,
+ * and the loud section is something you ask for rather than something you
+ * stumble into.
+ */
+import type { SiteMode } from '../lab/mode/mode-toggle';
+
+interface Props {
+  /** The section this page belongs to. */
+  current: SiteMode;
+  /** Where "Calm" should lead. Lab pages send it back to the arcade. */
+  calmHref?: string;
+  labHref?: string;
+}
+
+const { current, calmHref = '/', labHref = '/lab/' } = Astro.props;
+---
+
+<div class="mode-switch" data-mode-switch role="group" aria-label="Site mode">
+  <a
+    class="mode-switch__option"
+    data-mode-option="calm"
+    href={calmHref}
+    aria-current={current === 'calm' ? 'true' : undefined}
+  >
+    <span class="mode-switch__dot" aria-hidden="true"></span>Calm
+  </a>
+  <a
+    class="mode-switch__option mode-switch__option--lab"
+    data-mode-option="lab"
+    href={labHref}
+    aria-current={current === 'lab' ? 'true' : undefined}
+  >
+    <span class="mode-switch__dot" aria-hidden="true"></span>Lab
+  </a>
+</div>
+
+<script>
+  import { createSiteModeController } from '../lab/mode/mode-toggle';
+
+  createSiteModeController();
+</script>
+
+<style>
+  .mode-switch {
+    /* Hidden by default; see the opt-in rules below. */
+    display: none;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+  }
+
+  .mode-switch__option {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 36px;
+    padding: 0 0.7rem;
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: 0.8125rem;
+    font-weight: 650;
+    letter-spacing: 0.01em;
+  }
+
+  .mode-switch__dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 999px;
+    background: currentColor;
+    opacity: 0.5;
+  }
+
+  .mode-switch__option[aria-current='true'] {
+    color: var(--text);
+    background: var(--panel-2);
+  }
+
+  .mode-switch__option[aria-current='true'] .mode-switch__dot {
+    opacity: 1;
+    background: var(--accent);
+  }
+
+  .mode-switch__option:hover {
+    color: var(--text);
+  }
+
+  /*
+   * The Lab is opt-in, and the switch itself is part of what stays out of the
+   * way until then.
+   *
+   * The whole control is hidden for a visitor who has not opted in, not just
+   * the Lab option. Anything else would add an element to the header of every
+   * page on the site — which is precisely the dilution this section is meant to
+   * avoid, and it measurably breaks the header's compact-height budget at 200%
+   * zoom by adding a third wrapped row.
+   *
+   * So the switch appears when either is true:
+   *  - `data-site-mode="lab"` — you are on a Lab page, so this is the surface
+   *    where you opt in (or leave).
+   *  - `data-site-preference="lab"` — you opted in, so it persists everywhere.
+   *
+   * A visitor who never opts in gets a header identical to the one before the
+   * Lab existed, at every width and zoom level.
+   */
+  :global(html[data-site-preference='lab']) .mode-switch,
+  :global(html[data-site-mode='lab']) .mode-switch {
+    display: inline-flex;
+  }
+
+  /*
+   * The Lab option is opt-in too. It stays in the DOM so it can be linked and
+   * discovered, but takes no space until the preference allows it. On a Lab
+   * page both options show, so opting in is possible from a deep link.
+   */
+  .mode-switch__option--lab {
+    display: none;
+  }
+
+  :global(html[data-site-preference='lab']) .mode-switch__option--lab,
+  :global(html[data-site-mode='lab']) .mode-switch__option--lab {
+    display: inline-flex;
+  }
+
+  /* The Lab identity tints only its own option, never the calm chrome around
+     it. One accent is enough to signal "you are somewhere else". */
+  :global(html[data-lab-theme='lab']) .mode-switch__option--lab[aria-current='true'] .mode-switch__dot {
+    background: #ffb020;
+  }
+
+  :global(html[data-lab-theme='overdrive']) .mode-switch__option--lab[aria-current='true'] .mode-switch__dot {
+    background: #ff2d6f;
+  }
+
+  :global(html[data-lab-theme='raw']) .mode-switch__option--lab[aria-current='true'] .mode-switch__dot {
+    background: #c9ff2e;
+  }
+</style>

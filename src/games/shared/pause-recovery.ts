@@ -30,6 +30,12 @@ export function resumeBlockedMessage(
   if (reasons.has('hidden') && !environment.documentVisible) {
     return 'Return to this tab before resuming the game.';
   }
+  // An ad is the one pause a Resume control must never clear. The visitor did
+  // not create it and cannot end it from the game's own chrome; only the ad's
+  // dismissal may lift it.
+  if (reasons.has('ad')) {
+    return 'Finish or close the advertisement to resume the game.';
+  }
   return 'The game is still paused by the browser.';
 }
 

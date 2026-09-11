@@ -13,6 +13,24 @@ const visible: PauseEnvironment = { documentVisible: true, consentModalOpen: fal
 const reasons = (...values: PauseReason[]) => new Set(values);
 
 describe('shared game pause recovery', () => {
+  test('a Resume request cannot clear an ad pause', () => {
+    // The visitor does not control when an ad ends, so no Resume control may
+    // lift it. Only the ad's own dismissal clears this reason.
+    const remaining = pauseReasonsAfterResumeRequest(reasons('ad'), visible);
+    expect(remaining).toEqual(reasons('ad'));
+    expect(resumeBlockedMessage(remaining, visible)).toBe(
+      'Finish or close the advertisement to resume the game.',
+    );
+  });
+
+  test('an ad pause outranks the generic browser message', () => {
+    const remaining = pauseReasonsAfterResumeRequest(reasons('ad', 'player'), visible);
+    expect(remaining).toEqual(reasons('ad'));
+    expect(resumeBlockedMessage(remaining, visible)).toBe(
+      'Finish or close the advertisement to resume the game.',
+    );
+  });
+
   test('a Resume request clears a manual pause', () => {
     expect(pauseReasonsAfterResumeRequest(reasons('player'), visible)).toEqual(reasons());
   });
