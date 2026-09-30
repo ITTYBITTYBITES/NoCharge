@@ -25,7 +25,7 @@ test.describe('Lab section separation', () => {
   test('Lab pages carry no AdSense banner and no AdSense tag', async ({ page }) => {
     await blockGoogleEndpoints(page);
 
-    for (const path of ['/lab/', '/lab/pulse-runner/']) {
+    for (const path of ['/lab/', '/lab/pulse-runner/', '/lab/barn-road-chronicles/']) {
       await page.goto(path);
       await expect(page.locator('[data-ad-banner]'), `${path} must not show the AdSense banner`).toHaveCount(0);
       await expect(
@@ -36,7 +36,7 @@ test.describe('Lab section separation', () => {
   });
 
   test('Lab pages are no-index', async ({ page }) => {
-    for (const path of ['/lab/', '/lab/pulse-runner/']) {
+    for (const path of ['/lab/', '/lab/pulse-runner/', '/lab/barn-road-chronicles/']) {
       await page.goto(path);
       const robots = await page.locator('meta[name="robots"]').getAttribute('content');
       expect(robots, `${path} must be no-index`).toContain('noindex');
@@ -51,7 +51,7 @@ test.describe('Lab section separation', () => {
     });
     await blockGoogleEndpoints(page);
 
-    await page.goto('/lab/pulse-runner/');
+    await page.goto('/lab/barn-road-chronicles/');
     // Let the mount settle: the loop, canvas stage, and ad slots all initialise.
     await page.waitForTimeout(600);
 
@@ -64,7 +64,7 @@ test.describe('Lab section separation', () => {
   test('the prototype canvas mounts and the stage fills the viewport', async ({ page }) => {
     await blockGoogleEndpoints(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/lab/pulse-runner/');
+    await page.goto('/lab/barn-road-chronicles/');
 
     // Wait for the deterministic mount signal rather than racing the dynamic
     // import: an unsized canvas is 300x150 by default, which would make the
@@ -87,7 +87,7 @@ test.describe('Lab section separation', () => {
 
   test('the HUD exit control is reachable and points back to the calm site', async ({ page }) => {
     await blockGoogleEndpoints(page);
-    await page.goto('/lab/pulse-runner/');
+    await page.goto('/lab/barn-road-chronicles/');
 
     const exit = page.getByRole('link', { name: /return to calm/i });
     await expect(exit).toBeVisible();
