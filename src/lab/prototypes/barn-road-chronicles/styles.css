@@ -1,0 +1,112 @@
+/* ============================================================
+   BARN ROAD CHRONICLES · Act 1
+   All selectors are scoped to this prototype's viewport.
+   ============================================================ */
+[data-brc-stage] .lab-hud { top: calc(56px + env(safe-area-inset-top, 0px) + 8px); right: auto; left: max(12px, env(safe-area-inset-left, 0px)); z-index: 62; }
+#game-viewport {
+  --navy:#06080c; --glass:rgba(10,14,23,.72); --glass-heavy:rgba(10,14,23,.92); --teal:#00d2ff; --amber:#ffb700; --text:#e8eef6; --muted:#aab4c1;
+  position:absolute; inset:0; z-index:5; overflow:hidden; color:var(--text); background:var(--navy);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; user-select:none; touch-action:manipulation;
+}
+#game-viewport *,#game-viewport *::before,#game-viewport *::after { box-sizing:border-box; }
+#game-viewport button { color:inherit; font:inherit; cursor:pointer; }
+#game-viewport .brc-main-canvas { position:absolute; inset:0; z-index:3; width:100%; height:100%; background:transparent; pointer-events:none; }
+#game-viewport .scene-stack { position:absolute; inset:0; }
+#game-viewport .scene-view { position:absolute; inset:0; opacity:0; pointer-events:none; transition:opacity .45s ease; }
+#game-viewport .scene-view.active { opacity:1; pointer-events:auto; }
+#game-viewport .background-layer { position:absolute; inset:0; }
+#game-viewport .background-layer img { width:100%; height:100%; display:block; object-fit:cover; object-position:center; pointer-events:none; }
+#game-viewport .scene-grade { position:absolute; inset:0; background:linear-gradient(180deg,rgba(0,0,0,.48),transparent 23%,transparent 68%,rgba(0,0,0,.68)),radial-gradient(ellipse,transparent 38%,rgba(0,0,0,.42)); pointer-events:none; }
+#game-viewport #hud-header { position:absolute; inset:0 0 auto; height:calc(56px + env(safe-area-inset-top,0px)); padding:env(safe-area-inset-top,0px) max(12px,env(safe-area-inset-right,0px)) 0 max(12px,env(safe-area-inset-left,0px)); display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:8px; background:rgba(5,8,13,.76); border-bottom:1px solid rgba(0,210,255,.22); backdrop-filter:blur(12px); z-index:20; }
+#game-viewport .brand { font-size:clamp(9px,2vw,12px); letter-spacing:.18em; text-transform:uppercase; white-space:nowrap; overflow:hidden; }
+#game-viewport #location-chip { max-width:44vw; display:flex; align-items:center; gap:8px; padding:6px 12px; border:1px solid rgba(0,210,255,.25); border-radius:99px; background:rgba(0,210,255,.08); }
+#game-viewport #location-name { color:var(--teal); font-size:clamp(8px,1.8vw,11px); letter-spacing:.11em; text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#game-viewport .dot { width:6px;height:6px;border-radius:50%;background:var(--teal);box-shadow:0 0 9px var(--teal);flex:none; }
+#game-viewport .header-right { justify-self:end; display:flex; }
+#game-viewport #btn-reset,#game-viewport #btn-mute { min-height:44px; min-width:44px; padding:0 8px; border:0; background:transparent; color:var(--teal); font-size:9px; letter-spacing:.1em; text-transform:uppercase; }
+#game-viewport #btn-reset { color:#b9c1cc; }
+#game-viewport #btn-mute[aria-pressed=true] { color:#ff8993; }
+#game-viewport .hotspot-layer { position:absolute; inset:0; z-index:5; pointer-events:none; }
+#game-viewport .hotspot { position:absolute; width:48px;height:48px; transform:translate(-50%,-50%); padding:0; display:grid;place-items:center; border:0;background:transparent;pointer-events:auto; }
+#game-viewport .hotspot-ring { width:22px;height:22px; position:relative; border:1.5px solid var(--teal);border-radius:50%;background:rgba(0,210,255,.14);box-shadow:0 0 16px rgba(0,210,255,.8);animation:brcPulse 2.2s infinite; }
+#game-viewport .hotspot-ring:after { content:"";position:absolute;inset:-8px;border:1px solid rgba(0,210,255,.55);border-radius:50%;animation:brcPulse 2.2s infinite reverse; }
+#game-viewport .hotspot.amber .hotspot-ring { border-color:var(--amber);background:rgba(255,183,0,.18);box-shadow:0 0 18px rgba(255,183,0,.7); }
+#game-viewport .hotspot.is-complete { opacity:.45;filter:grayscale(.6); }
+#game-viewport .hotspot-label { position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);opacity:0;pointer-events:none;white-space:nowrap;padding:6px 9px;border:1px solid rgba(0,210,255,.3);border-radius:7px;background:var(--glass-heavy);font-size:10px;letter-spacing:.08em;text-transform:uppercase;transition:opacity .2s; }
+#game-viewport .hotspot:hover .hotspot-label,#game-viewport .hotspot:focus-visible .hotspot-label { opacity:1; }
+@keyframes brcPulse { 50% { transform:scale(1.2); } }
+#game-viewport .brc-particles { position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none; }
+#game-viewport #inventory-bar { position:absolute;z-index:12;left:0;right:0;bottom:0;min-height:76px;padding:10px max(14px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:12px;background:rgba(5,8,13,.78);border-top:1px solid rgba(0,210,255,.22);backdrop-filter:blur(12px); }
+#game-viewport .inventory-label { color:var(--teal);font-size:9px;letter-spacing:.16em;text-transform:uppercase; }
+#game-viewport #inventory-items { display:flex;align-items:center;gap:8px;min-width:0;overflow:auto; }
+#game-viewport .inventory-item { min-height:44px;padding:5px 10px;border:1px solid rgba(0,210,255,.25)!important;border-radius:9px;background:rgba(0,210,255,.08)!important;font-size:10px!important;white-space:nowrap; }
+#game-viewport .inventory-item span { margin-right:6px;color:var(--amber);font-size:16px; }
+#game-viewport .empty-kit,#game-viewport .inventory-hint { color:#aab4c1;font-size:10px; }
+#game-viewport .inventory-hint { margin-left:auto;text-align:right; }
+#game-viewport .brc-modal { position:absolute;inset:0;z-index:35;display:grid;place-items:center;padding:calc(70px + env(safe-area-inset-top,0px)) 16px calc(88px + env(safe-area-inset-bottom,0px)); }
+#game-viewport .brc-modal[hidden] { display:none; }
+#game-viewport .modal-scrim { position:absolute;inset:0;background:rgba(0,0,0,.68);backdrop-filter:blur(6px); }
+#game-viewport .modal-card { position:relative;width:min(520px,100%);max-height:100%;overflow:auto;padding:clamp(22px,5vw,36px);border:1px solid rgba(0,210,255,.3);border-radius:18px;background:linear-gradient(145deg,rgba(17,24,34,.97),rgba(5,9,15,.97));box-shadow:0 25px 90px #000; }
+#game-viewport .modal-close { position:absolute;right:12px;top:10px;width:44px;height:44px;border:0;background:transparent;font-size:28px;color:#b8c1cc; }
+#game-viewport .eyebrow { display:block;color:var(--amber);font-size:9px;font-weight:800;letter-spacing:.22em;text-transform:uppercase; }
+#game-viewport .modal-card h2 { margin:10px 42px 12px 0;font-size:clamp(21px,5vw,30px); }
+#game-viewport .modal-lead,#game-viewport .modal-note { color:#c5ced8;font-size:14px;line-height:1.6; }
+#game-viewport .modal-note { font-size:11px;color:#8995a3; }
+#game-viewport .glass-button { min-height:46px;padding:0 18px;border:1px solid rgba(0,210,255,.5)!important;border-radius:999px;background:rgba(0,210,255,.12)!important;color:#eafaff!important;font-size:11px!important;font-weight:750!important;letter-spacing:.09em;text-transform:uppercase; }
+#game-viewport .glass-button:hover { background:rgba(0,210,255,.24)!important; }
+#game-viewport .postcard { width:100%;max-height:36vh;object-fit:contain;border-radius:8px;margin:6px 0 16px; }
+#game-viewport .lock-digits { display:flex;justify-content:center;gap:12px;margin:20px 0; }
+#game-viewport .lock-digits label { display:grid;gap:5px;text-align:center;color:var(--amber);font-size:10px; }
+#game-viewport .lock-digits select { width:56px;height:62px;border-radius:10px;border:1px solid rgba(0,210,255,.35);background:#111923;color:white;text-align:center;font-size:24px; }
+#game-viewport .socket-row { display:flex;gap:8px;flex-wrap:wrap;margin:16px 0; }
+#game-viewport .socket { min-height:44px;padding:0 12px;border:1px dashed rgba(0,210,255,.5)!important;border-radius:8px;background:rgba(0,210,255,.07)!important;font-size:11px!important; }
+#game-viewport .socket.filled { color:#91ffbd; }
+#game-viewport .range-label { display:flex;justify-content:space-between;margin:18px 0 8px;font-size:12px; }
+#game-viewport .tuner-track { position:relative;padding:8px 0; }
+#game-viewport .tuner-track i { position:absolute;left:62%;width:12%;top:50%;height:6px;transform:translateY(-50%);border-radius:8px;background:#77edaa;opacity:.7; }
+#game-viewport .tuner-track input { position:relative;width:100%;accent-color:var(--teal); }
+#game-viewport .tune-readout { min-height:22px;color:#9cdffc;font-size:12px; }
+#game-viewport .flywheel { margin:20px auto;width:128px;height:128px;border:8px double rgba(0,210,255,.5);border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,#1e3540,#071018);box-shadow:0 0 30px rgba(0,210,255,.14); }
+#game-viewport .flywheel span { font-size:72px;color:var(--teal);line-height:1; }
+#game-viewport .flywheel.turning span { animation:brcTurn .5s ease; }
+#game-viewport .flywheel small { position:absolute;margin-top:148px;color:#c5ced8;font-size:11px; }
+@keyframes brcTurn { to { transform:rotate(360deg); } }
+#game-viewport .knot-row { display:flex;justify-content:center;gap:10px;margin:24px 0; }
+#game-viewport .knot { position:static!important;transform:none!important;width:48px!important;height:48px!important;border:1px solid var(--teal)!important;border-radius:50%;background:rgba(0,210,255,.1)!important;font-size:26px!important; }
+#game-viewport .knot.untied { opacity:.3; }
+#game-viewport #brc-toast { position:absolute;z-index:45;left:50%;top:calc(72px + env(safe-area-inset-top,0px));transform:translate(-50%,-8px);max-width:min(90%,560px);padding:11px 16px;border:1px solid rgba(0,210,255,.25);border-radius:10px;background:rgba(4,10,15,.9);color:white;font-size:12px;text-align:center;opacity:0;pointer-events:none;transition:.2s; }
+#game-viewport #brc-toast.visible { opacity:1;transform:translate(-50%,0); }
+#game-viewport #floor-reveal { position:absolute;left:50%;top:75%;z-index:8;transform:translate(-50%,-50%);min-height:46px;padding:0 16px;border-radius:999px;border:1px solid var(--teal);background:rgba(5,12,18,.88);color:white;white-space:nowrap; }
+#game-viewport #restoration-bay,#game-viewport #finale-card { position:absolute;z-index:9;inset:0;display:none;overflow:auto;background:linear-gradient(180deg,rgba(0,0,0,.38),rgba(0,0,0,.72)),url('/lab/barn-road-chronicles/assets/scenes/restoration-bay.jpg') center/cover; }
+#game-viewport #restoration-bay.active,#game-viewport #finale-card.active { display:flex; }
+#game-viewport #restoration-bay { flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:calc(72px + env(safe-area-inset-top,0px)) 18px calc(90px + env(safe-area-inset-bottom,0px)); }
+#game-viewport .restore-copy { text-align:center;max-width:680px; }
+#game-viewport .restore-copy h1,#game-viewport #finale-card h1 { margin:8px 0;font-size:clamp(22px,5vw,38px); }
+#game-viewport .restore-copy p,#game-viewport #finale-card p { color:#d5dde7;font-size:13px;line-height:1.5; }
+#game-viewport .car-workbench { position:relative;width:min(900px,90vw);height:min(42vh,340px);min-height:160px;display:grid;place-items:center;touch-action:none; }
+#game-viewport .car-workbench img,#game-viewport .car-workbench canvas { position:absolute;max-width:100%;max-height:100%;object-fit:contain; }
+#game-viewport #atom-clean { width:100%;height:100%;opacity:.06;transition:opacity .25s;pointer-events:none; }
+#game-viewport #atom-dirty { width:100%;height:100%;pointer-events:none; }
+#game-viewport #dirt-canvas,#game-viewport #paint-canvas { display:none;pointer-events:none; }
+#game-viewport #restore-hud { width:min(480px,85vw);display:grid;grid-template-columns:1fr auto;gap:5px;color:white;font-size:11px; }
+#game-viewport #restore-hud strong { color:var(--teal); }
+#game-viewport .progress-track { grid-column:1/-1;height:6px;border-radius:8px;background:rgba(255,255,255,.18);overflow:hidden; }
+#game-viewport .progress-track i { display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),#a8ffc5);transition:width .25s; }
+#game-viewport #tool-dock { display:flex;gap:8px;justify-content:center;flex-wrap:wrap; }
+#game-viewport #tool-dock button { min-height:44px;padding:0 13px;border:1px solid rgba(255,255,255,.22);border-radius:9px;background:rgba(8,13,20,.76);font-size:10px; }
+#game-viewport #tool-dock button.selected { color:var(--teal);border-color:var(--teal);background:rgba(0,210,255,.12); }
+#game-viewport .restore-exit { position:absolute;left:16px;bottom:calc(88px + env(safe-area-inset-bottom,0px)); }
+#game-viewport #finale-card { flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;background-image:linear-gradient(180deg,rgba(0,0,0,.3),rgba(0,0,0,.7)),url('/lab/barn-road-chronicles/assets/scenes/open-road.jpg'); }
+#game-viewport #finale-card p { max-width:500px; }
+#game-viewport .text-button { min-height:44px;margin-top:12px;border:0;background:transparent;color:#d0d7df;font-size:11px; }
+#game-viewport .letter { font-family:Georgia,serif;font-size:14px;line-height:1.8;color:#e0e5e9; }
+#game-viewport .letter .signature { text-align:right;font-style:italic; }
+@media (max-width:560px) {
+  #game-viewport .brand { max-width:110px;letter-spacing:.1em; }
+  #game-viewport #btn-reset,#game-viewport #btn-mute { padding:0 4px;font-size:8px; }
+  #game-viewport #inventory-bar { gap:7px;min-height:70px; }
+  #game-viewport .inventory-hint { display:none; }
+  #game-viewport .inventory-item { max-width:150px;overflow:hidden;text-overflow:ellipsis; }
+  #game-viewport .car-workbench { height:32vh; }
+}
+@media (prefers-reduced-motion:reduce) { #game-viewport *,#game-viewport *::before,#game-viewport *::after { animation-duration:.01ms!important;transition-duration:.01ms!important; } }

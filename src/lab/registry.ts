@@ -23,6 +23,9 @@ const registry: Record<string, LabLoader> = {
   'pulse-runner': async () => ({
     mount: (await import('./prototypes/pulse-runner/main')).mountPulseRunner,
   }),
+  'barn-road-chronicles': async () => ({
+    mount: (await import('./prototypes/barn-road-chronicles/main')).mountBarnRoadChronicles,
+  }),
 };
 
 export function emptyLabController(): GameController {
