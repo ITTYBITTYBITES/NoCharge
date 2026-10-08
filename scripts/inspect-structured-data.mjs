@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, sep } from 'node:path';
 
 const dist = join(process.cwd(), 'dist');
 if (!existsSync(dist)) throw new Error('dist/ is missing. Run npm run build first.');
@@ -57,11 +57,24 @@ const walk = (directory) => {
   }
 };
 walk(dist);
+// Localized copies of untranslated pages (under /tr/ or /fr-ca/) intentionally
+// repeat English metadata and point their canonical at the English URL. They
+// are not separate indexable pages, so only the canonical page is compared.
+const LOCALE_PREFIX = /^(tr|fr-ca)\//;
+const isCanonicalElsewhere = (path, html) => {
+  const relativePath = path.slice(dist.length + 1).split(sep).join('/');
+  if (!LOCALE_PREFIX.test(relativePath)) return false;
+  const canonical = html.match(/<link rel="canonical" href="([^"]+)"/i)?.[1];
+  const ownUrl = `https://nocharge.net/${relativePath.replace(/index\.html$/, '')}`;
+  return canonical !== undefined && canonical !== ownUrl;
+};
 for (const [label, pattern] of [['title', /<title>([^<]+)<\/title>/i], ['description', /<meta name="description" content="([^"]+)"/i]]) {
   const seen = new Map();
   for (const path of htmlFiles) {
-    const match = readFileSync(path, 'utf8').match(pattern);
+    const html = readFileSync(path, 'utf8');
+    const match = html.match(pattern);
     if (!match) continue;
+    if (isCanonicalElsewhere(path, html)) continue;
     if (seen.has(match[1])) throw new Error(`Duplicate ${label}: ${match[1]} (${seen.get(match[1])}, ${path})`);
     seen.set(match[1], path);
   }

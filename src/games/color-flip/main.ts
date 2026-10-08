@@ -9,7 +9,6 @@ import {
   step,
   undo as engineUndo,
   isAdjacent,
-  colorName,
   colorHex,
   colorShortcut,
   type ColorId,
@@ -17,7 +16,17 @@ import {
   type TapToStepState,
   GRID_SIZE,
 } from './engine';
+import { currentLocale } from '../../i18n/client';
+import { t, type MessageKey, type MessageParams } from '../../i18n/messages';
 import './styles.css';
+
+/** Translation key for each color's name. Ids are stable; names are localized. */
+const COLOR_KEYS: Record<ColorId, MessageKey> = {
+  green: 'flip.color.green',
+  blue: 'flip.color.blue',
+  amber: 'flip.color.amber',
+  rose: 'flip.color.rose',
+};
 
 const GAME_ID = 'color-flip';
 const TURN_BASED_GAME_ID = 'color-flip-turn-based';
@@ -31,70 +40,74 @@ const COLORS = [
 ] as const;
 
 export function mountColorFlip(root: HTMLElement): GameController {
+  const locale = currentLocale();
+  const L = (key: MessageKey, params?: MessageParams) => t(locale, key, params);
+  const colorName = (id: ColorId) => L(COLOR_KEYS[id]);
+
   root.innerHTML = `
     <div class="cf">
       <div class="cf__hud">
         <div class="cf__stats">
-          <span>Score <strong data-cf="score">0</strong></span>
-          <span>Best <strong data-cf="best">0</strong></span>
+          <span>${L('game.score')} <strong data-cf="score">0</strong></span>
+          <span>${L('game.best')} <strong data-cf="best">0</strong></span>
         </div>
         <div class="cf__color">
           <span class="cf__swatch" data-cf="swatch"></span>
-          <span data-cf="color-label">Green</span>
+          <span data-cf="color-label">${colorName('green')}</span>
         </div>
         <div class="cf__actions">
-          <button type="button" class="btn btn--ghost btn--sm" data-cf="rotation-btn">Rotation: Never</button>
-          <button type="button" class="btn btn--ghost btn--sm" data-cf="undo-btn" disabled>Undo</button>
-          <button type="button" class="btn btn--ghost btn--sm" data-cf="mode">Turn-based mode</button>
+          <button type="button" class="btn btn--ghost btn--sm" data-cf="rotation-btn">${L('flip.rotation.never')}</button>
+          <button type="button" class="btn btn--ghost btn--sm" data-cf="undo-btn" disabled>${L('game.undo')}</button>
+          <button type="button" class="btn btn--ghost btn--sm" data-cf="mode">${L('flip.turnMode')}</button>
         </div>
       </div>
-      <p class="cf__hint" id="cf-instructions" data-cf="hint">Pick a color for this round, then tap an adjacent tile to step. Match your color to score. Take your time.</p>
+      <p class="cf__hint" id="cf-instructions" data-cf="hint">${L('flip.hintVisual')}</p>
       <div class="cf__visual" data-cf="visual">
-        <div class="cf__round-picker" data-cf="round-picker" role="group" aria-label="Pick your color for this round">
-          <p class="cf__round-picker-label">Pick your color <span class="cf__round-picker-name" data-cf="picker-name">Green</span></p>
+        <div class="cf__round-picker" data-cf="round-picker" role="group" aria-label="${L('flip.ui.pickAria')}">
+          <p class="cf__round-picker-label">${L('flip.ui.pickLabel')} <span class="cf__round-picker-name" data-cf="picker-name">${colorName('green')}</span></p>
           <div class="cf__round-choices">
-            <button type="button" class="cf__round-choice cf__round-choice--green" data-cf-pick="green" aria-label="Pick Green" aria-keyshortcuts="G">
+            <button type="button" class="cf__round-choice cf__round-choice--green" data-cf-pick="green" aria-label="${L('flip.ui.pick', { color: colorName('green') })}" aria-keyshortcuts="G">
               <span class="cf__round-swatch" aria-hidden="true"></span>
-              <span>G · Green</span>
+              <span>${L('flip.ui.choice', { shortcut: 'G', color: colorName('green') })}</span>
             </button>
-            <button type="button" class="cf__round-choice cf__round-choice--blue" data-cf-pick="blue" aria-label="Pick Blue" aria-keyshortcuts="B">
+            <button type="button" class="cf__round-choice cf__round-choice--blue" data-cf-pick="blue" aria-label="${L('flip.ui.pick', { color: colorName('blue') })}" aria-keyshortcuts="B">
               <span class="cf__round-swatch" aria-hidden="true"></span>
-              <span>B · Blue</span>
+              <span>${L('flip.ui.choice', { shortcut: 'B', color: colorName('blue') })}</span>
             </button>
-            <button type="button" class="cf__round-choice cf__round-choice--amber" data-cf-pick="amber" aria-label="Pick Amber" aria-keyshortcuts="A">
+            <button type="button" class="cf__round-choice cf__round-choice--amber" data-cf-pick="amber" aria-label="${L('flip.ui.pick', { color: colorName('amber') })}" aria-keyshortcuts="A">
               <span class="cf__round-swatch" aria-hidden="true"></span>
-              <span>A · Amber</span>
+              <span>${L('flip.ui.choice', { shortcut: 'A', color: colorName('amber') })}</span>
             </button>
-            <button type="button" class="cf__round-choice cf__round-choice--rose" data-cf-pick="rose" aria-label="Pick Rose" aria-keyshortcuts="R">
+            <button type="button" class="cf__round-choice cf__round-choice--rose" data-cf-pick="rose" aria-label="${L('flip.ui.pick', { color: colorName('rose') })}" aria-keyshortcuts="R">
               <span class="cf__round-swatch" aria-hidden="true"></span>
-              <span>R · Rose</span>
+              <span>${L('flip.ui.choice', { shortcut: 'R', color: colorName('rose') })}</span>
             </button>
           </div>
         </div>
         <div class="cf__stage" data-cf="stage">
-          <div class="cf__grid" data-cf="grid" role="group" aria-label="Tap-to-step tile grid"></div>
+          <div class="cf__grid" data-cf="grid" role="group" aria-label="${L('flip.ui.grid')}"></div>
           <div class="cf__overlay" data-cf="overlay">
-            <h2 data-cf="overlay-heading">Ready?</h2>
+            <h2 data-cf="overlay-heading">${L('flip.ready')}</h2>
             <p data-cf="result" aria-live="polite"></p>
-            <button type="button" class="btn" data-cf="again">Start</button>
+            <button type="button" class="btn" data-cf="again">${L('flip.start')}</button>
           </div>
         </div>
       </div>
       <section class="cf__accessible" data-cf="accessible" aria-labelledby="cf-accessible-title" hidden>
-        <h2 id="cf-accessible-title">Turn-based Color Flip</h2>
-        <p>Match the announced tile without a moving canvas. Cycle your color, then step forward.</p>
+        <h2 id="cf-accessible-title">${L('flip.ui.turnTitle')}</h2>
+        <p>${L('flip.ui.turnBody')}</p>
         <div class="cf__accessible-state">
-          <p>Current color: <strong data-cf="accessible-current">Green</strong></p>
-          <p>Next tile: <strong data-cf="accessible-next">Green, G</strong></p>
+          <p>${L('flip.ui.currentColorLabel')} <strong data-cf="accessible-current">${colorName('green')}</strong></p>
+          <p>${L('flip.ui.nextTileLabel')} <strong data-cf="accessible-next">${colorName('green')}, G</strong></p>
           <p class="sr-only" data-cf="accessible-announcement" role="status" aria-live="polite" aria-atomic="true"></p>
         </div>
         <div class="cf__accessible-actions">
-          <button type="button" class="btn btn--ghost" data-cf="accessible-cycle">Cycle color</button>
-          <button type="button" class="btn" data-cf="accessible-step">Step forward</button>
+          <button type="button" class="btn btn--ghost" data-cf="accessible-cycle">${L('flip.ui.cycle')}</button>
+          <button type="button" class="btn" data-cf="accessible-step">${L('flip.ui.step')}</button>
         </div>
         <div class="cf__accessible-result" data-cf="accessible-result" hidden>
           <p data-cf="accessible-result-text"></p>
-          <button type="button" class="btn" data-cf="accessible-again">Play again</button>
+          <button type="button" class="btn" data-cf="accessible-again">${L('flip.playAgain')}</button>
         </div>
       </section>
     </div>
@@ -166,16 +179,16 @@ export function mountColorFlip(root: HTMLElement): GameController {
 
   function setTurnBasedTarget(id: ColorId) {
     turnBasedTarget = id;
-    accessibleNext.textContent = `${colorName(id)}, ${id[0]!.toUpperCase()}`;
+    accessibleNext.textContent = `${colorName(id)}, ${colorShortcut(id)}`;
   }
 
   function updateRotationBtn() {
-    const labels: Record<RotationMode, string> = {
-      'never': 'Rotation: Never',
-      'every-10': 'Rotation: Every 10',
-      'every-5': 'Rotation: Every 5',
+    const labels: Record<RotationMode, MessageKey> = {
+      'never': 'flip.rotation.never',
+      'every-10': 'flip.rotation.every10',
+      'every-5': 'flip.rotation.every5',
     };
-    rotationBtn.textContent = labels[rotation];
+    rotationBtn.textContent = L(labels[rotation]);
   }
 
   function updatePausedControls() {
@@ -206,7 +219,7 @@ export function mountColorFlip(root: HTMLElement): GameController {
     updatePausedControls();
     accessibleResult.hidden = true;
     announceTurnBased(
-      `New turn-based run. Current color ${colorName(playerColor)}. Next tile ${colorName(turnBasedTarget)}.`,
+      L('flip.newRun', { player: colorName(playerColor), next: colorName(turnBasedTarget) }),
     );
     if (!paused) accessibleCycleBtn.focus();
   }
@@ -216,9 +229,8 @@ export function mountColorFlip(root: HTMLElement): GameController {
     visual.hidden = true;
     stage.hidden = true;
     accessible.hidden = false;
-    modeBtn.textContent = 'Visual mode';
-    hint.textContent =
-      'Turn-based mode uses the fixed Green, Blue, Amber, Rose Cycle color control and has no moving-canvas timer.';
+    modeBtn.textContent = L('flip.visualMode');
+    hint.textContent = L('flip.hintTurn');
     startTurnBased();
   }
 
@@ -228,9 +240,8 @@ export function mountColorFlip(root: HTMLElement): GameController {
     accessible.hidden = true;
     visual.hidden = false;
     stage.hidden = false;
-    modeBtn.textContent = 'Turn-based mode';
-    hint.textContent =
-      'Pick a color for this round, then tap an adjacent tile to step. Match your color to score. Take your time.';
+    modeBtn.textContent = L('flip.turnMode');
+    hint.textContent = L('flip.hintVisual');
     best = loadScore(GAME_ID);
     bestEl.textContent = String(best);
     resetVisual(false);
@@ -242,7 +253,7 @@ export function mountColorFlip(root: HTMLElement): GameController {
     unlockAudio();
     const index = COLORS.findIndex((c) => c.id === playerColor);
     setPlayerColor(COLORS[(index + 1) % COLORS.length]!.id);
-    announceTurnBased(`Current color ${colorName(playerColor)}. Next tile ${colorName(turnBasedTarget)}.`);
+    announceTurnBased(L('flip.cycled', { player: colorName(playerColor), next: colorName(turnBasedTarget) }));
     void play('step');
   }
 
@@ -255,10 +266,10 @@ export function mountColorFlip(root: HTMLElement): GameController {
       best = saveScore(TURN_BASED_GAME_ID, score);
       bestEl.textContent = String(best);
       updatePausedControls();
-      accessibleResultText.textContent = `Wrong color. Score ${score}. Best ${best}.`;
+      accessibleResultText.textContent = L('flip.wrongShort', { score, best });
       accessibleResult.hidden = false;
       announceTurnBased(
-        `Wrong color. You were ${colorName(playerColor)} and the tile was ${colorName(turnBasedTarget)}. Score ${score}. Best ${best}.`,
+        L('flip.wrongLong', { player: colorName(playerColor), next: colorName(turnBasedTarget), score, best }),
       );
       accessibleAgainBtn.focus();
       void play('win');
@@ -269,7 +280,7 @@ export function mountColorFlip(root: HTMLElement): GameController {
     best = saveScore(TURN_BASED_GAME_ID, score);
     bestEl.textContent = String(best);
     setTurnBasedTarget(nextTurnBasedTarget());
-    announceTurnBased(`Correct. Score ${score}. Next tile ${colorName(turnBasedTarget)}.`);
+    announceTurnBased(L('flip.correct', { score, next: colorName(turnBasedTarget) }));
     void play('place');
   }
 
@@ -291,7 +302,10 @@ export function mountColorFlip(root: HTMLElement): GameController {
           // Player cell
           cell.classList.add('cf__tile--player');
           cell.style.setProperty('--tile-color', colorHex(state.playerColor));
-          cell.setAttribute('aria-label', `Player: ${colorName(state.playerColor)} (${colorShortcut(state.playerColor)})`);
+          cell.setAttribute(
+            'aria-label',
+            L('flip.aria.player', { color: colorName(state.playerColor), shortcut: colorShortcut(state.playerColor) }),
+          );
           cell.innerHTML = `<span class="cf__tile-symbol">${colorShortcut(state.playerColor)}</span>`;
           cell.disabled = true;
         } else {
@@ -302,10 +316,22 @@ export function mountColorFlip(root: HTMLElement): GameController {
             const adj = isAdjacent(col, row, center, center);
             if (adj && state.phase === 'playing') {
               cell.classList.add('cf__tile--adjacent');
-              cell.setAttribute('aria-label', `Step to ${colorName(tile.color)} (${colorShortcut(tile.color)})${tile.color === state.playerColor ? ' — matches' : ' — wrong color'}`);
+              cell.setAttribute(
+                'aria-label',
+                L(tile.color === state.playerColor ? 'flip.aria.stepMatch' : 'flip.aria.stepWrong', {
+                  color: colorName(tile.color),
+                  shortcut: colorShortcut(tile.color),
+                }),
+              );
             } else {
               cell.disabled = true;
-              cell.setAttribute('aria-label', `Tile: ${colorName(tile.color)} (${colorShortcut(tile.color)})${adj ? '' : ' — not adjacent'}`);
+              cell.setAttribute(
+                'aria-label',
+                L(adj ? 'flip.aria.tile' : 'flip.aria.tileFar', {
+                  color: colorName(tile.color),
+                  shortcut: colorShortcut(tile.color),
+                }),
+              );
             }
             cell.innerHTML = `<span class="cf__tile-letter">${colorShortcut(tile.color)}</span>`;
 
@@ -318,7 +344,7 @@ export function mountColorFlip(root: HTMLElement): GameController {
           } else {
             cell.classList.add('cf__tile--empty');
             cell.disabled = true;
-            cell.setAttribute('aria-label', 'Empty');
+            cell.setAttribute('aria-label', L('flip.aria.empty'));
           }
         }
 
@@ -375,9 +401,9 @@ export function mountColorFlip(root: HTMLElement): GameController {
   }
 
   function endVisualGame() {
-    overlayHeading.textContent = 'Round over';
-    resultEl.textContent = `Score ${state.score}. Best ${best}.`;
-    againBtn.textContent = 'Play again';
+    overlayHeading.textContent = L('flip.roundOver');
+    resultEl.textContent = L('flip.score', { score: state.score, best });
+    againBtn.textContent = L('flip.playAgain');
     overlay.classList.add('is-open');
     overlay.hidden = false;
     againBtn.focus();
@@ -394,14 +420,14 @@ export function mountColorFlip(root: HTMLElement): GameController {
 
     if (start) {
       roundPicker.hidden = false;
-      pickerName.textContent = 'Green';
+      pickerName.textContent = colorName('green');
       renderGrid();
       updatePausedControls();
       if (!paused) pickButtons[0]?.focus({ preventScroll: true });
     } else {
-      overlayHeading.textContent = 'Ready?';
-      resultEl.textContent = 'Pick a color to begin.';
-      againBtn.textContent = 'Start';
+      overlayHeading.textContent = L('flip.ready');
+      resultEl.textContent = L('flip.pickToBegin');
+      againBtn.textContent = L('flip.start');
       overlay.classList.add('is-open');
       overlay.hidden = false;
       roundPicker.hidden = true;

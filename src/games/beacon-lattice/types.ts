@@ -1,3 +1,4 @@
+import type { Message } from '../../i18n/message';
 export const BEACON_TYPES = ['cross', 'diagonal', 'horizontal', 'vertical'] as const;
 
 export type BeaconType = (typeof BEACON_TYPES)[number];
@@ -54,9 +55,10 @@ export type InvalidReason =
   | 'type-unavailable'
   | 'paused';
 
+/** Outcome of a player action. `message` is a key, formatted by the UI in the active locale. */
 export type ActionResult =
-  | { ok: true; announcement: string }
-  | { ok: false; reason: InvalidReason; announcement: string };
+  | { ok: true; message: Message }
+  | { ok: false; reason: InvalidReason; message: Message };
 
 export type CoverageBand = 'gap' | 'exact' | 'overlap';
 

@@ -1,0 +1,32 @@
+---
+/**
+ * Shown on a localized URL for a game that is pinned to English (word games,
+ * see src/i18n/coverage.ts). It sends the visitor to the English game. The
+ * page is a real document with a link, so it works without JavaScript, and it
+ * is kept out of search results.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { t } from '../i18n/messages';
+import type { Locale } from '../i18n/config';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  slug: string;
+}
+
+const { locale, title, slug } = Astro.props;
+const englishHref = `/games/${slug}/`;
+---
+
+<BaseLayout title={title} path={englishHref} noIndex>
+  <section class="panel pinned-game" data-pinned-redirect={englishHref}>
+    <p>{t(locale, 'game.pinned.notice')}</p>
+    <p><a href={englishHref}>{t(locale, 'game.pinned.link')}</a></p>
+  </section>
+</BaseLayout>
+
+<script>
+  const target = document.querySelector<HTMLElement>('[data-pinned-redirect]')?.dataset.pinnedRedirect;
+  if (target) window.location.replace(target);
+</script>

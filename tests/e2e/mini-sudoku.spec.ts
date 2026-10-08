@@ -14,6 +14,18 @@ const statusOf = (page: import('@playwright/test').Page) =>
 
 /** Read the rendered board as a flat 36-length array of 0-6 (0 = empty; notes are 0 here). */
 async function readBoard(page: import('@playwright/test').Page): Promise<number[]> {
+  // The board mounts after `load`. Every puzzle has givens, so wait for at least
+  // one before reading; otherwise an empty snapshot picks a given cell as "empty".
+  await expect
+    .poll(() =>
+      page.locator('.ms__cell').evaluateAll((cells) =>
+        cells.some((c) => {
+          const n = Number((c.textContent ?? '').trim());
+          return n >= 1 && n <= 6;
+        }),
+      ),
+    )
+    .toBe(true);
   return page.locator('.ms__cell').evaluateAll((cells) =>
     cells.map((c) => {
       const t = (c.textContent ?? '').trim();

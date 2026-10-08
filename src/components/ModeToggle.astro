@@ -12,6 +12,8 @@
  * stumble into.
  */
 import type { SiteMode } from '../lab/mode/mode-toggle';
+import { splitLocale, withLocale } from '../i18n/routes';
+import { t } from '../i18n/messages';
 
 interface Props {
   /** The section this page belongs to. */
@@ -21,17 +23,18 @@ interface Props {
   labHref?: string;
 }
 
-const { current, calmHref = '/', labHref = '/lab/' } = Astro.props;
+const { locale } = splitLocale(Astro.url.pathname);
+const { current, calmHref = withLocale('/', locale), labHref = withLocale('/lab/', locale) } = Astro.props;
 ---
 
-<div class="mode-switch" data-mode-switch role="group" aria-label="Site mode">
+<div class="mode-switch" data-mode-switch role="group" aria-label={t(locale, 'mode.label')}>
   <a
     class="mode-switch__option"
     data-mode-option="calm"
     href={calmHref}
     aria-current={current === 'calm' ? 'true' : undefined}
   >
-    <span class="mode-switch__dot" aria-hidden="true"></span>Calm
+    <span class="mode-switch__dot" aria-hidden="true"></span>{t(locale, 'mode.calm')}
   </a>
   <a
     class="mode-switch__option mode-switch__option--lab"
@@ -39,7 +42,7 @@ const { current, calmHref = '/', labHref = '/lab/' } = Astro.props;
     href={labHref}
     aria-current={current === 'lab' ? 'true' : undefined}
   >
-    <span class="mode-switch__dot" aria-hidden="true"></span>Lab
+    <span class="mode-switch__dot" aria-hidden="true"></span>{t(locale, 'mode.lab')}
   </a>
 </div>
 

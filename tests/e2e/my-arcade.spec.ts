@@ -92,6 +92,8 @@ const playColorFlip = async (page: Page) => {
 const completeMemoryMatch = async (page: Page) => {
   await page.goto('/games/memory-match/');
   const cards = page.locator('.mm__card');
+  // The board mounts after load; wait for every card before reading the layout.
+  await expect(cards).toHaveCount(16);
   const symbols = await cards.evaluateAll((elements) =>
     elements.map((element, index) => ({
       index,

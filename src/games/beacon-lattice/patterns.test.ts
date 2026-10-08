@@ -183,7 +183,7 @@ describe('authored puzzles', () => {
     for (const placement of puzzle.solution) {
       if (placement.locked) continue;
       const result = placeBeacon(state, puzzle, placement, placement.type);
-      expect(result.ok, result.announcement).toBe(true);
+      expect(result.ok, result.message.key).toBe(true);
     }
     expect(state.complete).toBe(true);
     expect(state.beaconCount).toBe(puzzle.par);

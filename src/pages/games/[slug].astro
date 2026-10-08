@@ -6,6 +6,9 @@ import ArticleCard from '../../components/ArticleCard.astro';
 import FaqList from '../../components/FaqList.astro';
 import { isPassPlayGameId } from '../../games/shared/pass-play';
 import { allFacts, relatedGames as catalogRelated } from '../../lib/game-catalog';
+import { splitLocale } from '../../i18n/routes';
+import { isPinnedToEnglish } from '../../i18n/coverage';
+import PinnedGameNotice from '../../components/PinnedGameNotice.astro';
 
 export async function getStaticPaths() {
   const games = (await getCollection('games')).filter((game) => !game.data.draft);
@@ -32,6 +35,11 @@ export async function getStaticPaths() {
 }
 
 const { game, hasGuide, passPlay, relatedGames, relatedArticles } = Astro.props;
+// Word games check answers against ASCII word lists, so their engine route is
+// English-only. A localized URL for one of them shows a notice and sends the
+// visitor to the English game (see PinnedGameNotice).
+const { locale: requestedLocale } = splitLocale(Astro.url.pathname);
+const pinnedToEnglish = isPinnedToEnglish(requestedLocale, game.id);
 const { Content } = await render(game);
 const slug = game.id;
 const presentation = game.data.presentation;
@@ -122,6 +130,9 @@ const gameSchema = [
 ];
 ---
 
+{pinnedToEnglish ? (
+<PinnedGameNotice locale={requestedLocale} title={game.data.title} slug={game.id} />
+) : (
 <BaseLayout
   title={game.data.title}
   description={game.data.description}
@@ -240,6 +251,7 @@ const gameSchema = [
     </section>
   </GameShell>
 </BaseLayout>
+)}
 
 
 <style>

@@ -566,3 +566,79 @@ p {
   min-height: 100vh;
   min-height: 100dvh;
 }
+
+/* ---- Localization ----------------------------------------------------------
+   Turkish and French labels run longer than English. On localized pages the
+   primary nav wraps onto its own full-width row at 48rem and below, so no label
+   is clipped or pushes the page wider than the viewport. English keeps its
+   original one-row layout. */
+@media (max-width: 48rem) {
+  html:not([data-locale='en']) .site-header {
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+  }
+
+  html:not([data-locale='en']) .primary-nav {
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 0.1rem 0.75rem;
+  }
+
+  html:not([data-locale='en']) .nav-link {
+    font-size: 0.88rem;
+  }
+}
+
+html:not([data-locale='en']) .nav-link,
+html:not([data-locale='en']) .lang-switch__option,
+html:not([data-locale='en']) .lang-prompt__text {
+  overflow-wrap: anywhere;
+}
+
+/* Language suggestion, shown once to a visitor whose browser prefers a
+   translated language. Kept in normal flow so it never covers content. */
+.lang-prompt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem 1rem;
+  margin: 0 0 1rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+
+.lang-prompt__text {
+  margin: 0;
+  min-width: 0;
+  flex: 1 1 16rem;
+}
+
+.lang-prompt__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Shown on a localized page whose body is still English. */
+.locale-notice {
+  margin: 0 0 1rem;
+  padding: 0.7rem 1rem;
+  border-left: 3px solid var(--accent-strong);
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.locale-notice p {
+  margin: 0;
+}
+
+.locale-notice a {
+  color: var(--accent-strong);
+  font-weight: 650;
+}

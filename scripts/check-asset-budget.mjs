@@ -21,7 +21,13 @@ const scriptBytes = scripts.reduce((sum, file) => sum + file.size, 0);
 const largestImage = images.sort((a, b) => b.size - a.size)[0];
 // The Barn Road Chronicles prototype adds a dedicated, dynamically loaded Lab chunk.
 // Keep this site-wide ceiling bounded while leaving a small amount of headroom.
-const limits = { scripts: 375 * 1024, largestImage: 350 * 1024 };
+// The script ceiling is 390 KiB (399360 bytes). The increase from 375 KiB covers the
+// global i18n runtime (locale routing, message formatting, the language switcher)
+// and the bundled base English dictionary (src/locales/en.json, about 11 KB minified).
+// English is bundled so English pages render without a fetch. The tr and fr-ca
+// dictionaries are emitted as separate JSON assets and loaded on demand, so they
+// are not counted here.
+const limits = { scripts: 390 * 1024, largestImage: 350 * 1024 };
 
 if (scriptBytes > limits.scripts) {
   throw new Error(`JavaScript budget exceeded: ${scriptBytes} bytes exceeds ${limits.scripts} bytes.`);

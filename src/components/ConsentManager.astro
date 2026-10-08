@@ -10,6 +10,10 @@
  * field keep their analytics value; the obsolete field is ignored and is never
  * translated into Google consent.
  */
+import { splitLocale, withLocale } from '../i18n/routes';
+import { t } from '../i18n/messages';
+
+const { locale } = splitLocale(Astro.url.pathname);
 ---
 
 <div
@@ -21,19 +25,19 @@
   hidden
 >
   <div class="consent-banner__copy">
-    <p class="eyebrow">Your choice</p>
-    <h2 id="consent-banner-title">Optional analytics</h2>
+    <p class="eyebrow">{t(locale, 'consent.eyebrow')}</p>
+    <h2 id="consent-banner-title">{t(locale, 'consent.title')}</h2>
     <p id="consent-banner-description">
       Necessary storage keeps your scores and this choice. Analytics stays off unless you allow it, and Google shows
       its own consent message for advertising. You can change this anytime.
     </p>
   </div>
   <div class="consent-actions">
-    <button class="btn btn--ghost btn--sm" type="button" data-consent-reject>Keep analytics off</button>
-    <button class="btn btn--ghost btn--sm" type="button" data-consent-customize>Customize</button>
-    <button class="btn btn--sm" type="button" data-consent-allow>Allow analytics</button>
+    <button class="btn btn--ghost btn--sm" type="button" data-consent-reject>{t(locale, 'consent.reject')}</button>
+    <button class="btn btn--ghost btn--sm" type="button" data-consent-customize>{t(locale, 'consent.customize')}</button>
+    <button class="btn btn--sm" type="button" data-consent-allow>{t(locale, 'consent.allow')}</button>
   </div>
-  <a class="consent-banner__link" href="/privacy/">Read the privacy policy</a>
+  <a class="consent-banner__link" href={withLocale('/privacy/', locale)}>{t(locale, 'consent.readPolicy')}</a>
 </div>
 
 <div class="consent-modal" data-consent-modal hidden>
@@ -45,11 +49,11 @@
     aria-labelledby="consent-settings-title"
     aria-describedby="consent-settings-description"
   >
-    <button class="consent-modal__close" type="button" aria-label="Close privacy choices" data-consent-close>
+    <button class="consent-modal__close" type="button" aria-label={t(locale, 'consent.closeLabel')} data-consent-close>
       ×
     </button>
-    <p class="eyebrow">Privacy choices</p>
-    <h2 id="consent-settings-title">Choose what may load</h2>
+    <p class="eyebrow">{t(locale, 'consent.modalEyebrow')}</p>
+    <h2 id="consent-settings-title">{t(locale, 'consent.modalTitle')}</h2>
     <p id="consent-settings-description" class="consent-modal__intro">
       Analytics remains blocked until you allow it. Turning it off stops future optional analytics requests
       initiated by NoCharge in this tab. Advertising choices are shown by Google&rsquo;s own consent message and are
@@ -58,28 +62,31 @@
 
     <div class="consent-option">
       <div>
-        <h3>Necessary storage</h3>
-        <p>Saves this choice, game scores, and preferences on your device.</p>
+        <h3>{t(locale, 'consent.necessary')}</h3>
+        <p>{t(locale, 'consent.necessaryBody')}</p>
       </div>
-      <span class="consent-option__required">Always on</span>
+      <span class="consent-option__required">{t(locale, 'consent.alwaysOn')}</span>
     </div>
 
     <div class="consent-option">
       <div>
-        <h3><label for="consent-analytics">Analytics</label></h3>
-        <p>Allows Google Analytics to measure broad site usage.</p>
+        <h3><label for="consent-analytics">{t(locale, 'consent.analytics')}</label></h3>
+        <p>{t(locale, 'consent.analyticsBody')}</p>
       </div>
       <input id="consent-analytics" type="checkbox" data-consent-analytics />
     </div>
 
     <div class="consent-modal__actions">
-      <button class="btn btn--ghost" type="button" data-consent-modal-allow>Allow analytics</button>
-      <button class="btn" type="button" data-consent-save>Save choices</button>
+      <button class="btn btn--ghost" type="button" data-consent-modal-allow>{t(locale, 'consent.allow')}</button>
+      <button class="btn" type="button" data-consent-save>{t(locale, 'consent.save')}</button>
     </div>
   </section>
 </div>
 
 <script>
+  import { currentLocale } from '../i18n/client';
+  import { ensureLocale, t } from '../i18n/messages';
+
   type ConsentChoice = {
     version: number;
     analytics: boolean;
@@ -140,7 +147,7 @@
 
   const updateSummary = () => {
     document.querySelectorAll<HTMLElement>('[data-consent-summary]').forEach((summary) => {
-      summary.textContent = `Analytics: ${currentChoice.analytics ? 'allowed' : 'off'}.`;
+      summary.textContent = t(currentLocale(), currentChoice.analytics ? 'consent.summaryOn' : 'consent.summaryOff');
     });
   };
 
@@ -238,6 +245,8 @@
   });
 
   applyChoice(currentChoice, false);
+  // The summary is text, so refresh it once this locale's dictionary is loaded.
+  void ensureLocale(currentLocale()).then(updateSummary);
   if (root) root.hidden = storedChoice !== null;
 </script>
 

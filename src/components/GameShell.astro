@@ -3,6 +3,8 @@ import type { GameArtworkData } from '../types/content';
 import GameArtwork from './GameArtwork.astro';
 import HandoffScreen from './HandoffScreen.astro';
 import { AMBIENT_CATALOG } from '../games/shared/audio/catalog';
+import { splitLocale, withLocale } from '../i18n/routes';
+import { t } from '../i18n/messages';
 
 interface Props {
   title: string;
@@ -15,14 +17,15 @@ interface Props {
 }
 
 const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = Astro.props;
+const { locale } = splitLocale(Astro.url.pathname);
 ---
 
 <section class="game-shell" data-game={slug}>
   {passPlay && <HandoffScreen />}
   <div class:list={['game-shell__top', { 'game-shell__top--artwork': artwork }]}>
-    <a class="back-link" href="/arcade/">← Arcade</a>
+    <a class="back-link" href={withLocale('/arcade/', locale)}>{t(locale, 'game.backToArcade')}</a>
     <div class="game-shell__heading">
-      {artwork && <p class="eyebrow">Quiet Arcade · {title}</p>}
+      {artwork && <p class="eyebrow">{t(locale, 'game.eyebrow', { title })}</p>}
       <h1 class="page-title">{title}</h1>
       <p class="lede">{tagline}</p>
       <div class="game-shell__play-action">
@@ -32,7 +35,7 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
           data-game-play-btn
           aria-controls="game-viewport"
         >
-          Play {title}
+          {t(locale, 'game.play', { title })}
         </button>
       </div>
     </div>
@@ -56,14 +59,14 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
     }
   </div>
 
-  <section class="game-viewport panel" data-game-viewport id="game-viewport" aria-label={`${title} game area`}>
-    <div class="game-toolbar" role="toolbar" aria-label="Game controls">
+  <section class="game-viewport panel" data-game-viewport id="game-viewport" aria-label={t(locale, 'game.area', { title })}>
+    <div class="game-toolbar" role="toolbar" aria-label={t(locale, 'game.controls')}>
       <div class="game-toolbar__primary">
         <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="pause" aria-pressed="false">
-          Pause game
+          {t(locale, 'game.pause')}
         </button>
         <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="mute" aria-pressed="false">
-          Mute sound
+          {t(locale, 'game.mute')}
         </button>
         <button
           type="button"
@@ -73,34 +76,34 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
           aria-haspopup="dialog"
           aria-controls="game-settings"
         >
-          Game settings
+          {t(locale, 'game.settings')}
         </button>
       </div>
-      <div class="game-toolbar__panel" id="game-settings" data-game-settings-panel role="dialog" aria-label="Game settings" hidden>
-        <p class="game-toolbar__panel-title">Game settings</p>
-        <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="sound" aria-pressed="true">Sound on</button>
-        <label class="game-toolbar__volume">Sound volume
-          <input data-game-toolbar="volume" type="range" min="0" max="100" value="60" aria-label="Sound volume" />
+      <div class="game-toolbar__panel" id="game-settings" data-game-settings-panel role="dialog" aria-label={t(locale, 'game.settings')} hidden>
+        <p class="game-toolbar__panel-title">{t(locale, 'game.settings')}</p>
+        <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="sound" aria-pressed="true">{t(locale, 'game.soundOn')}</button>
+        <label class="game-toolbar__volume">{t(locale, 'game.volume')}
+          <input data-game-toolbar="volume" type="range" min="0" max="100" value="60" aria-label={t(locale, 'game.volume')} />
         </label>
-        <label class="game-toolbar__ambient">Ambient
-          <select data-game-toolbar="ambient" aria-label="Ambient sound">
-            <option value="none">None</option>
+        <label class="game-toolbar__ambient">{t(locale, 'game.ambient')}
+          <select data-game-toolbar="ambient" aria-label={t(locale, 'game.ambientLabel')}>
+            <option value="none">{t(locale, 'game.ambientNone')}</option>
             {AMBIENT_CATALOG.map((texture) => <option value={texture.id}>{texture.label}</option>)}
           </select>
         </label>
-        <p class="game-toolbar__audio-note">Generated live in your browser — no audio files or streams.</p>
+        <p class="game-toolbar__audio-note">{t(locale, 'game.audioNote')}</p>
         <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="focus-in-menu" aria-pressed="false">
-          Focus mode
+          {t(locale, 'game.focusMode')}
         </button>
         <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="restart-in-menu">
-          New game
+          {t(locale, 'game.newGame')}
         </button>
       </div>
       <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="restart">
-        New game
+        {t(locale, 'game.newGame')}
       </button>
       <button type="button" class="btn btn--ghost btn--sm" data-game-toolbar="fullscreen" aria-pressed="false">
-        Focus mode
+        {t(locale, 'game.focusMode')}
       </button>
       <p class="game-toolbar__status" data-game-toolbar-status aria-live="polite" aria-atomic="true"></p>
     </div>
@@ -110,9 +113,9 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
     </div>
     <div class="game-viewport__pause" data-game-pause-overlay hidden>
       <div role="status" aria-live="polite">
-        <p class="game-viewport__pause-label">Game paused</p>
-        <p>Your current game is waiting exactly where you left it.</p>
-        <button type="button" class="btn" data-game-pause-resume>Resume game</button>
+        <p class="game-viewport__pause-label">{t(locale, 'game.paused')}</p>
+        <p>{t(locale, 'game.pausedBody')}</p>
+        <button type="button" class="btn" data-game-pause-resume>{t(locale, 'game.resume')}</button>
       </div>
     </div>
   </section>
@@ -124,11 +127,19 @@ const { title, tagline, slug, accent = '#12b66a', artwork, passPlay = false } = 
 
 <script>
   import { mountRenderedGameShells } from '../games/shared/shell';
+  import { currentLocale } from '../i18n/client';
+  import { DEFAULT_LOCALE } from '../i18n/config';
+  import { ensureLocale } from '../i18n/messages';
 
   // Astro hoists component scripts. Waiting for the parsed document keeps the
   // game mount reliable in WebKit when an external module arrives before this
-  // component's viewport markup has been parsed.
-  const mount = () => mountRenderedGameShells();
+  // component's viewport markup has been parsed. A non-English page first loads
+  // its dictionary, so the shell's labels are never shown in the wrong language.
+  const mount = () => {
+    const locale = currentLocale();
+    if (locale === DEFAULT_LOCALE) mountRenderedGameShells();
+    else void ensureLocale(locale).then(() => mountRenderedGameShells());
+  };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount, { once: true });
   else mount();
 </script>

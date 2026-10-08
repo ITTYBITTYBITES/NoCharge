@@ -15,6 +15,15 @@ interface Props {
   feedHref?: string;
   feedTitle?: string;
   additionalImages?: { url: string; width: number; height: number; alt?: string }[];
+  /** BCP-47 tag of the page language. Defaults to English. */
+  lang?: string;
+  /** Open Graph locale token, for example `fr_CA`. */
+  ogLocale?: string;
+  /**
+   * Language alternates for this page (`hreflang`). Only pages whose body is
+   * translated advertise alternates; an empty list emits none.
+   */
+  alternates?: { hreflang: string; href: string }[];
 }
 
 const {
@@ -33,6 +42,9 @@ const {
   feedHref,
   feedTitle = 'NoCharge feed',
   additionalImages = [],
+  lang = 'en',
+  ogLocale = 'en_US',
+  alternates = [],
 } = Astro.props;
 const site = Astro.site ?? new URL('https://nocharge.net');
 const canonical = new URL(canonicalPath ?? path, site).toString();
@@ -62,7 +74,7 @@ const defaultStructuredData = isGame
         url: new URL('/', site).toString(),
         logo: { '@type': 'ImageObject', url: new URL('/icons/icon-512.png', site).toString(), width: 512, height: 512 },
       },
-      inLanguage: 'en',
+      inLanguage: lang,
     }
   : path === '/'
     ? {
@@ -74,7 +86,7 @@ const defaultStructuredData = isGame
         description,
         url: canonical,
         image: socialImage,
-        inLanguage: 'en',
+        inLanguage: lang,
         publisher: { '@type': 'Organization', name: 'NoCharge', url: new URL('/', site).toString() },
       }
     : null;
@@ -84,11 +96,14 @@ const structuredData = schema ?? defaultStructuredData;
 <title>{fullTitle}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
+{alternates.map((alternate) => (
+  <link rel="alternate" hreflang={alternate.hreflang} href={new URL(alternate.href, site).toString()} />
+))}
 {feedHref && <link rel="alternate" type="application/rss+xml" title={feedTitle} href={new URL(feedHref, site).toString()} />}
 <!-- Indexing and link discovery are separate: noIndex must not imply nofollow. -->
 {noIndex && <meta name="robots" content="noindex" />}
 <meta property="og:type" content={ogType} />
-<meta property="og:locale" content="en_US" />
+<meta property="og:locale" content={ogLocale} />
 <meta property="og:site_name" content="NoCharge" />
 <meta property="og:title" content={fullTitle} />
 <meta property="og:description" content={description} />
