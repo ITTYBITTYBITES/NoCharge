@@ -1,0 +1,109 @@
+---
+/**
+ * Language switcher.
+ *
+ * Renders plain links to the same page in each locale, so it works with
+ * JavaScript disabled. The client module only records the choice in
+ * localStorage before the browser follows the link. Each link carries its own
+ * `lang`, so a screen reader pronounces the native name correctly.
+ */
+import { LOCALES, LOCALE_META } from '../i18n/config';
+import { splitLocale, withLocale } from '../i18n/routes';
+import { t } from '../i18n/messages';
+
+interface Props {
+  /** `footer` is always visible; `header` appears on wider screens only. */
+  variant?: 'footer' | 'header';
+}
+
+const { variant = 'footer' } = Astro.props;
+const { locale, route } = splitLocale(Astro.url.pathname);
+// The 404 page exists only in English (it is served for every unknown URL),
+// so offering other languages there would link to pages that do not exist.
+const isNotFoundPage = route === '/404/' || route === '/404.html';
+
+const options = LOCALES.map((code) => ({
+  code,
+  href: withLocale(route, code),
+  label: LOCALE_META[code].nativeName,
+  lang: LOCALE_META[code].htmlLang,
+}));
+---
+
+{!isNotFoundPage && (
+<nav class:list={['lang-switch', `lang-switch--${variant}`]} aria-label={t(locale, variant === 'footer' ? 'lang.choose' : 'lang.label')}>
+  <ul class="lang-switch__list">
+    {
+      options.map((option) => (
+        <li>
+          <a
+            class="lang-switch__option"
+            href={option.href}
+            hreflang={option.lang}
+            lang={option.lang}
+            data-locale-option={option.code}
+            aria-current={option.code === locale ? 'true' : undefined}
+          >
+            {option.label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+)}
+
+<script>
+  import { initLocaleSwitcher } from '../i18n/client';
+
+  initLocaleSwitcher();
+</script>
+
+<style>
+  .lang-switch__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .lang-switch__option {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0.35rem 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: 0.88rem;
+    text-decoration: none;
+  }
+
+  .lang-switch__option:hover {
+    color: var(--text);
+    text-decoration: underline;
+  }
+
+  .lang-switch__option[aria-current='true'] {
+    border-color: currentColor;
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .lang-switch__option:focus-visible {
+    outline: 3px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  .lang-switch--header {
+    display: none;
+  }
+
+  @media (min-width: 48.01rem) {
+    .lang-switch--header {
+      display: block;
+    }
+  }
+</style>

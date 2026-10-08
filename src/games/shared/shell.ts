@@ -19,13 +19,25 @@ import {
 import {
   addVisibleRecoveryListeners,
   pauseReasonsAfterResumeRequest,
-  resumeBlockedMessage,
+  resumeBlockedKey,
   resumeControllerIfReady,
   type PauseEnvironment,
 } from './pause-recovery';
 import type { GameController, PauseReason } from './types';
 import { getBrowserStorage, recordRecentlyPlayed } from './recently-played';
-import { focusModeLabel, nextMenuState, type ShellMenuState } from './shell-menu';
+import { focusModeLabel, nextMenuState, type FocusModeLabels, type ShellMenuState } from './shell-menu';
+import { currentLocale } from '../../i18n/client';
+import { t, type MessageKey, type MessageParams } from '../../i18n/messages';
+
+/** Translate a shell string into the locale of the page. */
+const tr = (key: MessageKey, params?: MessageParams): string => t(currentLocale(), key, params);
+
+const focusLabels = (): FocusModeLabels => ({
+  exitFullScreen: tr('game.exitFullScreen'),
+  exitFocusMode: tr('game.exitFocusMode'),
+  enterFullScreen: tr('game.enterFullScreen'),
+  focusMode: tr('game.focusMode'),
+});
 
 type PlatformModalEvent = CustomEvent<{ open?: boolean }>;
 
@@ -86,13 +98,13 @@ export function mountGameShell(viewport: HTMLElement): () => void {
   const updateMute = () => {
     const muted = isMuted();
     if (muteButton) {
-      muteButton.textContent = muted ? 'Unmute sound' : 'Mute sound';
-      muteButton.setAttribute('aria-label', muted ? 'Unmute game sound' : 'Mute game sound');
+      muteButton.textContent = tr(muted ? 'game.unmute' : 'game.mute');
+      muteButton.setAttribute('aria-label', tr(muted ? 'game.unmuteLabel' : 'game.muteLabel'));
       muteButton.setAttribute('aria-pressed', String(muted));
     }
     if (soundButton) {
       const enabled = isSoundEnabled();
-      soundButton.textContent = enabled ? 'Sound on' : 'Sound off';
+      soundButton.textContent = tr(enabled ? 'game.soundOn' : 'game.soundOff');
       soundButton.setAttribute('aria-pressed', String(enabled));
     }
     if (volumeInput) volumeInput.value = String(getSoundVolume());
@@ -103,26 +115,26 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     const paused = pauseReasons.size > 0 || controller.isPaused();
     viewport.classList.toggle('is-paused', paused);
     if (pauseButton) {
-      pauseButton.textContent = paused ? 'Resume game' : 'Pause game';
-      pauseButton.setAttribute('aria-label', paused ? 'Resume game' : 'Pause game');
+      pauseButton.textContent = tr(paused ? 'game.resume' : 'game.pause');
+      pauseButton.setAttribute('aria-label', tr(paused ? 'game.resume' : 'game.pause'));
       pauseButton.setAttribute('aria-pressed', String(paused));
     }
     if (pauseOverlay) pauseOverlay.hidden = !paused;
-    if (paused) announce('Game paused. Your current game is waiting.');
+    if (paused) announce(tr('game.pausedAnnounce'));
     else if (announcement) announce(announcement);
   };
 
   const applyFocusLabels = () => {
     const activeNative = document.fullscreenElement === viewport;
-    const labels = focusModeLabel(nativeFullscreenSupported, activeNative, immersive);
+    const labels = focusModeLabel(nativeFullscreenSupported, activeNative, immersive, focusLabels());
     if (fullscreenButton) {
       const active = activeNative || immersive;
       // Desktop retains a direct focus shortcut. On compact toolbars and while
       // settings are open, the menu is the one entry point; give the hidden
       // shortcut a distinct name so role queries never see duplicate actions.
       const directEntryVisible = !active && menu === 'closed' && !window.matchMedia('(max-width: 34rem)').matches;
-      fullscreenButton.textContent = active || directEntryVisible ? labels.text : 'Leave expanded game';
-      fullscreenButton.setAttribute('aria-label', active || directEntryVisible ? labels.aria : 'Leave expanded game');
+      fullscreenButton.textContent = active || directEntryVisible ? labels.text : tr('game.leaveExpanded');
+      fullscreenButton.setAttribute('aria-label', active || directEntryVisible ? labels.aria : tr('game.leaveExpanded'));
       fullscreenButton.setAttribute('aria-pressed', String(active));
     }
     if (focusInMenu) {
@@ -162,7 +174,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     updatePaused();
   };
 
-  const removePauseReason = (reason: PauseReason, message = 'Game resumed.') => {
+  const removePauseReason = (reason: PauseReason, message = tr('game.resumed')) => {
     if (!pauseReasons.delete(reason)) return;
     if (pauseReasons.size === 0) controller.resume();
     updatePaused(pauseReasons.size === 0 ? message : undefined);
@@ -183,13 +195,13 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     }
 
     if (resumeControllerIfReady(controller, wasPaused, pauseReasons)) {
-      updatePaused('Game resumed.');
+      updatePaused(tr('game.resumed'));
       defer(() => pauseButton?.focus({ preventScroll: true }));
       return;
     }
 
     updatePaused();
-    if (pauseReasons.size > 0) announce(resumeBlockedMessage(pauseReasons, environment));
+    if (pauseReasons.size > 0) announce(tr(resumeBlockedKey(pauseReasons, environment)));
   };
 
   const exitImmersive = (returnFocus = true) => {
@@ -198,7 +210,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     document.body.style.cssText = previousBodyStyle;
     window.scrollTo(0, scrollY);
     updateFullscreen();
-    announce('Focus mode exited.');
+    announce(tr('game.focusExited'));
     if (returnFocus) {
       const target = lastEnterTrigger || playButton || fullscreenButton;
       defer(() => target?.focus({ preventScroll: true }));
@@ -216,7 +228,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     document.body.style.overflow = 'hidden';
     immersive = true;
     updateFullscreen();
-    announce('Focus mode entered. The playable board is expanded.');
+    announce(tr('game.focusEntered'));
   };
 
   const requestFullscreen = async (trigger: HTMLElement | null = null) => {
@@ -229,7 +241,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
       try {
         await document.exitFullscreen();
       } catch {
-        announce('Full screen could not be exited. Use your browser controls if needed.');
+        announce(tr('game.fullscreenExitFailed'));
       }
       return;
     }
@@ -251,7 +263,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
 
   const recoverHiddenPauseWhenVisible = () => {
     if (document.visibilityState !== 'visible') return;
-    removePauseReason('hidden', 'Game resumed after returning to this tab.');
+    removePauseReason('hidden', tr('game.resumedTab'));
     // Only resume a soundscape that was actually playing before the tab was
     // hidden. A saved selection alone is not permission to start audio.
     if (ambientWasPlayingBeforeHidden) {
@@ -273,16 +285,16 @@ export function mountGameShell(viewport: HTMLElement): () => void {
   const onPlatformModal = (event: Event) => {
     const detail = (event as PlatformModalEvent).detail;
     if (detail?.open) addPauseReason('consent');
-    else removePauseReason('consent', 'Game resumed after the dialog closed.');
+    else removePauseReason('consent', tr('game.resumedDialog'));
   };
 
   const onFullscreenChange = () => {
     const activeNative = document.fullscreenElement === viewport;
     updateFullscreen();
     if (activeNative) {
-      announce('Full screen entered. Pause, sound, and exit controls remain available.');
+      announce(tr('game.fullscreenEntered'));
     } else if (!immersive) {
-      announce('Full screen exited.');
+      announce(tr('game.fullscreenExited'));
       const target = lastEnterTrigger || fullscreenButton || playButton;
       defer(() => target?.focus({ preventScroll: true }));
     }
@@ -330,13 +342,13 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     if (muted) stopAmbient();
     else if (getAmbient() !== 'none') startAmbient();
     updateMute();
-    announce(muted ? 'Game sound muted.' : 'Game sound unmuted.');
+    announce(tr(muted ? 'game.soundMuted' : 'game.soundUnmuted'));
   }, listenerOptions);
   soundButton?.addEventListener('click', () => {
     unlockAudio();
     setSoundEnabled(!isSoundEnabled());
     updateMute();
-    announce(isSoundEnabled() ? 'Sound enabled.' : 'Sound disabled.');
+    announce(tr(isSoundEnabled() ? 'game.soundEnabled' : 'game.soundDisabled'));
   }, listenerOptions);
   volumeInput?.addEventListener('input', () => {
     setSoundVolume(Number(volumeInput.value));
@@ -366,7 +378,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     controller.restart();
     // Keep settings open when restart came from the panel so the remaining
     // shared controls stay reachable and focus never moves into hidden UI.
-    announce('New game started.');
+    announce(tr('game.newStarted'));
   };
   restartButton?.addEventListener('click', restartGame, listenerOptions);
   restartInMenuButton?.addEventListener('click', restartGame, listenerOptions);
@@ -410,7 +422,7 @@ export function mountGameShell(viewport: HTMLElement): () => void {
     .catch((error) => {
       console.error(`Unable to finish mounting game "${gameId}".`, error);
       root.removeAttribute('aria-busy');
-      root.textContent = 'This game could not start. Reload the page and try again.';
+      root.textContent = tr('game.loadFailed');
     });
 
   return () => {

@@ -14,6 +14,8 @@ test.beforeEach(async ({ page }) => {
 test('Memory Match records flip then match on a pair', async ({ page }) => {
   await page.goto('/games/memory-match/');
   const cards = page.locator('.mm__card');
+  // The board mounts after load; wait for every card before reading the layout.
+  await expect(cards).toHaveCount(16);
   const symbols = await cards.evaluateAll((elements) =>
     elements.map((element) => element.querySelector('.mm__face--front')?.textContent ?? ''),
   );
@@ -21,7 +23,8 @@ test('Memory Match records flip then match on a pair', async ({ page }) => {
   const matchIndex = symbols.findIndex((symbol, index) => index > 0 && symbol === first);
   await cards.nth(0).click();
   await cards.nth(matchIndex).click();
-  expect(await soundCalls(page)).toEqual(['flip', 'flip', 'match']);
+  // Sound calls are recorded asynchronously after the click, so poll for them.
+  await expect.poll(() => soundCalls(page)).toEqual(['flip', 'flip', 'match']);
 });
 
 test('Word Tile Rush records place when a word is committed', async ({ page }) => {

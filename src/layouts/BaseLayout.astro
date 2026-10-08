@@ -7,6 +7,10 @@ import ConsentManager from '../components/ConsentManager.astro';
 import SeoHead from '../components/SeoHead.astro';
 import { ADSENSE_CONSENT_TAG_URL } from '../config/adsense';
 import { siteModeBootstrapScript } from '../lab/mode/mode-toggle';
+import { LOCALE_META } from '../i18n/config';
+import { splitLocale, withLocale } from '../i18n/routes';
+import { isBodyTranslated, translatedLocalesFor } from '../i18n/coverage';
+import { t } from '../i18n/messages';
 
 interface Props {
   title?: string;
@@ -119,10 +123,33 @@ const CONTENT_SECURITY_POLICY = [
   `form-action 'self'`,
 ].join(';');
 const release = import.meta.env.PUBLIC_RELEASE ?? '1.0.0';
+
+// Locale of this page, and its English route (the same route for every locale).
+const { locale, route: englishRoute } = splitLocale(Astro.url.pathname);
+const localeMeta = LOCALE_META[locale];
+const pageRoute = canonicalPath ?? path;
+const bodyTranslated = isBodyTranslated(locale, englishRoute);
+// An untranslated localized page is a copy of the English page: point search
+// engines at the English URL instead of indexing a near-duplicate.
+const seoCanonicalPath =
+  locale === 'en' || !bodyTranslated ? canonicalPath : withLocale(pageRoute, locale);
+const alternateLocales = translatedLocalesFor(pageRoute);
+const alternates =
+  alternateLocales.length === 0
+    ? []
+    : [
+        { hreflang: LOCALE_META.en.htmlLang, href: pageRoute },
+        ...alternateLocales.map((code) => ({ hreflang: LOCALE_META[code].htmlLang, href: withLocale(pageRoute, code) })),
+        { hreflang: 'x-default', href: pageRoute },
+      ];
+const contentLang = locale === 'en' || bodyTranslated ? undefined : 'en';
+// Localized chrome over an English body: say so, and link to the English page.
+const showLocaleNotice = locale !== 'en' && !bodyTranslated;
+
 ---
 
 <!doctype html>
-<html lang="en" data-release={release} data-site-mode={siteMode} data-lab-theme={labTheme}>
+<html lang={localeMeta.htmlLang} dir={localeMeta.dir} data-locale={locale} data-release={release} data-site-mode={siteMode} data-lab-theme={labTheme}>
   <head>
     <meta charset="utf-8" />
     <!--
@@ -139,7 +166,6 @@ const release = import.meta.env.PUBLIC_RELEASE ?? '1.0.0';
       title={title}
       description={description}
       path={path}
-      canonicalPath={canonicalPath}
       noIndex={noIndex}
       schema={schema}
       ogType={ogType}
@@ -150,6 +176,10 @@ const release = import.meta.env.PUBLIC_RELEASE ?? '1.0.0';
       socialImageHeight={socialImageHeight}
       feedHref={feedHref}
       additionalImages={additionalImages}
+      canonicalPath={seoCanonicalPath}
+      lang={localeMeta.htmlLang}
+      ogLocale={localeMeta.ogLocale}
+      alternates={alternates}
     />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
@@ -243,16 +273,26 @@ const release = import.meta.env.PUBLIC_RELEASE ?? '1.0.0';
     }
   </head>
   <body>
-    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <a class="skip-link" href="#main-content">{t(locale, 'site.skip')}</a>
     {
       fullBleed ? (
-        <main class="site-main site-main--bleed" id="main-content">
+        <main class="site-main site-main--bleed" id="main-content" lang={contentLang}>
+          {showLocaleNotice && (
+            <aside class="locale-notice" lang={localeMeta.htmlLang} aria-label={t(locale, 'notice.englishOnly')}>
+              <p>{t(locale, 'notice.englishOnly')} <a href={pageRoute} lang="en" hreflang="en">{t(locale, 'notice.readEnglish')}</a></p>
+            </aside>
+          )}
           <slot />
         </main>
       ) : (
         <div class="site-shell">
           <Header />
-          <main class="site-main" id="main-content">
+          <main class="site-main" id="main-content" lang={contentLang}>
+            {showLocaleNotice && (
+              <aside class="locale-notice" lang={localeMeta.htmlLang} aria-label={t(locale, 'notice.englishOnly')}>
+                <p>{t(locale, 'notice.englishOnly')} <a href={pageRoute} lang="en" hreflang="en">{t(locale, 'notice.readEnglish')}</a></p>
+              </aside>
+            )}
             <slot />
           </main>
           {isProd && showAds && <AdSenseBanner />}
@@ -265,6 +305,11 @@ const release = import.meta.env.PUBLIC_RELEASE ?? '1.0.0';
       import { startPrivacyAwareErrorReporting } from '../lib/error-monitoring';
 
       startPrivacyAwareErrorReporting(document.documentElement.dataset.release ?? '1.0.0');
+    </script>
+    <script>
+      import { initLanguagePreference } from '../i18n/client';
+
+      initLanguagePreference();
     </script>
   </body>
 </html>

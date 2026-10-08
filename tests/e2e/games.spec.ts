@@ -36,6 +36,8 @@ test('Memory Match survives restart during a pending mismatch', async ({ page })
 test('Memory Match replaces the cleared board with a visible result panel', async ({ page }) => {
   await page.goto('/games/memory-match/');
   const cards = page.locator('.mm__card');
+  // The board mounts after load; wait for every card before reading the layout.
+  await expect(cards).toHaveCount(16);
   const symbols = await cards.evaluateAll((elements) =>
     elements.map((element, index) => ({
       index,
@@ -60,6 +62,8 @@ test('Memory Match replaces the cleared board with a visible result panel', asyn
 test('Word Tile Rush waits for input and supports keyboard selection', async ({ page }) => {
   await page.goto('/games/word-tile-rush/');
   const cells = page.locator('.wtr__cell');
+  // The board mounts after the page loads; wait for it before taking the snapshot.
+  await expect(cells.first()).toBeAttached();
   const before = await cells.allTextContents();
   await page.waitForTimeout(3_000);
   await expect(cells).toHaveText(before);

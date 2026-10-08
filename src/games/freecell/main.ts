@@ -28,7 +28,12 @@ import {
   type RowPlanInput,
 } from '../shared/solitaire/stage-fit';
 import { fanLayout } from '../shared/solitaire/fan';
+import { currentLocale } from '../../i18n/client';
+import { t, type MessageKey, type MessageParams } from '../../i18n/messages';
 import './styles.css';
+
+/** Suit names for the foundation labels, in foundation order. */
+const SUIT_KEYS = ['freecell.suit.spades', 'freecell.suit.hearts', 'freecell.suit.diamonds', 'freecell.suit.clubs'] as const satisfies readonly MessageKey[];
 
 const GAMES_WON_KEY = 'nocharge:freecell:games-won';
 /** Solitaire cards are 5 wide by 7 tall. */
@@ -43,37 +48,40 @@ const DESKTOP_COLUMN_BUDGET_PX = 10_000;
 const FAN_BAR_RESERVE_PX = 46;
 
 export function mountFreeCell(root: HTMLElement): GameController {
+  const locale = currentLocale();
+  const L = (key: MessageKey, params?: MessageParams) => t(locale, key, params);
+  const cards = (count: number) => L('common.cards', { count });
   root.innerHTML = `
     <div class="fc">
       <div class="fc__hud">
         <div class="fc__stats" aria-live="polite">
-          <span>Moves <strong data-fc="moves">0</strong></span>
-          <span>Won <strong data-fc="won">0</strong></span>
+          <span>${L('freecell.ui.moves')} <strong data-fc="moves">0</strong></span>
+          <span>${L('freecell.ui.won')} <strong data-fc="won">0</strong></span>
         </div>
-        <button type="button" class="btn btn--sm" data-fc="undo-btn">Undo</button>
+        <button type="button" class="btn btn--sm" data-fc="undo-btn">${L('freecell.ui.undo')}</button>
       </div>
-      <div class="fc__board" data-fc="board" role="group" aria-label="FreeCell solitaire board">
+      <div class="fc__board" data-fc="board" role="group" aria-label="${L('freecell.ui.board')}">
         <div class="fc__top">
           <div class="fc__cells" data-fc="cells">
-            <div class="fc__cell" data-fc-cell="0" role="button" tabindex="0" aria-label="Free cell 1"></div>
-            <div class="fc__cell" data-fc-cell="1" role="button" tabindex="0" aria-label="Free cell 2"></div>
-            <div class="fc__cell" data-fc-cell="2" role="button" tabindex="0" aria-label="Free cell 3"></div>
-            <div class="fc__cell" data-fc-cell="3" role="button" tabindex="0" aria-label="Free cell 4"></div>
+            <div class="fc__cell" data-fc-cell="0" role="button" tabindex="0" aria-label="${L('freecell.cellEmpty', { cell: 1 })}"></div>
+            <div class="fc__cell" data-fc-cell="1" role="button" tabindex="0" aria-label="${L('freecell.cellEmpty', { cell: 2 })}"></div>
+            <div class="fc__cell" data-fc-cell="2" role="button" tabindex="0" aria-label="${L('freecell.cellEmpty', { cell: 3 })}"></div>
+            <div class="fc__cell" data-fc-cell="3" role="button" tabindex="0" aria-label="${L('freecell.cellEmpty', { cell: 4 })}"></div>
           </div>
           <div class="fc__foundations" data-fc="foundations">
-            <div class="fc__foundation" data-fc-fn="0" role="button" tabindex="0" aria-label="Foundation spades"></div>
-            <div class="fc__foundation" data-fc-fn="1" role="button" tabindex="0" aria-label="Foundation hearts"></div>
-            <div class="fc__foundation" data-fc-fn="2" role="button" tabindex="0" aria-label="Foundation diamonds"></div>
-            <div class="fc__foundation" data-fc-fn="3" role="button" tabindex="0" aria-label="Foundation clubs"></div>
+            <div class="fc__foundation" data-fc-fn="0" role="button" tabindex="0" aria-label="${L('freecell.foundation', { suit: L('freecell.suit.spades'), cards: cards(0) })}"></div>
+            <div class="fc__foundation" data-fc-fn="1" role="button" tabindex="0" aria-label="${L('freecell.foundation', { suit: L('freecell.suit.hearts'), cards: cards(0) })}"></div>
+            <div class="fc__foundation" data-fc-fn="2" role="button" tabindex="0" aria-label="${L('freecell.foundation', { suit: L('freecell.suit.diamonds'), cards: cards(0) })}"></div>
+            <div class="fc__foundation" data-fc-fn="3" role="button" tabindex="0" aria-label="${L('freecell.foundation', { suit: L('freecell.suit.clubs'), cards: cards(0) })}"></div>
           </div>
         </div>
         <div class="fc__tableau" data-fc="tableau"></div>
-        <div class="fc__fan" data-fc="fan" role="group" aria-label="Selected column detail" hidden></div>
+        <div class="fc__fan" data-fc="fan" role="group" aria-label="${L('freecell.ui.fan')}" hidden></div>
       </div>
       <div class="fc__overlay" data-fc="overlay" hidden>
-        <h2>Game won</h2>
+        <h2>${L('freecell.ui.gameWon')}</h2>
         <p data-fc="result" aria-live="polite"></p>
-        <button type="button" class="btn" data-fc="again">New game</button>
+        <button type="button" class="btn" data-fc="again">${L('game.newGame')}</button>
       </div>
     </div>
   `;
@@ -342,13 +350,15 @@ export function mountFreeCell(root: HTMLElement): GameController {
     fanEl.hidden = false;
     fanEl.innerHTML = `
       <div class="fc__fan-bar">
-        <button type="button" class="btn btn--sm" data-fc-fan-close>Close column ${col + 1}</button>
-        <span class="fc__fan-count" aria-live="polite">Column ${col + 1} · ${pile.length} cards${
-          plan.pages > 1 ? ` · page ${Math.min(plan.pages, Math.floor(plan.startIndex / Math.max(1, plan.perPage)) + 1)} of ${plan.pages}` : ''
+        <button type="button" class="btn btn--sm" data-fc-fan-close>${L('freecell.ui.close', { column: col + 1 })}</button>
+        <span class="fc__fan-count" aria-live="polite">${L('freecell.ui.fanCount', { column: col + 1, cards: cards(pile.length) })}${
+          plan.pages > 1
+            ? L('freecell.ui.page', { page: Math.min(plan.pages, Math.floor(plan.startIndex / Math.max(1, plan.perPage)) + 1), pages: plan.pages })
+            : ''
         }</span>
         ${
           plan.pages > 1
-            ? '<span class="fc__fan-pager"><button type="button" class="btn btn--sm" data-fc-fan-prev>Previous</button><button type="button" class="btn btn--sm" data-fc-fan-next>Next</button></span>'
+            ? `<span class="fc__fan-pager"><button type="button" class="btn btn--sm" data-fc-fan-prev>${L('freecell.ui.previous')}</button><button type="button" class="btn btn--sm" data-fc-fan-next>${L('freecell.ui.next')}</button></span>`
             : ''
         }
       </div>
@@ -406,7 +416,7 @@ export function mountFreeCell(root: HTMLElement): GameController {
       expand.dataset.fcExpand = '';
       const tooTall = columnStep(col, height).overflows || expanded.has(col);
       expand.setAttribute('aria-expanded', String(tooTall));
-      expand.setAttribute('aria-label', `Open column ${col + 1} detail: ${column.length} cards`);
+      expand.setAttribute('aria-label', L('freecell.openColumn', { column: col + 1, cards: cards(column.length) }));
       expand.textContent = tooTall ? '▼' : '⤢';
       expand.addEventListener('click', (e) => {
         e.preventDefault();
@@ -426,7 +436,7 @@ export function mountFreeCell(root: HTMLElement): GameController {
         empty.setAttribute('aria-hidden', 'false');
         empty.setAttribute('role', 'button');
         empty.setAttribute('tabindex', '0');
-        empty.setAttribute('aria-label', `Column ${col + 1}, empty`);
+        empty.setAttribute('aria-label', L('freecell.emptyColumn', { column: col + 1 }));
         empty.addEventListener('click', () => handleColumnClick(col));
         empty.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleColumnClick(col); } });
         pile.appendChild(empty);
@@ -454,7 +464,9 @@ export function mountFreeCell(root: HTMLElement): GameController {
       wrapper.setAttribute('role', 'group');
       wrapper.setAttribute(
         'aria-label',
-        `Column ${col + 1}, ${column.length} cards${column.length > 0 ? ', top: ' + cardName(column[column.length - 1]!) : ''}`,
+        column.length > 0
+          ? L('freecell.columnTop', { column: col + 1, cards: cards(column.length), top: cardName(column[column.length - 1]!) })
+          : L('freecell.column', { column: col + 1, cards: cards(0) }),
       );
       tableauEl.appendChild(wrapper);
     });
@@ -475,7 +487,7 @@ export function mountFreeCell(root: HTMLElement): GameController {
       } else {
         el.innerHTML = '<div class="fc__card fc__card--empty" aria-hidden="true"></div>';
       }
-      el.setAttribute('aria-label', `Free cell ${i + 1}${card ? ': ' + cardName(card) : ', empty'}`);
+      el.setAttribute('aria-label', card ? L('freecell.cellCard', { cell: i + 1, card: cardName(card) }) : L('freecell.cellEmpty', { cell: i + 1 }));
     });
 
     // Foundations
@@ -487,7 +499,13 @@ export function mountFreeCell(root: HTMLElement): GameController {
       } else {
         el.innerHTML = '<div class="fc__card fc__card--empty" aria-hidden="true"></div>';
       }
-      el.setAttribute('aria-label', `Foundation ${['spades', 'hearts', 'diamonds', 'clubs'][i]}, ${pile.length} cards${pile.length > 0 ? `, top: ${cardName(pile[pile.length - 1]!)}` : ''}`);
+      const suit = L(SUIT_KEYS[i]!);
+      el.setAttribute(
+        'aria-label',
+        pile.length > 0
+          ? L('freecell.foundationTop', { suit, cards: cards(pile.length), top: cardName(pile[pile.length - 1]!) })
+          : L('freecell.foundation', { suit, cards: cards(0) }),
+      );
     });
 
     // The fan replaces the tableau inside the same fixed stage; it never
@@ -499,7 +517,7 @@ export function mountFreeCell(root: HTMLElement): GameController {
     if (state.won) {
       gamesWon++;
       saveInt(GAMES_WON_KEY, gamesWon);
-      resultEl.textContent = `Completed in ${state.moves} moves.`;
+      resultEl.textContent = L('freecell.completed', { moves: L('common.moves', { count: state.moves }) });
       overlay.hidden = false;
       void play('win');
     }

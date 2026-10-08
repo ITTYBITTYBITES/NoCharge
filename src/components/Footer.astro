@@ -1,28 +1,35 @@
 ---
 import BrandMark from './BrandMark.astro';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import { splitLocale, withLocale } from '../i18n/routes';
+import { t } from '../i18n/messages';
+
 const year = new Date().getFullYear();
+const { locale } = splitLocale(Astro.url.pathname);
+const href = (path: string) => withLocale(path, locale);
 ---
 
 <footer class="site-footer">
   <div class="site-footer__identity">
     <span class="site-footer__identity-line">
       <BrandMark class="brand-mark--footer" size="1.1rem" />
-      <span>&copy; {year} NoCharge · General-audience site, not directed to children.</span>
+      <span>{t(locale, 'footer.copyright', { year: String(year) })}</span>
     </span>
     <a href="mailto:hello@nocharge.net">hello@nocharge.net</a>
   </div>
   <div class="footer-groups">
-    <nav aria-labelledby="footer-explore"><h2 id="footer-explore">Explore</h2><ul>
-      <li><a href="/arcade/">Arcade</a></li><li><a href="/guides/">Guides</a></li><li><a href="/articles/">Articles</a></li><li><a href="/collections/">Collections</a></li><li><a href="/tools/">Tools</a></li><li><a href="/learn/">Learn</a></li><li><a href="/daily/">Daily</a></li><li><a href="/setup/">Setup</a></li><li><a href="/search/">Search</a></li><li><a href="/lab/">Lab</a></li>
+    <nav aria-labelledby="footer-explore"><h2 id="footer-explore">{t(locale, 'nav.explore')}</h2><ul>
+      <li><a href={href('/arcade/')}>{t(locale, 'nav.arcade')}</a></li><li><a href={href('/guides/')}>{t(locale, 'nav.guides')}</a></li><li><a href={href('/articles/')}>{t(locale, 'nav.articles')}</a></li><li><a href={href('/collections/')}>{t(locale, 'nav.collections')}</a></li><li><a href={href('/tools/')}>{t(locale, 'nav.tools')}</a></li><li><a href={href('/learn/')}>{t(locale, 'nav.learn')}</a></li><li><a href={href('/daily/')}>{t(locale, 'nav.daily')}</a></li><li><a href={href('/setup/')}>{t(locale, 'nav.setup')}</a></li><li><a href={href('/search/')}>{t(locale, 'site.search')}</a></li><li><a href={href('/lab/')}>{t(locale, 'nav.lab')}</a></li>
     </ul></nav>
-    <nav aria-labelledby="footer-nocharge"><h2 id="footer-nocharge">NoCharge</h2><ul>
-      <li><a href="/about/">About</a></li><li><a href="/contact/">Contact</a></li><li><a href="/help/">Help</a></li><li><a href="/accessibility/">Accessibility</a></li><li><a href="/changelog/">Changelog</a></li>
+    <nav aria-labelledby="footer-nocharge"><h2 id="footer-nocharge">{t(locale, 'nav.nocharge')}</h2><ul>
+      <li><a href={href('/about/')}>{t(locale, 'nav.about')}</a></li><li><a href={href('/contact/')}>{t(locale, 'nav.contact')}</a></li><li><a href={href('/help/')}>{t(locale, 'nav.help')}</a></li><li><a href={href('/accessibility/')}>{t(locale, 'nav.accessibility')}</a></li><li><a href={href('/changelog/')}>{t(locale, 'nav.changelog')}</a></li>
     </ul></nav>
-    <nav aria-labelledby="footer-policies"><h2 id="footer-policies">Policies</h2><ul>
-      <li><a href="/privacy/">Privacy</a></li><li><a href="/privacy-policy/">Privacy Policy</a></li><li><a href="/terms/">Terms</a></li><li><a href="/advertising/">Advertising</a></li>
+    <nav aria-labelledby="footer-policies"><h2 id="footer-policies">{t(locale, 'nav.policies')}</h2><ul>
+      <li><a href={href('/privacy/')}>{t(locale, 'nav.privacy')}</a></li><li><a href={href('/privacy-policy/')}>{t(locale, 'nav.privacyPolicy')}</a></li><li><a href={href('/terms/')}>{t(locale, 'nav.terms')}</a></li><li><a href={href('/advertising/')}>{t(locale, 'nav.advertising')}</a></li>
     </ul></nav>
   </div>
-  <div class="footer-controls"><button type="button" data-consent-open>Analytics choices</button><button type="button" data-google-ad-choices>Privacy and cookie settings</button></div>
+  <LanguageSwitcher variant="footer" />
+  <div class="footer-controls"><button type="button" data-consent-open>{t(locale, 'footer.analyticsChoices')}</button><button type="button" data-google-ad-choices>{t(locale, 'footer.adChoices')}</button></div>
 </footer>
 
 <script is:inline>

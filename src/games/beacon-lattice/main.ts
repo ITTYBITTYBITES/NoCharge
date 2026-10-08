@@ -1,10 +1,15 @@
 import { play, unlockAudio } from '../shared/audio';
 import type { GameController, PauseReason } from '../shared/types';
 import { signalMeaningfulGameInteraction } from '../shared/recently-played';
+import { currentLocale } from '../../i18n/client';
+import { formatMessage, message, type Message } from '../../i18n/message';
+import { t, type MessageKey, type MessageParams } from '../../i18n/messages';
 import { coverageBand } from './coverage';
 import {
+  beaconTypeName,
   boardStatus,
   cellViews,
+  coverageBandName,
   createState,
   moveCursor,
   placeBeacon,
@@ -14,11 +19,11 @@ import {
   setCursor,
   undo,
 } from './engine';
-import { BEACON_META } from './patterns';
 import { PUZZLES, getPuzzle, puzzleIndex } from './puzzles';
 import { loadProgress, recordSolve, setCurrentPuzzle, type LatticeProgress } from './progress';
 import type { BeaconType, GameState, PuzzleDefinition } from './types';
 import { isBeaconType } from './patterns';
+import { BEACON_META } from './patterns';
 import './styles.css';
 
 const SHORTCUTS: Record<string, BeaconType> = {
@@ -28,25 +33,30 @@ const SHORTCUTS: Record<string, BeaconType> = {
   '4': 'vertical',
 };
 
-function bandPhrase(count: number): string {
-  const band = coverageBand(count);
-  if (band === 'gap') return `${count} · Gap`;
-  if (band === 'exact') return `${count} · Exact`;
-  return `${count} · Overlap`;
-}
+const DESCRIPTION_KEYS: Record<BeaconType, MessageKey> = {
+  cross: 'beacon.desc.cross',
+  diagonal: 'beacon.desc.diagonal',
+  horizontal: 'beacon.desc.horizontal',
+  vertical: 'beacon.desc.vertical',
+};
 
-function cellName(puzzle: PuzzleDefinition, state: GameState, x: number, y: number): string {
+/** The cell's name for screen readers, as a message. */
+function cellMessage(puzzle: PuzzleDefinition, state: GameState, x: number, y: number): Message {
   const view = cellViews(state, puzzle).find((cell) => cell.x === x && cell.y === y)!;
-  const row = `Row ${y + 1}, column ${x + 1}`;
-  if (view.kind === 'blocked') return `${row}. Blocked obstacle. Does not take coverage.`;
-  if (view.kind === 'void') return `${row}. Outside the lattice.`;
-  const cover = view.band === 'gap' ? 'Gap' : view.band === 'exact' ? 'Exact' : 'Overlap';
-  const placed = view.beacon
-    ? `${BEACON_META[view.beacon.type].name} beacon placed${view.beacon.locked ? ', locked' : ''}.`
-    : view.eligible
-      ? 'Empty eligible cell.'
-      : 'Empty cell. Placement is not allowed here.';
-  return `${row}. ${cover} coverage: ${view.coverage}. ${placed}`;
+  const cell = message('beacon.cell.row', { row: y + 1, column: x + 1 });
+  if (view.kind === 'blocked') return message('beacon.cell.blocked', { cell });
+  if (view.kind === 'void') return message('beacon.cell.void', { cell });
+  const placed: Message = view.beacon
+    ? message(view.beacon.locked ? 'beacon.cell.placedLocked' : 'beacon.cell.placed', {
+        type: beaconTypeName(view.beacon.type),
+      })
+    : message(view.eligible ? 'beacon.cell.eligible' : 'beacon.cell.notAllowed');
+  return message('beacon.cell.coverage', {
+    cell,
+    band: coverageBandName(view.band ?? 'overlap'),
+    coverage: view.coverage,
+    placed,
+  });
 }
 
 export function mountBeaconLattice(root: HTMLElement): GameController {
@@ -67,38 +77,42 @@ export function mountBeaconLattice(root: HTMLElement): GameController {
 }
 
 function mountBeaconLatticeInner(root: HTMLElement): GameController {
+  const locale = currentLocale();
+  const text = (key: MessageKey, params?: MessageParams) => t(locale, key, params);
+  const format = (value: Message) => formatMessage(locale, value);
+
   root.innerHTML = `
     <div class="bl">
       <div class="bl__hud">
         <label>
-          <span class="sr-only">Choose puzzle</span>
-          <select data-bl="picker" aria-label="Puzzle selector"></select>
+          <span class="sr-only">${text('beacon.ui.choosePuzzle')}</span>
+          <select data-bl="picker" aria-label="${text('beacon.ui.picker')}"></select>
         </label>
-        <button type="button" class="btn btn--ghost btn--sm" data-bl="prev">Previous puzzle</button>
-        <button type="button" class="btn btn--ghost btn--sm" data-bl="next">Next puzzle</button>
+        <button type="button" class="btn btn--ghost btn--sm" data-bl="prev">${text('beacon.ui.previous')}</button>
+        <button type="button" class="btn btn--ghost btn--sm" data-bl="next">${text('beacon.ui.next')}</button>
       </div>
       <div class="bl__stats" aria-live="polite">
-        <span>Beacons <strong data-bl="count">0</strong></span>
-        <span>Par <strong data-bl="par">0</strong></span>
-        <span>Best <strong data-bl="best">—</strong></span>
-        <span>Solved <strong data-bl="solved">0</strong>/${PUZZLES.length}</span>
+        <span>${text('beacon.ui.beacons')} <strong data-bl="count">0</strong></span>
+        <span>${text('beacon.ui.par')} <strong data-bl="par">0</strong></span>
+        <span>${text('beacon.ui.best')} <strong data-bl="best">—</strong></span>
+        <span>${text('beacon.ui.solved')} <strong data-bl="solved">0</strong>/${PUZZLES.length}</span>
       </div>
       <p class="bl__note" data-bl="note"></p>
-      <div class="bl__types" data-bl="types" role="group" aria-label="Beacon types"></div>
+      <div class="bl__types" data-bl="types" role="group" aria-label="${text('beacon.ui.types')}"></div>
       <div class="bl__legend" aria-hidden="true">
-        <span>0 · Gap</span>
-        <span>1 · Exact</span>
-        <span>2+ · Overlap</span>
+        <span>${text('beacon.ui.band', { count: 0, band: format(coverageBandName('gap')) })}</span>
+        <span>${text('beacon.ui.band', { count: 1, band: format(coverageBandName('exact')) })}</span>
+        <span>${text('beacon.ui.band', { count: '2+', band: format(coverageBandName('overlap')) })}</span>
       </div>
-      <div class="bl__board" data-bl="board" role="group" aria-label="Beacon Lattice board"></div>
+      <div class="bl__board" data-bl="board" role="group" aria-label="${text('beacon.ui.board')}"></div>
       <div class="bl__toolbar">
-        <button type="button" class="btn btn--ghost btn--sm" data-bl="undo">Undo</button>
+        <button type="button" class="btn btn--ghost btn--sm" data-bl="undo">${text('beacon.ui.undo')}</button>
       </div>
       <p class="bl__status" data-bl="live" aria-live="polite"></p>
       <div class="bl__overlay" data-bl="overlay">
-        <h2>Lattice complete</h2>
+        <h2>${text('beacon.ui.complete')}</h2>
         <p data-bl="result"></p>
-        <button type="button" class="btn" data-bl="again">Play this puzzle again</button>
+        <button type="button" class="btn" data-bl="again">${text('beacon.ui.again')}</button>
       </div>
     </div>
   `;
@@ -116,34 +130,64 @@ function mountBeaconLatticeInner(root: HTMLElement): GameController {
   let state = createState(puzzle);
   let paused = false;
 
-  const announce = (message: string) => {
-    live.textContent = message;
+  const announce = (value: string) => {
+    live.textContent = value;
   };
+  const say = (value: Message) => announce(format(value));
 
   const fillPicker = () => {
-    picker.innerHTML = PUZZLES.map((item, index) => {
-      const done = progress.completed.includes(item.id) ? ' (solved)' : '';
-      return `<option value="${item.id}">${index + 1}. ${item.title}${done}</option>`;
-    }).join('');
+    const options = PUZZLES.map((item, index) => {
+      const option = document.createElement('option');
+      option.value = item.id;
+      const done = progress.completed.includes(item.id) ? text('beacon.ui.solvedMark') : '';
+      // Puzzle titles are authored English content; only the markers are localized.
+      option.textContent = `${index + 1}. ${item.title}${done}`;
+      return option;
+    });
+    picker.replaceChildren(...options);
     picker.value = puzzle.id;
   };
 
   const renderTypes = () => {
-    typesEl.innerHTML = puzzle.available
-      .map((type) => {
+    typesEl.replaceChildren(
+      ...puzzle.available.map((type) => {
         const meta = BEACON_META[type];
         const remaining = puzzle.inventory[type];
         const used = state.placements.filter((placement) => placement.type === type).length;
         const left = remaining == null ? '∞' : String(Math.max(0, remaining - used));
         const pressed = state.selectedType === type;
-        return `<button type="button" class="btn btn--ghost btn--sm" data-type="${type}" aria-pressed="${pressed}" aria-keyshortcuts="${meta.shortcut}" aria-label="${meta.name}. ${meta.description} ${left} remaining.">${meta.shortcut} · ${meta.name} ${meta.short} (${left})</button>`;
-      })
-      .join('');
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'btn btn--ghost btn--sm';
+        button.dataset.type = type;
+        button.setAttribute('aria-pressed', String(pressed));
+        button.setAttribute('aria-keyshortcuts', meta.shortcut);
+        const name = beaconTypeName(type);
+        button.setAttribute(
+          'aria-label',
+          text('beacon.ui.typeAria', {
+            name: format(name),
+            description: text(DESCRIPTION_KEYS[type]),
+            left,
+          }),
+        );
+        button.textContent = text('beacon.ui.typeLabel', {
+          shortcut: meta.shortcut,
+          name: format(name),
+          short: meta.short,
+          left,
+        });
+        return button;
+      }),
+    );
   };
+
+  const bandPhrase = (count: number): string =>
+    text('beacon.ui.band', { count, band: format(coverageBandName(coverageBand(count))) });
 
   const renderBoard = () => {
     board.style.gridTemplateColumns = `repeat(${puzzle.width}, minmax(0, 1fr))`;
-    board.innerHTML = '';
+    board.replaceChildren();
     for (const view of cellViews(state, puzzle)) {
       const el = document.createElement('button');
       el.type = 'button';
@@ -156,10 +200,23 @@ function mountBeaconLatticeInner(root: HTMLElement): GameController {
       if (state.cursor.x === view.x && state.cursor.y === view.y) el.classList.add('is-cursor');
       el.disabled = paused || view.kind !== 'required' || state.complete;
       el.setAttribute('role', 'button');
-      el.setAttribute('aria-label', cellName(puzzle, state, view.x, view.y));
-      const glyph = view.beacon ? `<span class="bl__glyph" aria-hidden="true">${BEACON_META[view.beacon.type].short}</span>` : '';
-      const count = view.kind === 'blocked' ? '■ Block' : view.kind === 'void' ? '· Void' : bandPhrase(view.coverage);
-      el.innerHTML = `${glyph}<span class="bl__count">${count}</span>`;
+      el.setAttribute('aria-label', format(cellMessage(puzzle, state, view.x, view.y)));
+      if (view.beacon) {
+        const glyph = document.createElement('span');
+        glyph.className = 'bl__glyph';
+        glyph.setAttribute('aria-hidden', 'true');
+        glyph.textContent = BEACON_META[view.beacon.type].short;
+        el.append(glyph);
+      }
+      const count = document.createElement('span');
+      count.className = 'bl__count';
+      count.textContent =
+        view.kind === 'blocked'
+          ? text('beacon.cell.blockedShort')
+          : view.kind === 'void'
+            ? text('beacon.cell.voidShort')
+            : bandPhrase(view.coverage);
+      el.append(count);
       el.addEventListener('click', () => onCell(view.x, view.y));
       board.appendChild(el);
     }
@@ -172,10 +229,11 @@ function mountBeaconLatticeInner(root: HTMLElement): GameController {
     root.querySelector('[data-bl="best"]')!.textContent = best == null ? '—' : String(best);
     root.querySelector('[data-bl="solved"]')!.textContent = String(progress.completed.length);
     picker.disabled = paused;
+    // Puzzle notes are authored English content.
     noteEl.textContent = puzzle.note ?? '';
     overlay.classList.toggle('is-open', state.complete);
     if (state.complete) {
-      resultEl.textContent = `Solved with ${state.beaconCount} beacons. Par ${puzzle.par}.`;
+      resultEl.textContent = format(boardStatus(state, puzzle));
       root.classList.add('game-root--complete');
     } else {
       root.classList.remove('game-root--complete');
@@ -189,14 +247,14 @@ function mountBeaconLatticeInner(root: HTMLElement): GameController {
     renderHud();
   };
 
-  const loadPuzzle = (id: string, announcement?: string) => {
+  const loadPuzzle = (id: string, announcement?: Message) => {
     const next = getPuzzle(id);
     if (!next) return;
     puzzle = next;
     progress = setCurrentPuzzle(progress, next.id);
     state = createState(next);
     render();
-    announce(announcement ?? `${next.title} loaded. ${boardStatus(state, next)}`);
+    say(announcement ?? message('beacon.ui.loaded', { title: next.title, status: boardStatus(state, next) }));
   };
 
   const onCell = (x: number, y: number) => {
@@ -211,7 +269,7 @@ function mountBeaconLatticeInner(root: HTMLElement): GameController {
       if (state.complete) progress = recordSolve(progress, puzzle.id, state.beaconCount);
     }
     render();
-    announce(result.announcement);
+    say(result.message);
   };
 
   const onKey = (event: KeyboardEvent) => {
@@ -224,7 +282,7 @@ function mountBeaconLatticeInner(root: HTMLElement): GameController {
       event.preventDefault();
       const result = selectType(state, puzzle, null);
       render();
-      announce(result.announcement);
+      say(result.message);
       return;
     }
     if (event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
@@ -233,14 +291,14 @@ function mountBeaconLatticeInner(root: HTMLElement): GameController {
       const dy = event.key === 'ArrowUp' ? -1 : event.key === 'ArrowDown' ? 1 : 0;
       const result = moveCursor(state, puzzle, dx, dy);
       render();
-      announce(result.ok ? cellName(puzzle, state, state.cursor.x, state.cursor.y) : result.announcement);
+      say(result.ok ? cellMessage(puzzle, state, state.cursor.x, state.cursor.y) : result.message);
       return;
     }
     if (SHORTCUTS[event.key] && puzzle.available.includes(SHORTCUTS[event.key]!)) {
       event.preventDefault();
       const result = selectType(state, puzzle, SHORTCUTS[event.key]!);
       render();
-      announce(result.announcement);
+      say(result.message);
       return;
     }
     if (event.key === 'Enter' || event.key === ' ') {
@@ -254,24 +312,25 @@ function mountBeaconLatticeInner(root: HTMLElement): GameController {
       if (paused) return;
       const result = removeBeacon(state, puzzle, state.cursor);
       render();
-      announce(result.announcement);
+      say(result.message);
       return;
     }
     if (event.key === 'u' || event.key === 'U') {
       event.preventDefault();
       const result = undo(state, puzzle);
       render();
-      announce(result.announcement);
+      say(result.message);
     }
   };
 
   picker.addEventListener('change', () => {
     if (paused) {
       picker.value = puzzle.id;
-      announce('The game is paused.');
+      announce(text('beacon.paused'));
       return;
     }
-    loadPuzzle(picker.value, `${getPuzzle(picker.value)?.title} selected.`);
+    const selected = getPuzzle(picker.value);
+    loadPuzzle(picker.value, selected ? message('beacon.ui.selectedPuzzle', { title: selected.title }) : undefined);
   });
   root.querySelector('[data-bl="prev"]')!.addEventListener('click', () => {
     if (paused) return;
@@ -290,25 +349,25 @@ function mountBeaconLatticeInner(root: HTMLElement): GameController {
     unlockAudio();
     const result = selectType(state, puzzle, button.dataset.type as BeaconType);
     render();
-    announce(result.announcement);
+    say(result.message);
   });
   root.querySelector('[data-bl="undo"]')!.addEventListener('click', () => {
     if (paused) return;
     const result = undo(state, puzzle);
     render();
-    announce(result.announcement);
+    say(result.message);
   });
   root.querySelector('[data-bl="again"]')!.addEventListener('click', () => {
     if (paused) return;
-    restartPuzzle(state, puzzle);
+    const result = restartPuzzle(state, puzzle);
     render();
-    announce(`${puzzle.title} restarted.`);
+    say(result.message);
   });
   document.addEventListener('keydown', onKey);
 
   fillPicker();
   render();
-  announce(`${puzzle.title} ready. Cover every required cell exactly once.`);
+  announce(text('beacon.ui.ready', { title: puzzle.title }));
 
   return {
     destroy() {

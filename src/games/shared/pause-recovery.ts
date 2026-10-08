@@ -1,3 +1,4 @@
+import { t, type MessageKey } from '../../i18n/messages';
 import type { PauseReason } from './types';
 
 export type PauseEnvironment = {
@@ -20,23 +21,32 @@ export function pauseReasonsAfterResumeRequest(
   return remaining;
 }
 
-export function resumeBlockedMessage(
+/** Message key explaining why Resume cannot clear the pause yet. */
+export function resumeBlockedKey(
   reasons: ReadonlySet<PauseReason>,
   environment: PauseEnvironment,
-): string {
+): MessageKey {
   if (reasons.has('consent') && environment.consentModalOpen) {
-    return 'Close Privacy choices before resuming the game.';
+    return 'game.resumeBlockedConsent';
   }
   if (reasons.has('hidden') && !environment.documentVisible) {
-    return 'Return to this tab before resuming the game.';
+    return 'game.resumeBlockedHidden';
   }
   // An ad is the one pause a Resume control must never clear. The visitor did
   // not create it and cannot end it from the game's own chrome; only the ad's
   // dismissal may lift it.
   if (reasons.has('ad')) {
-    return 'Finish or close the advertisement to resume the game.';
+    return 'game.resumeBlockedAd';
   }
-  return 'The game is still paused by the browser.';
+  return 'game.resumeBlockedBrowser';
+}
+
+/** English text for `resumeBlockedKey`; the shell uses the key and the active locale. */
+export function resumeBlockedMessage(
+  reasons: ReadonlySet<PauseReason>,
+  environment: PauseEnvironment,
+): string {
+  return t('en', resumeBlockedKey(reasons, environment));
 }
 
 /** Call a controller at most once for a transition from paused to unblocked. */

@@ -64,7 +64,7 @@ test('FreeCell taps select a card and send it to a foundation on a phone', async
   const foundationIndex = FOUNDATION_INDEX[ace!.symbol]!;
   await expect(page.locator(`[data-fc-fn="${foundationIndex}"]`)).toHaveAttribute(
     'aria-label',
-    /Foundation .+, 1 cards, top: A/,
+    /Foundation .+, 1 cards?, top: A/,
   );
 
   expect(errors).toEqual([]);

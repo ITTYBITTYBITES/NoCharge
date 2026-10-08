@@ -1,8 +1,13 @@
 ---
 import BrandMark from './BrandMark.astro';
 import ModeToggle from './ModeToggle.astro';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import { splitLocale, withLocale } from '../i18n/routes';
+import { t } from '../i18n/messages';
 
-const pathname = Astro.url.pathname;
+// Section checks use the English route, so they work for every locale.
+const { locale, route: pathname } = splitLocale(Astro.url.pathname);
+const href = (path: string) => withLocale(path, locale);
 const arcadeCurrent = pathname.startsWith('/arcade/') || pathname.startsWith('/games/');
 const guidesCurrent = pathname.startsWith('/guides/');
 const articlesCurrent = pathname.startsWith('/articles/');
@@ -25,22 +30,23 @@ const searchAria = searchCurrent ? 'page' : undefined;
 ---
 
 <header class="site-header">
-  <a class="brand" href="/" aria-label="NoCharge home">
+  <a class="brand" href={href('/')} aria-label={t(locale, 'site.homeLabel')}>
     <BrandMark class="brand__mark" size="2rem" />
     <span>NoCharge</span>
   </a>
-  <nav class="primary-nav" aria-label="Primary">
-    <a class:list={['nav-link', { 'is-current': arcadeCurrent }]} href="/arcade/" aria-current={arcadeAria}>Arcade</a>
-    <a class:list={['nav-link', { 'is-current': guidesCurrent }]} href="/guides/" aria-current={guidesAria}>Guides</a>
-    <a class:list={['nav-link', { 'is-current': articlesCurrent }]} href="/articles/" aria-current={articlesAria}>Articles</a>
-    <a class:list={['nav-link', { 'is-current': toolsCurrent }]} href="/tools/" aria-current={toolsAria}>Tools</a>
-    <a class:list={['nav-link', { 'is-current': learnCurrent }]} href="/learn/" aria-current={learnAria}>Learn</a>
-    <a class:list={['nav-link', { 'is-current': dailyCurrent }]} href="/daily/" aria-current={dailyAria}>Daily</a>
-    <a class:list={['nav-link', 'nav-link--setup', { 'is-current': setupCurrent }]} href="/setup/" aria-current={setupAria}>Setup</a>
-    <a class:list={['nav-link', 'nav-link--search', { 'is-current': searchCurrent }]} href="/search/" aria-current={searchAria} aria-label="Search NoCharge">
+  <nav class="primary-nav" aria-label={t(locale, 'site.primaryNav')}>
+    <a class:list={['nav-link', { 'is-current': arcadeCurrent }]} href={href('/arcade/')} aria-current={arcadeAria}>{t(locale, 'nav.arcade')}</a>
+    <a class:list={['nav-link', { 'is-current': guidesCurrent }]} href={href('/guides/')} aria-current={guidesAria}>{t(locale, 'nav.guides')}</a>
+    <a class:list={['nav-link', { 'is-current': articlesCurrent }]} href={href('/articles/')} aria-current={articlesAria}>{t(locale, 'nav.articles')}</a>
+    <a class:list={['nav-link', { 'is-current': toolsCurrent }]} href={href('/tools/')} aria-current={toolsAria}>{t(locale, 'nav.tools')}</a>
+    <a class:list={['nav-link', { 'is-current': learnCurrent }]} href={href('/learn/')} aria-current={learnAria}>{t(locale, 'nav.learn')}</a>
+    <a class:list={['nav-link', { 'is-current': dailyCurrent }]} href={href('/daily/')} aria-current={dailyAria}>{t(locale, 'nav.daily')}</a>
+    <a class:list={['nav-link', 'nav-link--setup', { 'is-current': setupCurrent }]} href={href('/setup/')} aria-current={setupAria}>{t(locale, 'nav.setup')}</a>
+    <a class:list={['nav-link', 'nav-link--search', { 'is-current': searchCurrent }]} href={href('/search/')} aria-current={searchAria} aria-label={t(locale, 'site.searchLabel')}>
       <svg class="nav-link__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
-      <span class="sr-only">Search</span>
+      <span class="sr-only">{t(locale, 'site.search')}</span>
     </a>
     <ModeToggle current={labCurrent ? 'lab' : 'calm'} />
   </nav>
+  <LanguageSwitcher variant="header" />
 </header>
