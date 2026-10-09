@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 // Simulate a Turkish dictionary that is missing a key. The lookup must fall back
 // to English rather than showing the raw key or an empty string.
-vi.mock('../locales/tr.json', () => ({ default: { 'game.pause': 'Duraklat' } }));
+vi.mock('./dictionaries/tr.json', () => ({ default: { 'game.pause': 'Duraklat' } }));
 
 const { t } = await import('./messages');
 

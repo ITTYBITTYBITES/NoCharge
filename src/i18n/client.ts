@@ -8,9 +8,9 @@
  *   visitor preferences. It is only a preference: no analytics, no tracking.
  * - On the English home page (`/`) only, a stored non-English choice routes
  *   the visitor to that language's home page. With no stored choice and a
- *   browser that prefers Turkish or French, a dismissible suggestion appears.
- *   Deep links are never redirected, and nothing is redirected for crawlers
- *   (they have no stored preference).
+ *   browser that prefers Turkish, French, Spanish, or German, a dismissible
+ *   suggestion appears. Deep links are never redirected, and nothing is
+ *   redirected for crawlers (they have no stored preference).
  */
 
 import { prefKey } from '../games/shared/storage';
@@ -55,6 +55,8 @@ export function detectPreferredLocale(languages: readonly string[]): Locale | nu
     if (primary === 'en') return null;
     if (primary === 'tr') return 'tr';
     if (primary === 'fr') return 'fr-ca';
+    if (primary === 'es') return 'es';
+    if (primary === 'de') return 'de';
   }
   return null;
 }
