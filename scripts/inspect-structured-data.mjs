@@ -57,10 +57,11 @@ const walk = (directory) => {
   }
 };
 walk(dist);
-// Localized copies of untranslated pages (under /tr/ or /fr-ca/) intentionally
-// repeat English metadata and point their canonical at the English URL. They
-// are not separate indexable pages, so only the canonical page is compared.
-const LOCALE_PREFIX = /^(tr|fr-ca)\//;
+// Localized copies of untranslated pages (under /tr/, /fr-ca/, /es/, or /de/)
+// intentionally repeat English metadata and point their canonical at the
+// English URL. They are not separate indexable pages, so only the canonical
+// page is compared. Keep in sync with PREFIXED_LOCALES in src/i18n/config.ts.
+const LOCALE_PREFIX = /^(tr|fr-ca|es|de)\//;
 const isCanonicalElsewhere = (path, html) => {
   const relativePath = path.slice(dist.length + 1).split(sep).join('/');
   if (!LOCALE_PREFIX.test(relativePath)) return false;

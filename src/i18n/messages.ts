@@ -22,12 +22,16 @@
  * Browser-safe: this module is bundled into game code.
  */
 
-import en from '../locales/en.json';
-import trServer from '../locales/tr.json';
-import frCaServer from '../locales/fr-ca.json';
+import en from './dictionaries/en.json';
+import trServer from './dictionaries/tr.json';
+import frCaServer from './dictionaries/fr-ca.json';
+import esServer from './dictionaries/es.json';
+import deServer from './dictionaries/de.json';
 // `?url` makes Vite emit the file as a static asset, so it never enters a JS chunk.
-import trUrl from '../locales/tr.json?url';
-import frCaUrl from '../locales/fr-ca.json?url';
+import trUrl from './dictionaries/tr.json?url';
+import frCaUrl from './dictionaries/fr-ca.json?url';
+import esUrl from './dictionaries/es.json?url';
+import deUrl from './dictionaries/de.json?url';
 import { DEFAULT_LOCALE, LOCALE_META, type Locale } from './config';
 
 type Dictionary = Readonly<Record<string, string>>;
@@ -36,11 +40,15 @@ const SERVER_DICTIONARIES: Readonly<Record<Locale, Dictionary>> = {
   en,
   tr: trServer,
   'fr-ca': frCaServer,
+  es: esServer,
+  de: deServer,
 };
 
 const BROWSER_DICTIONARY_URLS: Readonly<Partial<Record<Locale, string>>> = {
   tr: trUrl,
   'fr-ca': frCaUrl,
+  es: esUrl,
+  de: deUrl,
 };
 
 /** Browser cache. English is bundled; other locales are added by `ensureLocale`. */

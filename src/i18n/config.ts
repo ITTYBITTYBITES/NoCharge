@@ -3,12 +3,12 @@
  *
  * English is the default and lives at the root (`/`, `/arcade/`, …) so existing
  * URLs, canonicals, and the English end-to-end suite stay unchanged. Other
- * locales live under a URL prefix (`/tr/`, `/fr-ca/`).
+ * locales live under a URL prefix (`/tr/`, `/fr-ca/`, `/es/`, `/de/`).
  *
  * Keep this file free of Node-only imports: it is bundled into browser code.
  */
 
-export const LOCALES = ['en', 'tr', 'fr-ca'] as const;
+export const LOCALES = ['en', 'tr', 'fr-ca', 'es', 'de'] as const;
 export type Locale = (typeof LOCALES)[number];
 
 export const DEFAULT_LOCALE: Locale = 'en';
@@ -31,6 +31,8 @@ export const LOCALE_META: Record<Locale, LocaleMeta> = {
   en: { htmlLang: 'en', dir: 'ltr', ogLocale: 'en_US', nativeName: 'English' },
   tr: { htmlLang: 'tr', dir: 'ltr', ogLocale: 'tr_TR', nativeName: 'Türkçe' },
   'fr-ca': { htmlLang: 'fr-CA', dir: 'ltr', ogLocale: 'fr_CA', nativeName: 'Français (Canada)' },
+  es: { htmlLang: 'es', dir: 'ltr', ogLocale: 'es_ES', nativeName: 'Español' },
+  de: { htmlLang: 'de', dir: 'ltr', ogLocale: 'de_DE', nativeName: 'Deutsch' },
 };
 
 export function isLocale(value: unknown): value is Locale {

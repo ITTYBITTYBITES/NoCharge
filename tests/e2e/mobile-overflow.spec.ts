@@ -39,7 +39,14 @@ interface OverflowIssue {
   offenders: { tag: string; cls: string; text: string; right: number; width: number }[];
 }
 
-const PAGE_CHUNK_SIZE = 100;
+// One test per viewport and page chunk. The sweep used to run every page at every
+// viewport inside one test; with localized pages it outgrew the 10-minute test
+// timeout on slower CI runners. Chunking keeps each test within its own budget and
+// changes no assertion. Each locale prefix (/tr/, /fr-ca/, /es/, /de/) mirrors
+// every English page, so the built page count grows with each language; keep the
+// chunks small enough that one chunk test stays well inside the timeout as the
+// route list expands.
+const PAGE_CHUNK_SIZE = 50;
 
 function chunk<T>(items: T[], size: number): T[][] {
   const out: T[][] = [];
@@ -65,10 +72,6 @@ test('the build exposes the public pages for the overflow sweep', () => {
   expect(paths.filter((path) => path.startsWith('/games/')).length).toBeGreaterThanOrEqual(4);
 });
 
-// One test per viewport and page chunk. The sweep used to run every page at every
-// viewport inside one test; with localized pages it outgrew the 10-minute test
-// timeout on slower CI runners. Chunking keeps each test within its own budget and
-// changes no assertion.
 for (const viewport of MOBILE_VIEWPORTS) {
   chunk(ALL_PAGES, PAGE_CHUNK_SIZE).forEach((paths, index) => {
     const first = index * PAGE_CHUNK_SIZE + 1;
