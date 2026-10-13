@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-// Localized routes (/tr/, /fr-ca/, /es/, /de/) render translated chrome and
+// Localized routes (/tr/, /fr-ca/, /es/, /de/, /pt-br/, /ja/, /nl/) render translated chrome and
 // game-shell controls around the English body copy. These checks cover the
 // behavior the language work promises: document language, navigation labels,
 // shell controls, pinned word games, and returning-visitor routing from the root.
@@ -139,4 +139,134 @@ test('Spanish and German word-game URLs land on the English game', async ({ page
   await page.goto('/de/games/hangman/');
   await page.waitForURL((url) => url.pathname === '/games/hangman/');
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+});
+
+// Portuguese (Brazil), Japanese, and Dutch. Each row is checked against the
+// strings in its own dictionary, so a missing or mistyped key shows up here.
+const NEW_LOCALES = [
+  {
+    code: 'pt-br',
+    path: '/pt-br/',
+    htmlLang: 'pt-BR',
+    navName: 'Principal',
+    navArcade: 'Jogos',
+    pause: 'Pausar o jogo',
+    hintStart: 'Escolha uma cor para esta rodada',
+    gridName: 'Grade de peças para avançar com toques',
+    freecellMoves: 'Movimentos',
+    freecellWon: 'Vencidas',
+    englishOnly: 'Por enquanto, esta página está disponível somente em inglês.',
+    readEnglish: 'Leia em inglês',
+    nativeName: 'Português (Brasil)',
+  },
+  {
+    code: 'ja',
+    path: '/ja/',
+    htmlLang: 'ja',
+    navName: 'メイン',
+    navArcade: 'アーケード',
+    pause: 'ゲームを一時停止',
+    hintStart: 'このラウンドの色を選び',
+    gridName: 'タップで進むタイルのグリッド',
+    freecellMoves: '手数',
+    freecellWon: '勝利',
+    englishOnly: 'このページは現在、英語版のみです。',
+    readEnglish: '英語で読む',
+    nativeName: '日本語',
+  },
+  {
+    code: 'nl',
+    path: '/nl/',
+    htmlLang: 'nl',
+    navName: 'Hoofdmenu',
+    navArcade: 'Spellen',
+    pause: 'Spel pauzeren',
+    hintStart: 'Kies een kleur voor deze ronde',
+    gridName: 'Raster van tegels om op te tikken',
+    freecellMoves: 'Zetten',
+    freecellWon: 'Gewonnen',
+    englishOnly: 'Deze pagina is voorlopig alleen in het Engels beschikbaar.',
+    readEnglish: 'Lees hem in het Engels',
+    nativeName: 'Nederlands',
+  },
+] as const;
+
+for (const locale of NEW_LOCALES) {
+  test(`returning visitor with a stored ${locale.nativeName} preference is routed from / to ${locale.path}`, async ({ page }) => {
+    await page.addInitScript((code) => {
+      window.localStorage.setItem('nocharge:pref:language', JSON.stringify(code));
+    }, locale.code);
+    await page.goto('/');
+    await page.waitForURL(`**${locale.path}`);
+    await expect(page.locator('html')).toHaveAttribute('lang', locale.htmlLang);
+    await expect(page.locator('html')).toHaveAttribute('data-locale', locale.code);
+  });
+
+  test(`${locale.nativeName} home page sets the document language and translates the navigation`, async ({ page }) => {
+    await page.goto(locale.path);
+    await expect(page.locator('html')).toHaveAttribute('lang', locale.htmlLang);
+    const nav = page.getByRole('navigation', { name: locale.navName });
+    await expect(nav.getByRole('link', { name: locale.navArcade })).toBeVisible();
+    await expect(page.locator(`[data-locale-option="${locale.code}"]`).first()).toHaveAttribute('aria-current', 'true');
+  });
+
+  test(`${locale.nativeName} Color Flip shell controls and game HUD are translated`, async ({ page }) => {
+    await page.goto(`${locale.path}games/color-flip/`);
+    await expect(page.locator('html')).toHaveAttribute('lang', locale.htmlLang);
+    await expect(page.locator('[data-game-toolbar="pause"]').first()).toHaveText(locale.pause);
+    await expect(page.getByRole('group', { name: locale.gridName })).toBeVisible();
+    await expect(page.locator('[data-cf="hint"]')).toContainText(locale.hintStart);
+  });
+
+  test(`${locale.nativeName} FreeCell HUD counters are translated`, async ({ page }) => {
+    await page.goto(`${locale.path}games/freecell/`);
+    await expect(page.locator('[data-fc="moves"]').locator('xpath=..')).toContainText(locale.freecellMoves);
+    await expect(page.locator('[data-fc="won"]').locator('xpath=..')).toContainText(locale.freecellWon);
+  });
+
+  test(`${locale.nativeName} editorial page keeps the English body behind a localized notice`, async ({ page }) => {
+    await page.goto(`${locale.path}articles/what-quiet-arcade-means-at-nocharge/`);
+    await expect(page.locator('html')).toHaveAttribute('lang', locale.htmlLang);
+    await expect(page.locator('main')).toHaveAttribute('lang', 'en');
+    const notice = page.locator('aside.locale-notice');
+    await expect(notice).toContainText(locale.englishOnly);
+    await expect(notice.getByRole('link', { name: locale.readEnglish })).toHaveAttribute(
+      'href',
+      '/articles/what-quiet-arcade-means-at-nocharge/',
+    );
+  });
+
+  test(`${locale.nativeName} word games send visitors to the English game`, async ({ page }) => {
+    await page.goto(`${locale.path}games/hangman/`);
+    await page.waitForURL((url) => url.pathname === '/games/hangman/');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  });
+}
+
+test('the language switcher offers Português (Brasil), 日本語, and Nederlands in the footer', async ({ page }) => {
+  await page.goto('/');
+  for (const locale of NEW_LOCALES) {
+    const option = page.locator(`footer [data-locale-option="${locale.code}"]`);
+    await expect(option).toHaveText(locale.nativeName);
+    await expect(option).toHaveAttribute('lang', locale.htmlLang);
+    await expect(option).toHaveAttribute('href', locale.path);
+  }
+});
+
+test('the header language menu lists every language without growing the header', async ({ page }) => {
+  await page.goto('/ja/');
+  const summary = page.locator('.lang-menu__summary');
+  await expect(summary).toContainText('日本語');
+  const headerHeight = async () => Math.round((await page.locator('.site-header').boundingBox())?.height ?? 0);
+  const closedHeight = await headerHeight();
+  await summary.click();
+  const panel = page.locator('.lang-menu__panel');
+  await expect(panel.getByRole('link', { name: 'Português (Brasil)' })).toBeVisible();
+  await expect(panel.getByRole('link', { name: 'Nederlands' })).toBeVisible();
+  await expect(panel.locator('[data-locale-option="ja"]')).toHaveAttribute('aria-current', 'true');
+  // The open panel floats over the page, so the header keeps its one-row height.
+  expect(await headerHeight()).toBe(closedHeight);
+  expect(closedHeight).toBeLessThanOrEqual(100);
+  await page.keyboard.press('Escape');
+  await expect(panel).toBeHidden();
 });

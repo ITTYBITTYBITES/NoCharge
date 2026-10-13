@@ -42,10 +42,15 @@ interface OverflowIssue {
 // One test per viewport and page chunk. The sweep used to run every page at every
 // viewport inside one test; with localized pages it outgrew the 10-minute test
 // timeout on slower CI runners. Chunking keeps each test within its own budget and
-// changes no assertion. Each locale prefix (/tr/, /fr-ca/, /es/, /de/) mirrors
-// every English page, so the built page count grows with each language; keep the
-// chunks small enough that one chunk test stays well inside the timeout as the
-// route list expands.
+// changes no assertion.
+//
+// Each locale prefix (/tr/, /fr-ca/, /es/, /de/, /pt-br/, /ja/, /nl/) mirrors every
+// English page, so the built page count grows with each language. Measured on the
+// 8-locale build (2,962 HTML pages): one 50-page chunk takes about 12 s per viewport
+// locally, so a chunk stays far inside the 600 s per-test budget. Playwright runs
+// the chunks one after another in CI (workers: 1), so the chunk count (60 per
+// viewport) is what sets total run time. Keep the chunk size at 50 unless a
+// chunk's measured time approaches the budget.
 const PAGE_CHUNK_SIZE = 50;
 
 function chunk<T>(items: T[], size: number): T[][] {

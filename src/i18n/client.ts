@@ -8,9 +8,10 @@
  *   visitor preferences. It is only a preference: no analytics, no tracking.
  * - On the English home page (`/`) only, a stored non-English choice routes
  *   the visitor to that language's home page. With no stored choice and a
- *   browser that prefers Turkish, French, Spanish, or German, a dismissible
- *   suggestion appears. Deep links are never redirected, and nothing is
- *   redirected for crawlers (they have no stored preference).
+ *   browser that prefers a translated language (Turkish, French, Spanish,
+ *   German, Portuguese, Japanese, or Dutch), a dismissible suggestion appears.
+ *   Deep links are never redirected, and nothing is redirected for crawlers
+ *   (they have no stored preference).
  */
 
 import { prefKey } from '../games/shared/storage';
@@ -57,6 +58,10 @@ export function detectPreferredLocale(languages: readonly string[]): Locale | nu
     if (primary === 'fr') return 'fr-ca';
     if (primary === 'es') return 'es';
     if (primary === 'de') return 'de';
+    // Portuguese is offered as Brazilian Portuguese, the only Portuguese we translate.
+    if (primary === 'pt') return 'pt-br';
+    if (primary === 'ja') return 'ja';
+    if (primary === 'nl') return 'nl';
   }
   return null;
 }
@@ -126,5 +131,17 @@ export function initLocaleSwitcher(): void {
     const option = target.closest<HTMLElement>('[data-locale-option]');
     const code = option?.dataset.localeOption;
     if (isLocale(code)) storeLocale(code);
+    // Close the header language menu when the visitor clicks anywhere outside it.
+    for (const menu of document.querySelectorAll<HTMLDetailsElement>('.lang-menu[open]')) {
+      if (!menu.contains(target)) menu.open = false;
+    }
+  });
+  // Escape closes the header language menu and returns focus to its summary.
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    for (const menu of document.querySelectorAll<HTMLDetailsElement>('.lang-menu[open]')) {
+      menu.open = false;
+      menu.querySelector<HTMLElement>('summary')?.focus();
+    }
   });
 }
