@@ -3,12 +3,13 @@
  *
  * English is the default and lives at the root (`/`, `/arcade/`, …) so existing
  * URLs, canonicals, and the English end-to-end suite stay unchanged. Other
- * locales live under a URL prefix (`/tr/`, `/fr-ca/`, `/es/`, `/de/`).
+ * locales live under a URL prefix (`/tr/`, `/fr-ca/`, `/es/`, `/de/`,
+ * `/pt-br/`, `/ja/`, `/nl/`).
  *
  * Keep this file free of Node-only imports: it is bundled into browser code.
  */
 
-export const LOCALES = ['en', 'tr', 'fr-ca', 'es', 'de'] as const;
+export const LOCALES = ['en', 'tr', 'fr-ca', 'es', 'de', 'pt-br', 'ja', 'nl'] as const;
 export type Locale = (typeof LOCALES)[number];
 
 export const DEFAULT_LOCALE: Locale = 'en';
@@ -33,6 +34,9 @@ export const LOCALE_META: Record<Locale, LocaleMeta> = {
   'fr-ca': { htmlLang: 'fr-CA', dir: 'ltr', ogLocale: 'fr_CA', nativeName: 'Français (Canada)' },
   es: { htmlLang: 'es', dir: 'ltr', ogLocale: 'es_ES', nativeName: 'Español' },
   de: { htmlLang: 'de', dir: 'ltr', ogLocale: 'de_DE', nativeName: 'Deutsch' },
+  'pt-br': { htmlLang: 'pt-BR', dir: 'ltr', ogLocale: 'pt_BR', nativeName: 'Português (Brasil)' },
+  ja: { htmlLang: 'ja', dir: 'ltr', ogLocale: 'ja_JP', nativeName: '日本語' },
+  nl: { htmlLang: 'nl', dir: 'ltr', ogLocale: 'nl_NL', nativeName: 'Nederlands' },
 };
 
 export function isLocale(value: unknown): value is Locale {

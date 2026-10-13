@@ -8,11 +8,11 @@ export default defineConfig({
     format: 'directory',
   },
   // English stays at the root. Turkish, Canadian French, Spanish, and German
-  // live under /tr/, /fr-ca/, /es/, and /de/. Pages are mirrored by
+  // live under /tr/, /fr-ca/, /es/, /de/, /pt-br/, /ja/, and /nl/. Pages are mirrored by
   // `localizedRoutes()`; see src/i18n/localized-routes.ts.
   i18n: {
     defaultLocale: 'en',
-    locales: ['en', 'tr', 'fr-ca', 'es', 'de'],
+    locales: ['en', 'tr', 'fr-ca', 'es', 'de', 'pt-br', 'ja', 'nl'],
     routing: {
       prefixDefaultLocale: false,
     },

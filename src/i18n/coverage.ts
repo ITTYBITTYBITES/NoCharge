@@ -3,7 +3,8 @@
  *
  * Every page is served in every locale, and the header, footer, controls, and
  * game shells are always translated. A page's own copy is English until it is
- * listed here. For an unlisted page under `/tr/`, `/fr-ca/`, `/es/`, or `/de/`:
+ * listed here. For an unlisted page under `/tr/`, `/fr-ca/`, `/es/`, `/de/`,
+ * `/pt-br/`, `/ja/`, or `/nl/`:
  *   - the English body sits inside `<main lang="en">`, so screen readers use
  *     the right pronunciation;
  *   - the canonical points at the English URL, so the thin localized copy is
@@ -22,6 +23,9 @@ const TRANSLATED_BODY: Readonly<Record<Locale, ReadonlySet<string>>> = {
   'fr-ca': new Set<string>(),
   es: new Set<string>(),
   de: new Set<string>(),
+  'pt-br': new Set<string>(),
+  ja: new Set<string>(),
+  nl: new Set<string>(),
 };
 
 /** English routes that have translated body copy in `locale`. */

@@ -27,11 +27,17 @@ import trServer from './dictionaries/tr.json';
 import frCaServer from './dictionaries/fr-ca.json';
 import esServer from './dictionaries/es.json';
 import deServer from './dictionaries/de.json';
+import ptBrServer from './dictionaries/pt-br.json';
+import jaServer from './dictionaries/ja.json';
+import nlServer from './dictionaries/nl.json';
 // `?url` makes Vite emit the file as a static asset, so it never enters a JS chunk.
 import trUrl from './dictionaries/tr.json?url';
 import frCaUrl from './dictionaries/fr-ca.json?url';
 import esUrl from './dictionaries/es.json?url';
 import deUrl from './dictionaries/de.json?url';
+import ptBrUrl from './dictionaries/pt-br.json?url';
+import jaUrl from './dictionaries/ja.json?url';
+import nlUrl from './dictionaries/nl.json?url';
 import { DEFAULT_LOCALE, LOCALE_META, type Locale } from './config';
 
 type Dictionary = Readonly<Record<string, string>>;
@@ -42,6 +48,9 @@ const SERVER_DICTIONARIES: Readonly<Record<Locale, Dictionary>> = {
   'fr-ca': frCaServer,
   es: esServer,
   de: deServer,
+  'pt-br': ptBrServer,
+  ja: jaServer,
+  nl: nlServer,
 };
 
 const BROWSER_DICTIONARY_URLS: Readonly<Partial<Record<Locale, string>>> = {
@@ -49,6 +58,9 @@ const BROWSER_DICTIONARY_URLS: Readonly<Partial<Record<Locale, string>>> = {
   'fr-ca': frCaUrl,
   es: esUrl,
   de: deUrl,
+  'pt-br': ptBrUrl,
+  ja: jaUrl,
+  nl: nlUrl,
 };
 
 /** Browser cache. English is bundled; other locales are added by `ensureLocale`. */
