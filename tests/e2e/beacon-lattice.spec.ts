@@ -145,15 +145,15 @@ test('guide, articles, social metadata, and sitemap include Beacon Lattice', asy
   expect(xml).toContain('/guides/beacon-lattice/');
 });
 
-test('ad banner stays below Beacon Lattice gameplay', async ({ page }) => {
+test('Beacon Lattice gameplay carries no ad overlay or placeholder', async ({ page }) => {
   await page.goto('/games/beacon-lattice/');
-  const metrics = await page.evaluate(() => {
-    const banner = document.querySelector('[data-ad-banner]');
+  await expect(page.locator('[data-ad-banner]')).toHaveCount(0);
+  const insideGameplay = await page.evaluate(() => {
     const viewport = document.querySelector('[data-game-viewport]');
-    if (!banner || !viewport) return null;
-    return banner.getBoundingClientRect().top + window.scrollY - (viewport.getBoundingClientRect().bottom + window.scrollY);
+    if (!viewport) return null;
+    return viewport.querySelector('[data-ad-banner], .adsbygoogle, [class*="ad-"]') !== null;
   });
-  expect(metrics).toBeGreaterThanOrEqual(150);
+  expect(insideGameplay).toBe(false);
 });
 
 test('best count does not worsen after a longer solve', async ({ page }) => {

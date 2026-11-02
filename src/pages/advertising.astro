@@ -1,11 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { ADSENSE_ENABLED } from '../config/adsense';
 ---
 
 <BaseLayout
   title="Advertising Disclosure"
-  description="How NoCharge runs one labeled, responsive Google AdSense banner with Google Privacy & messaging consent, and how to report a problematic ad."
+  description="Which advertising, if any, is currently active on NoCharge, how affiliate links work, and how to report a problematic ad."
   path="/advertising/"
   showAds={false}
 >
@@ -15,10 +16,29 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
       <p class="eyebrow">Advertising Disclosure</p>
       <h1 class="page-title">How advertising and affiliate links work on NoCharge.</h1>
       <p class="lede">One labeled banner, clearly marked Amazon affiliate links, and no commercial links in gameplay.</p>
-      <p class="trust-page__date">Last updated: August 21, 2026</p>
+      <p class="trust-page__date">Last updated: November 2, 2026</p>
     </header>
 
-    <section aria-labelledby="ads-relationship">
+    {
+      !ADSENSE_ENABLED && (
+        <section aria-labelledby="ads-none">
+          <h2 id="ads-none">No advertising network is active right now</h2>
+          <p>
+            NoCharge is not currently serving display advertising. This build loads no ad script, no advertising
+            consent tag, and no empty ad container or placeholder on any page, and no advertising data is collected.
+            There is consequently no advertising choice to manage&nbsp;— the only commercial links on the site are
+            the clearly marked Amazon affiliate links described below.
+          </p>
+          <p>
+            The display-advertising implementation is kept in the codebase, switched off, so it can be restored
+            without a redesign. If advertising is switched on again, this page and the{' '}
+            <a href="/privacy/">Privacy page</a> will be updated first.
+          </p>
+        </section>
+      )
+    }
+
+    <section aria-labelledby="ads-relationship" hidden={!ADSENSE_ENABLED}>
       <h2 id="ads-relationship">Google AdSense banner relationship</h2>
       <p>
         NoCharge displays exactly one manual, responsive Google AdSense banner near the bottom of eligible pages,
@@ -28,7 +48,7 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
       </p>
     </section>
 
-    <section aria-labelledby="ads-consent">
+    <section aria-labelledby="ads-consent" hidden={!ADSENSE_ENABLED}>
       <h2 id="ads-consent">Your advertising choice</h2>
       <p>
         Google Privacy &amp; messaging is the advertising consent platform. Where applicable, Google shows its own
@@ -42,7 +62,7 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
       </p>
     </section>
 
-    <section aria-labelledby="ads-data">
+    <section aria-labelledby="ads-data" hidden={!ADSENSE_ENABLED}>
       <h2 id="ads-data">Data Google may process</h2>
       <p>
         When a banner loads, your browser connects directly to Google. Google may use cookies or similar storage

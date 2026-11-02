@@ -61,8 +61,8 @@ export const GET: APIRoute = async () => {
 - **Name:** NoCharge.
 - **What it is:** a static-first browser arcade ("Quiet Arcade") with original and classic-rule games, definitive player guides, situation-based collections, and fully client-side tools.
 - **Free model:** every game and tool opens with no account, subscription, email, or download. No cloud profiles, no cross-device sync, no leaderboards, no energy/lives systems, no paywalls to continue.
-- **Ad model:** eligible pages show exactly one manual, responsive, labeled Google AdSense banner before the footer. Ads never appear in the game canvas or during the play loop. Auto ads, interstitials, anchors, and popups are off.
-- **Analytics:** Google Analytics 4 is blocked until the visitor allows it. With consent it loads only in production with anonymized IP. Advertising choices use Google's Privacy & messaging message.
+- **Ad model:** display advertising is currently **off**. The site's one-banner, labeled AdSense implementation is retained behind \`PUBLIC_ADSENSE_ENABLED\` but the shipped build renders no banner, no ad placeholder, no AdSense tag, and no ad consent tag. When enabled, at most one manual banner appears before the footer and never in the game canvas or during the play loop; auto ads, interstitials, anchors, and popups are always off.
+- **Analytics:** Google Analytics 4 is blocked until the visitor allows it. With consent it loads only in production with anonymized IP.
 - **Accessibility posture:** visible focus outlines, documented keyboard paths, non-color-critical states where color is the mechanic (Color Flip has visual + turn-based modes), \`prefers-reduced-motion\` honored, no transform-scale forcing, calm defaults.
 - **Honesty posture:** no fake rankings or "#1" claims; difficulty labels explain their meaning (e.g. cell counts); no cognitive/medical benefit claims; "unblocked" is described as network-dependent, never promised.
 
@@ -75,7 +75,7 @@ export const GET: APIRoute = async () => {
 - **What happens when I switch tabs?** The shared game shell pauses the game and stops ambient audio; returning resumes unless you paused manually.
 - **Can I play offline?** After load, browser HTTP cache may replay assets, but NoCharge does not claim offline support: there is no service worker or installable offline package.
 - **Do the tools upload my input?** No. All tool calculations run in the current page.
-- **Do you sell my data?** No. There are no accounts and no personal profiles. Analytics are consent-gated; advertising consent is handled by Google's message.
+- **Do you sell my data?** No. There are no accounts and no personal profiles. Analytics are consent-gated, and no advertising network runs by default.
 
 ## Current registry facts (reviewed 2026-08-27)
 

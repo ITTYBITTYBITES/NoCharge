@@ -5,7 +5,7 @@ import Footer from '../components/Footer.astro';
 import AdSenseBanner from '../components/AdSenseBanner.astro';
 import ConsentManager from '../components/ConsentManager.astro';
 import SeoHead from '../components/SeoHead.astro';
-import { ADSENSE_CONSENT_TAG_URL } from '../config/adsense';
+import { ADSENSE_CONSENT_TAG_URL, ADSENSE_ENABLED } from '../config/adsense';
 import { siteModeBootstrapScript } from '../lab/mode/mode-toggle';
 import { LOCALE_META } from '../i18n/config';
 import { splitLocale, withLocale } from '../i18n/routes';
@@ -89,6 +89,17 @@ const {
 } = Astro.props;
 
 const isProd = import.meta.env.PROD;
+
+/**
+ * Whether the Google AdSense banner and its consent tag may render here.
+ *
+ * Two independent conditions, both required: the page must be eligible
+ * (`showAds`) and advertising must be switched on for the build
+ * (`PUBLIC_ADSENSE_ENABLED=true`). The build flag defaults to off, so the site
+ * ships with no ad markup at all. See src/config/adsense.ts and
+ * docs/ADVERTISING_STATE.md.
+ */
+const adSenseOn = isProd && ADSENSE_ENABLED && showAds;
 
 /**
  * Build the Content-Security-Policy. Identical to the calm site's policy
@@ -191,7 +202,7 @@ const showLocaleNotice = locale !== 'en' && !bodyTranslated;
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta http-equiv="Content-Security-Policy" content={CONTENT_SECURITY_POLICY} />
     {
-      isProd && (
+      isProd && ADSENSE_ENABLED && (
         <>
           <!--
             Official Google Privacy & messaging (Funding Choices) message tag.
@@ -295,7 +306,7 @@ const showLocaleNotice = locale !== 'en' && !bodyTranslated;
             )}
             <slot />
           </main>
-          {isProd && showAds && <AdSenseBanner />}
+          {adSenseOn && <AdSenseBanner />}
           <Footer />
         </div>
       )

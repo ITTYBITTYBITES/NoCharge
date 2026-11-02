@@ -2,19 +2,27 @@
 /**
  * Reserved advertisement containers for the Lab stage.
  *
- * Both are in-flow grid areas with a reserved minimum size, so a creative that
- * fills late cannot shift the stage (the Lighthouse CLS budget is 0.1). If a
- * slot stays empty — no consent, no configuration, no demand — the track keeps
- * its space and the stage is simply shorter than it could be. It is never
- * reflowed.
+ * The Lab's ad network is switched off in this build (`ADSTERRA_ENABLED`), so
+ * this component renders **nothing at all** — no container, no "Advertisement"
+ * label, no reserved track. Hiding an empty slot rather than reserving space for
+ * it is deliberate: a placeholder with an ad label and an unfilled box is not a
+ * neutral placeholder, it is a broken advert on the page.
  *
- * These containers are structurally incapable of overlapping the playfield: the
- * stage is a different grid area. See src/styles/lab.css.
+ * The mounting logic below is preserved unchanged for the day a network is
+ * approved: set `PUBLIC_ADSTERRA_ENABLED=true`, supply the placement keys, and
+ * the two slots come back with their reserved sizes.
+ *
+ * When they do, both containers are in-flow grid areas with a reserved minimum
+ * size, so a creative that fills late cannot shift the stage (the Lighthouse CLS
+ * budget is 0.1). They are structurally incapable of overlapping the playfield:
+ * the stage is a different grid area. See src/styles/lab.css.
  *
  * `mountLabAdSlots` decides which single slot to fill. Nothing is injected
  * unless a real advertising consent basis has been wired up — see
  * ./consent-gate.ts.
  */
+import { ADSTERRA_ENABLED } from '../../config/adsterra';
+
 interface Props {
   /** Show the desktop side rail. Off for short landscape. */
   rail?: boolean;
@@ -23,23 +31,34 @@ interface Props {
 const { rail = true } = Astro.props;
 ---
 
-<div class="lab-ad lab-ad--bottom" data-lab-ad="bottom">
-  <p class="lab-ad__label">Advertisement</p>
-</div>
-{rail && (
-  <div class="lab-ad lab-ad--rail" data-lab-ad="rail">
-    <p class="lab-ad__label">Advertisement</p>
-  </div>
-)}
+{
+  ADSTERRA_ENABLED && (
+    <>
+      <div class="lab-ad lab-ad--bottom" data-lab-ad="bottom">
+        <p class="lab-ad__label">Advertisement</p>
+      </div>
+      {rail && (
+        <div class="lab-ad lab-ad--rail" data-lab-ad="rail">
+          <p class="lab-ad__label">Advertisement</p>
+        </div>
+      )}
+    </>
+  )
+}
 
 <script>
-  import { mountLabAdSlots } from './mount-slots';
+  import { ADSTERRA_ENABLED } from '../../config/adsterra';
 
-  const scope = document.querySelector<HTMLElement>('[data-lab-frame]') ?? document;
-  const controller = mountLabAdSlots({
-    bottom: scope.querySelector<HTMLElement>('[data-lab-ad="bottom"]'),
-    rail: scope.querySelector<HTMLElement>('[data-lab-ad="rail"]'),
-  });
+  // Imported only when a network is enabled, so a disabled build ships no ad
+  // provider code to the browser at all — not even as an unused module.
+  if (ADSTERRA_ENABLED) {
+    const { mountLabAdSlots } = await import('./mount-slots');
+    const scope = document.querySelector<HTMLElement>('[data-lab-frame]') ?? document;
+    const controller = mountLabAdSlots({
+      bottom: scope.querySelector<HTMLElement>('[data-lab-ad="bottom"]'),
+      rail: scope.querySelector<HTMLElement>('[data-lab-ad="rail"]'),
+    });
 
-  document.addEventListener('astro:before-swap', () => controller.destroy(), { once: true });
+    document.addEventListener('astro:before-swap', () => controller.destroy(), { once: true });
+  }
 </script>

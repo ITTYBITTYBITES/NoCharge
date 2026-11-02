@@ -3,6 +3,7 @@ import BrandMark from './BrandMark.astro';
 import LanguageSwitcher from './LanguageSwitcher.astro';
 import { splitLocale, withLocale } from '../i18n/routes';
 import { t } from '../i18n/messages';
+import { ADSENSE_ENABLED } from '../config/adsense';
 
 const year = new Date().getFullYear();
 const { locale } = splitLocale(Astro.url.pathname);
@@ -29,11 +30,16 @@ const href = (path: string) => withLocale(path, locale);
     </ul></nav>
   </div>
   <LanguageSwitcher variant="footer" />
-  <div class="footer-controls"><button type="button" data-consent-open>{t(locale, 'footer.analyticsChoices')}</button><button type="button" data-google-ad-choices>{t(locale, 'footer.adChoices')}</button></div>
+  <div class="footer-controls"><button type="button" data-consent-open>{t(locale, 'footer.analyticsChoices')}</button>{
+    ADSENSE_ENABLED && <button type="button" data-google-ad-choices>{t(locale, 'footer.adChoices')}</button>
+  }</div>
 </footer>
 
-<script is:inline>
-  (() => {
+<script is:inline define:vars={{ ADSENSE_ENABLED }}>
+  // Only emitted wiring when an advertising consent message can exist. With
+  // advertising off, this script would be dead code referencing a control that
+  // is not rendered.
+  if (ADSENSE_ENABLED) {
     document.querySelectorAll('[data-google-ad-choices]').forEach((control) => {
       control.addEventListener('click', () => {
         const googlefc = window.googlefc;
@@ -41,5 +47,5 @@ const href = (path: string) => withLocale(path, locale);
         window.open('https://policies.google.com/privacy', '_blank', 'noopener');
       });
     });
-  })();
+  }
 </script>

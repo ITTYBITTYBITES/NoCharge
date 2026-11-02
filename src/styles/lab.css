@@ -88,10 +88,14 @@
   height: 100dvh;
 
   display: grid;
-  grid-template-areas:
-    'stage'
-    'ad-bottom';
-  grid-template-rows: minmax(0, 1fr) auto;
+  /*
+   * One track when advertising is off (the shipped default): the stage owns the
+   * whole frame. The optional `ad-bottom` track is added by `.lab-frame--ads`,
+   * which adslots.astro only emits when a network is actually enabled — so no
+   * empty ad band is ever reserved on screen.
+   */
+  grid-template-areas: 'stage';
+  grid-template-rows: minmax(0, 1fr);
   grid-template-columns: minmax(0, 1fr);
 
   /* Safe-area padding for notches and home indicators. */
@@ -122,12 +126,16 @@
 }
 
 /*
- * Ad containers.
+ * Ad containers — only present when a network is enabled.
  *
- * Both are reserved grid tracks with explicit min-height, so a creative that
- * fills late cannot shift the stage (Lighthouse CLS budget is 0.1). If the slot
- * stays empty the track keeps its space and the stage is simply a little
- * shorter than it could be — never reflowed.
+ * `AdSlots` renders these, and the `ad-bottom` / `ad-rail` grid tracks that hold
+ * them, only when `PUBLIC_ADSTERRA_ENABLED=true` (`.lab-frame--ads`). With the
+ * default build there is no container, no label, and no reserved band.
+ *
+ * When they are present both are reserved grid tracks with explicit min-height,
+ * so a creative that fills late cannot shift the stage (Lighthouse CLS budget is
+ * 0.1). If the slot stays empty the track keeps its space and the stage is
+ * simply a little shorter than it could be — never reflowed.
  */
 .lab-ad {
   display: grid;
@@ -314,7 +322,7 @@
  * The rail sits in its own grid column so it can never overlap the stage.
  */
 @media (orientation: landscape) and (min-width: 64rem) {
-  .lab-frame {
+  .lab-frame.lab-frame--ads {
     grid-template-areas:
       'stage ad-rail'
       'ad-bottom ad-bottom';

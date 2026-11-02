@@ -70,10 +70,12 @@ test('ships a restrictive document policy with only the documented Google origin
   // upgrade-insecure-requests is applied only at the production edge.
   expect(policy).not.toContain('upgrade-insecure-requests');
 
-  // The banner is a native AdSense <ins>, never a custom sandboxed iframe.
-  await expect(page.locator('[data-ad-banner] ins.adsbygoogle')).toHaveCount(1);
-  await expect(page.locator('.ad-slot__frame, iframe[src*="/ads/"]')).toHaveCount(0);
-  await expect(page.locator('[data-ad-banner] iframe')).toHaveCount(0);
+  // Advertising is off in this build: the policy still lists the documented
+  // Google origins for the retained implementation, but the page renders no
+  // banner, no ad unit, and no ad frame of any kind.
+  await expect(page.locator('[data-ad-banner]')).toHaveCount(0);
+  await expect(page.locator('ins.adsbygoogle, .adsbygoogle')).toHaveCount(0);
+  await expect(page.locator('.ad-slot__frame, iframe[src*="/ads/"], iframe[src*="googlesyndication"]')).toHaveCount(0);
 });
 
 test('publishes security contact details and the custom 404', async ({ request }) => {

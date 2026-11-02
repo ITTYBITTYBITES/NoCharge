@@ -26,7 +26,7 @@ const { title, tagline, touchControls, controls } = entry.data;
   fullBleed={true}
   extraCsp={ADSTERRA_ENABLED ? ADSTERRA_CSP_SOURCES : undefined}
 >
-  <div class="lab-frame" data-lab-frame>
+  <div class:list={['lab-frame', { 'lab-frame--ads': ADSTERRA_ENABLED }]} data-lab-frame>
     <div class="lab-stage" data-touch-controls={String(touchControls)}>
       <div class="lab-hud" data-lab-hud>
         <a class="lab-hud__exit" data-lab-hud="exit" href="/">Return to calm</a>

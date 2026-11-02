@@ -16,7 +16,7 @@ A growing collection of browser games and practical player guides built with **A
 | Styling      | Plain CSS (“Quiet Arcade”)                  |
 | Storage      | `localStorage`                              |
 | Analytics    | GA4 (`G-GYQ8TEM6DS`), consent-gated          |
-| Ads          | One manual, responsive Google AdSense banner; consent via Google Privacy & messaging |
+| Ads          | **Disabled.** One-banner AdSense implementation and the Lab ad-slot code are retained behind build flags; see `docs/ADVERTISING_STATE.md` |
 
 ## Games
 

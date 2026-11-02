@@ -3,10 +3,10 @@ import { denyOptionalServices } from './helpers/consent';
 
 test.beforeEach(async ({ page }) => denyOptionalServices(page));
 
-test('homepage keeps the real labeled ad while omitting ad-promotion copy', async ({ page }) => {
+test('homepage ships no ad or ad placeholder while omitting ad-promotion copy', async ({ page }) => {
   await page.goto('/');
-  await expect(page.locator('[data-ad-banner]')).toHaveCount(1);
-  await expect(page.locator('[data-ad-banner]').getByText('Advertisement', { exact: true })).toBeVisible();
+  await expect(page.locator('[data-ad-banner]')).toHaveCount(0);
+  await expect(page.getByText('Advertisement', { exact: true })).toHaveCount(0);
   await expect(page.getByText(/one labeled banner Google manages|restrained advertising|no interstitials/i)).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'A growing play library' })).toBeVisible();
 });
