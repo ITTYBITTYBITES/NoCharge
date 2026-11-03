@@ -1,0 +1,65 @@
+---
+/**
+ * Awin MasterTag (`pub.<PID>.min.js`), loaded only when the program is on and
+ * only after the visitor has allowed optional services.
+ *
+ * Why it is consent-gated rather than a plain `<head>` script:
+ *
+ *  - The MasterTag sets the Awin tracking cookie (`awc`) and is what makes
+ *    Convert-a-Link work. That is a non-essential third-party cookie, so in the
+ *    UK/EEA it needs a consent basis before it sets anything.
+ *  - NoCharge has exactly one optional consent purpose today: `analytics`.
+ *    Rather than invent a second purpose that no dialog explains, the tag
+ *    inherits the analytics decision and the disclosure copy names Awin
+ *    explicitly. `docs/AWIN_INTEGRATION.md` records this as a known limitation
+ *    with the two ways to do it properly (a dedicated purpose in consent v2, or
+ *    a TCF-registered CMP).
+ *
+ * The script is injected, not authored into the HTML, so a denied visitor makes
+ * no request to dwin2.com at all and the strict CSP is never exercised.
+ */
+import { AWIN_ENABLED, AWIN_MASTERTAG_URL, AWIN_PUBLISHER_ID } from '../config/awin';
+
+const when = import.meta.env.PROD;
+---
+
+{
+  when && AWIN_ENABLED && (
+    <script is:inline define:vars={{ AWIN_MASTERTAG_URL, AWIN_PUBLISHER_ID }}>
+      (() => {
+        const STORAGE_KEY = 'nocharge:consent';
+        const VERSION = 1;
+
+        const allowed = () => {
+          try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return false;
+            const parsed = JSON.parse(raw);
+            return parsed && parsed.version === VERSION && parsed.analytics === true;
+          } catch {
+            return false;
+          }
+        };
+
+        const load = () => {
+          if (document.querySelector('script[data-awin-mastertag]')) return;
+          const tag = document.createElement('script');
+          tag.src = AWIN_MASTERTAG_URL;
+          tag.async = true;
+          tag.dataset.awinMastertag = AWIN_PUBLISHER_ID;
+          // No SRI: Awin rotates this file. The CSP pins the host instead.
+          document.head.appendChild(tag);
+        };
+
+        if (allowed()) load();
+
+        // A visitor can change their mind mid-session. Loading on grant is fine;
+        // un-loading is not possible, and re-loading on a later grant is a no-op.
+        window.addEventListener('nocharge:consentchange', (event) => {
+          const detail = event.detail;
+          if (detail && detail.analytics === true) load();
+        });
+      })();
+    </script>
+  )
+}

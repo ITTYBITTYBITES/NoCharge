@@ -71,7 +71,7 @@ test('no page loads an advertising script or advertising consent tag', async ({ 
     await expect(page.locator(`script[src*="${CONSENT_TAG_PATTERN}"]`), `${path} must not load the Google consent tag`).toHaveCount(0);
 
     const html = (await page.content()).toLowerCase();
-    for (const needle of ['adsbygoogle', 'pagead2', 'fundingchoicesmessages', 'highperformanceformat', 'atoptions', 'adsterra.com']) {
+    for (const needle of ['adsbygoogle', 'pagead2', 'fundingchoicesmessages', 'highperformanceformat', 'atoptions', 'adsterra.com', 'dwin2.com', 'awin1.com']) {
       expect(html, `${path} must not contain ${needle}`).not.toContain(needle);
     }
     // No advertising consent state is fabricated either.

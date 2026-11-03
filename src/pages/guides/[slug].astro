@@ -5,6 +5,7 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import GameArtwork from '../../components/GameArtwork.astro';
 import ArticleCard from '../../components/ArticleCard.astro';
 import FaqList from '../../components/FaqList.astro';
+import GearPicks from '../../components/GearPicks.astro';
 
 export async function getStaticPaths() {
   const games = (await getCollection('games')).filter((game) => !game.data.draft);
@@ -225,6 +226,15 @@ const schema = [
       <div class="guide-prose prose">
         <Content />
       </div>
+
+      {/* Informational-intent page, so the module sits after the rules and
+          before the FAQ: a reader who came for the rules is done before they
+          meet a commercial link. */}
+      <GearPicks
+        slot="guide"
+        heading="Setup upgrades that help this game"
+        intro="Optional hardware for the setup problems this guide covers. Text links only, and the game itself never contains a paid link."
+      />
 
       <section class="panel guide-faq" id="guide-faq" aria-labelledby="faq-heading">
         <h2 id="faq-heading">Frequently asked questions about {game.data.title}</h2>

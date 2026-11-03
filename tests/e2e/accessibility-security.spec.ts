@@ -63,8 +63,10 @@ test('ships a restrictive document policy with only the documented Google origin
   expect(directive('script-src')).not.toContain('adtrafficquality');
   expect(directive('img-src')).not.toContain('adtrafficquality');
   expect(directive('frame-src')).not.toContain('adtrafficquality');
-  // The removed Adsterra provider is gone from the policy.
+  // Retired ad networks are gone from the policy, and Awin's hosts appear only
+  // when PUBLIC_AWIN_ENABLED is set (they are absent from this build).
   expect(policy).not.toContain('highperformanceformat');
+  expect(policy).not.toContain('dwin2.com');
   // The meta CSP must not force HTTPS upgrades: WebKit applies the meta
   // directive to plain-HTTP local previews and fails the TLS handshake.
   // upgrade-insecure-requests is applied only at the production edge.

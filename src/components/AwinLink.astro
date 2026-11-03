@@ -1,0 +1,294 @@
+---
+/**
+ * The only sanctioned way to render an Awin paid link.
+ *
+ * Modelled on `setup/PaidAmazonLink.astro`: every check happens at **build
+ * time**, so a link that cannot pay commission fails the build instead of
+ * shipping. It throws when:
+ *
+ *  - the merchant is not in the registry (`src/config/awin.ts`);
+ *  - the merchant has no confirmed MID (a guessed MID pays nobody);
+ *  - an explicit `merchantId` disagrees with the registry entry — this is the
+ *    copy/paste failure that silently attributes to the wrong advertiser;
+ *  - the destination is not absolute https;
+ *  - the `clickref` is not a valid Awin reporting token;
+ *  - the label breaks editorial policy (price/deal/rating/superlative claims,
+ *    or a label that does not identify itself as a paid link).
+ *
+ * It renders **nothing** when `PUBLIC_AWIN_ENABLED` is not `true`. Validation
+ * still runs, so content cannot rot silently while the program is off.
+ *
+ * Two link shapes are supported:
+ *
+ *  - `mode="cread"` (default): an explicit `awin1.com/cread.php` URL. Works with
+ *    the MasterTag blocked, is deterministic, and is what tests assert.
+ *  - `mode="direct"`: the bare merchant URL, attributed in the browser by
+ *    Convert-a-Link. Only allowed for a domain on the merchant's allowlist. Use
+ *    this for links written by hand in markdown where no build-time redirect was
+ *    generated — the MasterTag must be consented for it to pay.
+ */
+import { AWIN_PUBLISHER_ID } from '../config/awin';
+import { AWIN_MERCHANTS, AWIN_ENABLED, type AwinMerchant } from '../config/awin';
+import { AWIN_REL, assertAwinLabel, buildAwinHref, isAttributableAwinHref } from '../lib/awin';
+
+interface Props {
+  /** Registry key of the merchant, e.g. `brkox`. */
+  merchant?: string;
+  /** Optional explicit Awin MID. Must match the registry entry when both are given. */
+  merchantId?: string;
+  /** Destination page at the merchant (absolute https). */
+  href: string;
+  /** Awin reporting reference, e.g. `setup-quiet-keyboard-switches`. */
+  clickref?: string;
+  /** Visible text. Required in `text` variant; validated as a paid-link label. */
+  label?: string;
+  /** `text` (inline link), `button` (underlined text CTA), or `card` (styled panel). */
+  variant?: 'text' | 'button' | 'card';
+  /** `cread` builds an awin1.com tracking URL; `direct` relies on Convert-a-Link. */
+  mode?: 'cread' | 'direct';
+  /** Extra classes merged onto the anchor. */
+  class?: string;
+  /** Accessible name when the visible text alone is not descriptive. */
+  ariaLabel?: string;
+  /** Render the visible "(opens in a new tab)" cue. Default true. */
+  cue?: boolean;
+  /** Card-only supporting copy. */
+  why?: string;
+  limits?: string;
+}
+
+const {
+  merchant: merchantKey,
+  merchantId,
+  href,
+  clickref,
+  label,
+  variant = 'text',
+  mode = 'cread',
+  class: className,
+  ariaLabel,
+  cue = true,
+  why,
+  limits,
+} = Astro.props;
+
+/* ------------------------------------------------------------- resolution -- */
+
+function resolveMerchant(): AwinMerchant {
+  if (merchantKey) {
+    const found = AWIN_MERCHANTS.find((entry) => entry.key === merchantKey);
+    if (!found) {
+      throw new Error(
+        `AwinLink: unknown merchant "${merchantKey}". Add it to AWIN_MERCHANTS in src/config/awin.ts first.`,
+      );
+    }
+    return found;
+  }
+  if (merchantId) {
+    const found = AWIN_MERCHANTS.find((entry) => entry.mid === merchantId);
+    if (!found) {
+      throw new Error(
+        `AwinLink: merchantId "${merchantId}" is not an approved advertiser in AWIN_MERCHANTS. ` +
+          'Refusing to render a link to an unregistered advertiser.',
+      );
+    }
+    return found;
+  }
+  throw new Error('AwinLink: pass either `merchant` (registry key) or `merchantId` (MID).');
+}
+
+const merchant = resolveMerchant();
+
+if (merchantId && merchant.mid && merchantId !== merchant.mid) {
+  throw new Error(
+    `AwinLink: merchantId "${merchantId}" does not match the registered MID ` +
+      `"${merchant.mid}" for ${merchant.name}. One of the two is wrong; fix it before shipping.`,
+  );
+}
+if (merchant.status !== 'approved') {
+  throw new Error(`AwinLink: ${merchant.name} is not an approved advertiser (status: ${merchant.status}).`);
+}
+if (merchant.mid === null) {
+  throw new Error(
+    `AwinLink: ${merchant.name} has no confirmed MID in AWIN_MERCHANTS. ` +
+      'Paste the MID from Awin → Advertisers before using this merchant. A guessed MID pays no commission.',
+  );
+}
+
+// The visible label must satisfy editorial policy. In card variant the anchor
+// text is the label too, so the same rule applies.
+const anchorText = label?.trim() ?? '';
+if (anchorText === '') throw new Error('AwinLink: `label` is required and must be non-empty.');
+assertAwinLabel(anchorText);
+
+/* ------------------------------------------------------------------- href -- */
+
+let resolvedHref: string;
+if (mode === 'direct') {
+  const parsed = new URL(href);
+  if (parsed.protocol !== 'https:') throw new Error(`AwinLink: direct destination must be https, got "${href}"`);
+  if (!merchant.domains.includes(parsed.hostname)) {
+    throw new Error(
+      `AwinLink: "${parsed.hostname}" is not on ${merchant.name}'s registered domains ` +
+        `(${merchant.domains.join(', ')}). Add the domain to AWIN_MERCHANTS after verifying it.`,
+    );
+  }
+  resolvedHref = parsed.toString();
+} else {
+  resolvedHref = buildAwinHref({
+    destination: href,
+    publisherId: AWIN_PUBLISHER_ID,
+    merchantId: merchant.mid,
+    clickref,
+  }).href;
+}
+
+// Belt and braces: the rendered href must be attributable to this publisher and
+// this advertiser. Catches a future refactor of buildAwinHref before it ships.
+if (
+  !isAttributableAwinHref(resolvedHref, {
+    publisherId: AWIN_PUBLISHER_ID,
+    merchantId: merchant.mid,
+    merchantDomains: merchant.domains,
+  })
+) {
+  throw new Error(`AwinLink: generated href is not attributable to ${AWIN_PUBLISHER_ID}/${merchant.mid}: ${resolvedHref}`);
+}
+
+const anchorClass = [
+  'awin-link',
+  variant === 'button' ? 'awin-link--button' : '',
+  variant === 'card' ? 'awin-link--card' : '',
+  className ?? '',
+]
+  .filter(Boolean)
+  .join(' ');
+---
+
+{
+  AWIN_ENABLED &&
+    (variant === 'text' ? (
+    <span class="awin-link-wrap" data-awin-block={variant} data-awin-merchant={merchant.key}>
+      <a
+        class={anchorClass}
+        href={resolvedHref}
+        target="_blank"
+        rel={AWIN_REL}
+        data-awin-link
+        data-awin-merchant={merchant.key}
+        data-awin-mid={merchant.mid}
+        data-awin-pid={AWIN_PUBLISHER_ID}
+        data-awin-mode={mode}
+        data-awin-clickref={clickref}
+        aria-label={ariaLabel}
+      >
+        {anchorText}
+      </a>
+      {cue && <span class="awin-link__cue">(opens in a new tab)</span>}
+    </span>
+    ) : (
+      <div class="awin-link-wrap" data-awin-block={variant} data-awin-merchant={merchant.key}>
+        <a
+          class={anchorClass}
+          href={resolvedHref}
+          target="_blank"
+          rel={AWIN_REL}
+          data-awin-link
+          data-awin-merchant={merchant.key}
+          data-awin-mid={merchant.mid}
+          data-awin-pid={AWIN_PUBLISHER_ID}
+          data-awin-mode={mode}
+          data-awin-clickref={clickref}
+          aria-label={ariaLabel}
+        >
+          {anchorText}
+        </a>
+        {cue && <span class="awin-link__cue">(opens in a new tab)</span>}
+        {(why || limits) && (
+          <dl class="awin-link__terms">
+            {why && (
+              <div>
+                <dt>Why this link</dt>
+                <dd>{why}</dd>
+              </div>
+            )}
+            {limits && (
+              <div>
+                <dt>Limitations</dt>
+                <dd>{limits}</dd>
+              </div>
+            )}
+          </dl>
+        )}
+      </div>
+    ))
+}
+
+<style>
+  .awin-link-wrap {
+    display: inline;
+  }
+
+  /* Underlined text, never a filled retail button (editorial policy). */
+  .awin-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    width: fit-content;
+    max-width: 100%;
+    color: #ffd58a;
+    font-weight: 800;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+    overflow-wrap: break-word;
+  }
+
+  .awin-link:focus-visible {
+    outline: 3px solid #fff;
+    outline-offset: 4px;
+  }
+
+  .awin-link__cue {
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-style: italic;
+    white-space: nowrap;
+  }
+
+  .awin-link-wrap[data-awin-block='card'],
+  .awin-link-wrap[data-awin-block='button'] {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .awin-link__terms {
+    display: grid;
+    gap: 0.6rem;
+    margin: 0;
+    max-width: 46rem;
+  }
+
+  .awin-link__terms div {
+    display: grid;
+    gap: 0.15rem;
+  }
+
+  .awin-link__terms dt {
+    color: var(--text);
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+
+  .awin-link__terms dd {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  @media (forced-colors: active) {
+    .awin-link {
+      color: LinkText;
+    }
+  }
+</style>

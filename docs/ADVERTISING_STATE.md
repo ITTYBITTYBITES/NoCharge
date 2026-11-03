@@ -1,7 +1,13 @@
 # Advertising state
 
-**Status: advertising is off.** No ad network, no ad banner, no ad placeholder,
-no ad script, and no advertising consent tag is rendered by the shipped build.
+**Status: display advertising is off, and monetization is affiliate-only.**
+No ad network, no ad banner, no ad placeholder, no ad script, and no advertising
+consent tag is rendered by the shipped build.
+
+> Superseded in part: the plan below describes the *legacy* AdSense path, which is
+> retained but retired. Revenue now comes from affiliate links — Awin
+> (`docs/AWIN_INTEGRATION.md`) plus Amazon Associates. Adsterra has been deleted
+> from the codebase, not just disabled.
 
 Two implementations are retained in the repository and can be switched on by
 build flag. Neither has any effect when the flag is unset, and **no**

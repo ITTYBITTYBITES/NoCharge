@@ -11,22 +11,18 @@ interface ImportMetaEnv {
    */
   readonly PUBLIC_ADSENSE_ENABLED?: string;
   /**
-   * Lab advertising is configured entirely through the environment so no
-   * publisher or placement id is ever committed to the repository.
+   * Awin affiliate program master switch. Off unless exactly 'true'.
    *
-   * Nothing loads — and nothing is rendered at all, including the reserved ad
-   * containers and their "Advertisement" labels — unless
-   * PUBLIC_ADSTERRA_ENABLED is exactly 'true'. That keeps the default build free
-   * of third-party requests, which is what the `third-party: 0` performance
-   * budget on the calm site is protecting.
+   * Off (the shipped default) means: no MasterTag request, no Awin link, no
+   * Awin CSP widening, and no "recommended gear" module. The components stay in
+   * the repository so the program can be switched on without a code change.
+   * See docs/AWIN_INTEGRATION.md.
    */
-  readonly PUBLIC_ADSTERRA_ENABLED?: string;
-  /** 320×50 mobile banner placement key. */
-  readonly PUBLIC_ADSTERRA_KEY_MOBILE?: string;
-  /** 728×90 leaderboard placement key. */
-  readonly PUBLIC_ADSTERRA_KEY_LEADERBOARD?: string;
-  /** 300×600 or 160×600 side-rail placement key. */
-  readonly PUBLIC_ADSTERRA_KEY_RAIL?: string;
+  readonly PUBLIC_AWIN_ENABLED?: string;
+  /** Awin advertiser id (MID) for brkox. Numeric, from Awin → Advertisers. */
+  readonly PUBLIC_AWIN_MID_BRKOX?: string;
+  /** Awin advertiser id (MID) for Shenzhen Cangyu Technology. */
+  readonly PUBLIC_AWIN_MID_CANGYU?: string;
 }
 
 interface ImportMeta {

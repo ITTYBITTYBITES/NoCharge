@@ -21,6 +21,14 @@ const inlineProse = new Set(['a', 'code', 'em', 'strong', 'b', 'i', 'mark']);
 const ignoredParagraphClasses = new Set(['ma-card__links', 'daily-slot__actions']);
 const wordAtEnd = /[\p{L}\p{N}]$/u;
 const wordAtStart = /^[\p{L}\p{N}]/u;
+/**
+ * CJK scripts do not separate words with spaces, so "no whitespace between an
+ * inline element and the text beside it" is correct there, not a defect. This
+ * rule exists to catch Latin word-joining; exempt pairs whose boundary
+ * character is Han, Hiragana or Katakana.
+ */
+const cjk = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}]/u;
+const boundaryIsCjk = (left, right) => cjk.test(left.slice(-1)) || cjk.test(right.slice(0, 1));
 const failures = [];
 
 function attr(node, name) {
@@ -44,6 +52,7 @@ function inspect(node, file) {
         const left = text(leftNode);
         const right = text(rightNode);
         if (!left || !right || !wordAtEnd.test(left) || !wordAtStart.test(right)) continue;
+        if (boundaryIsCjk(left, right)) continue;
         const excerpt = text(node).replace(/\s+/g, ' ').trim().slice(0, 180);
         failures.push(`${relative(dist, file)}: joins “${left.slice(-24)}” and “${right.slice(0, 24)}” without whitespace (${excerpt})`);
       }
