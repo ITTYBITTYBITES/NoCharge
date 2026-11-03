@@ -27,7 +27,31 @@ for (const slug of expectedSlugs) {
   if (html.includes('data-ad-banner')) throw new Error(`Display ad on setup article: ${slug}`);
 
   const hasAffiliateLinks = html.includes('data-has-affiliate-links="true"');
+  const hasPaidLinks = html.includes('data-has-paid-links="true"');
+  const awinLinks = [...html.matchAll(/<a[^>]+data-awin-link[^>]*>[\s\S]*?<\/a>/g)].map((match) => match[0]);
   const links = [...html.matchAll(/<a[^>]+data-amazon-paid-link[^>]*>[\s\S]*?<\/a>/g)].map((match) => match[0]);
+
+  // Awin paid links on a Setup article: same disclosure order, same rel, real
+  // publisher id, numeric MID, and the link text must say "(paid link)".
+  if (awinLinks.length) {
+    const disclosure = html.indexOf('data-affiliate-disclosure');
+    if (disclosure < 0 || disclosure > html.indexOf('data-awin-link')) {
+      throw new Error(`Awin disclosure not before first paid link: ${slug}`);
+    }
+    for (const tag of awinLinks) {
+      const href = tag.match(/href="([^"]+)"/)?.[1]?.replaceAll('&amp;', '&') ?? '';
+      const rel = tag.match(/rel="([^"]+)"/)?.[1] ?? '';
+      if (!/^https:\/\/www\.awin1\.com\/cread\.php\?/.test(href)) {
+        throw new Error(`Awin link is not a cread URL in ${slug}: ${href}`);
+      }
+      if (!/awinaffid=3025417(?:&|$)/.test(href)) throw new Error(`Awin link without the publisher id in ${slug}: ${href}`);
+      if (!/awinmid=\d+/.test(href)) throw new Error(`Awin link without a numeric MID in ${slug}: ${href}`);
+      for (const token of ['sponsored', 'nofollow', 'noopener', 'noreferrer']) {
+        if (!rel.split(' ').includes(token)) throw new Error(`Awin rel missing ${token} in ${slug}`);
+      }
+      if (!/\(paid link\)/i.test(tag.replace(/<[^>]*>/g, ''))) throw new Error(`Awin label not marked paid in ${slug}`);
+    }
+  }
   if (hasAffiliateLinks) {
     const disclosure = html.indexOf('data-affiliate-disclosure');
     const firstLink = html.indexOf('data-amazon-paid-link');
@@ -35,7 +59,7 @@ for (const slug of expectedSlugs) {
     if (!html.includes('As an Amazon Associate I earn from qualifying purchases.')) {
       throw new Error(`Required statement missing: ${slug}`);
     }
-  } else if (links.length || html.includes('data-affiliate-disclosure')) {
+  } else if ((links.length || awinLinks.length || html.includes('data-affiliate-disclosure')) && !hasPaidLinks) {
     throw new Error(`False affiliate markup: ${slug}`);
   }
 
@@ -65,9 +89,19 @@ for (const file of ['index.html', ...expectedSlugs.map((slug) => `${slug}/index.
 }
 
 const gameDirectories = (await readdir(join(dist, 'games'), { withFileTypes: true })).filter((entry) => entry.isDirectory());
+/** Extracts the game shell region so a footer module is not mistaken for game UI. */
+function gameSurface(html) {
+  const start = html.indexOf('data-game-shell');
+  if (start === -1) return '';
+  const end = html.indexOf('</main>', start);
+  return html.slice(start, end === -1 ? undefined : end);
+}
+
 for (const game of gameDirectories) {
   const html = await readFile(join(dist, 'games', game.name, 'index.html'), 'utf8');
-  if (/amazon\.com|data-amazon-paid-link/i.test(html)) throw new Error(`Amazon link in game UI: ${game.name}`);
+  const surface = gameSurface(html);
+  if (/amazon\.com|data-amazon-paid-link/i.test(surface)) throw new Error(`Amazon link in game UI: ${game.name}`);
+  if (/awin1\.com|data-awin-link/i.test(surface)) throw new Error(`Awin link in game UI: ${game.name}`);
 }
 
 console.log(`Quiet Setup validation passed: ${expectedSlugs.length} articles, ${paidUrls.length} direct paid links; no merchant requests made.`);

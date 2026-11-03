@@ -122,3 +122,29 @@ describe('disclosure contract', () => {
     expect(AWIN_REL.split(' ').sort()).toEqual(['nofollow', 'noopener', 'noreferrer', 'sponsored']);
   });
 });
+
+describe('setup topic map', () => {
+  it('covers every topic the schema allows, and only merchants in the registry', async () => {
+    const { AWIN_MERCHANTS_BY_TOPIC, SETUP_TOPICS, assertTopicMapMatchesRegistry } = await import('./awin-topic-map');
+    const { AWIN_MERCHANTS } = await import('../config/awin');
+
+    // Every schema topic has an explicit entry (empty is fine, missing is not).
+    expect(Object.keys(AWIN_MERCHANTS_BY_TOPIC).sort()).toEqual([...SETUP_TOPICS].sort());
+
+    // No entry points at a merchant that does not exist.
+    expect(assertTopicMapMatchesRegistry(AWIN_MERCHANTS.map((merchant) => merchant.key))).toEqual([]);
+
+    // Regression guard for the shipped bug: the artistic/artwork identifiers were
+    // used as topics and produced zero affiliate blocks on 210 articles.
+    for (const artworkName of ['lamp', 'bias-light', 'lamp-light', 'monitor', 'zoom-display', 'cables']) {
+      expect(Object.keys(AWIN_MERCHANTS_BY_TOPIC)).not.toContain(artworkName);
+    }
+  });
+
+  it('maps both approved merchants to at least one topic', async () => {
+    const { AWIN_MERCHANTS_BY_TOPIC } = await import('./awin-topic-map');
+    const mapped = new Set(Object.values(AWIN_MERCHANTS_BY_TOPIC).flat());
+    expect(mapped.has('brkox')).toBe(true);
+    expect(mapped.has('shenzhen-cangyu')).toBe(true);
+  });
+});

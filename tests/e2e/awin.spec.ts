@@ -19,7 +19,6 @@ import { expect, test } from '@playwright/test';
 import { denyOptionalServices } from './helpers/consent';
 
 const PID = '3025417';
-const MASTERTAG = 'https://www.dwin2.com/pub.3025417.min.js';
 const REL = ['nofollow', 'noopener', 'noreferrer', 'sponsored'];
 
 test.describe('shipped build: Awin is off', () => {

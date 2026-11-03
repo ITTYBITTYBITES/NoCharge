@@ -161,6 +161,23 @@ for (const file of htmlFiles(DIST)) {
   }
 }
 
+/**
+ * Enabled-build floor. A zero-link build is the failure mode that looks exactly
+ * like success: every assertion above passes because there is nothing to assert
+ * against. It shipped once (a topic map keyed on artwork identifiers), so the
+ * count is now asserted rather than printed and admired.
+ */
+const enabled = mastertagPages > 0;
+if (enabled && paidLinks === 0) {
+  failures.push(
+    'PUBLIC_AWIN_ENABLED is on and the MasterTag rendered, but zero paid links were produced — ' +
+      'check AWIN_MERCHANTS_BY_TOPIC keys, merchant MIDs, and GearPicks placement',
+  );
+}
+if (!enabled && paidLinks > 0) {
+  failures.push(`${paidLinks} paid links rendered without the MasterTag loader (flag off?)`);
+}
+
 console.log(`validate:awin — ${pages} pages, ${paidLinks} paid links, ${mastertagPages} pages with the MasterTag`);
 if (failures.length) {
   console.error(`\n${failures.length} problem(s):\n` + failures.map((line) => ` - ${line}`).join('\n'));

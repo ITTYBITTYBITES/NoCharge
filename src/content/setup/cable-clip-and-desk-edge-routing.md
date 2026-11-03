@@ -8,6 +8,7 @@ topics: [desk-and-comfort]
 evidenceLevel: editorial-research
 hasAffiliateLinks: true
 affiliateDisclosure: true
+awinMerchants: ['shenzhen-cangyu']
 artwork: footrest-mat
 featured: false
 draft: false
