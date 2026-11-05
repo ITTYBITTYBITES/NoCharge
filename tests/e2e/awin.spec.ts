@@ -1,27 +1,17 @@
-/**
- * Awin integration contract.
- *
- * The shipped build has `PUBLIC_AWIN_ENABLED` unset, so the first block asserts
- * the *absence* of every Awin artifact — no MasterTag, no link, no CSP
- * widening. That keeps the calm default honest.
- *
- * The second block simulates the enabled build in the browser: it seeds an
- * analytics consent (the gate the MasterTag waits for), then asserts the tag
- * URL, and asserts that every rendered Awin link is attributable and carries the
- * required `rel`. Those assertions run against the links that exist in the
- * build, so they are meaningful in both modes.
- *
- * `npm run validate:awin` checks the built HTML for the same invariants without
- * a browser, which is what CI should rely on for the static guarantees.
- */
+/** Browser checks for both enabled and disabled static builds. */
+import { readFileSync } from 'node:fs';
+
 import { expect, test } from '@playwright/test';
 
 import { denyOptionalServices } from './helpers/consent';
 
 const PID = '3025417';
 const REL = ['nofollow', 'noopener', 'noreferrer', 'sponsored'];
+// The build step's environment need not be present in the Playwright step.
+const awinEnabled = readFileSync('dist/index.html', 'utf8').includes('pub.3025417.min.js');
 
 test.describe('shipped build: Awin is off', () => {
+  test.skip(awinEnabled, 'The generated build has Awin enabled');
   test.beforeEach(async ({ page }) => {
     await denyOptionalServices(page);
   });
@@ -56,6 +46,31 @@ test.describe('shipped build: Awin is off', () => {
   });
 });
 
+test.describe('shipped build: Awin is on', () => {
+  test.skip(!awinEnabled, 'The generated build has Awin disabled');
+
+  test('links and restricted CSP are present without loading the tag on denied consent', async ({ page }) => {
+    await denyOptionalServices(page);
+    const requests: string[] = [];
+    page.on('request', request => requests.push(request.url()));
+    await page.goto('/');
+    await expect(page.locator('[data-awin-link]').first()).toBeVisible();
+    await expect(page.locator('script[src*="dwin2.com"]')).toHaveCount(0);
+    const policy = await page.locator('meta[http-equiv="Content-Security-Policy"]').getAttribute('content');
+    expect(policy).toContain('https://www.dwin2.com');
+    expect(policy).toContain('https://www.awin1.com');
+    expect(requests.filter(url => url.includes('dwin2.com'))).toEqual([]);
+  });
+
+  test('granting consent loads the MasterTag', async ({ page }) => {
+    await page.route('https://www.dwin2.com/**', route => route.fulfill({ status: 200, contentType: 'text/javascript', body: '' }));
+    await denyOptionalServices(page);
+    await page.goto('/');
+    await page.evaluate(() => window.dispatchEvent(new CustomEvent('nocharge:consentchange', { detail: { analytics: true } })));
+    await expect(page.locator('script[data-awin-mastertag="3025417"]')).toHaveAttribute('src', 'https://www.dwin2.com/pub.3025417.min.js');
+  });
+});
+
 test.describe('consent gate', () => {
   test('the MasterTag is not requested before an analytics decision', async ({ page }) => {
     const requested: string[] = [];
@@ -72,6 +87,7 @@ test.describe('every rendered paid link meets the contract', () => {
   });
 
   test('Awin links carry rel, target, PID and a clickable https destination', async ({ page }) => {
+    await page.goto('/');
     const audit = await page.evaluate(async () => {
       const seen: { href: string; rel: string; target: string | null; pid: string | null; mid: string | null }[] = [];
       // Setup articles with lighting/screens topics are where Awin blocks land.
@@ -92,6 +108,9 @@ test.describe('every rendered paid link meets the contract', () => {
       }
       return seen;
     });
+
+    if (awinEnabled) expect(audit.length).toBeGreaterThan(0);
+    else expect(audit).toHaveLength(0);
 
     for (const link of audit) {
       expect(link.rel.split(' ').sort(), link.href).toEqual(REL);

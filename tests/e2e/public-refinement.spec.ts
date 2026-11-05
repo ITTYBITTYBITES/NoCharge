@@ -17,12 +17,12 @@ test('footer exposes durable grouped destinations without repeated links', async
   await expect(footer.getByRole('navigation', { name: 'Explore' })).toBeVisible();
   await expect(footer.getByRole('navigation', { name: 'NoCharge' })).toBeVisible();
   await expect(footer.getByRole('navigation', { name: 'Policies' })).toBeVisible();
-  const hrefs = await footer.locator('a').evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+  const hrefs = await footer.locator('.footer-groups a').evaluateAll((links) => links.map((link) => link.getAttribute('href')));
   expect(new Set(hrefs).size).toBe(hrefs.length);
   expect(hrefs).toEqual(expect.arrayContaining(['/arcade/', '/guides/', '/articles/', '/collections/', '/help/', '/privacy/', '/terms/', '/advertising/']));
   expect(hrefs.filter((href) => href?.startsWith('/games/'))).toHaveLength(0);
   expect(hrefs.filter((href) => href?.startsWith('/articles/')).length).toBe(1);
-  expect(hrefs.filter((href) => href === 'mailto:hello@nocharge.net')).toHaveLength(1);
+  await expect(footer.locator('a[href="mailto:hello@nocharge.net"]')).toHaveCount(1);
 });
 
 test('public changelog uses visitor language and keeps reverse chronology', async ({ page }) => {

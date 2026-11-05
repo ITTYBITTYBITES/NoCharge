@@ -63,10 +63,16 @@ test('ships a restrictive document policy with only the documented Google origin
   expect(directive('script-src')).not.toContain('adtrafficquality');
   expect(directive('img-src')).not.toContain('adtrafficquality');
   expect(directive('frame-src')).not.toContain('adtrafficquality');
-  // Retired ad networks are gone from the policy, and Awin's hosts appear only
-  // when PUBLIC_AWIN_ENABLED is set (they are absent from this build).
+  // Awin hosts are included only when the generated page has its consent-gated loader.
   expect(policy).not.toContain('highperformanceformat');
-  expect(policy).not.toContain('dwin2.com');
+  const hasAwinLoader = (await page.content()).includes('pub.3025417.min.js');
+  if (hasAwinLoader) {
+    expect(directive('script-src')).toContain('https://www.dwin2.com');
+    expect(directive('connect-src')).toContain('https://www.awin1.com');
+  } else {
+    expect(policy).not.toContain('dwin2.com');
+    expect(policy).not.toContain('awin1.com');
+  }
   // The meta CSP must not force HTTPS upgrades: WebKit applies the meta
   // directive to plain-HTTP local previews and fails the TLS handshake.
   // upgrade-insecure-requests is applied only at the production edge.
