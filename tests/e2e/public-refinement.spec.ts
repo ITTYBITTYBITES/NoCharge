@@ -3,10 +3,10 @@ import { denyOptionalServices } from './helpers/consent';
 
 test.beforeEach(async ({ page }) => denyOptionalServices(page));
 
-test('homepage keeps the real labeled ad while omitting ad-promotion copy', async ({ page }) => {
+test('homepage ships no ad or ad placeholder while omitting ad-promotion copy', async ({ page }) => {
   await page.goto('/');
-  await expect(page.locator('[data-ad-banner]')).toHaveCount(1);
-  await expect(page.locator('[data-ad-banner]').getByText('Advertisement', { exact: true })).toBeVisible();
+  await expect(page.locator('[data-ad-banner]')).toHaveCount(0);
+  await expect(page.getByText('Advertisement', { exact: true })).toHaveCount(0);
   await expect(page.getByText(/one labeled banner Google manages|restrained advertising|no interstitials/i)).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'A growing play library' })).toBeVisible();
 });
@@ -17,12 +17,12 @@ test('footer exposes durable grouped destinations without repeated links', async
   await expect(footer.getByRole('navigation', { name: 'Explore' })).toBeVisible();
   await expect(footer.getByRole('navigation', { name: 'NoCharge' })).toBeVisible();
   await expect(footer.getByRole('navigation', { name: 'Policies' })).toBeVisible();
-  const hrefs = await footer.locator('a').evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+  const hrefs = await footer.locator('.footer-groups a').evaluateAll((links) => links.map((link) => link.getAttribute('href')));
   expect(new Set(hrefs).size).toBe(hrefs.length);
   expect(hrefs).toEqual(expect.arrayContaining(['/arcade/', '/guides/', '/articles/', '/collections/', '/help/', '/privacy/', '/terms/', '/advertising/']));
   expect(hrefs.filter((href) => href?.startsWith('/games/'))).toHaveLength(0);
   expect(hrefs.filter((href) => href?.startsWith('/articles/')).length).toBe(1);
-  expect(hrefs.filter((href) => href === 'mailto:hello@nocharge.net')).toHaveLength(1);
+  await expect(footer.locator('a[href="mailto:hello@nocharge.net"]')).toHaveCount(1);
 });
 
 test('public changelog uses visitor language and keeps reverse chronology', async ({ page }) => {

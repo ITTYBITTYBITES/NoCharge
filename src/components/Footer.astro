@@ -3,10 +3,17 @@ import BrandMark from './BrandMark.astro';
 import LanguageSwitcher from './LanguageSwitcher.astro';
 import { splitLocale, withLocale } from '../i18n/routes';
 import { t } from '../i18n/messages';
+import { ADSENSE_ENABLED } from '../config/adsense';
+import { AWIN_ENABLED } from '../config/awin';
 
 const year = new Date().getFullYear();
 const { locale } = splitLocale(Astro.url.pathname);
 const href = (path: string) => withLocale(path, locale);
+// The affiliate note embeds a link. Split on the placeholder rather than
+// concatenating a sentence fragment with an anchor, so every locale keeps its
+// own word order around the link.
+const [affiliateNoteBefore, affiliateNoteAfter = ''] = t(locale, 'footer.affiliateNote', { advertisingLink: '{link}' })
+  .split('{link}');
 ---
 
 <footer class="site-footer">
@@ -28,12 +35,35 @@ const href = (path: string) => withLocale(path, locale);
       <li><a href={href('/privacy/')}>{t(locale, 'nav.privacy')}</a></li><li><a href={href('/privacy-policy/')}>{t(locale, 'nav.privacyPolicy')}</a></li><li><a href={href('/terms/')}>{t(locale, 'nav.terms')}</a></li><li><a href={href('/advertising/')}>{t(locale, 'nav.advertising')}</a></li>
     </ul></nav>
   </div>
+  {/* Site-wide affiliate disclosure. Always present: the Amazon layer is live
+      even when Awin is off, so this is not conditional on the Awin flag. */}
+  <p class="site-footer__affiliate" data-affiliate-note lang={locale}><span>{affiliateNoteBefore}</span><a
+      href={href('/advertising/')}>{t(locale, 'nav.advertising')}</a><span>{affiliateNoteAfter}</span></p>
   <LanguageSwitcher variant="footer" />
-  <div class="footer-controls"><button type="button" data-consent-open>{t(locale, 'footer.analyticsChoices')}</button><button type="button" data-google-ad-choices>{t(locale, 'footer.adChoices')}</button></div>
+  <div class="footer-controls"><button type="button" data-consent-open>{t(locale, 'footer.analyticsChoices')}</button>{
+    ADSENSE_ENABLED && <button type="button" data-google-ad-choices>{t(locale, 'footer.adChoices')}</button>
+  }</div>
 </footer>
 
-<script is:inline>
-  (() => {
+<style>
+  /* Not a flex row: a Latin sentence needs a space around the inline link, and
+     the dictionary supplies it. A CJK locale supplies none, which is correct
+     there — so spacing stays in the copy, not in CSS. */
+  .site-footer__affiliate {
+    max-width: 46rem;
+    margin: 0.25rem 0 0;
+    color: var(--muted);
+    font-size: 0.82rem;
+    line-height: 1.6;
+    overflow-wrap: break-word;
+  }
+</style>
+
+<script is:inline define:vars={{ ADSENSE_ENABLED, AWIN_ENABLED }}>
+  // Only emitted wiring when an advertising consent message can exist. With
+  // advertising off, this script would be dead code referencing a control that
+  // is not rendered.
+  if (ADSENSE_ENABLED) {
     document.querySelectorAll('[data-google-ad-choices]').forEach((control) => {
       control.addEventListener('click', () => {
         const googlefc = window.googlefc;
@@ -41,5 +71,5 @@ const href = (path: string) => withLocale(path, locale);
         window.open('https://policies.google.com/privacy', '_blank', 'noopener');
       });
     });
-  })();
+  }
 </script>

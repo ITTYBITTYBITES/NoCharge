@@ -1,0 +1,37 @@
+diff --git a/.github/workflows/deploy.yml b/.github/workflows/deploy.yml
+index ee5ccc7..80aafdd 100644
+--- a/.github/workflows/deploy.yml
++++ b/.github/workflows/deploy.yml
+@@ -52,9 +52,32 @@ jobs:
+       - name: Check types and Astro files
+         run: npm run check
+ 
++      # Monetization flags come from repository/environment variables, never from
++      # a committed .env. On a pull_request from a fork these are empty, so the
++      # preview build is the flag-off build — which is the honest default.
++      # Without this block the deployed site would build with PUBLIC_AWIN_ENABLED
++      # unset and silently render zero affiliate links.
+       - name: Build site
++        env:
++          PUBLIC_AWIN_ENABLED: ${{ vars.PUBLIC_AWIN_ENABLED }}
++          PUBLIC_AWIN_MID_BRKOX: ${{ vars.PUBLIC_AWIN_MID_BRKOX }}
++          PUBLIC_AWIN_MID_CANGYU: ${{ vars.PUBLIC_AWIN_MID_CANGYU }}
++          PUBLIC_ADSENSE_ENABLED: ${{ vars.PUBLIC_ADSENSE_ENABLED }}
+         run: npm run build
+ 
++      # `npm run build` runs verify:build, which includes validate:awin. With the
++      # flag on, that fails if the build produces zero paid links, so a
++      # misconfigured variable cannot deploy a silently non-monetized site.
++      - name: Report monetization state
++        env:
++          PUBLIC_AWIN_ENABLED: ${{ vars.PUBLIC_AWIN_ENABLED }}
++        run: |
++          if [ "$PUBLIC_AWIN_ENABLED" = "true" ]; then
++            echo "Awin enabled for this build."
++          else
++            echo "::notice title=Awin disabled::PUBLIC_AWIN_ENABLED is not 'true' for this repository; the deployed build renders no affiliate links."
++          fi
++
+       - name: Browser diagnostics
+         run: |
+           which google-chrome google-chrome-stable chromium chromium-browser || true

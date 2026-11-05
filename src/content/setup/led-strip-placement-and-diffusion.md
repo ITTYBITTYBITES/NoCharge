@@ -8,6 +8,7 @@ topics: [lighting, desk-and-comfort]
 evidenceLevel: editorial-research
 hasAffiliateLinks: true
 affiliateDisclosure: true
+awinMerchants: ['brkox']
 artwork: room-lighting
 featured: false
 draft: false

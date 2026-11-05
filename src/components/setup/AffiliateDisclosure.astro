@@ -1,12 +1,45 @@
 ---
+/**
+ * Page-level affiliate disclosure. Rendered before the first paid link.
+ *
+ * Two networks can be present, and the wording changes with them:
+ *  - `awin`   — Awin commission link (brkox, Shenzhen Cangyu).
+ *  - `amazon` — Amazon Associates, which requires its exact statement.
+ *
+ * The Amazon statement is only rendered when an Amazon link is actually on the
+ * page; printing it on an Awin-only page would be a false statement about the
+ * commercial relationships in that article.
+ */
 import { AFFILIATE_DISCLOSURE, AMAZON_REQUIRED_STATEMENT } from '../../config/affiliate';
+import { awinDisclosureLines } from '../../lib/awin';
+import { AWIN_ENABLED, AWIN_PUBLISHER_ID } from '../../config/awin';
+
+interface Props {
+  /** Which networks the page actually uses. Order does not matter. */
+  networks?: readonly ('awin' | 'amazon')[];
+  /**
+   * `panel` renders an <aside> (a complementary landmark) — correct when it is
+   * the only disclosure on the page, as on a Setup article.
+   * `note` renders a role="note" block for pages that may carry more than one
+   * disclosure, so two landmarks never share an accessible name.
+   */
+  variant?: 'panel' | 'note';
+}
+
+const { networks = ['amazon'], variant = 'panel' } = Astro.props;
+const Panel = variant === 'panel' ? 'aside' : 'div';
+const panelRole = variant === 'panel' ? undefined : 'note';
+const usesAwin = AWIN_ENABLED && networks.includes('awin');
+const usesAmazon = networks.includes('amazon');
+const awinLine = usesAwin ? awinDisclosureLines(AWIN_PUBLISHER_ID)[0] : null;
 ---
 
-<aside class="affiliate-disclosure" aria-label="Affiliate disclosure" data-affiliate-disclosure>
+<Panel class="affiliate-disclosure" aria-label="Affiliate disclosure" role={panelRole} data-affiliate-disclosure data-disclosure-networks={networks.join(' ')}>
   <p><strong>Affiliate disclosure:</strong> {AFFILIATE_DISCLOSURE}</p>
-  <p><strong>{AMAZON_REQUIRED_STATEMENT}</strong></p>
-  <p class="new-tab-note">Affiliate links open in a new tab so you don't lose your place on NoCharge.</p>
-</aside>
+  {awinLine && <p>{awinLine}</p>}
+  {usesAmazon && <p><strong>{AMAZON_REQUIRED_STATEMENT}</strong></p>}
+  <p class="new-tab-note">Affiliate links open in a new tab so you don't lose your place on NoCharge. Paid links are marked &ldquo;(paid link)&rdquo; in their text.</p>
+</Panel>
 
 <style>
   /* Deliberately not an alert: a neutral panel with one amber rule, no icon,

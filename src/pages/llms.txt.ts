@@ -31,8 +31,8 @@ Key details:
 - Free model: every game and tool opens with no account, subscription, or download.
 - Local-only scores and progress: localStorage only; no server-side profiles or cross-device sync.
 - Quiet Arcade voice: calm defaults, untimed modes where the genre allows, reduced-motion support.
-- Ads: one labeled AdSense banner before the footer on eligible pages; never inside the game canvas or play loop.
-- Consent: analytics stays off until the visitor allows it; advertising choices use Google's Privacy & messaging message.
+- Ads: no display advertising. Some pages carry clearly marked paid links to Awin merchants and to Amazon; paid links are text-only (no images, prices, widgets, or embeds) and never appear inside a game board or game controls.
+- Consent: analytics stays off until the visitor allows it.
 - Accessibility: visible focus, documented keyboard paths where the game supports them, non-color-critical states in Color Flip, and \`prefers-reduced-motion\` honored.
 - Honesty limits: no fake rankings, no claims of cognitive benefit, no "works on every network" promises. School or locked-network play depends on the local network.
 

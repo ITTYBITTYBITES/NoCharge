@@ -8,6 +8,24 @@
  * TCF or GPP strings and never gates ads behind its own consent flag.
  */
 
+/**
+ * Master switch for the AdSense banner.
+ *
+ * Advertising is **off** by default: the site ships with no banner, no ad
+ * placeholder, no AdSense tag and no Google Privacy & messaging tag. The
+ * component, slot ids and `ads.txt` record are all kept so the banner can be
+ * restored by setting `PUBLIC_ADSENSE_ENABLED=true` — no code change needed.
+ *
+ * When it is `false`:
+ *  - `BaseLayout` renders no `<AdSenseBanner />` and loads no Google ad or
+ *    consent tag, regardless of a page's `showAds` prop;
+ *  - the footer's "Privacy and cookie settings" control is not rendered,
+ *    because there is no Google advertising consent message to reopen.
+ *
+ * See `docs/ADVERTISING_STATE.md`.
+ */
+export const ADSENSE_ENABLED = import.meta.env.PUBLIC_ADSENSE_ENABLED === 'true';
+
 /** AdSense publisher (client) id. */
 export const ADSENSE_PUBLISHER_ID = 'ca-pub-1566091161594729';
 

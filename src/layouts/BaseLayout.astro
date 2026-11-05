@@ -5,7 +5,10 @@ import Footer from '../components/Footer.astro';
 import AdSenseBanner from '../components/AdSenseBanner.astro';
 import ConsentManager from '../components/ConsentManager.astro';
 import SeoHead from '../components/SeoHead.astro';
-import { ADSENSE_CONSENT_TAG_URL } from '../config/adsense';
+import { ADSENSE_CONSENT_TAG_URL, ADSENSE_ENABLED } from '../config/adsense';
+import { AWIN_CSP_SOURCES, AWIN_ENABLED } from '../config/awin';
+import AwinMasterTag from '../components/AwinMasterTag.astro';
+import GearPicks from '../components/GearPicks.astro';
 import { siteModeBootstrapScript } from '../lab/mode/mode-toggle';
 import { LOCALE_META } from '../i18n/config';
 import { splitLocale, withLocale } from '../i18n/routes';
@@ -91,11 +94,30 @@ const {
 const isProd = import.meta.env.PROD;
 
 /**
+ * Whether the Google AdSense banner and its consent tag may render here.
+ *
+ * Two independent conditions, both required: the page must be eligible
+ * (`showAds`) and advertising must be switched on for the build
+ * (`PUBLIC_ADSENSE_ENABLED=true`). The build flag defaults to off, so the site
+ * ships with no ad markup at all. See src/config/adsense.ts and
+ * docs/ADVERTISING_STATE.md.
+ */
+const adSenseOn = isProd && ADSENSE_ENABLED && showAds;
+
+/**
  * Build the Content-Security-Policy. Identical to the calm site's policy
  * unless `extraCsp` widens a specific directive for this route.
  */
 const sources = (base: string, added: readonly string[] | undefined) =>
   added && added.length ? `${base} ${added.join(' ')}` : base;
+
+/**
+ * Awin needs two hosts (the MasterTag, and the click endpoint for
+ * Convert-a-Link). They are added only when the program is enabled, so the calm
+ * default policy is unchanged. Same rule as the Lab's `extraCsp`: host names
+ * only, no scheme wildcards.
+ */
+const awinCsp = AWIN_ENABLED ? AWIN_CSP_SOURCES : undefined;
 
 const CONTENT_SECURITY_POLICY = [
   `default-src 'self'`,
@@ -103,18 +125,18 @@ const CONTENT_SECURITY_POLICY = [
   `object-src 'none'`,
   sources(
     `script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com https://fundingchoicesmessages.google.com`,
-    extraCsp?.scriptSrc,
+    [...(extraCsp?.scriptSrc ?? []), ...(awinCsp?.scriptSrc ?? [])],
   ),
   `style-src 'self' 'unsafe-inline'`,
   sources(
     `img-src 'self' data: https://www.google-analytics.com https://*.google-analytics.com https://pagead2.googlesyndication.com https://tpc.googlesyndication.com https://googleads.g.doubleclick.net https://securepubads.g.doubleclick.net https://www.google.com`,
-    extraCsp?.imgSrc,
+    [...(extraCsp?.imgSrc ?? []), ...(awinCsp?.imgSrc ?? [])],
   ),
   `font-src 'self'`,
   `media-src 'self'`,
   sources(
     `connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://securepubads.g.doubleclick.net https://tpc.googlesyndication.com https://fundingchoicesmessages.google.com https://www.google.com https://*.adtrafficquality.google`,
-    extraCsp?.connectSrc,
+    [...(extraCsp?.connectSrc ?? []), ...(awinCsp?.connectSrc ?? [])],
   ),
   sources(
     `frame-src 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com https://fundingchoicesmessages.google.com`,
@@ -192,7 +214,7 @@ const showLocaleNotice = locale !== 'en' && !bodyTranslated;
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta http-equiv="Content-Security-Policy" content={CONTENT_SECURITY_POLICY} />
     {
-      isProd && (
+      isProd && ADSENSE_ENABLED && (
         <>
           <!--
             Official Google Privacy & messaging (Funding Choices) message tag.
@@ -296,12 +318,21 @@ const showLocaleNotice = locale !== 'en' && !bodyTranslated;
             )}
             <slot />
           </main>
-          {isProd && showAds && <AdSenseBanner />}
+          {/* The old display-ad band lived here. It is now an editorial module:
+              either the AdSense banner (if that legacy program is re-enabled)
+              or the Awin "recommended gear" panel (if Awin is enabled). Never
+              both. `showAds` keeps its original meaning — "may this page carry
+              a commercial module at all" — so trust pages, the Lab, Setup
+              guides and My Arcade opt out unchanged. */}
+          {adSenseOn ? <AdSenseBanner /> : AWIN_ENABLED && showAds && <GearPicks slot="page-footer" />}
           <Footer />
         </div>
       )
     }
     <ConsentManager />
+    {/* Awin MasterTag. Renders nothing unless PUBLIC_AWIN_ENABLED=true, and
+        injects the script only after the visitor allows optional services. */}
+    <AwinMasterTag />
     <script>
       import { startPrivacyAwareErrorReporting } from '../lib/error-monitoring';
 

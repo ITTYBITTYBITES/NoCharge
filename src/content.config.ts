@@ -102,6 +102,15 @@ const setup = defineCollection({
     topic: setupTopics, topics: z.array(setupTopics).min(1), evidenceLevel: evidenceLevels,
     hasAffiliateLinks: z.boolean(), affiliateDisclosure: z.boolean().default(false),
     affiliateLinks: z.array(affiliateLink).default([]),
+    /**
+     * Awin merchants approved for this article, by registry key.
+     *
+     * Empty by default: an article opts in explicitly, because the page claims
+     * "Contains paid links" and shows a disclosure based on this field. A
+     * topic-wide automatic insertion once put paid links on articles that
+     * declared none, which `validate-quiet-setup` rejected — correctly.
+     */
+    awinMerchants: z.array(z.enum(['brkox', 'shenzhen-cangyu'])).default([]),
     artwork: z.enum(['hero', 'keyboards', 'pointing', 'screens-stands', 'puzzles-desk', 'switches', 'zoom-display', 'desk-noise', 'monitor', 'speakers', 'posture', 'footrest', 'lamp', 'bias-light', 'cables', 'room-lighting', 'screen-film', 'monitor-calibration', 'chair-posture', 'lamp-light', 'footrest-mat', 'headphones', 'large-dual-monitors']),
     draft: z.boolean().default(false), featured: z.boolean().default(false),
   }).superRefine((data, ctx) => {
@@ -109,6 +118,10 @@ const setup = defineCollection({
       ctx.addIssue({ code: 'custom', message: 'Affiliate articles require disclosure metadata and at least one link.' });
     if (!data.hasAffiliateLinks && data.affiliateLinks.length)
       ctx.addIssue({ code: 'custom', message: 'Nonaffiliate articles cannot contain affiliate links.' });
+    // An Awin block renders a disclosure and a paid link, so the article must
+    // also declare the disclosure flag that the page reads.
+    if (data.awinMerchants.length > 0 && !data.affiliateDisclosure)
+      ctx.addIssue({ code: 'custom', message: 'Awin merchants require affiliateDisclosure: true.' });
     for (const link of data.affiliateLinks) {
       const url = new URL(link.url);
       if (!['amazon.com', 'www.amazon.com'].includes(url.hostname) || url.searchParams.get('tag') !== 'nocharge-20')

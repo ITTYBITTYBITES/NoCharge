@@ -16,7 +16,7 @@ A growing collection of browser games and practical player guides built with **A
 | Styling      | Plain CSS (“Quiet Arcade”)                  |
 | Storage      | `localStorage`                              |
 | Analytics    | GA4 (`G-GYQ8TEM6DS`), consent-gated          |
-| Ads          | One manual, responsive Google AdSense banner; consent via Google Privacy & messaging |
+| Monetization | Affiliate only. Awin (consent-gated MasterTag, build-time-validated links) + Amazon Associates; no display ads. See `docs/AWIN_INTEGRATION.md` |
 
 ## Games
 

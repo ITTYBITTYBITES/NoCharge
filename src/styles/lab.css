@@ -7,24 +7,23 @@
  *
  * Structure of this file:
  *   1. Theme tokens (three candidate identities)
- *   2. Layout frame — stage + ad containers
+ *   2. Layout frame — stage
  *   3. Canvas
  *   4. HUD
  *   5. Orientation variants
  *
  * Layout contract
  * ---------------
- * The stage is a CSS Grid with three named areas. Advertisements can only ever
- * occupy `ad-bottom` and `ad-rail`, never `stage` — so it is structurally
- * impossible for a banner to overlap the playfield or the touch controls, no
- * matter what size the network's creative decides to be.
+ * The frame is a CSS Grid with a single `stage` area. The Lab used to reserve
+ * `ad-bottom` and `ad-rail` tracks for a banner network; that network is gone
+ * (display advertising was replaced by Awin affiliate links — see
+ * docs/AWIN_INTEGRATION.md), so the stage owns the entire frame and there is no
+ * empty ad band to reserve, hide, or explain.
  *
- *   ┌──────────────────────────┬───────────┐
- *   │                          │           │
- *   │          stage           │  ad-rail  │   desktop landscape
- *   │                          │           │
- *   ├──────────────────────────┴───────────┤
- *   │              ad-bottom               │
+ *   ┌──────────────────────────────────────┐
+ *   │                                      │
+ *   │                stage                 │   every orientation
+ *   │                                      │
  *   └──────────────────────────────────────┘
  */
 
@@ -88,10 +87,9 @@
   height: 100dvh;
 
   display: grid;
-  grid-template-areas:
-    'stage'
-    'ad-bottom';
-  grid-template-rows: minmax(0, 1fr) auto;
+  /* One track: the stage owns the whole frame. No ad band is reserved. */
+  grid-template-areas: 'stage';
+  grid-template-rows: minmax(0, 1fr);
   grid-template-columns: minmax(0, 1fr);
 
   /* Safe-area padding for notches and home indicators. */
@@ -119,49 +117,6 @@
   min-width: 0;
   min-height: 0;
   overflow: hidden;
-}
-
-/*
- * Ad containers.
- *
- * Both are reserved grid tracks with explicit min-height, so a creative that
- * fills late cannot shift the stage (Lighthouse CLS budget is 0.1). If the slot
- * stays empty the track keeps its space and the stage is simply a little
- * shorter than it could be — never reflowed.
- */
-.lab-ad {
-  display: grid;
-  place-items: center;
-  min-width: 0;
-  overflow: hidden;
-  background: var(--lab-panel);
-  border-top: 1px solid var(--lab-line);
-}
-
-.lab-ad[hidden] {
-  display: none;
-}
-
-.lab-ad--bottom {
-  grid-area: ad-bottom;
-  /* 320×50 mobile banner plus a little breathing room. */
-  min-height: calc(50px + env(safe-area-inset-bottom, 0px));
-}
-
-.lab-ad--rail {
-  grid-area: ad-rail;
-  display: none;
-  border-top: 0;
-  border-left: 1px solid var(--lab-line);
-}
-
-/* The label stays visible even when the slot is empty, so an ad never appears
-   to be unexplained site content. */
-.lab-ad__label {
-  color: var(--lab-muted);
-  font-size: 0.6875rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 /* -------------------------------------------------------------- 3. canvas -- */
@@ -314,26 +269,6 @@
  * The rail sits in its own grid column so it can never overlap the stage.
  */
 @media (orientation: landscape) and (min-width: 64rem) {
-  .lab-frame {
-    grid-template-areas:
-      'stage ad-rail'
-      'ad-bottom ad-bottom';
-    grid-template-rows: minmax(0, 1fr) auto;
-    grid-template-columns: minmax(0, 1fr) 300px;
-  }
-
-  .lab-ad--rail {
-    display: grid;
-    /* 300×600 half-page, or 160×600 where only that fills. Reserved either
-       way so an empty slot costs no reflow. */
-    min-width: 300px;
-  }
-
-  .lab-ad--bottom {
-    /* 728×90 leaderboard. */
-    min-height: 90px;
-  }
-
   /* On a pointer device the touch band is dead weight. */
   .lab-stage[data-touch-controls='true'] {
     --lab-touch-band: 0px;
@@ -348,11 +283,6 @@
  * not get to make an action game unplayable.
  */
 @media (orientation: landscape) and (max-height: 30rem) {
-  .lab-ad--bottom,
-  .lab-ad--rail {
-    display: none;
-  }
-
   .lab-frame {
     grid-template-areas: 'stage';
     grid-template-rows: minmax(0, 1fr);

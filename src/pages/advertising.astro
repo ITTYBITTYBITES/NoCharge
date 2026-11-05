@@ -1,11 +1,13 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { ADSENSE_ENABLED } from '../config/adsense';
+import { AWIN_ENABLED, AWIN_MERCHANTS, AWIN_PUBLISHER_ID } from '../config/awin';
 ---
 
 <BaseLayout
   title="Advertising Disclosure"
-  description="How NoCharge runs one labeled, responsive Google AdSense banner with Google Privacy & messaging consent, and how to report a problematic ad."
+  description="Display advertising is off. How NoCharge earns from Awin and Amazon affiliate links, what is disclosed, and how to report a problem."
   path="/advertising/"
   showAds={false}
 >
@@ -14,11 +16,30 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
     <header>
       <p class="eyebrow">Advertising Disclosure</p>
       <h1 class="page-title">How advertising and affiliate links work on NoCharge.</h1>
-      <p class="lede">One labeled banner, clearly marked Amazon affiliate links, and no commercial links in gameplay.</p>
-      <p class="trust-page__date">Last updated: August 21, 2026</p>
+      <p class="lede">Clearly marked affiliate links, no commercial links in gameplay, and an explanation of how the site is supported.</p>
+      <p class="trust-page__date">Last updated: November 3, 2026</p>
     </header>
 
-    <section aria-labelledby="ads-relationship">
+    {
+      !ADSENSE_ENABLED && (
+        <section aria-labelledby="ads-none">
+          <h2 id="ads-none">No display advertising is served</h2>
+          <p>
+            NoCharge does not serve display advertising, does not load an ad network script, and does not reserve
+            empty ad space on any page. Instead, some pages contain clearly marked <strong>paid links</strong> to
+            merchants in the affiliate programmes described below. If you never follow a paid link, NoCharge earns
+            nothing from your visit.
+          </p>
+          <p>
+            The display-advertising implementation is kept in the codebase, switched off, so it can be restored
+            without a redesign. If advertising is switched on again, this page and the{' '}
+            <a href="/privacy/">Privacy page</a> will be updated first.
+          </p>
+        </section>
+      )
+    }
+
+    <section aria-labelledby="ads-relationship" hidden={!ADSENSE_ENABLED}>
       <h2 id="ads-relationship">Google AdSense banner relationship</h2>
       <p>
         NoCharge displays exactly one manual, responsive Google AdSense banner near the bottom of eligible pages,
@@ -28,7 +49,7 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
       </p>
     </section>
 
-    <section aria-labelledby="ads-consent">
+    <section aria-labelledby="ads-consent" hidden={!ADSENSE_ENABLED}>
       <h2 id="ads-consent">Your advertising choice</h2>
       <p>
         Google Privacy &amp; messaging is the advertising consent platform. Where applicable, Google shows its own
@@ -42,7 +63,7 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
       </p>
     </section>
 
-    <section aria-labelledby="ads-data">
+    <section aria-labelledby="ads-data" hidden={!ADSENSE_ENABLED}>
       <h2 id="ads-data">Data Google may process</h2>
       <p>
         When a banner loads, your browser connects directly to Google. Google may use cookies or similar storage
@@ -56,11 +77,43 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
     <section aria-labelledby="ads-labeling">
       <h2 id="ads-labeling">Labels, external destinations, and endorsement</h2>
       <p>
-        The banner is identified as an advertisement. An advertisement or external link does not mean NoCharge
+        An advertisement or external link does not mean NoCharge
         endorses, verifies, or guarantees the destination, offer, product, service, safety, availability, or claims
         made there. Use your own judgment and review an external site&rsquo;s terms and privacy information before
         interacting with it.
       </p>
+    </section>
+
+    <section aria-labelledby="awin-relationship" data-advertising-awin>
+      <h2 id="awin-relationship">Awin affiliate links</h2>
+      {AWIN_ENABLED ? (
+        <>
+          <p>
+            NoCharge is a publisher in the <a href="https://www.awin.com/">Awin</a> affiliate network (publisher
+            id {AWIN_PUBLISHER_ID}). When a reader follows a marked paid link to an approved merchant and completes a
+            qualifying purchase, NoCharge may earn a commission at no extra cost to the reader.
+          </p>
+          <p>
+            Current approved merchants on this site:
+            {' '}
+            {AWIN_MERCHANTS.filter((merchant) => merchant.status === 'approved')
+              .map((merchant) => merchant.name)
+              .join('; ')}
+            . Only merchants approved in the Awin dashboard are linked, and each is shown with the reason it was
+            included and its limitations.
+          </p>
+          <p>
+            Awin sets a tracking cookie so a purchase can be attributed to NoCharge. It is only set after you allow
+            the analytics-and-affiliate-tracking choice in the consent dialog; if you decline, the Awin script is
+            never requested. See the <a href="/privacy/">Privacy page</a>.
+          </p>
+        </>
+      ) : (
+        <p>
+          NoCharge is set up with the Awin network, but the integration is currently switched off in this build, so
+          no Awin script loads and no Awin link is shown.
+        </p>
+      )}
     </section>
 
     <section aria-labelledby="affiliate-relationship">

@@ -39,7 +39,7 @@ test('stores analytics-only choices and loads analytics only when allowed', asyn
   expect('advertising' in stored).toBe(false);
 });
 
-test('the site dialog never claims to control Google advertising', async ({ page }) => {
+test('the site dialog never claims to control advertising that is off', async ({ page }) => {
   await blockGoogleEndpoints(page);
   await page.goto('/');
 
@@ -51,8 +51,10 @@ test('the site dialog never claims to control Google advertising', async ({ page
   await expect(modal.locator('[data-consent-advertising]')).toHaveCount(0);
   await expect(modal.getByRole('checkbox')).toHaveCount(1);
   await expect(modal.getByRole('checkbox', { name: /^Analytics\b/ })).toBeVisible();
-  // The dialog points advertising choices at Google's own consent message.
-  await expect(modal).toContainText("Advertising choices are shown by Google");
+  // Advertising is off in this build, so the dialog says so rather than
+  // pointing at a Google consent message that is not loaded.
+  await expect(modal).toContainText('not currently running an advertising network');
+  await expect(modal).not.toContainText('Advertising choices are shown by Google');
 
   // The consent API exposes analytics only.
   const api = await page.evaluate(() => (window as Window & { NoChargeConsent: { get: () => Record<string, unknown> } }).NoChargeConsent.get());

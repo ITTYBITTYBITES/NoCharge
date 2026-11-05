@@ -12,6 +12,7 @@
  */
 import { splitLocale, withLocale } from '../i18n/routes';
 import { t } from '../i18n/messages';
+import { ADSENSE_ENABLED } from '../config/adsense';
 
 const { locale } = splitLocale(Astro.url.pathname);
 ---
@@ -28,8 +29,8 @@ const { locale } = splitLocale(Astro.url.pathname);
     <p class="eyebrow">{t(locale, 'consent.eyebrow')}</p>
     <h2 id="consent-banner-title">{t(locale, 'consent.title')}</h2>
     <p id="consent-banner-description">
-      Necessary storage keeps your scores and this choice. Analytics stays off unless you allow it, and Google shows
-      its own consent message for advertising. You can change this anytime.
+      Necessary storage keeps your scores and this choice. Analytics stays off unless you allow it.
+      {ADSENSE_ENABLED ? ' Google shows its own consent message for advertising.' : ''} You can change this anytime.
     </p>
   </div>
   <div class="consent-actions">
@@ -56,8 +57,10 @@ const { locale } = splitLocale(Astro.url.pathname);
     <h2 id="consent-settings-title">{t(locale, 'consent.modalTitle')}</h2>
     <p id="consent-settings-description" class="consent-modal__intro">
       Analytics remains blocked until you allow it. Turning it off stops future optional analytics requests
-      initiated by NoCharge in this tab. Advertising choices are shown by Google&rsquo;s own consent message and are
-      managed with the footer&rsquo;s Privacy and cookie settings link.
+      initiated by NoCharge in this tab.{' '}
+      {ADSENSE_ENABLED
+        ? 'Advertising choices are shown by Google’s own consent message and are managed with the footer’s Privacy and cookie settings link.'
+        : 'NoCharge is not currently running an advertising network, so this dialog never affects advertising.'}
     </p>
 
     <div class="consent-option">

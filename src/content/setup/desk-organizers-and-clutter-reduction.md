@@ -8,6 +8,7 @@ topics: [desk-and-comfort]
 evidenceLevel: editorial-research
 hasAffiliateLinks: true
 affiliateDisclosure: true
+awinMerchants: ['shenzhen-cangyu']
 artwork: desk-noise
 featured: false
 draft: false

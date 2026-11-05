@@ -7,6 +7,9 @@ import SetupArtwork from '../../components/setup/SetupArtwork.astro';
 import EvidenceLabel from '../../components/setup/EvidenceLabel.astro';
 import AffiliateDisclosure from '../../components/setup/AffiliateDisclosure.astro';
 import PaidAmazonLink from '../../components/setup/PaidAmazonLink.astro';
+import AwinLink from '../../components/AwinLink.astro';
+import { AWIN_ENABLED, renderableMerchants } from '../../config/awin';
+import { AWIN_MERCHANTS_BY_TOPIC } from '../../lib/awin-topic-map';
 import { SETUP_TOPIC_LABELS } from '../../lib/setup-topics';
 
 export async function getStaticPaths() {
@@ -16,6 +19,29 @@ export async function getStaticPaths() {
 
 const { article } = Astro.props;
 const { Content } = await render(article);
+
+/**
+ * Two gates, both required:
+ *  1. the article opts in (`awinMerchants:` in frontmatter), because the page
+ *     claims "Contains paid links" and must not lie;
+ *  2. the merchant is relevant to this article's topic, enforced at build time
+ *     below so a lamp article can never recommend a monitor arm.
+ */
+const topicMerchantKeys = AWIN_MERCHANTS_BY_TOPIC[article.data.topic];
+const declaredAwinKeys = article.data.awinMerchants;
+for (const key of declaredAwinKeys) {
+  if (!topicMerchantKeys.includes(key)) {
+    throw new Error(
+      `Setup article "${article.id}" declares Awin merchant "${key}", but topic "${article.data.topic}" ` +
+        `only allows: ${topicMerchantKeys.join(', ') || '(none)'}. Update AWIN_MERCHANTS_BY_TOPIC or remove the merchant.`,
+    );
+  }
+}
+const awinMerchants = AWIN_ENABLED
+  ? renderableMerchants().filter((merchant) => (declaredAwinKeys as readonly string[]).includes(merchant.key))
+  : [];
+/** The page claims paid links if either network is present. */
+const pageHasPaidLinks = article.data.hasAffiliateLinks || awinMerchants.length > 0;
 const path = `/setup/${article.id}/`;
 const canonical = `https://nocharge.net${path}`;
 const fmt = (date: string) =>
@@ -135,7 +161,13 @@ const schema = [
     { url: `/setup-art/${article.data.artwork}-pin-1000x1500.jpg`, width: 1000, height: 1500, alt: `Pinterest pin for ${article.data.title}` },
   ]}
 >
-  <article class="setup-article" data-setup-article data-has-affiliate-links={String(article.data.hasAffiliateLinks)}>
+  <article
+    class="setup-article"
+    data-setup-article
+    data-has-affiliate-links={String(article.data.hasAffiliateLinks)}
+    data-has-paid-links={String(pageHasPaidLinks)}
+    data-awin-merchants={declaredAwinKeys.join(' ')}
+  >
     <Breadcrumbs
       items={[{ label: 'Home', href: '/' }, { label: 'Quiet Setup', href: '/setup/' }, { label: article.data.title }]}
     />
@@ -151,7 +183,7 @@ const schema = [
         </p>
         <p class="article-meta__labels">
           <EvidenceLabel level={article.data.evidenceLevel} />
-          {article.data.hasAffiliateLinks && <span class="paid-indicator" data-paid-indicator>Contains paid links</span>}
+          {pageHasPaidLinks && <span class="paid-indicator" data-paid-indicator>Contains paid links</span>}
         </p>
       </div>
     </header>
@@ -163,9 +195,43 @@ const schema = [
       sizes="(max-width: 54rem) calc(100vw - 2rem), 52rem"
     />
 
-    {article.data.hasAffiliateLinks && <AffiliateDisclosure />}
+    {pageHasPaidLinks && (
+      <AffiliateDisclosure
+        networks={[...(article.data.hasAffiliateLinks ? ['amazon' as const] : []), ...(awinMerchants.length > 0 ? ['awin' as const] : [])]}
+      />
+    )}
 
     <div class="setup-prose prose"><Content /></div>
+
+    {/* Affiliate block for this article's topic. Placed after the criteria and
+        before the FAQ so the recommendation never interrupts the argument, and
+        only when an approved merchant actually matches the topic. */}
+    {awinMerchants.length > 0 && (
+      <section class="panel setup-awin" aria-labelledby="setup-awin-heading" data-setup-awin>
+        <h2 id="setup-awin-heading">Optional {article.data.title.toLowerCase().includes('light') ? 'lighting' : 'gear'} from an approved merchant</h2>
+        <AffiliateDisclosure networks={['awin']} variant="note" />
+        <ul class="setup-awin__list">
+          {awinMerchants.map((merchant) => {
+            const destination = merchant.destinations[0];
+            if (!destination) return null;
+            return (
+              <li>
+                <p class="setup-awin__merchant">{merchant.name}</p>
+                <AwinLink
+                  merchant={merchant.key}
+                  href={`https://${merchant.domains[0]}${destination.path}`}
+                  label={destination.label}
+                  clickref={`setup-${article.id.slice(0, 48)}`}
+                  variant="card"
+                  why={destination.why}
+                  limits={destination.limits}
+                />
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    )}
 
     <section class="panel setup-faq" id="faq" aria-labelledby="faq-heading">
       <h2 id="faq-heading">FAQ — {article.data.title}</h2>
@@ -343,6 +409,34 @@ const schema = [
     background: color-mix(in srgb, var(--accent) 8%, var(--panel-2));
     border-radius: 0.5rem;
     color: var(--text);
+  }
+
+  .setup-awin {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .setup-awin h2 {
+    margin: 0;
+  }
+
+  .setup-awin__list {
+    display: grid;
+    gap: 0.85rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .setup-awin__list > li {
+    display: grid;
+    gap: 0.35rem;
+    min-width: 0;
+  }
+
+  .setup-awin__merchant {
+    margin: 0;
+    font-weight: 800;
   }
 
   .paid-links {

@@ -8,6 +8,7 @@ topics: [screens-and-stands, desk-and-comfort]
 evidenceLevel: editorial-research
 hasAffiliateLinks: true
 affiliateDisclosure: true
+awinMerchants: ['shenzhen-cangyu']
 artwork: large-dual-monitors
 featured: false
 draft: false

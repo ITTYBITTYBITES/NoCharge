@@ -1,8 +1,6 @@
 ---
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import AdSlots from '../../lab/ads/adslots.astro';
-import { ADSTERRA_CSP_SOURCES, ADSTERRA_ENABLED } from '../../config/adsterra';
 import '../../styles/lab.css';
 
 export async function getStaticPaths() {
@@ -24,7 +22,6 @@ const { title, tagline, touchControls, controls } = entry.data;
   showAds={false}
   noIndex={true}
   fullBleed={true}
-  extraCsp={ADSTERRA_ENABLED ? ADSTERRA_CSP_SOURCES : undefined}
 >
   <div class="lab-frame" data-lab-frame>
     <div class="lab-stage" data-touch-controls={String(touchControls)}>
@@ -66,7 +63,6 @@ const { title, tagline, touchControls, controls } = entry.data;
       </div>
     </div>
 
-    <AdSlots />
   </div>
 
   <div class="lab-notes">

@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { STORAGE_KEY_DOCS } from '../lib/storage-docs';
+import { ADSENSE_ENABLED } from '../config/adsense';
+import { AWIN_ENABLED } from '../config/awin';
 
 const documented = STORAGE_KEY_DOCS.filter((doc) => !doc.planned);
 const planned = STORAGE_KEY_DOCS.filter((doc) => doc.planned);
@@ -8,7 +10,7 @@ const planned = STORAGE_KEY_DOCS.filter((doc) => doc.planned);
 
 <BaseLayout
   title="Privacy"
-  description="How NoCharge handles analytics, Google advertising, and data stored on your device."
+  description="How NoCharge handles analytics, advertising, and data stored on your device."
   path="/privacy/"
   showAds={false}
 >
@@ -26,7 +28,10 @@ const planned = STORAGE_KEY_DOCS.filter((doc) => doc.planned);
         <p>
           Analytics is off by default and loads only after you allow it. You can review or withdraw that choice at
           any time; necessary storage remains available for this choice and local game features. Advertising choices
-          are separate and are shown by Google&rsquo;s own consent message.
+          are separate from analytics.{' '}
+          {ADSENSE_ENABLED
+            ? 'They are shown by Google’s own consent message.'
+            : 'No advertising network is currently active on NoCharge, so there is no advertising choice to make.'}
         </p>
         <button class="btn btn--ghost btn--sm" type="button" data-consent-open>Review analytics choices</button>
         <p class="privacy__status" data-consent-summary aria-live="polite">Loading your current choices…</p>
@@ -119,7 +124,9 @@ const planned = STORAGE_KEY_DOCS.filter((doc) => doc.planned);
       </section>
 
       <section aria-labelledby="advertising">
-        <h2 id="advertising">Google advertising</h2>
+        <h2 id="advertising">Advertising</h2>
+        {ADSENSE_ENABLED ? (
+          <>
         <p>
           NoCharge shows one manual, responsive Google AdSense banner near the bottom of eligible pages. The banner
           is labeled &ldquo;Advertisement&rdquo; and never appears over gameplay or inside game controls. Auto ads are
@@ -140,6 +147,38 @@ const planned = STORAGE_KEY_DOCS.filter((doc) => doc.planned);
           <a href="https://policies.google.com/privacy">Google Privacy Policy</a>{' '}and{' '}
           <a href="https://policies.google.com/technologies/partner-sites">How Google uses information from sites that use Google services</a>.
         </p>
+          </>
+        ) : (
+          <p>
+            NoCharge is not currently running any advertising network, and this build loads no advertising script,
+            no advertising consent tag, and no ad placeholder. There is therefore no advertising data to collect and
+            no advertising choice to make. If advertising is enabled again, this page and the{' '}
+            <a href="/advertising/">Advertising Disclosure</a> will say so before anything is served.
+          </p>
+        )}
+      </section>
+
+      <section aria-labelledby="affiliate-tracking">
+        <h2 id="affiliate-tracking">Affiliate tracking</h2>
+        <p>
+          Some outbound links are paid links to merchants in affiliate programmes. Following one can earn NoCharge a
+          commission at no extra cost to you. Paid links are marked &ldquo;(paid link)&rdquo; in their text, open in a
+          new tab, and never appear inside a game board, game controls, or a results panel.
+        </p>
+        <p>
+          {AWIN_ENABLED
+            ? 'For Awin merchants, the Awin MasterTag sets a first-party tracking cookie so a purchase can be credited to NoCharge. That script is requested only after you allow the analytics-and-affiliate-tracking choice, and declining leaves it unloaded.'
+            : 'The Awin network is configured in this site but currently switched off, so no Awin tracking script or cookie is used.'}
+          {' '}Amazon links carry an Amazon Associates tracking parameter in the link itself; Amazon then sets its own
+          cookies on amazon.com under its own policies.
+        </p>
+        <p>
+          The consent dialog controls the Awin script; you can change the choice at any time with the button below.
+          Turning it off stops future affiliate tracking requests NoCharge initiates in this tab, and stops crediting
+          new commissions to NoCharge. It does not clear a cookie already set in your browser — clearing site data
+          does that.
+        </p>
+        <button class="btn btn--ghost btn--sm" type="button" data-consent-open>Review tracking choices</button>
       </section>
 
       <section aria-labelledby="amazon-links">

@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import ArticleCard from '../../components/ArticleCard.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import GearPicks from '../../components/GearPicks.astro';
 
 export async function getStaticPaths() {
   const games = (await getCollection('games')).filter((item) => !item.data.draft);
@@ -72,6 +73,13 @@ const schema=[articleSchema,{'@context':'https://schema.org','@type':'Breadcrumb
     {game && guide && <aside class="article-play panel" aria-label={`Play ${game.data.title} or read its guide`}><div><strong>Try the detail in a live board.</strong><p>{game.data.tagline}</p></div><div class="article-actions"><a class="btn btn--sm" href={`/games/${game.id}/`}>Play {game.data.title}</a><a class="btn btn--ghost btn--sm" href={`/guides/${guide.id}/`}>Read the guide</a></div></aside>}
     {!game && <aside class="article-play panel" aria-label="Explore NoCharge platform information"><div><strong>Check the current platform.</strong><p>Use the public pages behind this explanation.</p></div><div class="article-actions"><a class="btn btn--sm" href="/arcade/">Open the Arcade</a><a class="btn btn--ghost btn--sm" href="/privacy/">Review Privacy</a><a class="btn btn--ghost btn--sm" href="/accessibility/">Accessibility</a></div></aside>}
     <div class="article-prose prose"><Content /></div>
+    {/* Explainer pages are not buyer guides, so the module is a single compact
+        panel after the article — never injected into the prose. */}
+    <GearPicks
+      slot="article"
+      heading="Gear mentioned around these topics"
+      intro="A short list from merchants approved in our affiliate program. Nothing is embedded, priced, or loaded from a shop."
+    />
     <script>
       for (const table of document.querySelectorAll('.article-prose table')) {
         if (table.scrollWidth > table.clientWidth) {
