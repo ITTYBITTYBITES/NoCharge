@@ -147,6 +147,8 @@ async function inspectStaticMiniSite(page, slug, mode, viewport, event) {
   const expectedIds = slug === 'profivue' ? ['NC-PV-01', 'NC-PV-02', 'NC-PV-03'] : ['NC-RS-01', 'NC-RS-02'];
   const article = page.locator(`article[data-static-experience-route="${slug}"]`);
   await article.waitFor({ state: 'visible' });
+  assert.equal(await article.getAttribute('data-experience-theme'), slug, `${slug} applies its dedicated per-app theme (${mode}/${viewport.name}/${event})`);
+  assert.equal(await article.locator(`[data-app-microsite-footer="${slug}"]`).count(), 1, `${slug} renders its standalone micro-site footer (${mode}/${viewport.name}/${event})`);
   const shell = article.locator(`[data-experience-mini-site="${slug}"][data-editorial-experience="true"]`);
   assert.equal(await shell.count(), 1, `${slug} has one static editorial mini-site (${mode}/${viewport.name}/${event})`);
   assert.equal(await article.locator('.interactive-viewport, [data-demo], .detail-instructions, .experience-documentation').count(), 0,
@@ -228,6 +230,8 @@ async function inspectStaticShowcase(page, slug, mode, viewport, event) {
   const article = page.locator(`article[data-static-experience-route="${slug}"]`);
   const shell = article.locator(`[data-experience-showcase="${slug}"][data-nocharge-demo="absent"]`);
   assert.equal(await article.count(), 1, `${slug} has a canonical static showcase article (${mode}/${viewport.name}/${event})`);
+  assert.equal(await article.getAttribute('data-experience-theme'), slug, `${slug} applies its dedicated per-app theme (${mode}/${viewport.name}/${event})`);
+  assert.equal(await article.locator(`[data-app-microsite-footer="${slug}"]`).count(), 1, `${slug} renders its standalone micro-site footer (${mode}/${viewport.name}/${event})`);
   assert.equal(await shell.count(), 1, `${slug} has one showcase shell and explicitly no NoCharge demo`);
   assert.equal(await article.locator('.interactive-viewport, [data-demo], .interactive-module, .detail-instructions, .experience-documentation, [data-ad-slot]').count(), 0,
     `${slug} has no game runtime, interactive preview scaffolding, or ad slot`);
@@ -265,7 +269,7 @@ async function inspectStaticShowcase(page, slug, mode, viewport, event) {
     assert.equal(await article.locator('[data-app-legal-links]').count(), 1, `${slug} has one app-policy link group`);
     assert.equal(await article.locator('[data-app-legal-link="privacy"]').count(), 1, `${slug} has one privacy link`);
     assert.equal(await article.locator('[data-app-legal-link="terms"]').count(), 1, `${slug} has one terms link`);
-    const expectedLegalStatus = slug === 'coosjoint' ? 'draft' : 'source-provided';
+    const expectedLegalStatus = 'source-provided';
     assert.equal(await article.locator(`[data-app-legal-links][data-legal-source-status="${expectedLegalStatus}"]`).count(), 1, `${slug} policy links carry their correct source status`);
     assert.equal(await article.locator('[data-youtube-trailer]').count(), 1, `${slug} has one approved click-only trailer`);
     const expectedVideo = slug === 'coosjoint' ? 'bNMkbd4iv-g' : 'tOFySpe6yt0';
@@ -398,17 +402,12 @@ try {
           await waitForTheme(page, mode, 'halloween');
           const legalPage = page.locator(`article[data-app-legal-route="${slug}"][data-app-legal-kind="${kind}"]`);
           assert.equal(await legalPage.count(), 1, `${currentRoute} renders the app-specific legal record`);
+          assert.equal(await legalPage.getAttribute('data-experience-theme'), slug, `${currentRoute} uses the matching per-app visual theme`);
           assert.equal(await legalPage.locator('h1').count(), 1, `${currentRoute} has one policy heading`);
-          if (slug === 'coosjoint') {
-            assert.equal(await legalPage.getAttribute('data-app-legal-status'), 'draft', `${currentRoute} is marked publisher-draft`);
-            assert.equal(await legalPage.locator('[data-app-legal-draft-warning]').count(), 1, `${currentRoute} visibly warns it is not final`);
-            assert.equal(await legalPage.locator('.app-legal-content').count(), 0, `${currentRoute} does not publish unresolved draft clauses`);
-            assert.equal(await legalPage.locator('a[data-app-legal-source-link]').count(), 1, `${currentRoute} links to its publisher source draft`);
-          } else {
-            assert.equal(await legalPage.getAttribute('data-app-legal-status'), 'source-provided', `${currentRoute} retains its source-provided status`);
-            assert.ok(await legalPage.locator('.app-legal-content .app-legal-section').count() > 0, `${currentRoute} renders the attributed policy sections`);
-            assert.equal(await legalPage.locator('a[data-app-legal-source-link]').count(), 1, `${currentRoute} links to its exact publisher source`);
-          }
+          assert.equal(await legalPage.getAttribute('data-app-legal-status'), 'source-provided', `${currentRoute} publishes a complete policy record`);
+          assert.equal(await legalPage.locator('[data-app-legal-draft-warning]').count(), 0, `${currentRoute} has no unresolved draft warning`);
+          assert.ok(await legalPage.locator('.app-legal-content .app-legal-section').count() > 0, `${currentRoute} renders the attributed policy sections`);
+          assert.equal(await legalPage.locator('a[data-app-legal-source-link]').count(), 1, `${currentRoute} links to its exact publisher source`);
           assert.equal(await legalPage.locator('a[href="https://store.nocharge.net"]').count(), 0, `${currentRoute} keeps the separate NoCharge store out of app policy pages`);
           await expectNoOverflow(page, `${mode}/${viewport.name}/${currentRoute}`, viewport.width);
           routeChecks += 1;

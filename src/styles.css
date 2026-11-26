@@ -1723,3 +1723,411 @@ svg { display: block; }
   .setup-article .setup-faq, .setup-article .paid-links, .setup-article .article-next { padding: 17px; }
   .setup-article .paid-recommendation dl { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Per-app visual themes for Option 1 self-contained /experiences/<slug>/ micro-sites
+   and their matching /privacy/<slug>/ and /terms/<slug>/ legal documents.
+   All color pairs use solid opaque surfaces verified >= 6.5:1 in light and dark themes. */
+[data-experience-theme="coosjoint"] {
+  --app-hero-bg: #21152c;
+  --app-hero-ink: #fffaf0;
+  --app-hero-muted: #dfd6ea;
+  --app-hero-accent: #6feae2;
+  --app-hero-stripe: #36d9d1;
+  --app-hero-border: #3d2c52;
+  --app-hero-tag-bg: #322244;
+  --app-hero-tag-ink: #f5ecff;
+  --app-surface: #f9f3e9;
+  --app-surface-strong: #fffcf7;
+  --app-ink: #201729;
+  --app-text-secondary: #4b3e57;
+  --app-accent: #0a5e5c;
+  --app-border: #d9cab5;
+  --app-action-bg: #21152c;
+  --app-action-text: #fffaf0;
+  --app-action-hover: #332245;
+  --app-hero-radius: 26px;
+  --app-card-radius: 18px;
+}
+:root[data-theme="dark"] [data-experience-theme="coosjoint"] {
+  --app-hero-bg: #1a1224;
+  --app-hero-ink: #f7f1e7;
+  --app-hero-muted: #d4cae0;
+  --app-hero-accent: #6feae2;
+  --app-hero-stripe: #36d9d1;
+  --app-hero-border: #3e3152;
+  --app-hero-tag-bg: #2d2040;
+  --app-hero-tag-ink: #f5ecff;
+  --app-surface: #22192e;
+  --app-surface-strong: #181222;
+  --app-ink: #f3ece2;
+  --app-text-secondary: #cdc2d9;
+  --app-accent: #6feae2;
+  --app-border: #3e3152;
+  --app-action-bg: #5de3dc;
+  --app-action-text: #150e1e;
+  --app-action-hover: #84efe9;
+}
+
+[data-experience-theme="twosecondwitness"] {
+  --app-hero-bg: #121a2b;
+  --app-hero-ink: #f8fafc;
+  --app-hero-muted: #d1dbe8;
+  --app-hero-accent: #fcd34d;
+  --app-hero-stripe: #f59e0b;
+  --app-hero-border: #2b3a59;
+  --app-hero-tag-bg: #1e2b45;
+  --app-hero-tag-ink: #eef4fc;
+  --app-surface: #eef3f9;
+  --app-surface-strong: #ffffff;
+  --app-ink: #121b2b;
+  --app-text-secondary: #3c4a60;
+  --app-accent: #9a3412;
+  --app-border: #c6d3e3;
+  --app-action-bg: #121a2b;
+  --app-action-text: #f8fafc;
+  --app-action-hover: #21304d;
+  --app-hero-radius: 14px;
+  --app-card-radius: 12px;
+}
+:root[data-theme="dark"] [data-experience-theme="twosecondwitness"] {
+  --app-hero-bg: #0f1624;
+  --app-hero-ink: #f1f5f9;
+  --app-hero-muted: #cbd5e1;
+  --app-hero-accent: #fcd34d;
+  --app-hero-stripe: #f59e0b;
+  --app-hero-border: #313f59;
+  --app-hero-tag-bg: #1e2b45;
+  --app-hero-tag-ink: #eef4fc;
+  --app-surface: #1a2232;
+  --app-surface-strong: #131a27;
+  --app-ink: #edf2f8;
+  --app-text-secondary: #c2cde0;
+  --app-accent: #fcd34d;
+  --app-border: #313f59;
+  --app-action-bg: #f5b938;
+  --app-action-text: #111827;
+  --app-action-hover: #fcd34d;
+}
+
+[data-experience-theme="barn-road-chronicles"] {
+  --app-hero-bg: #241b14;
+  --app-hero-ink: #fbf6ee;
+  --app-hero-muted: #e0d4c3;
+  --app-hero-accent: #f4b96b;
+  --app-hero-stripe: #d97706;
+  --app-hero-border: #4a382a;
+  --app-hero-tag-bg: #382a1f;
+  --app-hero-tag-ink: #f7ecdc;
+  --app-surface: #f6f0e4;
+  --app-surface-strong: #fffcf6;
+  --app-ink: #241c15;
+  --app-text-secondary: #524436;
+  --app-accent: #853d14;
+  --app-border: #d9cbb4;
+  --app-action-bg: #241b14;
+  --app-action-text: #fbf6ee;
+  --app-action-hover: #3b2d22;
+  --app-hero-radius: 20px;
+  --app-card-radius: 15px;
+}
+:root[data-theme="dark"] [data-experience-theme="barn-road-chronicles"] {
+  --app-hero-bg: #1c1610;
+  --app-hero-ink: #f6eee2;
+  --app-hero-muted: #d9cbb8;
+  --app-hero-accent: #f4b96b;
+  --app-hero-stripe: #d97706;
+  --app-hero-border: #45382c;
+  --app-hero-tag-bg: #33271c;
+  --app-hero-tag-ink: #f7ecdc;
+  --app-surface: #251e18;
+  --app-surface-strong: #1a1510;
+  --app-ink: #f2e9dc;
+  --app-text-secondary: #cfc1ae;
+  --app-accent: #f4b96b;
+  --app-border: #45382c;
+  --app-action-bg: #e8a85c;
+  --app-action-text: #1c150e;
+  --app-action-hover: #f4be7d;
+}
+
+[data-experience-theme="profivue"] {
+  --app-hero-bg: #0f241c;
+  --app-hero-ink: #f4fbf8;
+  --app-hero-muted: #cde3d9;
+  --app-hero-accent: #6ee7b7;
+  --app-hero-stripe: #10b981;
+  --app-hero-border: #234739;
+  --app-hero-tag-bg: #19392d;
+  --app-hero-tag-ink: #e6f7f0;
+  --app-surface: #eef6f2;
+  --app-surface-strong: #ffffff;
+  --app-ink: #10241d;
+  --app-text-secondary: #395247;
+  --app-accent: #0b6340;
+  --app-border: #c2dacd;
+  --app-action-bg: #0f241c;
+  --app-action-text: #f4fbf8;
+  --app-action-hover: #1b3d30;
+  --app-hero-radius: 16px;
+  --app-card-radius: 14px;
+}
+:root[data-theme="dark"] [data-experience-theme="profivue"] {
+  --app-hero-bg: #0d1d17;
+  --app-hero-ink: #edf7f3;
+  --app-hero-muted: #c2dbd0;
+  --app-hero-accent: #6ee7b7;
+  --app-hero-stripe: #10b981;
+  --app-hero-border: #2a453a;
+  --app-hero-tag-bg: #19392d;
+  --app-hero-tag-ink: #e6f7f0;
+  --app-surface: #162620;
+  --app-surface-strong: #111d18;
+  --app-ink: #ebf5f0;
+  --app-text-secondary: #bfd4ca;
+  --app-accent: #6ee7b7;
+  --app-border: #2a453a;
+  --app-action-bg: #4ade80;
+  --app-action-text: #0b1c14;
+  --app-action-hover: #74e89e;
+}
+
+[data-experience-theme="rideside"] {
+  --app-hero-bg: #0e2236;
+  --app-hero-ink: #f2f8fd;
+  --app-hero-muted: #cde0f0;
+  --app-hero-accent: #7dd3fc;
+  --app-hero-stripe: #0ea5e9;
+  --app-hero-border: #24486b;
+  --app-hero-tag-bg: #173654;
+  --app-hero-tag-ink: #e5f3fc;
+  --app-surface: #edf5fb;
+  --app-surface-strong: #ffffff;
+  --app-ink: #0f2336;
+  --app-text-secondary: #385066;
+  --app-accent: #0b5380;
+  --app-border: #bfd6e8;
+  --app-action-bg: #0e2236;
+  --app-action-text: #f2f8fd;
+  --app-action-hover: #1a3a5c;
+  --app-hero-radius: 22px;
+  --app-card-radius: 16px;
+}
+:root[data-theme="dark"] [data-experience-theme="rideside"] {
+  --app-hero-bg: #0c1a29;
+  --app-hero-ink: #edf6fc;
+  --app-hero-muted: #c0d7ea;
+  --app-hero-accent: #7dd3fc;
+  --app-hero-stripe: #0ea5e9;
+  --app-hero-border: #29445e;
+  --app-hero-tag-bg: #173654;
+  --app-hero-tag-ink: #e5f3fc;
+  --app-surface: #152434;
+  --app-surface-strong: #101b27;
+  --app-ink: #eaf3fa;
+  --app-text-secondary: #bdd1e2;
+  --app-accent: #7dd3fc;
+  --app-border: #29445e;
+  --app-action-bg: #5cc5f6;
+  --app-action-text: #0a1929;
+  --app-action-hover: #83d5fa;
+}
+
+[data-experience-theme] {
+  --ink: var(--app-ink);
+  --text-secondary: var(--app-text-secondary);
+  --text-accent: var(--app-accent);
+  --surface-muted: var(--app-surface);
+  --paper-strong: var(--app-surface-strong);
+  --border-soft: var(--app-border);
+  --border-medium: var(--app-border);
+  --action-bg: var(--app-action-bg);
+  --action-text: var(--app-action-text);
+  --action-hover: var(--app-action-hover);
+}
+
+.detail-page--experiences[data-experience-theme] .detail-header {
+  max-width: 1020px;
+  margin: 0 auto 26px;
+  padding: clamp(22px, 3.8vw, 38px);
+  border: 1px solid var(--app-hero-border);
+  border-bottom: 5px solid var(--app-hero-stripe);
+  border-radius: var(--app-hero-radius);
+  background-color: var(--app-hero-bg);
+  color: var(--app-hero-ink);
+}
+.detail-page--experiences[data-experience-theme] .detail-header__eyebrow {
+  color: var(--app-hero-accent);
+}
+.detail-page--experiences[data-experience-theme] .detail-header h1 {
+  color: var(--app-hero-ink);
+}
+.detail-page--experiences[data-experience-theme] .detail-header__summary,
+.detail-page--experiences[data-experience-theme] .detail-header__metadata,
+.detail-page--experiences[data-experience-theme] .detail-header__metadata time {
+  color: var(--app-hero-muted);
+}
+.detail-page--experiences[data-experience-theme] .detail-tags span {
+  border-color: var(--app-hero-border);
+  background-color: var(--app-hero-tag-bg);
+  color: var(--app-hero-tag-ink);
+}
+
+.detail-page--experiences[data-experience-theme] .experience-showcase__intro,
+.detail-page--experiences[data-experience-theme] .experience-mini-site__answer {
+  border-top: 4px solid var(--app-hero-stripe);
+  border-radius: var(--app-card-radius);
+}
+.detail-page--experiences[data-experience-theme] .experience-showcase__faq > div,
+.detail-page--experiences[data-experience-theme] .experience-mini-site__workflow,
+.detail-page--experiences[data-experience-theme] .experience-mini-site__use-case,
+.detail-page--experiences[data-experience-theme] .experience-mini-site__figure,
+.detail-page--experiences[data-experience-theme] .experience-mini-site__faq-item {
+  border-radius: var(--app-card-radius);
+}
+.detail-page--experiences[data-experience-theme] .experience-showcase__faq > div,
+.detail-page--experiences[data-experience-theme] .experience-mini-site__workflow,
+.detail-page--experiences[data-experience-theme] .experience-mini-site__faq-item {
+  border-left: 3px solid var(--app-hero-stripe);
+}
+.detail-page--experiences[data-experience-theme] .youtube-trailer {
+  border-color: var(--app-hero-stripe);
+}
+
+[data-experience-theme] .app-legal-links a {
+  padding: 7px 13px;
+  border: 1px solid var(--app-border);
+  border-radius: 99px;
+  background-color: var(--app-surface-strong);
+  color: var(--app-accent);
+  text-decoration: none;
+}
+[data-experience-theme] .app-legal-links a:hover {
+  border-color: var(--app-hero-stripe);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.experience-microsite-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+  padding: clamp(18px, 3vw, 26px);
+  border: 1px solid var(--app-border, var(--border-medium));
+  border-top: 4px solid var(--app-hero-stripe, var(--text-accent));
+  border-radius: var(--app-card-radius, 18px);
+  background-color: var(--app-surface, var(--surface-muted));
+}
+.experience-microsite-footer__identity {
+  min-width: 0;
+  flex: 1 1 280px;
+}
+.experience-microsite-footer__identity .eyebrow {
+  margin: 0 0 6px;
+}
+.experience-microsite-footer__title {
+  margin: 0;
+  color: var(--ink);
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: -.02em;
+}
+.experience-microsite-footer__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin: 8px 0 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.experience-microsite-footer__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.experience-microsite-footer__nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--app-border, var(--border-medium));
+  border-radius: 99px;
+  background-color: var(--app-surface-strong, var(--paper-strong));
+  color: var(--app-accent, var(--ink));
+  font-size: 12px;
+  font-weight: 750;
+  text-decoration: none;
+}
+.experience-microsite-footer__nav a:hover {
+  border-color: var(--app-hero-stripe, var(--border-strong));
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.app-legal-page[data-experience-theme] .page-intro {
+  max-width: 900px;
+  margin: 26px auto 24px;
+  padding: clamp(22px, 3.8vw, 36px);
+  border: 1px solid var(--app-hero-border);
+  border-bottom: 5px solid var(--app-hero-stripe);
+  border-radius: var(--app-hero-radius);
+  background-color: var(--app-hero-bg);
+  color: var(--app-hero-ink);
+}
+.app-legal-page[data-experience-theme] .page-intro .breadcrumbs {
+  margin-bottom: 18px;
+}
+.app-legal-page[data-experience-theme] .page-intro .breadcrumbs ol,
+.app-legal-page[data-experience-theme] .page-intro .breadcrumbs a,
+.app-legal-page[data-experience-theme] .page-intro .breadcrumbs [aria-current="page"],
+.app-legal-page[data-experience-theme] .page-intro .breadcrumbs li + li::before {
+  color: var(--app-hero-muted);
+}
+.app-legal-page[data-experience-theme] .page-intro .breadcrumbs a:hover {
+  color: var(--app-hero-ink);
+}
+.app-legal-page[data-experience-theme] .page-intro__eyebrow {
+  color: var(--app-hero-accent);
+}
+.app-legal-page[data-experience-theme] .page-intro h1 {
+  color: var(--app-hero-ink);
+}
+.app-legal-page[data-experience-theme] .page-intro__lead {
+  color: var(--app-hero-muted);
+}
+.app-legal-page[data-experience-theme] .app-legal-meta {
+  width: min(100%, 900px);
+  margin: 0 auto 22px;
+  padding: 12px 16px;
+  border: 1px solid var(--app-border);
+  border-radius: 12px;
+  background-color: var(--app-surface);
+}
+.app-legal-page[data-experience-theme] .app-legal-meta a {
+  color: var(--app-accent);
+  font-weight: 750;
+  text-underline-offset: 3px;
+}
+.app-legal-page[data-experience-theme] .app-legal-source-note {
+  border-left-color: var(--app-hero-stripe);
+}
+
+@media (max-width: 520px) {
+  .detail-page--experiences[data-experience-theme] .detail-header,
+  .app-legal-page[data-experience-theme] .page-intro {
+    padding: 18px;
+  }
+  .experience-microsite-footer {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+  }
+  .experience-microsite-footer__nav a {
+    width: 100%;
+    justify-content: center;
+  }
+}

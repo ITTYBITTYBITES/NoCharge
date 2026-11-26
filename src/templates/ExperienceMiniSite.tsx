@@ -1,4 +1,5 @@
 import { AppLegalLinks } from '../components/AppLegalLinks';
+import { ExperienceMicroSiteFooter } from '../components/ExperienceMicroSiteFooter';
 import type { EditorialExperienceItem } from '../content/schemas';
 
 export function ExperienceMiniSite({ entry }: { entry: EditorialExperienceItem }) {
@@ -117,6 +118,8 @@ export function ExperienceMiniSite({ entry }: { entry: EditorialExperienceItem }
           ))}
         </dl>
       </section>
+
+      <ExperienceMicroSiteFooter slug={entry.slug} appName={entry.title} />
     </div>
   );
 }

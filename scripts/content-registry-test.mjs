@@ -150,7 +150,7 @@ try {
   assert.equal(redirectPlan.currentV2Snapshot.livePathsUnresolved, 0, 'no live path is left undispositioned');
   assert.equal(redirectPlan.currentV2Snapshot.publishedDetailRoutes, 53, 'the published detail-route target is 53');
   assert.equal(redirectPlan.currentV2Snapshot.prerenderedPages, 334, 'the current prerender inventory includes 210 Quiet Setup details, 48 Articles details, and both editorial hubs');
-  assert.equal(redirectPlan.currentV2Snapshot.canonicalSitemapUrls, 328, 'the current canonical sitemap includes approved Privacy and Terms routes and excludes noindex routes');
+  assert.equal(redirectPlan.currentV2Snapshot.canonicalSitemapUrls, 330, 'the current canonical sitemap includes all approved site and app Privacy and Terms routes and excludes noindex routes');
   assert.equal(redirectPlan.currentV2Snapshot.quietSetupPages, 210, 'the route ledger records all 210 Quiet Setup detail pages');
   assert.equal(redirectPlan.currentV2Snapshot.quietSetupAmazonLinkInstances, 284, 'the route ledger records all 284 preserved Amazon link instances');
   assert.equal(redirectPlan.currentV2Snapshot.quietSetupAmazonSearchUrls, 109, 'the route ledger records 109 distinct Amazon search URLs');
@@ -217,7 +217,7 @@ try {
     assert.ok(!pathRedirectBySource.has(retirement.path), `${retirement.path} is not captured by a redirect proposal`);
   }
   assert.equal(pathParityManifest.accounting.exactV2Routes + pathParityManifest.accounting.proposedRedirectMatches + pathParityManifest.accounting.explicitRetirementsNoRedirect, 363, 'exact routes, redirect proposals, and explicit retirements account for every live path');
-  assert.equal(sitemapPaths.length, 328, 'the canonical sitemap publishes exactly 328 indexable URLs after Privacy and Terms approval');
+  assert.equal(sitemapPaths.length, 330, 'the canonical sitemap publishes exactly 330 indexable URLs including all four Android app Privacy and Terms routes');
   assert.equal(site.prerenderPages.length, 334, 'the static build prerenders 334 HTML routes including 210 Quiet Setup details and the full Articles catalog');
   assert.equal(site.publishedContentPages.length, 53, 'all 53 published registry entries receive detail prerenders');
   assert.equal(site.publishedContentPages.length, registry.getPublishedEntries().length, 'every published registry entry automatically creates a detail prerender/SEO route');
@@ -529,7 +529,7 @@ try {
         }
         if (entry.appLegalSlug) {
           assert.ok(html.includes(`/privacy/${entry.appLegalSlug}/`) && html.includes(`/terms/${entry.appLegalSlug}/`), `app showcase links to its matching privacy and terms routes: ${page.path}`);
-          assert.ok(html.includes(`data-legal-status="${entry.appLegalSlug === 'coosjoint' ? 'draft' : 'source-provided'}"`), `app showcase exposes the source-derived legal status: ${page.path}`);
+          assert.ok(html.includes('data-legal-status="source-provided"'), `app showcase exposes the published legal status: ${page.path}`);
         } else {
           assert.equal(entry.slug, 'barn-road-chronicles', `only BRC has no Android app policy route: ${page.path}`);
           assert.ok(!html.includes('/privacy/barn-road-chronicles/') && !html.includes('/terms/barn-road-chronicles/'), 'BRC does not create a Google Play legal route');
@@ -589,21 +589,15 @@ try {
       const html = prerenderedHtml.get(route);
       assert.ok(html, `${slug} ${kind} source route is prerendered`);
       assert.ok(html.includes(`data-app-legal-route="${slug}"`) && html.includes(`data-app-legal-kind="${kind}"`), `${slug} ${kind} route is rendered by the app-specific legal page`);
+      assert.ok(html.includes(`data-experience-theme="${slug}"`), `${slug} ${kind} route uses its matching per-app visual theme`);
       assert.ok(html.includes(`https://nocharge.net${route}`), `${slug} ${kind} route has a direct canonical URL`);
-      const draft = slug === 'coosjoint';
-      const expectedStatus = draft ? 'draft' : 'source-provided';
-      assert.ok(html.includes(`data-app-legal-status="${expectedStatus}"`), `${slug} ${kind} retains its source review status`);
-      assert.ok(html.includes(`content="${draft ? 'noindex,follow' : 'index,follow'}"`), `${slug} ${kind} has the appropriate indexability status`);
-      assert.equal(site.getPageSEO(route).robots, draft ? 'noindex,follow' : 'index,follow', `${slug} ${kind} SEO status matches the policy record`);
-      if (draft) {
-        assert.ok(html.includes('Publisher draft · not a final policy') && html.includes('data-app-legal-draft-warning'), 'Coo’s Joint pages clearly refuse to present the publisher draft as final');
-        const policyArticle = html.match(/<article\b[^>]*data-app-legal-route=[\s\S]*?<\/article>/u)?.[0] ?? '';
-        assert.ok(policyArticle.includes('publisher’s source draft') && !/\[[A-Za-z][^\]]*\]/u.test(policyArticle), 'Coo’s Joint draft links to its source without reproducing unresolved placeholder text');
-        assert.ok(!sitemapPaths.includes(route), `Coo’s Joint ${kind} draft is excluded from sitemap.xml`);
-      } else {
-        assert.ok(html.includes('data-app-legal-source-link=') && html.includes('supplied by the app publisher') && !html.includes('not independently verified'), `${slug} ${kind} page attributes its policy text without stale review-required wording`);
-        assert.ok(sitemapPaths.includes(route), `${slug} ${kind} policy route is included in sitemap.xml`);
-      }
+      assert.ok(html.includes('data-app-legal-status="source-provided"'), `${slug} ${kind} publishes a complete app policy`);
+      assert.ok(html.includes('content="index,follow"'), `${slug} ${kind} is indexable for Google Play and search`);
+      assert.equal(site.getPageSEO(route).robots, 'index,follow', `${slug} ${kind} SEO status matches the policy record`);
+      const policyArticle = html.match(/<article\b[^>]*data-app-legal-route=[\s\S]*?<\/article>/u)?.[0] ?? '';
+      assert.ok(!policyArticle.includes('data-app-legal-draft-warning') && !/\[[A-Za-z][^\]]*\]/u.test(policyArticle), `${slug} ${kind} contains no draft stub or unresolved bracket placeholders`);
+      assert.ok(html.includes('data-app-legal-source-link=') && html.includes('supplied by the app publisher') && !html.includes('not independently verified'), `${slug} ${kind} page attributes its policy text without stale review-required wording`);
+      assert.ok(sitemapPaths.includes(route), `${slug} ${kind} policy route is included in sitemap.xml`);
     }
   }
   assert.equal(site.prerenderPages.filter((page) => /^(?:\/privacy|\/terms)\/(?:coosjoint|twosecondwitness|profivue|rideside)\/$/u.test(page.path)).length, 8, 'only four app-specific policy pairs are prerendered');
