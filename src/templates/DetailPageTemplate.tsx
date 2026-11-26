@@ -9,6 +9,7 @@ import { getSectionDefinition } from '../content/sections';
 import { getRelatedEntries } from '../content/registry';
 import type { PublishedCatalogEntry } from '../content/schemas';
 import { InteractiveModuleSlot } from '../modules/InteractiveModuleSlot';
+import { getExperienceTheme } from '../content/experienceThemes';
 import { ExperienceMiniSite } from './ExperienceMiniSite';
 import { ExperienceShowcase } from './ExperienceShowcase';
 
@@ -31,6 +32,7 @@ export function DetailPageTemplate({ entry }: { entry: PublishedCatalogEntry }) 
   const published = new Date(`${entry.publishedAt}T12:00:00Z`);
   const updated = new Date(`${entry.updatedAt}T12:00:00Z`);
   const isArcadeGame = entry.kind === 'arcade';
+  const experienceTheme = entry.kind === 'experience' ? getExperienceTheme(entry.slug) : undefined;
 
   useEffect(() => {
     if (!isArcadeGame) return;
@@ -47,10 +49,27 @@ export function DetailPageTemplate({ entry }: { entry: PublishedCatalogEntry }) 
       className={`page-container detail-page detail-page--${entry.section}`}
       data-experience-page={entry.kind === 'experience' ? entry.presentation ?? 'interactive-demo' : undefined}
       data-static-experience-route={entry.kind === 'experience' && (entry.presentation === 'editorial-mini-site' || entry.presentation === 'showcase') ? entry.slug : undefined}
+      data-experience-theme={experienceTheme?.slug}
     >
       <Breadcrumbs items={[{ label: section.title, href: section.path }, { label: entry.title }]} />
       <header className="detail-header">
-        <div className="detail-header__eyebrow"><span>{section.title}</span><span aria-hidden="true">·</span><span>{entry.category}</span></div>
+        <div className="detail-header__eyebrow">
+          {experienceTheme ? (
+            <>
+              <span>{experienceTheme.publisher}</span>
+              <span aria-hidden="true">·</span>
+              <span>{experienceTheme.mastheadBadge}</span>
+              <span aria-hidden="true">·</span>
+              <span>{entry.category}</span>
+            </>
+          ) : (
+            <>
+              <span>{section.title}</span>
+              <span aria-hidden="true">·</span>
+              <span>{entry.category}</span>
+            </>
+          )}
+        </div>
         <div className="detail-header__title-row">
           {entry.assetIconId && <AdaptiveIcon iconId={entry.assetIconId} size={52} className="detail-header__title-icon" />}
           <h1>{entry.title}</h1>

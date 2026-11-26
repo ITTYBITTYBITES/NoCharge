@@ -48,7 +48,13 @@ export function AppLegalPage() {
   const isDraft = record.status === 'publisher-draft' || !sections;
 
   return (
-    <article className="page-container destination-page legal-page app-legal-page" data-app-legal-route={record.slug} data-app-legal-kind={kind} data-app-legal-status={isDraft ? 'draft' : 'source-provided'}>
+    <article
+      className="page-container destination-page legal-page app-legal-page"
+      data-app-legal-route={record.slug}
+      data-app-legal-kind={kind}
+      data-app-legal-status={isDraft ? 'draft' : 'source-provided'}
+      data-experience-theme={record.slug}
+    >
       <PageIntro
         eyebrow={`${record.publisher} · App-specific document`}
         title={`${record.appName} ${title}`}
@@ -64,7 +70,8 @@ export function AppLegalPage() {
       />
       <div className="app-legal-meta">
         <span><strong>Publisher:</strong> {record.publisher}</span>
-        <span><strong>Source last updated:</strong> {record.lastUpdated}</span>
+        <span><strong>Last updated:</strong> {record.lastUpdated}</span>
+        <span><strong>App site:</strong> <Link to={`/experiences/${record.slug}/`}>nocharge.net/experiences/{record.slug}/</Link></span>
       </div>
 
       {isDraft ? (

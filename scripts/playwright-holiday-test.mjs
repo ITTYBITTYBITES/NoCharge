@@ -60,7 +60,7 @@ assert.equal(events.length, 16, 'all requested fixed and floating holidays plus 
 const sitemapHtml = await readFile(path.join(dist, 'sitemap.xml'), 'utf8');
 const publishedSitemapRoutes = [...sitemapHtml.matchAll(/<loc>([^<]+)<\/loc>/gu)]
   .map(([, url]) => new URL(url).pathname);
-assert.equal(publishedSitemapRoutes.length, 328, 'the canonical sitemap contains exactly 328 published URLs');
+assert.equal(publishedSitemapRoutes.length, 330, 'the canonical sitemap contains exactly 330 published URLs');
 const prerenderedRoutes = [...new Set(await collectPrerenderedRoutes(dist))].sort();
 assert.equal(prerenderedRoutes.length, 334, 'the production build contains all 334 prerendered HTML routes');
 const sitemapAndBaseRoutes = new Set([...baseRoutes, ...publishedSitemapRoutes]);

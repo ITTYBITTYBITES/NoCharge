@@ -1,11 +1,15 @@
 import { AppLegalLinks } from '../components/AppLegalLinks';
 import { ClickToLoadYouTubeTrailer } from '../components/ClickToLoadYouTubeTrailer';
+import { ExperienceMicroSiteFooter } from '../components/ExperienceMicroSiteFooter';
+import { getAppLegalRecord } from '../content/appLegalPolicies';
 import type { ShowcaseExperienceItem } from '../content/schemas';
 
 export function ExperienceShowcase({ entry }: { entry: ShowcaseExperienceItem }) {
   const documentation = entry.documentation;
   const prefix = `showcase-${entry.slug}`;
   const isBrc = entry.slug === 'barn-road-chronicles';
+  const legalRecord = getAppLegalRecord(entry.appLegalSlug);
+  const legalIsDraft = legalRecord?.status === 'publisher-draft';
   return (
     <div
       className={`experience-showcase experience-showcase--${entry.slug}`}
@@ -24,7 +28,7 @@ export function ExperienceShowcase({ entry }: { entry: ShowcaseExperienceItem })
               ? 'This NoCharge page is an outbound listing for the creator-hosted itch.io project. It does not embed the game, load its assets, or provide a local demo.'
               : 'This NoCharge page is a static product showcase. It does not reproduce the Android app or load a gameplay module.'}
           </p>
-          {entry.appLegalSlug && <AppLegalLinks appSlug={entry.appLegalSlug} draft={entry.appLegalSlug === 'coosjoint'} />}
+          {entry.appLegalSlug && <AppLegalLinks appSlug={entry.appLegalSlug} draft={legalIsDraft} />}
         </div>
         {entry.youtubeTrailers?.map((trailer) => (
           <ClickToLoadYouTubeTrailer
@@ -90,6 +94,8 @@ export function ExperienceShowcase({ entry }: { entry: ShowcaseExperienceItem })
           ))}
         </dl>
       </section>
+
+      <ExperienceMicroSiteFooter slug={entry.slug} appName={entry.title} />
     </div>
   );
 }

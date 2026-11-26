@@ -30,7 +30,7 @@ const events = JSON.parse(calendarMatch[1]);
 assert.equal(events.length, 16, 'the production holiday registry contains 16 palettes');
 const sitemapHtml = await readFile(path.join(dist, 'sitemap.xml'), 'utf8');
 const sitemapRoutes = [...sitemapHtml.matchAll(/<loc>([^<]+)<\/loc>/gu)].map(([, url]) => new URL(url).pathname);
-assert.equal(sitemapRoutes.length, 328, 'the canonical sitemap contains 328 URLs');
+assert.equal(sitemapRoutes.length, 330, 'the canonical sitemap contains 330 URLs');
 const baseRoutes = [
   '/', '/arcade/', '/experiences/', '/tools/', '/guides/', '/discover/', '/search/', '/shop/',
   '/about/', '/contact/', '/advertising/', '/privacy/', '/terms/',

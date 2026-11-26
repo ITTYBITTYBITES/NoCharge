@@ -118,6 +118,8 @@ try {
         assert.ok(detailHtml.includes(heading), `${product.name} static mini-site has prerendered ${heading}`);
       }
       assert.ok(detailHtml.includes(`data-static-experience-route="${product.slug}"`), `${product.name} has a dedicated static detail route`);
+      assert.ok(detailHtml.includes(`data-experience-theme="${product.slug}"`), `${product.name} applies its dedicated visual theme`);
+      assert.ok(detailHtml.includes(`data-app-microsite-footer="${product.slug}"`), `${product.name} renders its standalone micro-site footer`);
       assert.ok(detailHtml.includes('data-editorial-experience="true"'), `${product.name} renders the editorial mini-site template`);
       assert.equal((detailHtml.match(/data-app-legal-link="privacy"/gu) ?? []).length, 1, `${product.name} links its app privacy page exactly once`);
       assert.equal((detailHtml.match(/data-app-legal-link="terms"/gu) ?? []).length, 1, `${product.name} links its app terms page exactly once`);
@@ -164,8 +166,10 @@ try {
       assert.ok(!('offers' in softwareApplication) && !('aggregateRating' in softwareApplication) && !('isAccessibleForFree' in softwareApplication), `${product.name} schema invents no offer, rating, or price-accessibility claim`);
     } else if (showcaseProductSlugs.has(product.slug)) {
       const expectedVideoId = product.slug === 'coosjoint' ? 'bNMkbd4iv-g' : 'tOFySpe6yt0';
-      const legalStatus = product.slug === 'coosjoint' ? 'draft' : 'source-provided';
+      const legalStatus = 'source-provided';
       assert.ok(detailHtml.includes(`data-experience-showcase="${product.slug}"`), `${product.name} uses the static showcase template`);
+      assert.ok(detailHtml.includes(`data-experience-theme="${product.slug}"`), `${product.name} applies its dedicated visual theme`);
+      assert.ok(detailHtml.includes(`data-app-microsite-footer="${product.slug}"`), `${product.name} renders its standalone micro-site footer`);
       assert.ok(detailHtml.includes('data-nocharge-demo="absent"'), `${product.name} explicitly contains no NoCharge demo`);
       assert.ok(!detailHtml.includes('data-demo=') && !detailHtml.includes('interactive-viewport') && !detailHtml.includes('interactive-module') && !detailHtml.includes('detail-instructions'), `${product.name} has no local game module or demo shell`);
       assert.ok(!detailHtml.includes('experience-detail-after-interaction') && !detailHtml.includes('data-ad-slot='), `${product.name} has no post-demo ad reservation`);
@@ -231,6 +235,7 @@ try {
   const barnRoadHtml = await readFile(path.join(dist, 'experiences', 'barn-road-chronicles', 'index.html'), 'utf8');
   assert.ok(experiencesHtml.includes('Barn Road Chronicles: Act 1'), 'the Experiences directory publishes a local Barn Road Chronicles showcase card');
   assert.ok(barnRoadHtml.includes('data-experience-showcase="barn-road-chronicles"') && barnRoadHtml.includes('data-nocharge-demo="absent"'), 'BRC is a static outbound showcase with no NoCharge demo');
+  assert.ok(barnRoadHtml.includes('data-experience-theme="barn-road-chronicles"') && barnRoadHtml.includes('data-app-microsite-footer="barn-road-chronicles"'), 'BRC renders its dedicated visual theme and standalone micro-site footer');
   assert.ok(barnRoadHtml.includes('data-itchio-link="barn-road-chronicles"')
     && barnRoadHtml.includes('href="https://ittybittybites.itch.io/barn-road-chronicles-act-1/"'), 'BRC links only to the verified creator-owned itch.io HTML5 listing');
   assert.ok(!barnRoadHtml.includes('data-product-website-link="barn-road-chronicles"')
