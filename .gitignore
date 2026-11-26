@@ -1,11 +1,14 @@
-# build
+# build outputs
 dist/
 .astro/
-playwright-report/
-test-results/
 
 # dependencies
 node_modules/
+
+# environment files (keep the safe example)
+.env
+.env.*
+!.env.example
 
 # logs
 npm-debug.log*
@@ -13,10 +16,11 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# env
-.env
-.env.*
-!.env.example
+# browser/test reports and internal review output
+playwright-report/
+test-results/
+artifacts/
+.nocharge-review/
 
 # editor / OS
 .DS_Store
@@ -26,8 +30,7 @@ pnpm-debug.log*
 *.swp
 *.swo
 
-# misc
+# deployment/build caches
 .vercel
 .netlify
 .lighthouseci/
-artifacts/

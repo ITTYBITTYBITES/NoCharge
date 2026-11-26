@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" fill="none" aria-hidden="true" focusable="false">
+  <path d="M20 24h56v16c-9 4-9 12 0 16v16H20V56c9-4 9-12 0-16V24Z" fill="var(--paper-strong)" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M36 27v13M36 55v14M47 31h17M47 42h17M47 55h17M47 66h17" stroke="var(--witness-prop-accent,var(--event-accent))" stroke-width="4" stroke-linecap="round"/>
+  <path d="M42 24v48" stroke="var(--event-border)" stroke-width="3" stroke-dasharray="4 5"/>
+</svg>

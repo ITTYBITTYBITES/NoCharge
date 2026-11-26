@@ -1,0 +1,482 @@
+[
+  {
+    "slug": "checkers-variant-and-mandatory-captures",
+    "path": "/articles/checkers-variant-and-mandatory-captures/",
+    "title": "Checkers on NoCharge — mandatory captures and the simple rule",
+    "seoTitle": "Checkers on NoCharge — mandatory captures and the simple rule",
+    "description": "NoCharge Checkers uses mandatory jumps and same-piece multi-jump continuation, but does not require the longest capture chain. See its current English-draughts rules.",
+    "category": "Checkers",
+    "publishedAt": "2026-08-27",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "designing-browser-games-for-more-ways-to-play",
+    "path": "/articles/designing-browser-games-for-more-ways-to-play/",
+    "title": "Designing browser games for more ways to play",
+    "seoTitle": "Designing browser games for more ways to play | NoCharge",
+    "description": "Selected NoCharge keyboard, pointer, touch, feedback, and testing considerations. Game controls vary by title; this is not an accessibility certification or full manual audit.",
+    "category": "Platform · accessibility",
+    "publishedAt": "2026-08-19",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "five-new-single-player-games-for-quiet-arcade",
+    "path": "/articles/five-new-single-player-games-for-quiet-arcade/",
+    "title": "Five Earlier Single-Player Games Added to Quiet Arcade",
+    "seoTitle": "Five earlier single-player games added to Quiet Arcade | NoCharge",
+    "description": "Historical August 2026 announcement covering five earlier Arcade additions. It is not the current catalog count or a statement about V2 storage and policy.",
+    "category": "Platform · announcement",
+    "publishedAt": "2026-08-22",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "free-browser-games-no-account",
+    "path": "/articles/free-browser-games-no-account/",
+    "title": "Free browser games with no account — how NoCharge works",
+    "seoTitle": "Free browser games with no account — current NoCharge V2 limits | NoCharge",
+    "description": "NoCharge V2 Arcade games and core browser tools require no sign-in. Current play state is local to the page; optional paid Amazon links appear only in Quiet Setup.",
+    "category": "Platform · trust",
+    "publishedAt": "2026-08-27",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "freecell-on-nocharge-planning-with-free-cells",
+    "path": "/articles/freecell-on-nocharge-planning-with-free-cells/",
+    "title": "FreeCell on NoCharge: Planning with Free Cells",
+    "seoTitle": "FreeCell on NoCharge: Planning with Free Cells · NoCharge",
+    "description": "A source-checked guide to NoCharge FreeCell: its face-up seeded deal, free-cell move capacity, and current V2 limits on undo and saved records.",
+    "category": "FreeCell Solitaire",
+    "publishedAt": "2026-08-22",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "game-finder-vs-discovery-wheel",
+    "path": "/articles/game-finder-vs-discovery-wheel/",
+    "title": "Game Finder vs Discovery Wheel — two ways to filter the same catalog",
+    "seoTitle": "Game Finder vs Discovery Wheel — two ways to filter the same catalog",
+    "description": "Compare Game Finder’s five grouped questions with Discovery Wheel’s four filters and rotating shortlist. Both use static catalog facts, not a personalized ranking.",
+    "category": "Platform · trust",
+    "publishedAt": "2026-08-27",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "gomoku-free-style-variant",
+    "path": "/articles/gomoku-free-style-variant/",
+    "title": "Gomoku on NoCharge — why the variant is the contract",
+    "seoTitle": "Gomoku on NoCharge — why the variant is the contract · NoCharge",
+    "description": "NoCharge Gomoku is a local 15×15 game: five or more in a row wins, including an overline. There are no captures or Renju-style forbidden-move rules.",
+    "category": "Gomoku",
+    "publishedAt": "2026-08-27",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "hangman-accessible-letter-entry",
+    "path": "/articles/hangman-accessible-letter-entry/",
+    "title": "Hangman and accessible letter entry on NoCharge",
+    "seoTitle": "Hangman and accessible letter entry on NoCharge · NoCharge",
+    "description": "How current Hangman accepts alphabet-button guesses or page-level A–Z key presses, announces guess results, and handles six misses without a timer.",
+    "category": "Hangman",
+    "publishedAt": "2026-08-27",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "how-diagonal-letter-paths-work",
+    "path": "/articles/how-diagonal-letter-paths-work/",
+    "title": "How diagonal letter paths work in Word Tile Rush",
+    "seoTitle": "How diagonal letter paths work in Word Tile Rush · NoCharge",
+    "description": "In Word Tile Rush, trace adjacent letters horizontally, vertically, or diagonally without reusing tiles. Accepted bundled-list words score one point per letter.",
+    "category": "Word Tile Rush",
+    "publishedAt": "2026-08-15",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "how-exact-coverage-works-in-beacon-lattice",
+    "path": "/articles/how-exact-coverage-works-in-beacon-lattice/",
+    "title": "How exact coverage works in Beacon Lattice",
+    "seoTitle": "How exact coverage works in Beacon Lattice · NoCharge",
+    "description": "How five distinct rotatable pentominoes tile Beacon Lattice’s five-by-five board exactly once, and what makes a placement invalid.",
+    "category": "Beacon Lattice",
+    "publishedAt": "2026-08-19",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "how-move-counting-works-in-matching-games",
+    "path": "/articles/how-move-counting-works-in-matching-games/",
+    "title": "How move counting works in matching games",
+    "seoTitle": "How move counting works in matching games · NoCharge",
+    "description": "When NoCharge Memory Match counts a two-card attempt, why mismatches still count, and why the move total is not saved as a V2 best score.",
+    "category": "Memory Match",
+    "publishedAt": "2026-08-15",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "how-nocharge-saves-scores-without-an-account",
+    "path": "/articles/how-nocharge-saves-scores-without-an-account/",
+    "title": "Does NoCharge V2 save game scores?",
+    "seoTitle": "Does NoCharge V2 save game scores? | NoCharge",
+    "description": "NoCharge V2 does not persist game scores or provide a score-history dashboard. Browser storage is used for theme preferences, not game results.",
+    "category": "Platform · privacy",
+    "publishedAt": "2026-08-19",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "how-nocharge-tests-browser-games",
+    "path": "/articles/how-nocharge-tests-browser-games/",
+    "title": "How NoCharge tests browser games",
+    "seoTitle": "How NoCharge V2 tests browser content and behavior | NoCharge",
+    "description": "How NoCharge V2 checks types, builds, content, assets, and browser behavior—without treating automation as a manual audit, legal approval, or cutover authorization.",
+    "category": "Platform · testing",
+    "publishedAt": "2026-08-19",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "how-to-find-forced-beacon-placements",
+    "path": "/articles/how-to-find-forced-beacon-placements/",
+    "title": "How to reason about Beacon Lattice placements",
+    "seoTitle": "How to reason about Beacon Lattice placements · NoCharge",
+    "description": "Use piece shapes, rotations, corners, and leftover regions to reason about Beacon Lattice’s exact-cover puzzle without assuming a hint system.",
+    "category": "Beacon Lattice",
+    "publishedAt": "2026-08-19",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "keyboard-and-accessible-play-in-beacon-lattice",
+    "path": "/articles/keyboard-and-accessible-play-in-beacon-lattice/",
+    "title": "Keyboard and accessible play in Beacon Lattice",
+    "seoTitle": "Keyboard and accessible play in Beacon Lattice · NoCharge",
+    "description": "A source-checked overview of Beacon Lattice’s native buttons, coordinate selectors, cell labels, and keyboard limits—not an accessibility certification.",
+    "category": "Beacon Lattice",
+    "publishedAt": "2026-08-19",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "keyboard-only-browser-games",
+    "path": "/articles/keyboard-only-browser-games/",
+    "title": "Using a keyboard with NoCharge browser games",
+    "seoTitle": "Using a keyboard with NoCharge browser games · NoCharge",
+    "description": "Keyboard input varies by NoCharge game. Learn the standard button path, examples of title-specific keys, and why this overview is not a blanket accessibility certification.",
+    "category": "Platform · accessibility",
+    "publishedAt": "2026-08-27",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "keyboard-strategy-for-memory-match",
+    "path": "/articles/keyboard-strategy-for-memory-match/",
+    "title": "Keyboard strategy for Memory Match",
+    "seoTitle": "Keyboard strategy for Memory Match · NoCharge",
+    "description": "Use standard focus order and a row-and-column map to play the current Memory Match board by keyboard without relying on undocumented shortcuts or automatic focus changes.",
+    "category": "Memory Match",
+    "publishedAt": "2026-08-15",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "klondike-on-nocharge-rules-and-rhythm",
+    "path": "/articles/klondike-on-nocharge-rules-and-rhythm/",
+    "title": "Klondike on NoCharge: Rules and Rhythm",
+    "seoTitle": "Klondike on NoCharge: Rules and Rhythm · NoCharge",
+    "description": "Current Klondike rules on NoCharge: a seeded deal, draw-one or draw-three mode, move count, and no saved record or undo control.",
+    "category": "Klondike Solitaire",
+    "publishedAt": "2026-08-22",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "lights-out-solvable-by-construction",
+    "path": "/articles/lights-out-solvable-by-construction/",
+    "title": "Lights Out — solvable by construction, and why that matters",
+    "seoTitle": "Lights Out — solvable by construction, and why that matters · NoCharge",
+    "description": "How NoCharge Lights Out creates a solvable five-by-five board with 13 seeded cross toggles, and what its in-session move count does not claim.",
+    "category": "Lights Out",
+    "publishedAt": "2026-08-27",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "managing-a-rising-word-game-grid",
+    "path": "/articles/managing-a-rising-word-game-grid/",
+    "title": "Managing a rising word-game grid",
+    "seoTitle": "Managing a rising word-game grid · NoCharge",
+    "description": "Manage Word Tile Rush’s 90-second countdown, adjacent letter paths, per-letter scoring, column settling, and row added after each accepted word.",
+    "category": "Word Tile Rush",
+    "publishedAt": "2026-08-15",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "memory-match-move-count-vs-timed-memory",
+    "path": "/articles/memory-match-move-count-vs-timed-memory/",
+    "title": "Memory Match move-count vs timed memory games",
+    "seoTitle": "Memory Match move-count vs timed memory games · NoCharge",
+    "description": "A current comparison of Memory Match’s two-card move counter with timed formats, including the seeded board and lack of saved V2 records.",
+    "category": "Platform · accessibility",
+    "publishedAt": "2026-08-27",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "memory-match-systematic-board-scan",
+    "path": "/articles/memory-match-systematic-board-scan/",
+    "title": "A systematic way to scan a Memory Match board",
+    "seoTitle": "A systematic way to scan a Memory Match board · NoCharge",
+    "description": "Use a repeatable four-by-four scan to remember symbol locations in the current seeded Memory Match layout.",
+    "category": "Memory Match",
+    "publishedAt": "2026-08-15",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "minesweeper-calm-clearing-on-nocharge",
+    "path": "/articles/minesweeper-calm-clearing-on-nocharge/",
+    "title": "Minesweeper on NoCharge — a calm clearing loop, not a speed run",
+    "seoTitle": "Minesweeper on NoCharge — a calm clearing loop, not a speed run · NoCharge",
+    "description": "Current NoCharge Minesweeper is a nine-by-nine, ten-mine board with first-square safety, optional flags, no chord action, and no timer or saved best time.",
+    "category": "Minesweeper",
+    "publishedAt": "2026-08-27",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "mini-sudoku-on-nocharge-a-quiet-6x6",
+    "path": "/articles/mini-sudoku-on-nocharge-a-quiet-6x6/",
+    "title": "Mini Sudoku on NoCharge: A Quiet 6×6",
+    "seoTitle": "Mini Sudoku on NoCharge: A Quiet 6×6 · NoCharge",
+    "description": "A source-checked look at NoCharge Mini Sudoku’s fixed six-by-six board, three-by-two boxes, number pad, and session-only state.",
+    "category": "Mini Sudoku 6×6",
+    "publishedAt": "2026-08-23",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "mini-sudoku-vs-9x9",
+    "path": "/articles/mini-sudoku-vs-9x9/",
+    "title": "Mini Sudoku 6×6 vs Sudoku 9×9 — how to choose",
+    "seoTitle": "Mini Sudoku 6×6 vs Sudoku 9×9 — how to choose · NoCharge",
+    "description": "Compare NoCharge’s fixed Mini Sudoku 6×6 and Sudoku 9×9 boards by grid size, box shape, controls, and what is not saved.",
+    "category": "Platform · trust",
+    "publishedAt": "2026-08-27",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "nine-mens-morris-rules-variant",
+    "path": "/articles/nine-mens-morris-rules-variant/",
+    "title": "Nine Men's Morris rules contract",
+    "seoTitle": "Nine Men's Morris rules contract · NoCharge",
+    "description": "NoCharge Nine Men’s Morris uses 24 points, nine stones per player, mill removals, connected movement, and flying at three stones. See the current variant limits.",
+    "category": "Nine Men's Morris",
+    "publishedAt": "2026-08-27",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "no-charge-games-free-browser-games-with-no-charge",
+    "path": "/articles/no-charge-games-free-browser-games-with-no-charge/",
+    "title": "No Charge Games: what free play means on NoCharge",
+    "seoTitle": "NoCharge games: what free play means in V2 | NoCharge",
+    "description": "NoCharge V2 games and core tools need no account or purchase. Optional paid Amazon links are confined to Quiet Setup; Privacy, Terms, and Advertising describe the current site and remain subject to legal and owner review before cutover.",
+    "category": "Platform · trust",
+    "publishedAt": "2026-08-26",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "nonogram-on-nocharge-clues-and-a11y",
+    "path": "/articles/nonogram-on-nocharge-clues-and-a11y/",
+    "title": "Nonogram on NoCharge: Clues and Accessibility",
+    "seoTitle": "Nonogram on NoCharge: Clues and Accessibility · NoCharge",
+    "description": "Current NoCharge Nonogram offers formula-derived 5×5 and 10×10 patterns, visible run clues, three-state cells, and no saved completion count.",
+    "category": "Nonogram",
+    "publishedAt": "2026-08-22",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "pass-and-play-two-players-one-device",
+    "path": "/articles/pass-and-play-two-players-one-device/",
+    "title": "Pass & Play: two players, one device",
+    "seoTitle": "Pass & Play: two players, one device in V2 | NoCharge",
+    "description": "Current NoCharge Pass & Play includes six same-device games with local turns. There is no online matchmaking or saved match-history feature in V2.",
+    "category": "Platform · accessibility",
+    "publishedAt": "2026-08-22",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "pass-and-play-vs-solo-quiet-arcade",
+    "path": "/articles/pass-and-play-vs-solo-quiet-arcade/",
+    "title": "Pass & Play vs solo Quiet Arcade — how to choose",
+    "seoTitle": "Pass & Play vs solo Quiet Arcade — how to choose · NoCharge",
+    "description": "Compare solo and current NoCharge Pass & Play sessions: one person or two sharing a device, with no online mode or saved game records.",
+    "category": "Platform · trust",
+    "publishedAt": "2026-08-27",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "puzzle-generation-method",
+    "path": "/articles/puzzle-generation-method/",
+    "title": "How NoCharge builds current puzzle starts",
+    "seoTitle": "How NoCharge builds current puzzle starts · NoCharge",
+    "description": "An implementation-level look at deterministic Lights Out and Minesweeper, formula-derived Nonogram clues, fixed Sudoku boards, and the limits of those methods.",
+    "category": "Platform · trust",
+    "publishedAt": "2026-08-27",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "registry-facts",
+    "path": "/articles/registry-facts/",
+    "title": "Registry facts",
+    "seoTitle": "Registry facts — current NoCharge V2 route counts | NoCharge",
+    "description": "Current NoCharge V2 inventory: 28 Arcade, 5 App Experiences, 18 Tools, two Guides, 48 Articles, and 210 Quiet Setup detail routes. Snapshot dated November 16, 2026.",
+    "category": "First-party numbers · built from the catalog",
+    "publishedAt": "2026-11-16",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "simon-calm-pattern-same-rules",
+    "path": "/articles/simon-calm-pattern-same-rules/",
+    "title": "Simon’s Calm Cues: what changes and what does not",
+    "seoTitle": "Simon’s Calm Cues: what changes and what does not · NoCharge",
+    "description": "How the current Simon game uses four labeled pads, twelve rounds, optional sound, and a Calm cues timing toggle without saving a durable best score.",
+    "category": "Simon",
+    "publishedAt": "2026-08-27",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "solitaire-free-no-download",
+    "path": "/articles/solitaire-free-no-download/",
+    "title": "Solitaire free, no download, no signup — the NoCharge card shelf",
+    "seoTitle": "Solitaire free, no download, no signup — the NoCharge card shelf · NoCharge",
+    "description": "A current guide to NoCharge Klondike and FreeCell: their rules, controls, seeded resets, and the absence of saved game scores in V2.",
+    "category": "Platform · trust",
+    "publishedAt": "2026-08-27",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "sudoku-nine-x-nine-uniqueness-and-labels",
+    "path": "/articles/sudoku-nine-x-nine-uniqueness-and-labels/",
+    "title": "Sudoku 9×9 on NoCharge — the fixed puzzle and its checks",
+    "seoTitle": "Sudoku 9×9 on NoCharge — the fixed puzzle and its checks · NoCharge",
+    "description": "What the current NoCharge Sudoku 9×9 page actually provides: one fixed 3×3-box puzzle, a number pad, row checks, and no generator or saved resume.",
+    "category": "Sudoku 9×9",
+    "publishedAt": "2026-08-27",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "tile-garden-on-nocharge-a-calm-merge-game",
+    "path": "/articles/tile-garden-on-nocharge-a-calm-merge-game/",
+    "title": "Tile Garden on NoCharge: A Calm Merge Game",
+    "seoTitle": "Tile Garden on NoCharge: A Calm Merge Game · NoCharge",
+    "description": "The current Tile Garden is an eight-by-eight, single-mode puzzle: plant a deterministic seed, merge matching two-by-two tiers, and reach a center Flower before the board fills.",
+    "category": "Tile Garden",
+    "publishedAt": "2026-08-22",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "timed-word-tile-rush-vs-untimed-word-search",
+    "path": "/articles/timed-word-tile-rush-vs-untimed-word-search/",
+    "title": "Timed Word Tile Rush vs untimed Word Search",
+    "seoTitle": "Timed Word Tile Rush vs untimed Word Search · NoCharge",
+    "description": "Compare current Word Tile Rush’s 90-second, per-letter scoring with Word Search’s untimed eight-by-eight endpoint-selection puzzle; neither saves a game record.",
+    "category": "Platform · trust",
+    "publishedAt": "2026-08-27",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "timing-a-color-change-near-tile-boundaries",
+    "path": "/articles/timing-a-color-change-near-tile-boundaries/",
+    "title": "Choosing a color in Color Flip’s ten-step trail",
+    "seoTitle": "Choosing a color in Color Flip’s ten-step trail · NoCharge",
+    "description": "Use the named target and four labeled swatches in current Color Flip; learn when the active color stays put or cycles after a submission.",
+    "category": "Color Flip",
+    "publishedAt": "2026-08-15",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "twenty-forty-eight-on-nocharge-merge-strategy",
+    "path": "/articles/twenty-forty-eight-on-nocharge-merge-strategy/",
+    "title": "Twenty Forty-Eight on NoCharge: Merge Strategy",
+    "seoTitle": "Twenty Forty-Eight on NoCharge: Merge Strategy · NoCharge",
+    "description": "How NoCharge Twenty Forty-Eight slides and merges its seeded 4×4 board, treats 2048 as a milestone, and ends only when no legal move remains.",
+    "category": "Twenty Forty-Eight",
+    "publishedAt": "2026-08-22",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "two-player-games-one-device",
+    "path": "/articles/two-player-games-one-device/",
+    "title": "Two-player games on one device",
+    "seoTitle": "Two-player games on one device · NoCharge",
+    "description": "Current NoCharge Pass & Play includes six same-device games, with direct local turns and no online matchmaking, player names, saved results, or match history.",
+    "category": "Platform · trust",
+    "publishedAt": "2026-08-27",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "understanding-the-four-color-cycle",
+    "path": "/articles/understanding-the-four-color-cycle/",
+    "title": "How Color Flip’s palette cycle works",
+    "seoTitle": "How Color Flip’s palette cycle works · NoCharge",
+    "description": "The current Color Flip palette rotates Coral, Teal, Gold, and Violet; learn how manual cycling, Color cycle mode, and the ten-target trail differ.",
+    "category": "Color Flip",
+    "publishedAt": "2026-08-15",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "untimed-puzzle-games-in-the-browser",
+    "path": "/articles/untimed-puzzle-games-in-the-browser/",
+    "title": "Untimed puzzle games in the browser",
+    "seoTitle": "Untimed puzzle games in the browser · NoCharge",
+    "description": "What “untimed” means in current NoCharge, how it differs from a natural loss condition, and why the older broad inventory list should not be treated as current.",
+    "category": "Platform · trust",
+    "publishedAt": "2026-08-27",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "visual-mode-versus-turn-based-color-flip",
+    "path": "/articles/visual-mode-versus-turn-based-color-flip/",
+    "title": "Trail Session vs Color Cycle in Color Flip",
+    "seoTitle": "Trail Session vs Color Cycle in Color Flip · NoCharge",
+    "description": "Compare Color Flip’s two current modes: choose a swatch for each of ten targets, or rotate the active color after every submission.",
+    "category": "Color Flip",
+    "publishedAt": "2026-08-15",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "what-quiet-arcade-means-at-nocharge",
+    "path": "/articles/what-quiet-arcade-means-at-nocharge/",
+    "title": "What Quiet Arcade means at NoCharge",
+    "seoTitle": "What Quiet Arcade means at NoCharge V2 | NoCharge",
+    "description": "A current V2 definition of NoCharge’s browser-first Arcade and its limits: controls vary by game, scores stay in the active page, and there is no account or cloud-save feature.",
+    "category": "Platform · trust",
+    "publishedAt": "2026-08-19",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "where-high-scores-go",
+    "path": "/articles/where-high-scores-go/",
+    "title": "What NoCharge V2 stores in your browser",
+    "seoTitle": "What NoCharge V2 stores in your browser | NoCharge",
+    "description": "NoCharge V2 does not save game scores. Theme preferences use two localStorage keys; the Storage Inspector scans only nocharge:-prefixed names and never reads values.",
+    "category": "Platform · privacy",
+    "publishedAt": "2026-08-27",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "word-loom-original-word-game-design",
+    "path": "/articles/word-loom-original-word-game-design/",
+    "title": "Word Loom — an original word-game design, documented",
+    "seoTitle": "Word Loom — an original word-game design, documented · NoCharge",
+    "description": "Word Loom uses a local-date daily answer, a small built-in word list, duplicate-aware feedback, and six guesses; no streak or game record is saved.",
+    "category": "Word Loom",
+    "publishedAt": "2026-08-27",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "word-search-on-nocharge-quiet-word-hunting",
+    "path": "/articles/word-search-on-nocharge-quiet-word-hunting/",
+    "title": "Word Search on NoCharge: Quiet Word Hunting",
+    "seoTitle": "Word Search on NoCharge: rules and play | NoCharge",
+    "description": "NoCharge Word Search uses a fixed 8×8 grid with four targets and straight horizontal, vertical, or diagonal paths in either direction. It has no countdown or move score.",
+    "category": "Word Search",
+    "publishedAt": "2026-08-23",
+    "updatedAt": "2026-11-24"
+  },
+  {
+    "slug": "word-tile-rush-longer-word-scoring",
+    "path": "/articles/word-tile-rush-longer-word-scoring/",
+    "title": "How Word Tile Rush scoring works",
+    "seoTitle": "How Word Tile Rush scoring works · NoCharge",
+    "description": "In current Word Tile Rush, each accepted word scores one point per letter; the 90-second run uses a fixed local word list and no saved best score.",
+    "category": "Word Tile Rush",
+    "publishedAt": "2026-08-15",
+    "updatedAt": "2026-11-24"
+  }
+]

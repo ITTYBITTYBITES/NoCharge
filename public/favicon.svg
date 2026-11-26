@@ -1,12 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <!-- NoCharge favicon: the primary symbol on the site's charcoal tile.
-       Tiles and the open doorway use the brand green (#0f9d58) so the mark
-       stays crisp at 16 px without relying on colour pairs. -->
-  <rect width="64" height="64" rx="14" fill="#121212"/>
-  <g fill="#0f9d58">
-    <rect x="8" y="8" width="22" height="22" rx="6.5"/>
-    <rect x="34" y="8" width="22" height="22" rx="6.5"/>
-    <rect x="34" y="34" width="22" height="22" rx="6.5"/>
-  </g>
-  <path fill="none" stroke="#0f9d58" stroke-width="6" stroke-linejoin="round" d="M14.5 34 H22.5 A6.5 6.5 0 0 1 30 40.5 V49.5 A6.5 6.5 0 0 1 22.5 56 H16 M8 48 V41.5 A6.5 6.5 0 0 1 14.5 34"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="NoCharge mark">
+  <rect width="64" height="64" rx="21" fill="#d8f27c"/>
+  <path d="M17 45V19l30 26V19" fill="none" stroke="#20252b" stroke-linecap="round" stroke-linejoin="round" stroke-width="6.5"/>
+  <circle cx="47" cy="45" r="3.2" fill="#ff775d"/>
 </svg>

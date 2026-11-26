@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" role="img" aria-labelledby="nc14-b02-title nc14-b02-desc">
+  <title id="nc14-b02-title">Random Activity tool icon</title>
+  <desc id="nc14-b02-desc">Two clean crossing arrows indicate an unweighted shuffle rather than a ranked result. Transparent 24 by 24 vector; neutral details inherit currentColor and the accent uses --nocharge-icon-accent, matching the adaptive NoCharge R3.1 section-icon treatment.</desc>
+  <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h2.2c4.2 0 6.4 10 10.6 10H20M16.8 14l3.2 3-3.2 3M4 17h2.2c1.8 0 3.1-1.8 4.5-4M13.3 9c1.1-1.1 2.2-2 3.5-2H20M16.8 4l3.2 3-3.2 3"/><path d="M4 7h2.2M4 17h2.2" stroke="var(--nocharge-icon-accent, #0f7d47)"/></g>
+</svg>

@@ -33,85 +33,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Check generated art sources for drift
-        run: |
-          node scripts/generate-memory-match-art.mjs
-          node scripts/generate-word-tile-rush-art.mjs
-          node scripts/generate-color-flip-art.mjs
-          node scripts/generate-beacon-lattice-art.mjs
-          node scripts/generate-pass-play-art.mjs
-          node scripts/generate-klondike-art.mjs
-          node scripts/generate-freecell-art.mjs
-          node scripts/generate-nonogram-art.mjs
-          node scripts/generate-twenty-forty-eight-art.mjs
-          node scripts/generate-tile-garden-art.mjs
-          node scripts/generate-new-game-art.mjs word-search
-          node scripts/generate-new-game-art.mjs mini-sudoku
-          git diff --exit-code -- scripts/art-sources
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
 
-      - name: Check types and Astro files
-        run: npm run check
-
-      # Monetization flags come from repository/environment variables, never from
-      # a committed .env. On a pull_request from a fork these are empty, so the
-      # preview build is the flag-off build — which is the honest default.
-      # Without this block the deployed site would build with PUBLIC_AWIN_ENABLED
-      # unset and silently render zero affiliate links.
-      - name: Build site
-        env:
-          PUBLIC_AWIN_ENABLED: ${{ vars.PUBLIC_AWIN_ENABLED }}
-          PUBLIC_AWIN_MID_BRKOX: ${{ vars.PUBLIC_AWIN_MID_BRKOX }}
-          PUBLIC_AWIN_MID_CANGYU: ${{ vars.PUBLIC_AWIN_MID_CANGYU }}
-          PUBLIC_ADSENSE_ENABLED: ${{ vars.PUBLIC_ADSENSE_ENABLED }}
-        run: npm run build
-
-      # `npm run build` runs verify:build, which includes validate:awin. With the
-      # flag on, that fails if the build produces zero paid links, so a
-      # misconfigured variable cannot deploy a silently non-monetized site.
-      - name: Report monetization state
-        env:
-          PUBLIC_AWIN_ENABLED: ${{ vars.PUBLIC_AWIN_ENABLED }}
-        run: |
-          if [ "$PUBLIC_AWIN_ENABLED" = "true" ]; then
-            echo "Awin enabled for this build."
-          else
-            echo "::notice title=Awin disabled::PUBLIC_AWIN_ENABLED is not 'true' for this repository; the deployed build renders no affiliate links."
-          fi
-
-      - name: Browser diagnostics
-        run: |
-          which google-chrome google-chrome-stable chromium chromium-browser || true
-          google-chrome --version 2>/dev/null || google-chrome-stable --version 2>/dev/null || true
-          npx playwright --version
-
-      - name: Cache Playwright FFmpeg
-        id: playwright-ffmpeg-cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright/ffmpeg-*
-          key: playwright-ffmpeg-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('package-lock.json') }}
-
-      - name: Install Playwright FFmpeg
-        if: steps.playwright-ffmpeg-cache.outputs.cache-hit != 'true'
-        run: npx playwright install ffmpeg
-
-      - name: Run browser and accessibility tests
-        if: "!contains(github.event.head_commit.message, '[skip e2e]') && !contains(github.event.head_commit.message, '[skip checks]')"
-        run: npx playwright test --project=chromium
-
-      - name: Capture PR review screens
-        if: github.event_name == 'pull_request'
-        env:
-          CAPTURE_PR: '1'
-        run: npx playwright test tests/e2e/pr-captures.spec.ts --project=chromium
-
-      - name: Upload PR visual captures
-        if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v4
-        with:
-          name: pr-visual-captures
-          path: artifacts/pr-captures/
-          retention-days: 7
+      - name: Run V2 build and verification suite
+        run: npm test
 
       - name: Setup Pages
         if: github.event_name != 'pull_request'
@@ -124,7 +50,7 @@ jobs:
           path: ./dist
 
   deploy:
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     environment:

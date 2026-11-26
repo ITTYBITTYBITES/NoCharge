@@ -1,0 +1,213 @@
+:root {
+  --event-accent: #68745d;
+  --event-surface: #f4f5ef;
+  --event-border: #c8d2bf;
+  --event-text: #20252b;
+}
+
+:root[data-theme="dark"] {
+  --event-accent: #b8d58c;
+  --event-surface: #22281f;
+  --event-border: #46533b;
+  --event-text: #e0e0e0;
+}
+
+/* Fixed-date events — light palette */
+:root[data-theme="light"][data-event="new-years-day"] {
+  --event-accent: #805a0a;
+  --event-surface: #fff8e7;
+  --event-border: #d6be79;
+  --event-text: #20252b;
+}
+:root[data-theme="light"][data-event="valentines-day"] {
+  --event-accent: #a33455;
+  --event-surface: #fff0f4;
+  --event-border: #e0a1b2;
+  --event-text: #20252b;
+}
+:root[data-theme="light"][data-event="st-patricks-day"] {
+  --event-accent: #22643e;
+  --event-surface: #edf8f0;
+  --event-border: #9cc9aa;
+  --event-text: #20252b;
+}
+:root[data-theme="light"][data-event="earth-day"] {
+  --event-accent: #216b60;
+  --event-surface: #edf8f6;
+  --event-border: #9bcbc2;
+  --event-text: #20252b;
+}
+:root[data-theme="light"][data-event="independence-day"] {
+  --event-accent: #1d4e78;
+  --event-surface: #eff5fc;
+  --event-border: #9dbbda;
+  --event-text: #20252b;
+}
+:root[data-theme="light"][data-event="halloween"] {
+  --event-accent: #91450a;
+  --event-surface: #fff3e8;
+  --event-border: #e1b389;
+  --event-text: #20252b;
+}
+:root[data-theme="light"][data-event="veterans-day"] {
+  --event-accent: #3b4e6e;
+  --event-surface: #f1f4fa;
+  --event-border: #aab7d5;
+  --event-text: #20252b;
+}
+:root[data-theme="light"][data-event="christmas-day"] {
+  --event-accent: #245f3f;
+  --event-surface: #eff7f1;
+  --event-border: #a2c5aa;
+  --event-text: #20252b;
+}
+:root[data-theme="light"][data-event="new-years-eve"] {
+  --event-accent: #634987;
+  --event-surface: #f4effb;
+  --event-border: #b8a2d5;
+  --event-text: #20252b;
+}
+
+/* Floating dates and the inclusive seasonal range — light palette */
+:root[data-theme="light"][data-event="mlk-day"] {
+  --event-accent: #634887;
+  --event-surface: #f4effb;
+  --event-border: #b5a1d0;
+  --event-text: #20252b;
+}
+:root[data-theme="light"][data-event="presidents-day"] {
+  --event-accent: #244e7a;
+  --event-surface: #eef5fc;
+  --event-border: #9eb8d5;
+  --event-text: #20252b;
+}
+:root[data-theme="light"][data-event="easter-sunday"] {
+  --event-accent: #6b4d8a;
+  --event-surface: #f5f0fb;
+  --event-border: #baabd3;
+  --event-text: #20252b;
+}
+:root[data-theme="light"][data-event="memorial-day"] {
+  --event-accent: #8b3241;
+  --event-surface: #fff0f1;
+  --event-border: #d3a2a8;
+  --event-text: #20252b;
+}
+:root[data-theme="light"][data-event="labor-day"] {
+  --event-accent: #345c70;
+  --event-surface: #eff7fa;
+  --event-border: #9abecb;
+  --event-text: #20252b;
+}
+:root[data-theme="light"][data-event="thanksgiving"] {
+  --event-accent: #87500d;
+  --event-surface: #fff5e9;
+  --event-border: #d9b887;
+  --event-text: #20252b;
+}
+:root[data-theme="light"][data-event="winter-holiday-season"] {
+  --event-accent: #365d89;
+  --event-surface: #eef5fc;
+  --event-border: #9eb9d9;
+  --event-text: #20252b;
+}
+
+/* Fixed-date events — dark palette */
+:root[data-theme="dark"][data-event="new-years-day"] {
+  --event-accent: #e7c96f;
+  --event-surface: #2b271b;
+  --event-border: #776538;
+  --event-text: #e0e0e0;
+}
+:root[data-theme="dark"][data-event="valentines-day"] {
+  --event-accent: #f08aa8;
+  --event-surface: #2d2025;
+  --event-border: #744151;
+  --event-text: #e0e0e0;
+}
+:root[data-theme="dark"][data-event="st-patricks-day"] {
+  --event-accent: #7ccb92;
+  --event-surface: #1d2a22;
+  --event-border: #41694b;
+  --event-text: #e0e0e0;
+}
+:root[data-theme="dark"][data-event="earth-day"] {
+  --event-accent: #79cabd;
+  --event-surface: #1d2a28;
+  --event-border: #416b64;
+  --event-text: #e0e0e0;
+}
+:root[data-theme="dark"][data-event="independence-day"] {
+  --event-accent: #86b9ed;
+  --event-surface: #1e2731;
+  --event-border: #48617f;
+  --event-text: #e0e0e0;
+}
+:root[data-theme="dark"][data-event="halloween"] {
+  --event-accent: #ffa85f;
+  --event-surface: #2d241d;
+  --event-border: #7b5438;
+  --event-text: #e0e0e0;
+}
+:root[data-theme="dark"][data-event="veterans-day"] {
+  --event-accent: #a4b8dc;
+  --event-surface: #202633;
+  --event-border: #4d5a72;
+  --event-text: #e0e0e0;
+}
+:root[data-theme="dark"][data-event="christmas-day"] {
+  --event-accent: #7dd39b;
+  --event-surface: #1d2921;
+  --event-border: #436e50;
+  --event-text: #e0e0e0;
+}
+:root[data-theme="dark"][data-event="new-years-eve"] {
+  --event-accent: #c7a1ee;
+  --event-surface: #292331;
+  --event-border: #654e7e;
+  --event-text: #e0e0e0;
+}
+
+/* Floating dates and the inclusive seasonal range — dark palette */
+:root[data-theme="dark"][data-event="mlk-day"] {
+  --event-accent: #c5a4ec;
+  --event-surface: #292330;
+  --event-border: #695477;
+  --event-text: #e0e0e0;
+}
+:root[data-theme="dark"][data-event="presidents-day"] {
+  --event-accent: #8db7ef;
+  --event-surface: #1f2732;
+  --event-border: #4d6280;
+  --event-text: #e0e0e0;
+}
+:root[data-theme="dark"][data-event="easter-sunday"] {
+  --event-accent: #c5a8eb;
+  --event-surface: #292430;
+  --event-border: #685979;
+  --event-text: #e0e0e0;
+}
+:root[data-theme="dark"][data-event="memorial-day"] {
+  --event-accent: #f08f9a;
+  --event-surface: #2b2023;
+  --event-border: #78474c;
+  --event-text: #e0e0e0;
+}
+:root[data-theme="dark"][data-event="labor-day"] {
+  --event-accent: #8fc0d2;
+  --event-surface: #1e292e;
+  --event-border: #4d6672;
+  --event-text: #e0e0e0;
+}
+:root[data-theme="dark"][data-event="thanksgiving"] {
+  --event-accent: #f2b46c;
+  --event-surface: #2b241b;
+  --event-border: #795e38;
+  --event-text: #e0e0e0;
+}
+:root[data-theme="dark"][data-event="winter-holiday-season"] {
+  --event-accent: #a2c5ef;
+  --event-surface: #202733;
+  --event-border: #4e627a;
+  --event-text: #e0e0e0;
+}

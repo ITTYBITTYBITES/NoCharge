@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" role="img" aria-labelledby="nc18-b02-title nc18-b02-desc">
+  <title id="nc18-b02-title">Touch Target Checker tool icon</title>
+  <desc id="nc18-b02-desc">A pointer mark sits beside two measurement brackets. Transparent 24 by 24 vector; neutral details inherit currentColor and the accent uses --nocharge-icon-accent, matching the adaptive NoCharge R3.1 section-icon treatment.</desc>
+  <g fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3.5v12.2l3.2-3.1 2.2 5.1 2.2-1-2.2-5.1h4.5L5 3.5Z"/><path d="M15.7 6h4.8M15.7 18h4.8M18.1 6v12"/><path d="M16.8 9.1v5.8" stroke="var(--nocharge-icon-accent, #0f7d47)"/><circle cx="18.1" cy="6" r=".8" fill="var(--nocharge-icon-surface, #fffefa)"/></g>
+</svg>

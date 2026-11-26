@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" role="img" aria-labelledby="nc16-b02-title nc16-b02-desc">
+  <title id="nc16-b02-title">Singing Bowl Engine tool icon</title>
+  <desc id="nc16-b02-desc">A simple bowl silhouette with three restrained resonance arcs. Transparent 24 by 24 vector; neutral details inherit currentColor and the accent uses --nocharge-icon-accent, matching the adaptive NoCharge R3.1 section-icon treatment.</desc>
+  <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.2 13.1c.5 4.2 3.5 7.1 7.8 7.1s7.3-2.9 7.8-7.1H4.2Z"/><path d="M6.2 13.1h11.6M8.2 9.6a4.5 4.5 0 0 1 7.6 0"/><path d="M6.9 6.7a7.2 7.2 0 0 1 10.2 0M9.5 4.2a3.7 3.7 0 0 1 5 0" stroke="var(--nocharge-icon-accent, #0f7d47)"/><path d="M7 13.2c.7 2.1 2.4 3.2 5 3.2s4.3-1.1 5-3.2" stroke="var(--nocharge-icon-surface, #fffefa)"/></g>
+</svg>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180" fill="none" aria-hidden="true" focusable="false">
+  <circle cx="90" cy="90" r="82" fill="var(--event-surface)" stroke="var(--event-border)" stroke-width="4"/>
+  <circle cx="90" cy="90" r="62" fill="var(--paper-strong)" stroke="var(--ink)" stroke-width="3"/>
+  <path d="M41 90c13-21 30-32 49-32s36 11 49 32c-13 21-30 32-49 32S54 111 41 90Z" fill="var(--event-accent)" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round"/>
+  <circle cx="90" cy="90" r="16" fill="var(--paper-strong)" stroke="var(--ink)" stroke-width="4"/>
+  <circle cx="90" cy="90" r="5" fill="var(--ink)"/>
+  <path d="M90 17v13M90 150v13M17 90h13M150 90h13M38 38l9 9M133 133l9 9M142 38l-9 9M47 133l-9 9" stroke="var(--event-accent)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M64 142h52" stroke="var(--ink)" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="64" cy="142" r="4" fill="var(--event-accent)"/><circle cx="90" cy="142" r="4" fill="var(--event-accent)"/><circle cx="116" cy="142" r="4" fill="var(--event-accent)"/>
+</svg>

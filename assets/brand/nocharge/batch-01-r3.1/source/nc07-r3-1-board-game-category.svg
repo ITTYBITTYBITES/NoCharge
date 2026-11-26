@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" role="img" aria-labelledby="nc07-r31-title nc07-r31-desc">
+  <title id="nc07-r31-title">Board games category icon</title>
+  <desc id="nc07-r31-desc">An open three-by-three board with two round game pieces at intersections, echoing the actual grid-and-stone layouts in the site's board-game artwork. Theme behavior: neutral strokes inherit currentColor; green details use --nocharge-icon-accent; small recessed centers use --nocharge-icon-surface. The canvas remains transparent.</desc>
+  <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 4v16M12 4v16M19 4v16M4 5h16M4 12h16M4 19h16"/>
+  </g>
+  <circle cx="5" cy="5" r="2.1" fill="var(--nocharge-icon-surface, #fffefa)" stroke="var(--nocharge-icon-accent, #0f7d47)" stroke-width="1.8"/>
+  <circle cx="19" cy="12" r="2.1" fill="currentColor"/>
+</svg>

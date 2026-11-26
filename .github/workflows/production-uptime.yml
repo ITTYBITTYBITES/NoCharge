@@ -13,10 +13,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
-
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 22
-
-      - run: node scripts/check-production.mjs
+      - name: Check public V2 endpoints
+        shell: bash
+        env:
+          SITE_URL: https://nocharge.net
+        run: |
+          set -euo pipefail
+          for path in / /arcade/ /experiences/ /tools/ /guides/ /discover/ /setup/ /sitemap.xml /robots.txt /setup/feed.xml; do
+            echo "Checking ${SITE_URL}${path}"
+            curl --fail --location --silent --show-error --max-time 25 "${SITE_URL}${path}" >/dev/null
+          done

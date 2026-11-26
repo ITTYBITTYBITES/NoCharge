@@ -1,0 +1,133 @@
+:root {
+  color-scheme: light;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #20252b;
+  background: #f7f6ef;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+
+  /* Core surfaces and text */
+  --ink: #20252b;
+  --ink-soft: #424a52;
+  --muted: #58616a;
+  --text-secondary: #59616a;
+  --text-muted: #5d6662;
+  --text-subtle: #5f6766;
+  --text-faint: #5f6766;
+  --paper: #f7f6ef;
+  --paper-strong: #fffefa;
+  --surface-muted: #f4f3ed;
+  --surface-inset: #fbfaf5;
+  --surface-soft: #f9f8f2;
+  --surface-alt: #eae9e1;
+  --surface-hover: #ffffff;
+  --surface-inverse: #20252b;
+  --text-on-inverse: #fffefa;
+  --text-on-color: #20252b;
+  --text-on-color-muted: #535c5b;
+  --text-on-color-accent: #3a4f17;
+  --surface-header: rgba(247, 246, 239, .95);
+  --surface-translucent: rgba(255, 254, 250, .62);
+  --surface-tint: rgba(255, 254, 250, .55);
+  --surface-shop: rgba(255, 254, 250, .56);
+  --surface-collection: rgba(255, 254, 250, .68);
+  --surface-note: rgba(255, 254, 250, .65);
+  --surface-template: rgba(255, 254, 250, .72);
+  --surface-disabled: rgba(255, 255, 255, .52);
+  --line: #e4e1d8;
+  --line-dark: rgba(32, 37, 43, .16);
+  --border-soft: rgba(32, 37, 43, .09);
+  --border-medium: rgba(32, 37, 43, .12);
+  --border-strong: rgba(32, 37, 43, .22);
+  --border-hover: #a8adb0;
+
+  /* Brand, actions, and accessible focus */
+  --lime: #d8f27c;
+  --lime-deep: #3a4f17;
+  --coral: #ff775d;
+  --sky: #b9e6f1;
+  --lilac: #d9cef7;
+  --yellow: #f4d975;
+  --mint: #cce8d6;
+  --text-accent: #626c33;
+  /* R3.1 accent clears 3:1 non-text contrast on light page/surface tokens. */
+  --nocharge-icon-accent: #0f7d47;
+  --nocharge-icon-surface: var(--paper-strong);
+  --text-status: #5e6643;
+  --status-dot: #9bac4a;
+  --status-glow: rgba(155, 172, 74, .16);
+  --focus-color: #5b6e20;
+  --focus-shadow: rgba(91, 110, 32, .2);
+  --action-bg: #20252b;
+  --action-text: #fffefa;
+  --action-hover: #3a424a;
+  --accent-hover: #e3f8a0;
+  --illustration-white: #fffefa;
+  --header-theme-color: #f7f6ef;
+
+  /* Layout */
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 30px;
+  --content-width: 1220px;
+  --ease: 180ms ease;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  color: #e0e0e0;
+  background: #121212;
+
+  --ink: #e0e0e0;
+  --ink-soft: #c4c4c4;
+  --muted: #9a9a9a;
+  --text-secondary: #b8b8b8;
+  --text-muted: #a0a0a0;
+  --text-subtle: #969696;
+  --text-faint: #969696;
+  --paper: #121212;
+  --paper-strong: #1c1c1c;
+  --surface-muted: #242424;
+  --surface-inset: #1c1c1c;
+  --surface-soft: #1c1c1c;
+  --surface-alt: #1c1c1c;
+  --surface-hover: #242424;
+  --surface-inverse: #1c1c1c;
+  --text-on-inverse: #e0e0e0;
+  --text-on-color: #20252b;
+  --text-on-color-muted: #535c5b;
+  --text-on-color-accent: #3a4f17;
+  --surface-header: rgba(18, 18, 18, .96);
+  --surface-translucent: rgba(255, 255, 255, .05);
+  --surface-tint: rgba(255, 255, 255, .04);
+  --surface-shop: rgba(255, 255, 255, .04);
+  --surface-collection: rgba(255, 255, 255, .04);
+  --surface-note: rgba(255, 255, 255, .04);
+  --surface-template: rgba(255, 255, 255, .04);
+  --surface-disabled: rgba(255, 255, 255, .04);
+  --line: rgba(255, 255, 255, .1);
+  --line-dark: rgba(255, 255, 255, .18);
+  --border-soft: rgba(255, 255, 255, .1);
+  --border-medium: rgba(255, 255, 255, .14);
+  --border-strong: rgba(255, 255, 255, .2);
+  --border-hover: rgba(255, 255, 255, .32);
+
+  --text-accent: #c9e57c;
+  /* Brighter R3.1 accent preserves contrast on the dark theme surface. */
+  --nocharge-icon-accent: #12b66a;
+  --nocharge-icon-surface: var(--paper-strong);
+  --text-status: #c9e57c;
+  --status-dot: #12b66a;
+  --status-glow: rgba(18, 182, 106, .2);
+  --focus-color: #d8f27c;
+  --focus-shadow: rgba(216, 242, 124, .28);
+  --action-bg: #0f9d58;
+  --action-text: #04130e;
+  --action-hover: #12b66a;
+  --accent-hover: #e3f8a0;
+  --header-theme-color: #121212;
+}
+
+html { background: var(--paper); }
+body { color: var(--ink); background: var(--paper); }

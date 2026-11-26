@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" role="img" aria-labelledby="nc15-b02-title nc15-b02-desc">
+  <title id="nc15-b02-title">Ambient Mixer tool icon</title>
+  <desc id="nc15-b02-desc">Layered sound waves and a quiet control point represent browser-generated audio. Transparent 24 by 24 vector; neutral details inherit currentColor and the accent uses --nocharge-icon-accent, matching the adaptive NoCharge R3.1 section-icon treatment.</desc>
+  <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 9.5c1.4 0 1.4 5 2.8 5s1.4-9 2.8-9 1.4 13 2.8 13 1.4-7 2.8-7"/><path d="M16.3 8.5a5.2 5.2 0 0 1 0 7M18.7 6.2a8.4 8.4 0 0 1 0 11.6" stroke="var(--nocharge-icon-accent, #0f7d47)"/><circle cx="15.3" cy="12" r="1.1" fill="var(--nocharge-icon-surface, #fffefa)"/></g>
+</svg>

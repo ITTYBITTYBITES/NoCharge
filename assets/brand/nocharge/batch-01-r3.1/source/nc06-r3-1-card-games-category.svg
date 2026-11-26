@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" role="img" aria-labelledby="nc06-r31-title nc06-r31-desc">
+  <title id="nc06-r31-title">Card games category icon</title>
+  <desc id="nc06-r31-desc">Three clearly fanned playing cards, matching the real solitaire layouts in the site's card-game cover art. The cards contain no letters or suit glyphs. Theme behavior: neutral strokes inherit currentColor; green details use --nocharge-icon-accent; small recessed centers use --nocharge-icon-surface. The canvas remains transparent.</desc>
+  <rect x="3.8" y="5.4" width="9.2" height="13.2" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" transform="rotate(-18 8.4 12)"/>
+  <rect x="11" y="5.4" width="9.2" height="13.2" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" transform="rotate(18 15.6 12)"/>
+  <rect x="7.5" y="3.2" width="9" height="17.6" rx="2" fill="none" stroke="var(--nocharge-icon-accent, #0f7d47)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="m12 9.8 1.5 1.5-1.5 1.5-1.5-1.5z" fill="none" stroke="var(--nocharge-icon-accent, #0f7d47)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

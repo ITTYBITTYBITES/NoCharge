@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" role="img" aria-labelledby="nc08-r31-title nc08-r31-desc">
+  <title id="nc08-r31-title">Pass and Play category icon</title>
+  <desc id="nc08-r31-desc">Two player tokens facing across a shared central board, joined by a gentle handoff arrow. It represents the site's one-device Pass and Play collection without depicting people or a controller. Theme behavior: neutral strokes inherit currentColor; green details use --nocharge-icon-accent; small recessed centers use --nocharge-icon-surface. The canvas remains transparent.</desc>
+  <g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="5" cy="12" r="2.6" stroke="var(--nocharge-icon-accent, #0f7d47)"/>
+    <circle cx="19" cy="12" r="2.6"/>
+    <rect x="9" y="8.5" width="6" height="7" rx="1.3"/>
+    <path d="M7.8 7.2c1.1-1.2 2.5-1.8 4.2-1.8 1.3 0 2.5.4 3.5 1.2M16.2 16.8c-1.1 1.2-2.5 1.8-4.2 1.8-1.3 0-2.5-.4-3.5-1.2" stroke="var(--nocharge-icon-accent, #0f7d47)"/>
+    <path d="m14.2 4.9 1.7 1.7-2.4.5M9.8 19.1l-1.7-1.7 2.4-.5" stroke="var(--nocharge-icon-accent, #0f7d47)"/>
+  </g>
+</svg>

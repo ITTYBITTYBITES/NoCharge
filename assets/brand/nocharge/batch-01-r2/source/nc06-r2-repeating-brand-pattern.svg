@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="120" viewBox="0 0 240 120" role="img" aria-labelledby="title desc">
+  <title id="title">NoCharge reusable geometric brand pattern</title>
+  <desc id="desc">A seamless, transparent, low-contrast repeat tile built from a regular grid of rounded squares with restrained lime and coral accents. Intended for subtle section backgrounds.</desc>
+  <defs>
+    <pattern id="nc-pattern" width="80" height="80" patternUnits="userSpaceOnUse">
+      <rect x="10" y="10" width="20" height="20" rx="6" fill="none" stroke="#20252b" stroke-opacity=".2" stroke-width="1.6"/>
+      <rect x="50" y="10" width="20" height="20" rx="6" fill="#d8f27c" fill-opacity=".62"/>
+      <rect x="10" y="50" width="20" height="20" rx="6" fill="none" stroke="#20252b" stroke-opacity=".2" stroke-width="1.6"/>
+      <rect x="50" y="50" width="20" height="20" rx="6" fill="none" stroke="#20252b" stroke-opacity=".2" stroke-width="1.6"/>
+      <rect x="56" y="16" width="8" height="8" rx="3" fill="#ff775d"/>
+    </pattern>
+  </defs>
+  <rect width="240" height="120" fill="url(#nc-pattern)"/>
+</svg>

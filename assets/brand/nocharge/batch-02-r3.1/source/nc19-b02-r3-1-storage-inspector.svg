@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" role="img" aria-labelledby="nc19-b02-title nc19-b02-desc">
+  <title id="nc19-b02-title">Storage Inspector tool icon</title>
+  <desc id="nc19-b02-desc">A three-drawer local-data cabinet with a magnifier for key names. Transparent 24 by 24 vector; neutral details inherit currentColor and the accent uses --nocharge-icon-accent, matching the adaptive NoCharge R3.1 section-icon treatment.</desc>
+  <g fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 5h11v4h-11zM3.5 10h11v4h-11zM3.5 15h11v4h-11z"/><path d="M6 7h3M6 12h3M6 17h3M18.2 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4ZM20.5 14.3l1.5 1.5"/><path d="M6 12h3" stroke="var(--nocharge-icon-accent, #0f7d47)"/><circle cx="18.2" cy="12" r="1.1" fill="var(--nocharge-icon-surface, #fffefa)"/></g>
+</svg>

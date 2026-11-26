@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" fill="none" aria-hidden="true" focusable="false">
+  <path d="M21 20h20v45l-10 14-10-14V20ZM54 20h20v37l-10 15-10-15V20Z" fill="var(--witness-prop-accent,var(--event-accent))" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M24 31h14M24 43h14M57 31h14M57 43h14" stroke="var(--paper-strong)" stroke-width="3" stroke-linecap="round"/>
+  <path d="M31 79v7M64 72v14" stroke="var(--ink)" stroke-width="4" stroke-linecap="round"/>
+</svg>

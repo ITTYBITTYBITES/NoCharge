@@ -1,50 +1,24 @@
-# Security policy and deployment headers
+# Security policy
 
 ## Reporting a vulnerability
 
 Please email **hello@nocharge.net** with a description, reproduction steps, and affected URL. Do not include player data or run destructive tests against the production site.
 
-## Browser controls in this repository
+## V2 browser-resource baseline
 
-- Main pages ship a meta Content Security Policy that limits scripts, frames, media, connections, and form submissions to the documented analytics and AdSense origins.
-- Advertising is one manual, responsive Google AdSense banner. Its consent is managed by Google's Privacy & messaging (Funding Choices) consent platform, and the official AdSense tag consumes those choices; NoCharge never fabricates TCF or GPP strings.
-- The site keeps no custom advertising toggle and no custom ad frames. Google's consent message can be reopened from the footer's "Privacy and cookie settings" control.
-- Analytics loads only after analytics consent and is disabled again when consent is withdrawn.
-- A strict-origin referrer policy is declared on all pages.
+The V2 source and generated output were statically audited for external scripts, frames, network APIs, images, fonts, and stylesheets. The only direct third-party embed is the click-to-load YouTube iframe at `https://www.youtube-nocookie.com/embed/...`; the app does not directly reference `www.youtube.com` or `i.ytimg.com` thumbnails. Analytics, ad, CMP, and affiliate request integrations are inactive in V2. Outbound links are navigations, not embedded resource loads.
 
-## Browser meta CSP
+The app has inline executable boot scripts and inline style attributes. Any strict CSP must allow the current inline scripts (prefer build-specific hashes) and inline styles, and should allow only the direct YouTube frame host. Recompute script hashes if the generated inline blocks change.
 
-Every page ships this policy in a `<meta http-equiv="Content-Security-Policy">` element (see `src/layouts/BaseLayout.astro`):
+## Response headers and hosting boundary
 
-```text
-default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com https://fundingchoicesmessages.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.google-analytics.com https://*.google-analytics.com https://pagead2.googlesyndication.com https://tpc.googlesyndication.com https://googleads.g.doubleclick.net https://securepubads.g.doubleclick.net https://www.google.com; font-src 'self'; media-src 'self'; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://securepubads.g.doubleclick.net https://tpc.googlesyndication.com https://fundingchoicesmessages.google.com https://www.google.com https://*.adtrafficquality.google; frame-src 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com https://fundingchoicesmessages.google.com; form-action 'self'
-```
+GitHub Pages does not provide configurable custom response headers through repository files. This repository does not contain or deploy the separate Cloudflare `nocharge-headers` Worker. Do not assume that CSP or other edge headers changed when this site repository is pushed. A live response check during release preparation showed that the current Cloudflare CSP still omits the YouTube frame host; until the Worker is separately updated, the trailer may be blocked.
 
-Two differences from the edge policy are deliberate:
-
-- **No `upgrade-insecure-requests`.** WebKit applies the meta directive to plain-HTTP local preview servers too, upgrading `http://localhost` requests to HTTPS and failing the TLS handshake during local e2e runs. The production site is served entirely over HTTPS, so the meta-level upgrade is unnecessary there; the directive is applied only at the edge (below).
-- **No `frame-ancestors`.** The directive is ignored in meta elements, so it can only be delivered as an HTTP response header at the edge.
-
-The AdSense and Privacy & messaging origins follow Google's documented CSP guidance for the AdSense tag and the Funding Choices consent tag. `https://*.adtrafficquality.google` is allowed under `connect-src` only for Google's ad-quality (invalid-traffic detection) endpoint; do not add broader wildcards.
-
-## Required Cloudflare/edge response headers
-
-GitHub Pages does not provide repository-configurable custom response headers. If the custom domain is placed behind Cloudflare, Netlify, or another configurable edge, apply the following baseline there:
+The separately managed Worker should allow `https://www.youtube-nocookie.com` in `frame-src` for the click-to-load embed and preserve these headers:
 
 ```text
-Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com https://fundingchoicesmessages.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.google-analytics.com https://*.google-analytics.com https://pagead2.googlesyndication.com https://tpc.googlesyndication.com https://googleads.g.doubleclick.net https://securepubads.g.doubleclick.net https://www.google.com; font-src 'self'; media-src 'self'; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://securepubads.g.doubleclick.net https://tpc.googlesyndication.com https://fundingchoicesmessages.google.com https://www.google.com https://*.adtrafficquality.google; frame-src 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com https://fundingchoicesmessages.google.com; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
-Permissions-Policy: accelerometer=(), autoplay=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
-Referrer-Policy: strict-origin-when-cross-origin
 X-Content-Type-Options: nosniff
-X-Frame-Options: DENY
-Cross-Origin-Opener-Policy: same-origin
-Strict-Transport-Security: max-age=31536000
+Referrer-Policy: strict-origin-when-cross-origin
 ```
 
-The edge response CSP is the meta policy plus `frame-ancestors 'none'` and `upgrade-insecure-requests`, which are only meaningful as response headers. Keeping them out of the meta policy also keeps plain-HTTP local previews (Playwright, Astro dev) working in WebKit.
-
-**Owner action:** if the deployed domain is served through Cloudflare or another edge, update its CSP (or equivalent) security header with the policy above — repository changes cannot apply HTTP response headers on GitHub Pages.
-
-The baseline intentionally omits HSTS `includeSubDomains` and `preload`. Before adding either, confirm every current and future subdomain supports HTTPS and review the long-lived preload commitment. Apply the CSP as `Content-Security-Policy-Report-Only` first, test games, AdSense, Google Privacy & messaging, and analytics, then enforce only after reviewing reports. See `docs/CLOUDFLARE_OWNER_CHECKLIST.md`; repository changes cannot confirm dashboard configuration.
-
-The remaining `'unsafe-inline'` allowance supports the current small inline boot scripts, the Google consent tag, and Astro-generated style variables. A future hardening pass can move those scripts to static files and use CSP hashes.
+No Worker edit or deployment is included in this repository release. Verify the active edge policy and response headers independently before treating them as updated.

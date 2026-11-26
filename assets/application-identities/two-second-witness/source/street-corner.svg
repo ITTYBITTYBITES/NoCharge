@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="320" viewBox="0 0 720 320" fill="none" aria-hidden="true" focusable="false">
+  <rect x="2" y="2" width="716" height="316" rx="24" fill="var(--event-surface)" stroke="var(--event-border)" stroke-width="3"/>
+  <circle cx="623" cy="57" r="31" fill="var(--event-accent)" opacity=".24"/>
+  <path d="M24 177 176 76l128 101v84H24v-84Z" fill="var(--paper-strong)" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round"/>
+  <path d="m290 155 139-97 145 97v106H290V155Z" fill="var(--surface-muted)" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round"/>
+  <rect x="52" y="188" width="71" height="58" rx="8" fill="var(--event-surface)" stroke="var(--event-border)" stroke-width="4"/>
+  <rect x="151" y="188" width="72" height="58" rx="8" fill="var(--event-surface)" stroke="var(--event-border)" stroke-width="4"/>
+  <rect x="334" y="167" width="80" height="76" rx="9" fill="var(--paper-strong)" stroke="var(--event-border)" stroke-width="4"/>
+  <rect x="456" y="166" width="80" height="77" rx="9" fill="var(--paper-strong)" stroke="var(--event-border)" stroke-width="4"/>
+  <path d="M0 251h720v69H0z" fill="var(--surface-muted)" stroke="var(--ink)" stroke-width="4"/>
+  <path d="M0 282h720" stroke="var(--event-border)" stroke-width="4"/>
+  <path d="M44 307h56M170 307h56M296 307h56M422 307h56M548 307h56" stroke="var(--event-accent)" stroke-width="7" stroke-linecap="round"/>
+  <path d="M599 137h54v79h-54z" fill="var(--paper-strong)" stroke="var(--ink)" stroke-width="4"/>
+  <path d="M626 216v35M600 252h52" stroke="var(--ink)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M548 249v-24M565 249v-24" stroke="var(--event-accent)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M566 248h60" stroke="var(--ink)" stroke-width="5" stroke-linecap="round"/>
+</svg>

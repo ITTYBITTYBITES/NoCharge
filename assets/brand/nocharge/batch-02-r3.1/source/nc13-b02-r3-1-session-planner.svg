@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" role="img" aria-labelledby="nc13-b02-title nc13-b02-desc">
+  <title id="nc13-b02-title">Session Planner tool icon</title>
+  <desc id="nc13-b02-desc">A clock face with an accent hand and a short planning line. Transparent 24 by 24 vector; neutral details inherit currentColor and the accent uses --nocharge-icon-accent, matching the adaptive NoCharge R3.1 section-icon treatment.</desc>
+  <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="11.5" r="8.2"/><path d="M12 6.8v4.8l3.2 1.8M8.3 21h7.4"/><path d="M12 11.5l3.2 1.9" stroke="var(--nocharge-icon-accent, #0f7d47)"/><circle cx="12" cy="11.5" r="1" fill="var(--nocharge-icon-surface, #fffefa)"/></g>
+</svg>

@@ -1,0 +1,1327 @@
+{
+  "schemaVersion": 1,
+  "planStatus": "approved-plan-not-applied",
+  "source": {
+    "repository": "https://github.com/ITTYBITTYBITES/NoCharge",
+    "ref": "main",
+    "commit": "ff720ae89481741ebce31e51d37250edaa9b191e",
+    "commitDate": "2026-11-05",
+    "auditedAt": "2026-11-16",
+    "toolInventory": "src/config/tools.ts plus src/pages/tools/{slug}.astro",
+    "guideInventory": "src/content/guides/{slug}.md, routed by src/pages/guides/[slug].astro"
+  },
+  "currentV2Snapshot": {
+    "publishedDetailRoutes": 53,
+    "publishedCounts": {
+      "arcade": 28,
+      "experiences": 5,
+      "tools": 18,
+      "guides": 2
+    },
+    "publishedArcadeSlugs": [
+      "pattern-pairs",
+      "sum-sprint",
+      "simon",
+      "lights-out",
+      "last-token",
+      "hangman",
+      "tic-tac-toe",
+      "four-in-a-row",
+      "twenty-forty-eight",
+      "word-loom",
+      "beacon-lattice",
+      "checkers",
+      "color-flip",
+      "dots-and-boxes",
+      "freecell",
+      "gomoku",
+      "klondike",
+      "memory-match",
+      "minesweeper",
+      "mini-sudoku",
+      "nine-mens-morris",
+      "nonogram",
+      "pass-the-picture",
+      "reversi",
+      "sudoku-9x9",
+      "tile-garden",
+      "word-search",
+      "word-tile-rush"
+    ],
+    "publishedToolSlugs": [
+      "word-counter",
+      "json-workbench",
+      "contrast-checker",
+      "discovery-wheel",
+      "game-finder",
+      "session-planner",
+      "random-activity",
+      "ambient-mixer",
+      "singing-bowl-engine",
+      "reduced-motion-tester",
+      "touch-target-checker",
+      "storage-inspector",
+      "zoom-visualizer",
+      "nonogram-clue-calculator",
+      "solitaire-comparator",
+      "sudoku-helper",
+      "focus-order-demo",
+      "word-scoring"
+    ],
+    "publishedGuideSlugs": [
+      "a-practical-guide-to-interface-contrast",
+      "a-local-first-workflow-for-browser-tools"
+    ],
+    "publishedExperienceSlugs": [
+      "coosjoint",
+      "twosecondwitness",
+      "barn-road-chronicles",
+      "profivue",
+      "rideside"
+    ],
+    "prerenderedPages": 334,
+    "canonicalSitemapUrls": 328,
+    "quietSetupPages": 210,
+    "quietSetupAmazonLinkInstances": 284,
+    "quietSetupAmazonSearchUrls": 109,
+    "livePathsExactV2Route": 285,
+    "livePathsWithoutRouteOrProposedRedirect": 19,
+    "quietSetupAmazonLinkedPages": 195,
+    "quietSetupNonAmazonPages": 15,
+    "quietSetupHubPages": 1,
+    "articleDetailPages": 48,
+    "articleHubPages": 1,
+    "editorialHubPages": 2,
+    "quietSetupFeedItems": 210,
+    "livePathsProposedRedirect": 59,
+    "livePathsExplicitlyRetiredNoRedirect": 19,
+    "livePathsDispositioned": 52,
+    "livePathsUnresolved": 0
+  },
+  "summary": {
+    "legacyToolRoutes": 16,
+    "legacyGuideRoutes": 26,
+    "legacyRoutesTotal": 42,
+    "samePathPublishedReplacements": 16,
+    "deferredNoRedirectRoutes": 0,
+    "permanentRedirectsProposed": 59,
+    "canonicalArcadeRouteReplacements": 52,
+    "additionalLivePathRedirectsProposed": 33,
+    "dailyPathReplacementProposed": 1,
+    "learnArticleReplacementsProposed": 6,
+    "explicitRetirementsNoRedirect": 19,
+    "livePathDispositionDecisions": 52,
+    "livePathAccountingUnclassified": 0
+  },
+  "redirectPolicy": [
+    "Preserve a legacy URL when the fresh V2 entry has the same slug and user intent; do not add an unnecessary redirect hop.",
+    "When a legacy game-guide slug has a published one-to-one V2 Arcade replacement, propose one permanent direct redirect to /arcade/{slug}/; do not route through another legacy URL or a section hub.",
+    "Only propose a permanent redirect to a verified one-to-one replacement that is published, indexable, and passes the full publication gate.",
+    "Do not redirect individual legacy URLs to /tools/, /guides/, /discover/, /arcade/, or a merely adjacent game/article.",
+    "Deferred means not migrated in this phase, not approved for deletion. Keep each old route on the legacy deployment until an owner explicitly chooses migration or retirement.",
+    "If a route is explicitly retired without a replacement, use 410 where the production host supports it; otherwise let the normal 404 response stand. This is not a redirect.",
+    "For the 52 Batch 3 paths, use only the named route disposition in the parity manifest: 33 individually approved redirect decisions to verified routes and 19 approved no-redirect retirements. Retirements are not redirects; use 410 where supported or the normal 404. These decisions are not active Cloudflare rules."
+  ],
+  "permanentRedirects": [
+    {
+      "from": "/guides/beacon-lattice/",
+      "to": "/arcade/beacon-lattice/",
+      "status": 301,
+      "reason": "A clean-room V2 Arcade game is published at /arcade/beacon-lattice/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/guides/checkers/",
+      "to": "/arcade/checkers/",
+      "status": 301,
+      "reason": "A clean-room V2 Arcade game is published at /arcade/checkers/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/guides/color-flip/",
+      "to": "/arcade/color-flip/",
+      "status": 301,
+      "reason": "A clean-room V2 Arcade game is published at /arcade/color-flip/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/guides/dots-and-boxes/",
+      "to": "/arcade/dots-and-boxes/",
+      "status": 301,
+      "reason": "A clean-room V2 Arcade game is published at /arcade/dots-and-boxes/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/guides/four-in-a-row/",
+      "to": "/arcade/four-in-a-row/",
+      "status": 301,
+      "reason": "A clean-room V2 Arcade game is published at /arcade/four-in-a-row/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/guides/freecell/",
+      "to": "/arcade/freecell/",
+      "status": 301,
+      "reason": "A clean-room V2 Arcade game is published at /arcade/freecell/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/guides/gomoku/",
+      "to": "/arcade/gomoku/",
+      "status": 301,
+      "reason": "A clean-room V2 Arcade game is published at /arcade/gomoku/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/guides/hangman/",
+      "to": "/arcade/hangman/",
+      "status": 301,
+      "reason": "A clean-room V2 Arcade game is published at /arcade/hangman/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/guides/klondike/",
+      "to": "/arcade/klondike/",
+      "status": 301,
+      "reason": "A clean-room V2 Arcade game is published at /arcade/klondike/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/guides/last-token/",
+      "to": "/arcade/last-token/",
+      "status": 301,
+      "reason": "A clean-room V2 Arcade game is published at /arcade/last-token/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/guides/lights-out/",
+      "to": "/arcade/lights-out/",
+      "status": 301,
+      "reason": "A clean-room V2 Arcade game is published at /arcade/lights-out/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/guides/memory-match/",
+      "to": "/arcade/memory-match/",
+      "status": 301,
+      "reason": "A clean-room V2 Arcade game is published at /arcade/memory-match/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/guides/minesweeper/",
+      "to": "/arcade/minesweeper/",
+      "status": 301,
+      "reason": "A clean-room V2 Arcade game is published at /arcade/minesweeper/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/guides/mini-sudoku/",
+      "to": "/arcade/mini-sudoku/",
+      "status": 301,
+      "reason": "A clean-room V2 Arcade game is published at /arcade/mini-sudoku/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/guides/nine-mens-morris/",
+      "to": "/arcade/nine-mens-morris/",
+      "status": 301,
+      "reason": "A clean-room V2 Arcade game is published at /arcade/nine-mens-morris/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/guides/nonogram/",
+      "to": "/arcade/nonogram/",
+      "status": 301,
+      "reason": "A clean-room V2 Arcade game is published at /arcade/nonogram/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/guides/pass-the-picture/",
+      "to": "/arcade/pass-the-picture/",
+      "status": 301,
+      "reason": "A clean-room V2 Arcade game is published at /arcade/pass-the-picture/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/guides/reversi/",
+      "to": "/arcade/reversi/",
+      "status": 301,
+      "reason": "A clean-room V2 Arcade game is published at /arcade/reversi/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/guides/simon/",
+      "to": "/arcade/simon/",
+      "status": 301,
+      "reason": "A clean-room V2 Arcade game is published at /arcade/simon/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/guides/sudoku-9x9/",
+      "to": "/arcade/sudoku-9x9/",
+      "status": 301,
+      "reason": "A clean-room V2 Arcade game is published at /arcade/sudoku-9x9/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/guides/tic-tac-toe/",
+      "to": "/arcade/tic-tac-toe/",
+      "status": 301,
+      "reason": "A clean-room V2 Arcade game is published at /arcade/tic-tac-toe/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/guides/tile-garden/",
+      "to": "/arcade/tile-garden/",
+      "status": 301,
+      "reason": "A clean-room V2 Arcade game is published at /arcade/tile-garden/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/guides/twenty-forty-eight/",
+      "to": "/arcade/twenty-forty-eight/",
+      "status": 301,
+      "reason": "A clean-room V2 Arcade game is published at /arcade/twenty-forty-eight/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/guides/word-loom/",
+      "to": "/arcade/word-loom/",
+      "status": 301,
+      "reason": "A clean-room V2 Arcade game is published at /arcade/word-loom/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/guides/word-search/",
+      "to": "/arcade/word-search/",
+      "status": 301,
+      "reason": "A clean-room V2 Arcade game is published at /arcade/word-search/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/guides/word-tile-rush/",
+      "to": "/arcade/word-tile-rush/",
+      "status": 301,
+      "reason": "A clean-room V2 Arcade game is published at /arcade/word-tile-rush/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/daily/",
+      "to": "/arcade/word-loom/",
+      "status": 301,
+      "reason": "The live daily hub identifies its Daily Word as the only live slot and marks its other slots planned. V2 Word Loom is the current date-seeded daily game; the old planned slots are not carried forward. Propose a direct route to that game, not a generic hub.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/games/beacon-lattice/",
+      "to": "/arcade/beacon-lattice/",
+      "status": 301,
+      "reason": "The legacy game detail has a published V2 Arcade detail with the same slug and play intent. Propose one direct 301 to that built canonical game page.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/games/checkers/",
+      "to": "/arcade/checkers/",
+      "status": 301,
+      "reason": "The legacy game detail has a published V2 Arcade detail with the same slug and play intent. Propose one direct 301 to that built canonical game page.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/games/color-flip/",
+      "to": "/arcade/color-flip/",
+      "status": 301,
+      "reason": "The legacy game detail has a published V2 Arcade detail with the same slug and play intent. Propose one direct 301 to that built canonical game page.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/games/dots-and-boxes/",
+      "to": "/arcade/dots-and-boxes/",
+      "status": 301,
+      "reason": "The legacy game detail has a published V2 Arcade detail with the same slug and play intent. Propose one direct 301 to that built canonical game page.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/games/four-in-a-row/",
+      "to": "/arcade/four-in-a-row/",
+      "status": 301,
+      "reason": "The legacy game detail has a published V2 Arcade detail with the same slug and play intent. Propose one direct 301 to that built canonical game page.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/games/freecell/",
+      "to": "/arcade/freecell/",
+      "status": 301,
+      "reason": "The legacy game detail has a published V2 Arcade detail with the same slug and play intent. Propose one direct 301 to that built canonical game page.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/games/gomoku/",
+      "to": "/arcade/gomoku/",
+      "status": 301,
+      "reason": "The legacy game detail has a published V2 Arcade detail with the same slug and play intent. Propose one direct 301 to that built canonical game page.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/games/hangman/",
+      "to": "/arcade/hangman/",
+      "status": 301,
+      "reason": "The legacy game detail has a published V2 Arcade detail with the same slug and play intent. Propose one direct 301 to that built canonical game page.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/games/klondike/",
+      "to": "/arcade/klondike/",
+      "status": 301,
+      "reason": "The legacy game detail has a published V2 Arcade detail with the same slug and play intent. Propose one direct 301 to that built canonical game page.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/games/last-token/",
+      "to": "/arcade/last-token/",
+      "status": 301,
+      "reason": "The legacy game detail has a published V2 Arcade detail with the same slug and play intent. Propose one direct 301 to that built canonical game page.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/games/lights-out/",
+      "to": "/arcade/lights-out/",
+      "status": 301,
+      "reason": "The legacy game detail has a published V2 Arcade detail with the same slug and play intent. Propose one direct 301 to that built canonical game page.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/games/memory-match/",
+      "to": "/arcade/memory-match/",
+      "status": 301,
+      "reason": "The legacy game detail has a published V2 Arcade detail with the same slug and play intent. Propose one direct 301 to that built canonical game page.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/games/minesweeper/",
+      "to": "/arcade/minesweeper/",
+      "status": 301,
+      "reason": "The legacy game detail has a published V2 Arcade detail with the same slug and play intent. Propose one direct 301 to that built canonical game page.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/games/mini-sudoku/",
+      "to": "/arcade/mini-sudoku/",
+      "status": 301,
+      "reason": "The legacy game detail has a published V2 Arcade detail with the same slug and play intent. Propose one direct 301 to that built canonical game page.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/games/nine-mens-morris/",
+      "to": "/arcade/nine-mens-morris/",
+      "status": 301,
+      "reason": "The legacy game detail has a published V2 Arcade detail with the same slug and play intent. Propose one direct 301 to that built canonical game page.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/games/nonogram/",
+      "to": "/arcade/nonogram/",
+      "status": 301,
+      "reason": "The legacy game detail has a published V2 Arcade detail with the same slug and play intent. Propose one direct 301 to that built canonical game page.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/games/pass-the-picture/",
+      "to": "/arcade/pass-the-picture/",
+      "status": 301,
+      "reason": "The legacy game detail has a published V2 Arcade detail with the same slug and play intent. Propose one direct 301 to that built canonical game page.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/games/reversi/",
+      "to": "/arcade/reversi/",
+      "status": 301,
+      "reason": "The legacy game detail has a published V2 Arcade detail with the same slug and play intent. Propose one direct 301 to that built canonical game page.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/games/simon/",
+      "to": "/arcade/simon/",
+      "status": 301,
+      "reason": "The legacy game detail has a published V2 Arcade detail with the same slug and play intent. Propose one direct 301 to that built canonical game page.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/games/sudoku-9x9/",
+      "to": "/arcade/sudoku-9x9/",
+      "status": 301,
+      "reason": "The legacy game detail has a published V2 Arcade detail with the same slug and play intent. Propose one direct 301 to that built canonical game page.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/games/tic-tac-toe/",
+      "to": "/arcade/tic-tac-toe/",
+      "status": 301,
+      "reason": "The legacy game detail has a published V2 Arcade detail with the same slug and play intent. Propose one direct 301 to that built canonical game page.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/games/tile-garden/",
+      "to": "/arcade/tile-garden/",
+      "status": 301,
+      "reason": "The legacy game detail has a published V2 Arcade detail with the same slug and play intent. Propose one direct 301 to that built canonical game page.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/games/twenty-forty-eight/",
+      "to": "/arcade/twenty-forty-eight/",
+      "status": 301,
+      "reason": "The legacy game detail has a published V2 Arcade detail with the same slug and play intent. Propose one direct 301 to that built canonical game page.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/games/word-loom/",
+      "to": "/arcade/word-loom/",
+      "status": 301,
+      "reason": "The legacy game detail has a published V2 Arcade detail with the same slug and play intent. Propose one direct 301 to that built canonical game page.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/games/word-search/",
+      "to": "/arcade/word-search/",
+      "status": 301,
+      "reason": "The legacy game detail has a published V2 Arcade detail with the same slug and play intent. Propose one direct 301 to that built canonical game page.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/games/word-tile-rush/",
+      "to": "/arcade/word-tile-rush/",
+      "status": 301,
+      "reason": "The legacy game detail has a published V2 Arcade detail with the same slug and play intent. Propose one direct 301 to that built canonical game page.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/learn/browser-games-without-accounts/",
+      "to": "/articles/free-browser-games-no-account/",
+      "status": 301,
+      "reason": "The V2 article directly explains account-free browser play and distinguishes it from offline or managed-network availability.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/learn/local-storage-scoring/",
+      "to": "/articles/where-high-scores-go/",
+      "status": 301,
+      "reason": "The V2 browser-storage article directly documents current localStorage keys, the absence of saved game scores, and the read-only inspector scope.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/learn/unblocked-vs-no-account/",
+      "to": "/articles/free-browser-games-no-account/",
+      "status": 301,
+      "reason": "The V2 no-account article states that no sign-in does not mean offline access or guaranteed availability on a managed network.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/learn/untimed-play/",
+      "to": "/articles/untimed-puzzle-games-in-the-browser/",
+      "status": 301,
+      "reason": "The V2 untimed-play article defines current timing behavior and directs readers to title-specific rules rather than the older broad inventory.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/learn/what-is-pass-and-play/",
+      "to": "/articles/two-player-games-one-device/",
+      "status": 301,
+      "reason": "The V2 two-player article describes the current same-device Pass & Play scope, game count, and limits.",
+      "decisionStatus": "approved-not-applied"
+    },
+    {
+      "from": "/learn/what-is-quiet-arcade/",
+      "to": "/articles/what-quiet-arcade-means-at-nocharge/",
+      "status": 301,
+      "reason": "The V2 Quiet Arcade article is the current direct definition and states the product label’s limits.",
+      "decisionStatus": "approved-not-applied"
+    }
+  ],
+  "routeDecisions": [
+    {
+      "contentType": "tool",
+      "slug": "discovery-wheel",
+      "legacySource": "src/pages/tools/discovery-wheel.astro",
+      "legacyPath": "/tools/discovery-wheel/",
+      "legacyCategory": "Play",
+      "legacyFunction": "Catalog filter and guided game picker",
+      "v2Status": "published",
+      "action": "retain-same-canonical-path",
+      "targetPath": "/tools/discovery-wheel/",
+      "httpRedirect": null,
+      "legacyHandling": "same-path V2 replacement; no redirect needed",
+      "reason": "Fresh, publication-gated V2 tool implementation is published at the same canonical path (/tools/discovery-wheel/); no redirect hop or generic target is introduced."
+    },
+    {
+      "contentType": "tool",
+      "slug": "game-finder",
+      "legacySource": "src/pages/tools/game-finder.astro",
+      "legacyPath": "/tools/game-finder/",
+      "legacyCategory": "Play",
+      "legacyFunction": "Five-answer quiz that creates a game shortlist",
+      "v2Status": "published",
+      "action": "retain-same-canonical-path",
+      "targetPath": "/tools/game-finder/",
+      "httpRedirect": null,
+      "legacyHandling": "same-path V2 replacement; no redirect needed",
+      "reason": "Fresh, publication-gated V2 tool implementation is published at the same canonical path (/tools/game-finder/); no redirect hop or generic target is introduced."
+    },
+    {
+      "contentType": "tool",
+      "slug": "session-planner",
+      "legacySource": "src/pages/tools/session-planner.astro",
+      "legacyPath": "/tools/session-planner/",
+      "legacyCategory": "Play",
+      "legacyFunction": "Session-duration and preference-based shortlist/run estimate",
+      "v2Status": "published",
+      "action": "retain-same-canonical-path",
+      "targetPath": "/tools/session-planner/",
+      "httpRedirect": null,
+      "legacyHandling": "same-path V2 replacement; no redirect needed",
+      "reason": "Fresh, publication-gated V2 tool implementation is published at the same canonical path (/tools/session-planner/); no redirect hop or generic target is introduced."
+    },
+    {
+      "contentType": "tool",
+      "slug": "random-activity",
+      "legacySource": "src/pages/tools/random-activity.astro",
+      "legacyPath": "/tools/random-activity/",
+      "legacyCategory": "Play",
+      "legacyFunction": "Random choice across games, articles, and tools",
+      "v2Status": "published",
+      "action": "retain-same-canonical-path",
+      "targetPath": "/tools/random-activity/",
+      "httpRedirect": null,
+      "legacyHandling": "same-path V2 replacement; no redirect needed",
+      "reason": "Fresh, publication-gated V2 tool implementation is published at the same canonical path (/tools/random-activity/); no redirect hop or generic target is introduced."
+    },
+    {
+      "contentType": "tool",
+      "slug": "ambient-mixer",
+      "legacySource": "src/pages/tools/ambient-mixer.astro",
+      "legacyPath": "/tools/ambient-mixer/",
+      "legacyCategory": "Audio",
+      "legacyFunction": "Browser-generated ambient soundscapes",
+      "v2Status": "published",
+      "action": "retain-same-canonical-path",
+      "targetPath": "/tools/ambient-mixer/",
+      "httpRedirect": null,
+      "legacyHandling": "same-path V2 replacement; no redirect needed",
+      "reason": "Fresh, publication-gated V2 tool implementation is published at the same canonical path (/tools/ambient-mixer/); no redirect hop or generic target is introduced."
+    },
+    {
+      "contentType": "tool",
+      "slug": "singing-bowl-engine",
+      "legacySource": "src/pages/tools/singing-bowl-engine.astro",
+      "legacyPath": "/tools/singing-bowl-engine/",
+      "legacyCategory": "Audio",
+      "legacyFunction": "Interactive bowl/rim-singing synthesis and presets",
+      "v2Status": "published",
+      "action": "retain-same-canonical-path",
+      "targetPath": "/tools/singing-bowl-engine/",
+      "httpRedirect": null,
+      "legacyHandling": "same-path V2 replacement; no redirect needed",
+      "reason": "Fresh, publication-gated V2 tool implementation is published at the same canonical path (/tools/singing-bowl-engine/); no redirect hop or generic target is introduced."
+    },
+    {
+      "contentType": "tool",
+      "slug": "contrast-checker",
+      "legacySource": "src/pages/tools/contrast-checker.astro",
+      "legacyPath": "/tools/contrast-checker/",
+      "legacyCategory": "Accessibility",
+      "legacyFunction": "WCAG 2.x color-pair contrast calculation",
+      "v2Status": "published",
+      "action": "retain-same-canonical-path",
+      "targetPath": "/tools/contrast-checker/",
+      "httpRedirect": null,
+      "legacyHandling": "same-path V2 replacement; no redirect needed",
+      "reason": "Fresh V2 implementation is published at the same canonical path."
+    },
+    {
+      "contentType": "tool",
+      "slug": "reduced-motion-tester",
+      "legacySource": "src/pages/tools/reduced-motion-tester.astro",
+      "legacyPath": "/tools/reduced-motion-tester/",
+      "legacyCategory": "Accessibility",
+      "legacyFunction": "Live reduced-motion preference and behavior demo",
+      "v2Status": "published",
+      "action": "retain-same-canonical-path",
+      "targetPath": "/tools/reduced-motion-tester/",
+      "httpRedirect": null,
+      "legacyHandling": "same-path V2 replacement; no redirect needed",
+      "reason": "Fresh, publication-gated V2 tool implementation is published at the same canonical path (/tools/reduced-motion-tester/); no redirect hop or generic target is introduced."
+    },
+    {
+      "contentType": "tool",
+      "slug": "touch-target-checker",
+      "legacySource": "src/pages/tools/touch-target-checker.astro",
+      "legacyPath": "/tools/touch-target-checker/",
+      "legacyCategory": "Accessibility",
+      "legacyFunction": "Touch-target dimensions and spacing check",
+      "v2Status": "published",
+      "action": "retain-same-canonical-path",
+      "targetPath": "/tools/touch-target-checker/",
+      "httpRedirect": null,
+      "legacyHandling": "same-path V2 replacement; no redirect needed",
+      "reason": "Fresh, publication-gated V2 tool implementation is published at the same canonical path (/tools/touch-target-checker/); no redirect hop or generic target is introduced."
+    },
+    {
+      "contentType": "tool",
+      "slug": "storage-inspector",
+      "legacySource": "src/pages/tools/storage-inspector.astro",
+      "legacyPath": "/tools/storage-inspector/",
+      "legacyCategory": "Accessibility",
+      "legacyFunction": "Read-only view of NoCharge local-storage keys",
+      "v2Status": "published",
+      "action": "retain-same-canonical-path",
+      "targetPath": "/tools/storage-inspector/",
+      "httpRedirect": null,
+      "legacyHandling": "same-path V2 replacement; no redirect needed",
+      "reason": "Fresh, publication-gated V2 tool implementation is published at the same canonical path (/tools/storage-inspector/); no redirect hop or generic target is introduced."
+    },
+    {
+      "contentType": "tool",
+      "slug": "zoom-visualizer",
+      "legacySource": "src/pages/tools/zoom-visualizer.astro",
+      "legacyPath": "/tools/zoom-visualizer/",
+      "legacyCategory": "Setup",
+      "legacyFunction": "Estimated CSS viewport dimensions at browser zoom",
+      "v2Status": "published",
+      "action": "retain-same-canonical-path",
+      "targetPath": "/tools/zoom-visualizer/",
+      "httpRedirect": null,
+      "legacyHandling": "same-path V2 replacement; no redirect needed",
+      "reason": "Fresh, publication-gated V2 tool implementation is published at the same canonical path (/tools/zoom-visualizer/); no redirect hop or generic target is introduced."
+    },
+    {
+      "contentType": "tool",
+      "slug": "nonogram-clue-calculator",
+      "legacySource": "src/pages/tools/nonogram-clue-calculator.astro",
+      "legacyPath": "/tools/nonogram-clue-calculator/",
+      "legacyCategory": "Learning",
+      "legacyFunction": "Possible line placements and forced nonogram cells",
+      "v2Status": "published",
+      "action": "retain-same-canonical-path",
+      "targetPath": "/tools/nonogram-clue-calculator/",
+      "httpRedirect": null,
+      "legacyHandling": "same-path V2 replacement; no redirect needed",
+      "reason": "Fresh, publication-gated V2 tool implementation is published at the same canonical path (/tools/nonogram-clue-calculator/); no redirect hop or generic target is introduced."
+    },
+    {
+      "contentType": "tool",
+      "slug": "solitaire-comparator",
+      "legacySource": "src/pages/tools/solitaire-comparator.astro",
+      "legacyPath": "/tools/solitaire-comparator/",
+      "legacyCategory": "Learning",
+      "legacyFunction": "Rules comparison for solitaire variants",
+      "v2Status": "published",
+      "action": "retain-same-canonical-path",
+      "targetPath": "/tools/solitaire-comparator/",
+      "httpRedirect": null,
+      "legacyHandling": "same-path V2 replacement; no redirect needed",
+      "reason": "Fresh, publication-gated V2 tool implementation is published at the same canonical path (/tools/solitaire-comparator/); no redirect hop or generic target is introduced."
+    },
+    {
+      "contentType": "tool",
+      "slug": "sudoku-helper",
+      "legacySource": "src/pages/tools/sudoku-helper.astro",
+      "legacyPath": "/tools/sudoku-helper/",
+      "legacyCategory": "Learning",
+      "legacyFunction": "Sudoku candidates and pencil-mark reasoning",
+      "v2Status": "published",
+      "action": "retain-same-canonical-path",
+      "targetPath": "/tools/sudoku-helper/",
+      "httpRedirect": null,
+      "legacyHandling": "same-path V2 replacement; no redirect needed",
+      "reason": "Fresh, publication-gated V2 tool implementation is published at the same canonical path (/tools/sudoku-helper/); no redirect hop or generic target is introduced."
+    },
+    {
+      "contentType": "tool",
+      "slug": "focus-order-demo",
+      "legacySource": "src/pages/tools/focus-order-demo.astro",
+      "legacyPath": "/tools/focus-order-demo/",
+      "legacyCategory": "Accessibility",
+      "legacyFunction": "Keyboard focus-order demonstration in a sample grid",
+      "v2Status": "published",
+      "action": "retain-same-canonical-path",
+      "targetPath": "/tools/focus-order-demo/",
+      "httpRedirect": null,
+      "legacyHandling": "same-path V2 replacement; no redirect needed",
+      "reason": "Fresh, publication-gated V2 tool implementation is published at the same canonical path (/tools/focus-order-demo/); no redirect hop or generic target is introduced."
+    },
+    {
+      "contentType": "tool",
+      "slug": "word-scoring",
+      "legacySource": "src/pages/tools/word-scoring.astro",
+      "legacyPath": "/tools/word-scoring/",
+      "legacyCategory": "Learning",
+      "legacyFunction": "Word-length scoring curves and legacy Word Tile Rush scoring",
+      "v2Status": "published",
+      "action": "retain-same-canonical-path",
+      "targetPath": "/tools/word-scoring/",
+      "httpRedirect": null,
+      "legacyHandling": "same-path V2 replacement; no redirect needed",
+      "reason": "Fresh, publication-gated V2 tool implementation is published at the same canonical path (/tools/word-scoring/); no redirect hop or generic target is introduced."
+    },
+    {
+      "contentType": "guide",
+      "slug": "beacon-lattice",
+      "legacySource": "src/content/guides/beacon-lattice.md",
+      "legacyPath": "/guides/beacon-lattice/",
+      "legacyFunction": "Exact-coverage placement puzzle; patterns, inventory, and constraints",
+      "v2Status": "published",
+      "action": "permanent-redirect-to-canonical-arcade-route",
+      "targetPath": "/arcade/beacon-lattice/",
+      "httpRedirect": 301,
+      "legacyHandling": "proposed one-hop permanent redirect directly to the published V2 Arcade canonical route; host-level rule remains unapplied until deployment approval",
+      "reason": "A clean-room V2 Arcade game is published at /arcade/beacon-lattice/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination."
+    },
+    {
+      "contentType": "guide",
+      "slug": "checkers",
+      "legacySource": "src/content/guides/checkers.md",
+      "legacyPath": "/guides/checkers/",
+      "legacyFunction": "English draughts rules, mandatory capture, promotion, and variants",
+      "v2Status": "published",
+      "action": "permanent-redirect-to-canonical-arcade-route",
+      "targetPath": "/arcade/checkers/",
+      "httpRedirect": 301,
+      "legacyHandling": "proposed one-hop permanent redirect directly to the published V2 Arcade canonical route; host-level rule remains unapplied until deployment approval",
+      "reason": "A clean-room V2 Arcade game is published at /arcade/checkers/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination."
+    },
+    {
+      "contentType": "guide",
+      "slug": "color-flip",
+      "legacySource": "src/content/guides/color-flip.md",
+      "legacyPath": "/guides/color-flip/",
+      "legacyFunction": "Color-labeled stepping puzzle, rotation options, and turn-based mode",
+      "v2Status": "published",
+      "action": "permanent-redirect-to-canonical-arcade-route",
+      "targetPath": "/arcade/color-flip/",
+      "httpRedirect": 301,
+      "legacyHandling": "proposed one-hop permanent redirect directly to the published V2 Arcade canonical route; host-level rule remains unapplied until deployment approval",
+      "reason": "A clean-room V2 Arcade game is published at /arcade/color-flip/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination."
+    },
+    {
+      "contentType": "guide",
+      "slug": "dots-and-boxes",
+      "legacySource": "src/content/guides/dots-and-boxes.md",
+      "legacyPath": "/guides/dots-and-boxes/",
+      "legacyFunction": "Line drawing, box claims, extra turns, and chain play",
+      "v2Status": "published",
+      "action": "permanent-redirect-to-canonical-arcade-route",
+      "targetPath": "/arcade/dots-and-boxes/",
+      "httpRedirect": 301,
+      "legacyHandling": "proposed one-hop permanent redirect directly to the published V2 Arcade canonical route; host-level rule remains unapplied until deployment approval",
+      "reason": "A clean-room V2 Arcade game is published at /arcade/dots-and-boxes/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination."
+    },
+    {
+      "contentType": "guide",
+      "slug": "four-in-a-row",
+      "legacySource": "src/content/guides/four-in-a-row.md",
+      "legacyPath": "/guides/four-in-a-row/",
+      "legacyFunction": "Column-drop alignment rules, board sizes, and threats",
+      "v2Status": "published",
+      "action": "permanent-redirect-to-canonical-arcade-route",
+      "targetPath": "/arcade/four-in-a-row/",
+      "httpRedirect": 301,
+      "legacyHandling": "proposed one-hop permanent redirect directly to the published V2 Arcade canonical route; host-level rule remains unapplied until deployment approval",
+      "reason": "A clean-room V2 Arcade game is published at /arcade/four-in-a-row/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination."
+    },
+    {
+      "contentType": "guide",
+      "slug": "freecell",
+      "legacySource": "src/content/guides/freecell.md",
+      "legacyPath": "/guides/freecell/",
+      "legacyFunction": "Face-up solitaire, free cells, tableau moves, and foundations",
+      "v2Status": "published",
+      "action": "permanent-redirect-to-canonical-arcade-route",
+      "targetPath": "/arcade/freecell/",
+      "httpRedirect": 301,
+      "legacyHandling": "proposed one-hop permanent redirect directly to the published V2 Arcade canonical route; host-level rule remains unapplied until deployment approval",
+      "reason": "A clean-room V2 Arcade game is published at /arcade/freecell/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination."
+    },
+    {
+      "contentType": "guide",
+      "slug": "gomoku",
+      "legacySource": "src/content/guides/gomoku.md",
+      "legacyPath": "/guides/gomoku/",
+      "legacyFunction": "Free-style five-in-a-row rules and threats",
+      "v2Status": "published",
+      "action": "permanent-redirect-to-canonical-arcade-route",
+      "targetPath": "/arcade/gomoku/",
+      "httpRedirect": 301,
+      "legacyHandling": "proposed one-hop permanent redirect directly to the published V2 Arcade canonical route; host-level rule remains unapplied until deployment approval",
+      "reason": "A clean-room V2 Arcade game is published at /arcade/gomoku/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination."
+    },
+    {
+      "contentType": "guide",
+      "slug": "hangman",
+      "legacySource": "src/content/guides/hangman.md",
+      "legacyPath": "/guides/hangman/",
+      "legacyFunction": "Letter guesses, themes, miss limit, and local state",
+      "v2Status": "published",
+      "action": "permanent-redirect-to-canonical-arcade-route",
+      "targetPath": "/arcade/hangman/",
+      "httpRedirect": 301,
+      "legacyHandling": "proposed one-hop permanent redirect directly to the published V2 Arcade canonical route; host-level rule remains unapplied until deployment approval",
+      "reason": "A clean-room V2 Arcade game is published at /arcade/hangman/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination."
+    },
+    {
+      "contentType": "guide",
+      "slug": "klondike",
+      "legacySource": "src/content/guides/klondike.md",
+      "legacyPath": "/guides/klondike/",
+      "legacyFunction": "Draw modes, tableau/foundation rules, undo, and local metrics",
+      "v2Status": "published",
+      "action": "permanent-redirect-to-canonical-arcade-route",
+      "targetPath": "/arcade/klondike/",
+      "httpRedirect": 301,
+      "legacyHandling": "proposed one-hop permanent redirect directly to the published V2 Arcade canonical route; host-level rule remains unapplied until deployment approval",
+      "reason": "A clean-room V2 Arcade game is published at /arcade/klondike/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination."
+    },
+    {
+      "contentType": "guide",
+      "slug": "last-token",
+      "legacySource": "src/content/guides/last-token.md",
+      "legacyPath": "/guides/last-token/",
+      "legacyFunction": "Misère take-away rules, pile presets, and endgame positions",
+      "v2Status": "published",
+      "action": "permanent-redirect-to-canonical-arcade-route",
+      "targetPath": "/arcade/last-token/",
+      "httpRedirect": 301,
+      "legacyHandling": "proposed one-hop permanent redirect directly to the published V2 Arcade canonical route; host-level rule remains unapplied until deployment approval",
+      "reason": "A clean-room V2 Arcade game is published at /arcade/last-token/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination."
+    },
+    {
+      "contentType": "guide",
+      "slug": "lights-out",
+      "legacySource": "src/content/guides/lights-out.md",
+      "legacyPath": "/guides/lights-out/",
+      "legacyFunction": "Five-cell toggle rule, puzzle generation, and solving",
+      "v2Status": "published",
+      "action": "permanent-redirect-to-canonical-arcade-route",
+      "targetPath": "/arcade/lights-out/",
+      "httpRedirect": 301,
+      "legacyHandling": "proposed one-hop permanent redirect directly to the published V2 Arcade canonical route; host-level rule remains unapplied until deployment approval",
+      "reason": "A clean-room V2 Arcade game is published at /arcade/lights-out/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination."
+    },
+    {
+      "contentType": "guide",
+      "slug": "memory-match",
+      "legacySource": "src/content/guides/memory-match.md",
+      "legacyPath": "/guides/memory-match/",
+      "legacyFunction": "Pair matching, move count, keyboard play, and recall strategy",
+      "v2Status": "published",
+      "action": "permanent-redirect-to-canonical-arcade-route",
+      "targetPath": "/arcade/memory-match/",
+      "httpRedirect": 301,
+      "legacyHandling": "proposed one-hop permanent redirect directly to the published V2 Arcade canonical route; host-level rule remains unapplied until deployment approval",
+      "reason": "A clean-room V2 Arcade game is published at /arcade/memory-match/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination."
+    },
+    {
+      "contentType": "guide",
+      "slug": "minesweeper",
+      "legacySource": "src/content/guides/minesweeper.md",
+      "legacyPath": "/guides/minesweeper/",
+      "legacyFunction": "Mine clues, first-click safety, flags/chording, and board sizes",
+      "v2Status": "published",
+      "action": "permanent-redirect-to-canonical-arcade-route",
+      "targetPath": "/arcade/minesweeper/",
+      "httpRedirect": 301,
+      "legacyHandling": "proposed one-hop permanent redirect directly to the published V2 Arcade canonical route; host-level rule remains unapplied until deployment approval",
+      "reason": "A clean-room V2 Arcade game is published at /arcade/minesweeper/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination."
+    },
+    {
+      "contentType": "guide",
+      "slug": "mini-sudoku",
+      "legacySource": "src/content/guides/mini-sudoku.md",
+      "legacyPath": "/guides/mini-sudoku/",
+      "legacyFunction": "6×6 Sudoku rules, pencil marks, and controls",
+      "v2Status": "published",
+      "action": "permanent-redirect-to-canonical-arcade-route",
+      "targetPath": "/arcade/mini-sudoku/",
+      "httpRedirect": 301,
+      "legacyHandling": "proposed one-hop permanent redirect directly to the published V2 Arcade canonical route; host-level rule remains unapplied until deployment approval",
+      "reason": "A clean-room V2 Arcade game is published at /arcade/mini-sudoku/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination."
+    },
+    {
+      "contentType": "guide",
+      "slug": "nine-mens-morris",
+      "legacySource": "src/content/guides/nine-mens-morris.md",
+      "legacyPath": "/guides/nine-mens-morris/",
+      "legacyFunction": "Placement/movement phases, mills, flying, and blocked-player loss",
+      "v2Status": "published",
+      "action": "permanent-redirect-to-canonical-arcade-route",
+      "targetPath": "/arcade/nine-mens-morris/",
+      "httpRedirect": 301,
+      "legacyHandling": "proposed one-hop permanent redirect directly to the published V2 Arcade canonical route; host-level rule remains unapplied until deployment approval",
+      "reason": "A clean-room V2 Arcade game is published at /arcade/nine-mens-morris/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination."
+    },
+    {
+      "contentType": "guide",
+      "slug": "nonogram",
+      "legacySource": "src/content/guides/nonogram.md",
+      "legacyPath": "/guides/nonogram/",
+      "legacyFunction": "Run clues, cell marking, overlap, and text/keyboard support",
+      "v2Status": "published",
+      "action": "permanent-redirect-to-canonical-arcade-route",
+      "targetPath": "/arcade/nonogram/",
+      "httpRedirect": 301,
+      "legacyHandling": "proposed one-hop permanent redirect directly to the published V2 Arcade canonical route; host-level rule remains unapplied until deployment approval",
+      "reason": "A clean-room V2 Arcade game is published at /arcade/nonogram/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination."
+    },
+    {
+      "contentType": "guide",
+      "slug": "pass-the-picture",
+      "legacySource": "src/content/guides/pass-the-picture.md",
+      "legacyPath": "/guides/pass-the-picture/",
+      "legacyFunction": "Shared drawing turns, undo, and local PNG export",
+      "v2Status": "published",
+      "action": "permanent-redirect-to-canonical-arcade-route",
+      "targetPath": "/arcade/pass-the-picture/",
+      "httpRedirect": 301,
+      "legacyHandling": "proposed one-hop permanent redirect directly to the published V2 Arcade canonical route; host-level rule remains unapplied until deployment approval",
+      "reason": "A clean-room V2 Arcade game is published at /arcade/pass-the-picture/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination."
+    },
+    {
+      "contentType": "guide",
+      "slug": "reversi",
+      "legacySource": "src/content/guides/reversi.md",
+      "legacyPath": "/guides/reversi/",
+      "legacyFunction": "Outflanking, automatic passes, corners, and mobility",
+      "v2Status": "published",
+      "action": "permanent-redirect-to-canonical-arcade-route",
+      "targetPath": "/arcade/reversi/",
+      "httpRedirect": 301,
+      "legacyHandling": "proposed one-hop permanent redirect directly to the published V2 Arcade canonical route; host-level rule remains unapplied until deployment approval",
+      "reason": "A clean-room V2 Arcade game is published at /arcade/reversi/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination."
+    },
+    {
+      "contentType": "guide",
+      "slug": "simon",
+      "legacySource": "src/content/guides/simon.md",
+      "legacyPath": "/guides/simon/",
+      "legacyFunction": "Sequence replay, calm presentation, and local best length",
+      "v2Status": "published",
+      "action": "permanent-redirect-to-canonical-arcade-route",
+      "targetPath": "/arcade/simon/",
+      "httpRedirect": 301,
+      "legacyHandling": "proposed one-hop permanent redirect directly to the published V2 Arcade canonical route; host-level rule remains unapplied until deployment approval",
+      "reason": "A clean-room V2 Arcade game is published at /arcade/simon/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination."
+    },
+    {
+      "contentType": "guide",
+      "slug": "sudoku-9x9",
+      "legacySource": "src/content/guides/sudoku-9x9.md",
+      "legacyPath": "/guides/sudoku-9x9/",
+      "legacyFunction": "9×9 Sudoku rules, givens, pencil marks, and uniqueness claims",
+      "v2Status": "published",
+      "action": "permanent-redirect-to-canonical-arcade-route",
+      "targetPath": "/arcade/sudoku-9x9/",
+      "httpRedirect": 301,
+      "legacyHandling": "proposed one-hop permanent redirect directly to the published V2 Arcade canonical route; host-level rule remains unapplied until deployment approval",
+      "reason": "A clean-room V2 Arcade game is published at /arcade/sudoku-9x9/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination."
+    },
+    {
+      "contentType": "guide",
+      "slug": "tic-tac-toe",
+      "legacySource": "src/content/guides/tic-tac-toe.md",
+      "legacyPath": "/guides/tic-tac-toe/",
+      "legacyFunction": "3×3/4×4 rules, match mode, handoff, and forks",
+      "v2Status": "published",
+      "action": "permanent-redirect-to-canonical-arcade-route",
+      "targetPath": "/arcade/tic-tac-toe/",
+      "httpRedirect": 301,
+      "legacyHandling": "proposed one-hop permanent redirect directly to the published V2 Arcade canonical route; host-level rule remains unapplied until deployment approval",
+      "reason": "A clean-room V2 Arcade game is published at /arcade/tic-tac-toe/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination."
+    },
+    {
+      "contentType": "guide",
+      "slug": "tile-garden",
+      "legacySource": "src/content/guides/tile-garden.md",
+      "legacyPath": "/guides/tile-garden/",
+      "legacyFunction": "Tile placement, 2×2 merges, modes, and calm-play boundaries",
+      "v2Status": "published",
+      "action": "permanent-redirect-to-canonical-arcade-route",
+      "targetPath": "/arcade/tile-garden/",
+      "httpRedirect": 301,
+      "legacyHandling": "proposed one-hop permanent redirect directly to the published V2 Arcade canonical route; host-level rule remains unapplied until deployment approval",
+      "reason": "A clean-room V2 Arcade game is published at /arcade/tile-garden/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination."
+    },
+    {
+      "contentType": "guide",
+      "slug": "twenty-forty-eight",
+      "legacySource": "src/content/guides/twenty-forty-eight.md",
+      "legacyPath": "/guides/twenty-forty-eight/",
+      "legacyFunction": "4×4 sliding merges, spawning, and corner-anchor examples",
+      "v2Status": "published",
+      "action": "permanent-redirect-to-canonical-arcade-route",
+      "targetPath": "/arcade/twenty-forty-eight/",
+      "httpRedirect": 301,
+      "legacyHandling": "proposed one-hop permanent redirect directly to the published V2 Arcade canonical route; host-level rule remains unapplied until deployment approval",
+      "reason": "A clean-room V2 Arcade game is published at /arcade/twenty-forty-eight/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination."
+    },
+    {
+      "contentType": "guide",
+      "slug": "word-loom",
+      "legacySource": "src/content/guides/word-loom.md",
+      "legacyPath": "/guides/word-loom/",
+      "legacyFunction": "Five-letter guesses, symbol-plus-color feedback, and daily/practice rules",
+      "v2Status": "published",
+      "action": "permanent-redirect-to-canonical-arcade-route",
+      "targetPath": "/arcade/word-loom/",
+      "httpRedirect": 301,
+      "legacyHandling": "proposed one-hop permanent redirect directly to the published V2 Arcade canonical route; host-level rule remains unapplied until deployment approval",
+      "reason": "A clean-room V2 Arcade game is published at /arcade/word-loom/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination."
+    },
+    {
+      "contentType": "guide",
+      "slug": "word-search",
+      "legacySource": "src/content/guides/word-search.md",
+      "legacyPath": "/guides/word-search/",
+      "legacyFunction": "Straight-line word selection, hints, themes, and keyboard controls",
+      "v2Status": "published",
+      "action": "permanent-redirect-to-canonical-arcade-route",
+      "targetPath": "/arcade/word-search/",
+      "httpRedirect": 301,
+      "legacyHandling": "proposed one-hop permanent redirect directly to the published V2 Arcade canonical route; host-level rule remains unapplied until deployment approval",
+      "reason": "A clean-room V2 Arcade game is published at /arcade/word-search/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination."
+    },
+    {
+      "contentType": "guide",
+      "slug": "word-tile-rush",
+      "legacySource": "src/content/guides/word-tile-rush.md",
+      "legacyPath": "/guides/word-tile-rush/",
+      "legacyFunction": "Adjacent-letter paths, scoring, and a rising-grid run",
+      "v2Status": "published",
+      "action": "permanent-redirect-to-canonical-arcade-route",
+      "targetPath": "/arcade/word-tile-rush/",
+      "httpRedirect": 301,
+      "legacyHandling": "proposed one-hop permanent redirect directly to the published V2 Arcade canonical route; host-level rule remains unapplied until deployment approval",
+      "reason": "A clean-room V2 Arcade game is published at /arcade/word-tile-rush/; this is a direct one-to-one replacement, not a redirect chain or generic hub destination."
+    }
+  ],
+  "deploymentNote": "Approval ledger only; all 59 exact one-hop permanent-redirect proposals and 19 path-specific no-redirect retirements are user-approved for the later Cloudflare-agent pass, not applied. The 26 original /guides/{slug}/ game-guide routes and 26 /games/{slug}/ routes map directly to matching published /arcade/{slug}/ pages; six /learn/ topic routes map to named current Articles, and /daily/ maps to the current Word Loom daily page. No catch-all is approved. Current V2 source remains 334 prerendered HTML routes and 328 canonical sitemap URLs. Across 363 live paths, route accounting is 285 exact V2 paths + 59 approved-but-inactive redirect decisions + 19 approved no-redirect retirements = 363; zero paths are unclassified. No Cloudflare rule, redirect, DNS change, deployment, publisher ID, ad, analytics, or monetization change occurred.",
+  "phase4cVerification": {
+    "status": "passed",
+    "verifiedAt": "2026-11-16",
+    "scope": {
+      "tier2": [
+        "beacon-lattice",
+        "checkers",
+        "color-flip",
+        "dots-and-boxes",
+        "minesweeper",
+        "mini-sudoku",
+        "nonogram",
+        "reversi",
+        "tile-garden",
+        "word-search",
+        "word-tile-rush"
+      ],
+      "tier3": [
+        "freecell",
+        "gomoku",
+        "klondike",
+        "nine-mens-morris",
+        "pass-the-picture",
+        "sudoku-9x9",
+        "memory-match"
+      ],
+      "published": 18,
+      "draft": 0
+    },
+    "checks": {
+      "typedArcadeLifecycle": true,
+      "naturalTerminalBreakHooksOnly": true,
+      "authoredDocumentationSections": [
+        "How to Play",
+        "Controls",
+        "Rules & Scoring",
+        "Tips",
+        "Related Guides & Tools"
+      ],
+      "uniqueSeoAndRelatedSlugs": "passed",
+      "seededResetVisibilityAndFocusPause": "passed",
+      "responsiveBrowser": "passed: 1440px and 390px; Light/Dark and active seasonal palette",
+      "browserVisits": 232,
+      "overflowChecks": 232,
+      "interactions": 71,
+      "arcadeAdGapMinimumPx": 160,
+      "arcadeAdSpacingChecks": 112,
+      "thirdPartyRequests": 0,
+      "npmTest": "passed: full build, calendar, smoke, content, ad placement, Experience/Shop, assets, both browser suites, and holiday-theme Playwright matrix",
+      "holidayThemeRouteVisits": 3968,
+      "holidayThemeEventThemeViewportCombinations": 64,
+      "holidayThemeDatePreviewChecks": 64,
+      "holidayThemeContrastFailures": 0,
+      "holidayThemeOverflowFailures": 0,
+      "holidayThemePageConsoleRequestErrors": 0
+    },
+    "counts": {
+      "publishedArcadeGames": 28,
+      "publishedDetailRoutes": 50,
+      "prerenderedPages": 62,
+      "canonicalSitemapUrls": 56
+    },
+    "redirects": {
+      "directGameGuide301sProposed": 26,
+      "chains": 0,
+      "hostRulesApplied": false
+    },
+    "fullRegression": "npm test completed successfully with exit code 0; 3968 holiday-theme route visits and zero contrast, overflow, page, console, or request errors."
+  },
+  "explicitRetirements": [
+    {
+      "path": "/accessibility/",
+      "disposition": "explicit-retirement-no-redirect",
+      "decisionStatus": "approved-no-redirect",
+      "httpOutcome": "410-if-supported-otherwise-normal-404",
+      "reason": "The live statement makes broad accessibility and conformance claims that have not been reviewed against V2 and lists hello@nocharge.net for barrier reports. V2 has related accessibility articles but no approved equivalent site-wide accessibility statement; the narrow reporting address is preserved on /contact/ without a response-time promise. Do not redirect the full statement to an adjacent article."
+    },
+    {
+      "path": "/collections/",
+      "disposition": "explicit-retirement-no-redirect",
+      "decisionStatus": "approved-no-redirect",
+      "httpOutcome": "410-if-supported-otherwise-normal-404",
+      "reason": "V2 has no reviewed curated-collection hub. The general Arcade/Discover directories do not preserve the legacy inclusion methods or membership; do not substitute a broad directory redirect."
+    },
+    {
+      "path": "/collections/browser-games-without-accounts/",
+      "disposition": "explicit-retirement-no-redirect",
+      "decisionStatus": "approved-no-redirect",
+      "httpOutcome": "410-if-supported-otherwise-normal-404",
+      "reason": "V2 has no reviewed per-collection membership route. Its general Arcade and no-account explainer do not reproduce the legacy curated list; do not redirect to a generic hub."
+    },
+    {
+      "path": "/collections/games-for-a-short-break/",
+      "disposition": "explicit-retirement-no-redirect",
+      "decisionStatus": "approved-no-redirect",
+      "httpOutcome": "410-if-supported-otherwise-normal-404",
+      "reason": "V2 has no reviewed per-collection membership route or verified typical-run durations for the legacy list; do not redirect to a generic hub."
+    },
+    {
+      "path": "/collections/keyboard-friendly-browser-games/",
+      "disposition": "explicit-retirement-no-redirect",
+      "decisionStatus": "approved-no-redirect",
+      "httpOutcome": "410-if-supported-otherwise-normal-404",
+      "reason": "V2 has no reviewed per-collection membership route for a blanket keyboard-complete list; individual game controls vary, so do not redirect to a generic hub."
+    },
+    {
+      "path": "/collections/large-tap-targets-low-complexity/",
+      "disposition": "explicit-retirement-no-redirect",
+      "decisionStatus": "approved-no-redirect",
+      "httpOutcome": "410-if-supported-otherwise-normal-404",
+      "reason": "V2 has no reviewed per-collection membership route or current 44px/board-density audit for the legacy list; do not redirect to a generic hub."
+    },
+    {
+      "path": "/collections/logic-and-number/",
+      "disposition": "explicit-retirement-no-redirect",
+      "decisionStatus": "approved-no-redirect",
+      "httpOutcome": "410-if-supported-otherwise-normal-404",
+      "reason": "V2 has no reviewed curated membership route matching the legacy inclusion method; do not redirect to a generic Arcade category."
+    },
+    {
+      "path": "/collections/no-charge-games/",
+      "disposition": "explicit-retirement-no-redirect",
+      "decisionStatus": "approved-no-redirect",
+      "httpOutcome": "410-if-supported-otherwise-normal-404",
+      "reason": "V2 has no reviewed per-collection route matching the legacy list; the current Arcade inventory differs, so do not redirect to a generic hub."
+    },
+    {
+      "path": "/collections/one-thumb-mobile-friendly/",
+      "disposition": "explicit-retirement-no-redirect",
+      "decisionStatus": "approved-no-redirect",
+      "httpOutcome": "410-if-supported-otherwise-normal-404",
+      "reason": "V2 has no reviewed per-collection membership route confirming a full one-thumb loop for the legacy list; do not redirect to a generic hub."
+    },
+    {
+      "path": "/collections/originals-only/",
+      "disposition": "explicit-retirement-no-redirect",
+      "decisionStatus": "approved-no-redirect",
+      "httpOutcome": "410-if-supported-otherwise-normal-404",
+      "reason": "V2 has no reviewed per-collection membership route or current original-title classification matching the legacy set; do not redirect to a generic hub."
+    },
+    {
+      "path": "/collections/pass-and-play/",
+      "disposition": "explicit-retirement-no-redirect",
+      "decisionStatus": "approved-no-redirect",
+      "httpOutcome": "410-if-supported-otherwise-normal-404",
+      "reason": "V2 has a current Pass & Play article, but no collection route reproducing the legacy membership; do not treat a related article as a direct replacement."
+    },
+    {
+      "path": "/collections/untimed-or-reduced-pressure-browser-games/",
+      "disposition": "explicit-retirement-no-redirect",
+      "decisionStatus": "approved-no-redirect",
+      "httpOutcome": "410-if-supported-otherwise-normal-404",
+      "reason": "V2 has a current untimed-play article, but no per-collection route matching the legacy membership; individual game timing differs, so do not redirect to a generic hub."
+    },
+    {
+      "path": "/collections/word-games/",
+      "disposition": "explicit-retirement-no-redirect",
+      "decisionStatus": "approved-no-redirect",
+      "httpOutcome": "410-if-supported-otherwise-normal-404",
+      "reason": "V2 has word-game detail pages but no reviewed curated-list route matching the legacy set; do not redirect to a generic hub."
+    },
+    {
+      "path": "/help/",
+      "disposition": "explicit-retirement-no-redirect",
+      "decisionStatus": "approved-no-redirect",
+      "httpOutcome": "410-if-supported-otherwise-normal-404",
+      "reason": "V2 does not have an equivalent troubleshooting/support hub. /contact/ offers only a limited accessibility-barrier reporting address and no general support channel. Do not redirect /help/ to a topic-specific contact route."
+    },
+    {
+      "path": "/learn/",
+      "disposition": "explicit-retirement-no-redirect",
+      "decisionStatus": "approved-no-redirect",
+      "httpOutcome": "410-if-supported-otherwise-normal-404",
+      "reason": "The legacy Learn hub combines several definitions, articles, and tools. V2 has no single equivalent hub; six current topic pages receive individual redirects and the remaining legacy topics are explicitly retired."
+    },
+    {
+      "path": "/learn/game-mode-viewport/",
+      "disposition": "explicit-retirement-no-redirect",
+      "decisionStatus": "approved-no-redirect",
+      "httpOutcome": "410-if-supported-otherwise-normal-404",
+      "reason": "The V2 site does not publish the same Game Mode viewport feature or its legacy instructions; no safe one-to-one destination exists."
+    },
+    {
+      "path": "/learn/glossary/",
+      "disposition": "explicit-retirement-no-redirect",
+      "decisionStatus": "approved-no-redirect",
+      "httpOutcome": "410-if-supported-otherwise-normal-404",
+      "reason": "V2 has no single current glossary route reproducing this term set. Disparate game/tool pages are not a one-to-one replacement."
+    },
+    {
+      "path": "/learn/handoff-screen/",
+      "disposition": "explicit-retirement-no-redirect",
+      "decisionStatus": "approved-no-redirect",
+      "httpOutcome": "410-if-supported-otherwise-normal-404",
+      "reason": "Current V2 Pass & Play uses direct local turns and has no universal handoff-screen feature. The related two-player article explains that difference but is not a replacement feature."
+    },
+    {
+      "path": "/media/",
+      "disposition": "explicit-retirement-no-redirect",
+      "decisionStatus": "approved-no-redirect",
+      "httpOutcome": "410-if-supported-otherwise-normal-404",
+      "reason": "V2 does not publish a media kit or verified brand-resource package. /about/ is not an equivalent media destination, so do not redirect there."
+    }
+  ],
+  "approvalRecord": {
+    "recordedAtLocal": "2026-11-16",
+    "approvedBy": "User-directed approval recorded for this task",
+    "status": "approved-not-applied",
+    "scope": {
+      "exactV2LivePaths": 285,
+      "exactPath301Proposals": 59,
+      "noRedirectRetirements": 19,
+      "totalLivePaths": 363,
+      "unclassified": 0
+    },
+    "constraints": [
+      "The 59 exact-path 301 proposals are approved for the later Cloudflare-agent pass but remain inactive.",
+      "The 19 path-specific no-redirect retirements are approved; use 410 where supported, otherwise the normal 404.",
+      "No Cloudflare rules, redirects, DNS, or deployment changes were made in this task.",
+      "No catch-all redirect is approved."
+    ]
+  }
+}

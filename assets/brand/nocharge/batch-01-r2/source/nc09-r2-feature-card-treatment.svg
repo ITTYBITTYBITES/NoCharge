@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="420" viewBox="0 0 720 420" role="img" aria-labelledby="title desc">
+  <title id="title">NoCharge reusable featured-card graphic treatment</title>
+  <desc id="desc">A transparent, low-contrast rounded frame with a small modular corner accent. It leaves the main card area open for real content and is intended for featured or promotional card art slots, not as a screenshot or product image.</desc>
+  <rect x="16" y="16" width="688" height="388" rx="30" fill="none" stroke="#20252b" stroke-opacity=".16" stroke-width="2"/>
+  <path d="M44 102V44h58M618 376h58v-58" fill="none" stroke="#20252b" stroke-opacity=".2" stroke-width="2" stroke-linecap="round"/>
+  <rect x="590" y="52" width="34" height="34" rx="10" fill="#d8f27c"/>
+  <rect x="632" y="52" width="34" height="34" rx="10" fill="none" stroke="#20252b" stroke-opacity=".24" stroke-width="2"/>
+  <rect x="590" y="94" width="34" height="34" rx="10" fill="none" stroke="#20252b" stroke-opacity=".24" stroke-width="2"/>
+  <rect x="632" y="94" width="34" height="34" rx="10" fill="#ff775d"/>
+</svg>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" role="img" aria-labelledby="title desc">
+  <title id="title">NoCharge standalone brand symbol</title>
+  <desc id="desc">A solid, custom geometric N inside the website's signature lime rounded tile. The canvas outside the tile is transparent.</desc>
+  <rect x="6" y="6" width="108" height="108" rx="32" fill="#d8f27c"/>
+  <path d="M28 92V28h16l32 36V28h16v64H76L44 56v36Z" fill="#20252b"/>
+</svg>

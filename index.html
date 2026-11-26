@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en" data-event="none" data-event-preference="auto">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f7f6ef" />
+    <script>
+      (() => {
+        const root = document.documentElement;
+        const key = 'nocharge-theme';
+        let preference = 'system';
+        try {
+          const saved = window.localStorage.getItem(key);
+          if (saved === 'light' || saved === 'dark' || saved === 'system') preference = saved;
+        } catch {
+          // Continue with the system preference when storage is unavailable.
+        }
+        const systemDark = Boolean(window.matchMedia?.('(prefers-color-scheme: dark)').matches);
+        const theme = preference === 'system' ? (systemDark ? 'dark' : 'light') : preference;
+        root.dataset.themePreference = preference;
+        root.dataset.theme = theme;
+        const themeColor = document.querySelector('meta[name="theme-color"]');
+        if (themeColor) themeColor.setAttribute('content', theme === 'dark' ? '#121212' : '#f7f6ef');
+      })();
+    </script>
+    <script id="nocharge-holiday-calendar" type="application/json">__NOCHARGE_HOLIDAY_CALENDAR_JSON__</script>
+    <script>
+      (() => {
+        const root = document.documentElement;
+        let events = [];
+        try {
+          const json = document.getElementById('nocharge-holiday-calendar')?.textContent?.trim() ?? '';
+          if (json.startsWith('[')) events = JSON.parse(json);
+        } catch {
+          // Vite development keeps the build-time marker; the React resolver is the fallback.
+        }
+
+        const localNoon = (year, month, day) => {
+          const date = new Date(0);
+          date.setFullYear(year, month - 1, day);
+          date.setHours(12, 0, 0, 0);
+          return date;
+        };
+        const addDays = (date, amount) => {
+          const result = localNoon(date.getFullYear(), date.getMonth() + 1, date.getDate());
+          result.setDate(result.getDate() + amount);
+          return result;
+        };
+        const dayNumber = (date) => {
+          const utcDay = new Date(0);
+          utcDay.setUTCFullYear(date.getFullYear(), date.getMonth(), date.getDate());
+          utcDay.setUTCHours(0, 0, 0, 0);
+          return Math.floor(utcDay.getTime() / 86400000);
+        };
+        const parseLocalDate = (value) => {
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(value ?? '')) return null;
+          const [year, month, day] = value.split('-').map(Number);
+          const date = localNoon(year, month, day);
+          return date.getFullYear() === year && date.getMonth() + 1 === month && date.getDate() === day ? date : null;
+        };
+        const easterSunday = (year) => {
+          const a = year % 19, b = Math.floor(year / 100), c = year % 100;
+          const d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25);
+          const g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30;
+          const i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7;
+          const m = Math.floor((a + 11 * h + 22 * l) / 451);
+          const month = Math.floor((h + l - 7 * m + 114) / 31);
+          const day = ((h + l - 7 * m + 114) % 31) + 1;
+          return localNoon(year, month, day);
+        };
+        const nthWeekday = (year, month, weekday, occurrence) => {
+          const first = localNoon(year, month, 1);
+          const offset = (weekday - first.getDay() + 7) % 7;
+          return localNoon(year, month, 1 + offset + (occurrence - 1) * 7);
+        };
+        const lastWeekday = (year, month, weekday) => {
+          const last = localNoon(year, month + 1, 0);
+          const offset = (last.getDay() - weekday + 7) % 7;
+          return localNoon(year, month, last.getDate() - offset);
+        };
+        const nominalDate = (event, year) => {
+          const rule = event.dateRule;
+          if (!rule) return null;
+          if (rule.type === 'fixed') return localNoon(year, rule.month, rule.day);
+          if (rule.type === 'nth-weekday') return nthWeekday(year, rule.month, rule.weekday, rule.occurrence);
+          if (rule.type === 'last-weekday') return lastWeekday(year, rule.month, rule.weekday);
+          if (rule.type === 'easter') return easterSunday(year);
+          if (rule.type === 'range') return localNoon(year, rule.start.month, rule.start.day);
+          return null;
+        };
+        const windowFor = (event, year) => {
+          const rule = event.dateRule;
+          if (event.windowType === 'range' && rule?.type === 'range') {
+            const start = localNoon(year, rule.start.month, rule.start.day);
+            const startOrder = rule.start.month * 100 + rule.start.day;
+            const endOrder = rule.end.month * 100 + rule.end.day;
+            const endYear = endOrder < startOrder ? year + 1 : year;
+            return { start, end: localNoon(endYear, rule.end.month, rule.end.day), anchor: start };
+          }
+          const anchor = nominalDate(event, year);
+          if (!anchor) return null;
+          if (event.windowType === 'day') return { start: anchor, end: anchor, anchor };
+          const start = addDays(anchor, -anchor.getDay());
+          return { start, end: addDays(start, 6), anchor };
+        };
+        const resolveDate = (date) => {
+          const target = dayNumber(date);
+          const matches = [];
+          for (const event of events) {
+            for (let year = date.getFullYear() - 1; year <= date.getFullYear() + 1; year += 1) {
+              const window = windowFor(event, year);
+              if (window && target >= dayNumber(window.start) && target <= dayNumber(window.end)) {
+                matches.push({ event, window });
+              }
+            }
+          }
+          const specificity = { range: 1, week: 2, day: 3 };
+          matches.sort((a, b) => specificity[b.event.windowType] - specificity[a.event.windowType]
+            || b.event.priority - a.event.priority
+            || (dayNumber(a.window.end) - dayNumber(a.window.start)) - (dayNumber(b.window.end) - dayNumber(b.window.start))
+            || Math.abs(target - dayNumber(a.window.anchor)) - Math.abs(target - dayNumber(b.window.anchor))
+            || a.event.id.localeCompare(b.event.id));
+          return matches[0]?.event ?? null;
+        };
+
+        let preference = 'auto';
+        try {
+          const saved = window.localStorage.getItem('nocharge-seasonal-mode');
+          if (saved === 'auto' || saved === 'standard') preference = saved;
+        } catch {
+          // Continue with automatic seasonal themes when storage is unavailable.
+        }
+        const params = new URLSearchParams(window.location.search);
+        let selected = null;
+        let preview = false;
+        const previewEvent = params.get('previewEvent')?.trim() ?? '';
+        if (previewEvent === 'none') {
+          preview = true;
+        } else if (previewEvent) {
+          selected = events.find((event) => event.id === previewEvent) ?? null;
+          preview = Boolean(selected);
+        }
+        if (!preview) {
+          const previewDate = parseLocalDate(params.get('previewDate') ?? '');
+          if (previewDate) {
+            selected = resolveDate(previewDate);
+            preview = true;
+          }
+        }
+        if (!preview && preference === 'auto') selected = resolveDate(new Date());
+        root.dataset.eventPreference = preference;
+        root.dataset.event = selected?.id ?? 'none';
+        if (preview) root.dataset.eventPreview = 'true';
+        else delete root.dataset.eventPreview;
+      })();
+    </script>
+    <meta name="description" content="__SEO_DESCRIPTION__" />
+    <meta name="robots" content="__SEO_ROBOTS__" />
+    <title>__SEO_TITLE__</title>
+    <link rel="canonical" href="__SEO_CANONICAL__" />
+    <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
+    <meta property="og:site_name" content="NoCharge" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="__OG_TITLE__" />
+    <meta property="og:description" content="__OG_DESCRIPTION__" />
+    <meta property="og:url" content="__OG_URL__" />
+    <meta property="og:image" content="https://nocharge.net/og-nocharge.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="NoCharge — play, explore, make it useful" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://nocharge.net/og-nocharge.png" />
+    <meta name="twitter:title" content="__OG_TITLE__" />
+    <meta name="twitter:description" content="__OG_DESCRIPTION__" />
+    <script id="structured-data" type="application/ld+json">__SEO_JSONLD__</script>
+  </head>
+  <body>
+    <div id="root" data-prerendered-path="__NOCHARGE_PRERENDER_PATH__"><!--app-html--></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
