@@ -1,6 +1,7 @@
 import { Link, useLocation, useParams } from 'react-router';
 import { PageIntro } from '../components/Primitives';
 import { getAppLegalRecord, type AppLegalKind, type AppLegalSection as AppLegalSectionData } from '../content/appLegalPolicies';
+import { getExperienceTheme } from '../content/experienceThemes';
 import { NotFoundPage } from './NotFoundPage';
 
 function LegalSection({ section }: { section: AppLegalSectionData }) {
@@ -46,6 +47,7 @@ export function AppLegalPage() {
   const sourceUrl = record.sourceUrls[kind];
   const sections = record.policies?.[kind];
   const isDraft = record.status === 'publisher-draft' || !sections;
+  const theme = getExperienceTheme(record.slug);
 
   return (
     <article
@@ -54,6 +56,7 @@ export function AppLegalPage() {
       data-app-legal-kind={kind}
       data-app-legal-status={isDraft ? 'draft' : 'source-provided'}
       data-experience-theme={record.slug}
+      data-experience-personality={theme?.personality}
     >
       <PageIntro
         eyebrow={`${record.publisher} · App-specific document`}
