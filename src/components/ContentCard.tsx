@@ -6,7 +6,12 @@ import type { PublishedCatalogEntry } from '../content/schemas';
 export function ContentCard({ entry, compact = false }: { entry: PublishedCatalogEntry; compact?: boolean }) {
   const section = getSectionDefinition(entry.section);
   return (
-    <article className={`catalog-card${compact ? ' catalog-card--compact' : ''}`} data-section={entry.section} data-category={entry.category}>
+    <article
+      className={`catalog-card${compact ? ' catalog-card--compact' : ''}`}
+      data-section={entry.section}
+      data-category={entry.category}
+      data-entry-slug={entry.slug}
+    >
       <div className="catalog-card__meta">
         <span>{section.title}</span>
         <span aria-hidden="true">·</span>

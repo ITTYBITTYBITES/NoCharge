@@ -1,9 +1,17 @@
 import { useState } from 'react';
 
-export function ClickToLoadYouTubeTrailer({ title, videoId, experienceSlug }: {
+export function ClickToLoadYouTubeTrailer({
+  title,
+  videoId,
+  experienceSlug,
+  eyebrowLabel = 'Official trailer · YouTube',
+  noteLabel = 'Click to load · no video request before play',
+}: {
   title: string;
   videoId: string;
   experienceSlug: string;
+  eyebrowLabel?: string;
+  noteLabel?: string;
 }) {
   const [requested, setRequested] = useState(false);
   return (
@@ -28,10 +36,10 @@ export function ClickToLoadYouTubeTrailer({ title, videoId, experienceSlug }: {
           data-trailer-play={experienceSlug}
           data-trailer-click-only="true"
         >
-          <span className="youtube-trailer__eyebrow">Official trailer · YouTube</span>
+          <span className="youtube-trailer__eyebrow">{eyebrowLabel}</span>
           <span className="youtube-trailer__play" aria-hidden="true">▶</span>
           <span className="youtube-trailer__title">{title}</span>
-          <span className="youtube-trailer__note">Click to load · no video request before play</span>
+          <span className="youtube-trailer__note">{noteLabel}</span>
         </button>
       )}
     </div>

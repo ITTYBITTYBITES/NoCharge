@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { AdSlot } from '../components/AdSlot';
 import type { AdSlotId } from '../integrations/advertising';
 import { ContentCard } from '../components/ContentCard';
-import { ExperienceProductDirectory } from '../components/ExperienceProductDirectory';
+import { ExperienceProductDirectory, type StudioCategoryFilter } from '../components/ExperienceProductDirectory';
 import { EmptyState, PageIntro, SectionHeading } from '../components/Primitives';
 import { getSectionDefinition } from '../content/sections';
 import { getPublishedBySection } from '../content/registry';
@@ -17,6 +17,16 @@ const directoryAdSlots: Record<ContentSection, AdSlotId> = {
   guides: 'guides-hub-footer',
 };
 
+const studioFilterOptions: readonly {
+  id: StudioCategoryFilter;
+  label: string;
+  catalogCategory: string;
+}[] = [
+  { id: 'all', label: 'All', catalogCategory: 'all' },
+  { id: 'games', label: 'Games', catalogCategory: 'Games & Entertainment' },
+  { id: 'productivity', label: 'Productivity', catalogCategory: 'Productivity & Utilities' },
+];
+
 export function SectionLandingTemplate({ section, initialCategory }: { section: ContentSection; initialCategory?: string }) {
   const definition = getSectionDefinition(section);
   const entries = getPublishedBySection(section);
@@ -29,6 +39,17 @@ export function SectionLandingTemplate({ section, initialCategory }: { section: 
   useEffect(() => {
     if (initialCategory !== undefined) setCategory(initialCategory);
   }, [initialCategory]);
+
+  const studioFilter: StudioCategoryFilter = category === 'Games & Entertainment'
+    ? 'games'
+    : category === 'Productivity & Utilities'
+      ? 'productivity'
+      : 'all';
+
+  const selectStudioFilter = (next: StudioCategoryFilter) => {
+    const match = studioFilterOptions.find((option) => option.id === next);
+    setCategory(match?.catalogCategory ?? 'all');
+  };
 
   const visibleEntries = useMemo(() => entries
     .filter((entry) => category === 'all' || entry.category === category)
@@ -49,18 +70,80 @@ export function SectionLandingTemplate({ section, initialCategory }: { section: 
     ? 'Browse static app and game-release showcases alongside editorial product overviews. Each page identifies its platform and links to an official destination.'
     : definition.description;
 
+  const isExperiences = section === 'experiences';
+  const gameCount = isExperiences ? entries.filter((entry) => entry.category === 'Games & Entertainment').length : 0;
+  const utilityCount = isExperiences ? entries.filter((entry) => entry.category === 'Productivity & Utilities').length : 0;
+
   return (
-    <div className={`page-container destination-page section-landing section-landing--${section}`}>
-      <PageIntro eyebrow={definition.eyebrow} title={definition.title} lead={introLead} breadcrumb={[{ label: definition.title }]} status={false} iconId={definition.assetIconId ?? null} />
-      {section === 'experiences' && <ExperienceProductDirectory />}
+    <div
+      className={`page-container destination-page section-landing section-landing--${section}`}
+      data-studio={isExperiences ? 'ittybittybites' : undefined}
+    >
+      {isExperiences ? (
+        <div className="studio-hero">
+          <PageIntro
+            eyebrow={definition.eyebrow}
+            title={definition.title}
+            lead={introLead}
+            breadcrumb={[{ label: definition.title }]}
+            status={false}
+            iconId={definition.assetIconId ?? null}
+          />
+          <div className="studio-hero__deck">
+            <div className="studio-hero__identity">
+              <p className="studio-hero__kicker">ITTYBITTYBITES STUDIO GALLERY</p>
+              <p className="studio-hero__headline">An IttyBittyBites Experience</p>
+              <p className="studio-hero__subcopy">
+                Independent Android games with atmospheric worlds alongside local-first everyday utilities — each presented in its own dedicated micro-site.
+              </p>
+            </div>
+            <div className="studio-hero__controls">
+              <div className="studio-hero__stats" aria-label="Studio catalog breakdown">
+                <span className="studio-stat">{entries.length} Published Releases</span>
+                <span className="studio-stat">{gameCount} Games</span>
+                <span className="studio-stat">{utilityCount} Productivity Utilities</span>
+              </div>
+              <div className="studio-filter-pills" role="group" aria-label="Filter IttyBittyBites showcase by category">
+                {studioFilterOptions.map((option) => {
+                  const active = studioFilter === option.id;
+                  return (
+                    <button
+                      key={option.id}
+                      type="button"
+                      className={`studio-filter-pill${active ? ' is-selected' : ''}`}
+                      aria-pressed={active}
+                      data-studio-filter={option.id}
+                      onClick={() => selectStudioFilter(option.id)}
+                    >
+                      {option.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <PageIntro
+          eyebrow={definition.eyebrow}
+          title={definition.title}
+          lead={introLead}
+          breadcrumb={[{ label: definition.title }]}
+          status={false}
+          iconId={definition.assetIconId ?? null}
+        />
+      )}
+
+      {isExperiences && <ExperienceProductDirectory activeFilter={studioFilter} />}
+
       <section className="catalog-directory" aria-labelledby="directory-title">
         <SectionHeading
           id="directory-title"
-          eyebrow={section === 'experiences' ? 'Apps and authored experiences' : 'Published library'}
-          title={section === 'experiences' ? 'Explore the Experience library.' : `Browse ${definition.title.toLocaleLowerCase()}.`}
+          eyebrow={isExperiences ? 'Apps and authored experiences' : 'Published library'}
+          title={isExperiences ? 'Explore the Experience library.' : `Browse ${definition.title.toLocaleLowerCase()}.`}
           aside={<span className="catalog-count">{entries.length} published {entries.length === 1 ? 'entry' : 'entries'}</span>}
         >
-          {section === 'experiences'
+          {isExperiences
             ? 'This library includes static app and release showcases plus editorial product overviews. Filter by category or tag, then choose how you want the entries ordered.'
             : 'Filter by category or tag, then choose how you want the directory ordered. Only published entries appear here.'}
         </SectionHeading>
@@ -95,7 +178,7 @@ export function SectionLandingTemplate({ section, initialCategory }: { section: 
           </div>
         ) : (
           <div className="catalog-empty-state">
-            <EmptyState kind={section === 'experiences' ? 'apps' : section} eyebrow="No matching entries" title="No published item matches those filters.">
+            <EmptyState kind={isExperiences ? 'apps' : section} eyebrow="No matching entries" title="No published item matches those filters.">
               Clear one or both filters to see the complete published directory.
             </EmptyState>
             <button className="button button--secondary" type="button" onClick={resetFilters}>Clear filters</button>

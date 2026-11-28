@@ -50,9 +50,16 @@ export function DetailPageTemplate({ entry }: { entry: PublishedCatalogEntry }) 
       data-experience-page={entry.kind === 'experience' ? entry.presentation ?? 'interactive-demo' : undefined}
       data-static-experience-route={entry.kind === 'experience' && (entry.presentation === 'editorial-mini-site' || entry.presentation === 'showcase') ? entry.slug : undefined}
       data-experience-theme={experienceTheme?.slug}
+      data-experience-personality={experienceTheme?.personality}
     >
       <Breadcrumbs items={[{ label: section.title, href: section.path }, { label: entry.title }]} />
       <header className="detail-header">
+        {experienceTheme && (
+          <div className="experience-hero-stamp">
+            <span className="experience-hero-stamp__code">{experienceTheme.headerStamp}</span>
+            <span className="experience-hero-stamp__motif">{experienceTheme.motifBadge}</span>
+          </div>
+        )}
         <div className="detail-header__eyebrow">
           {experienceTheme ? (
             <>
